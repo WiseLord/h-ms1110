@@ -1,0 +1,98 @@
+
+(rules PCB front_panel
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 2005)
+    (layer_rule F.Cu
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 7.9)
+    )
+    (layer_rule B.Cu
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.1)
+    )
+  )
+  (rule
+    (width 250.0)
+    (clear 200.2)
+    (clear 125.0 (type smd_to_turn_gap))
+    (clear 50.0 (type smd_smd))
+  )
+  (padstack "Via[0-1]_800:400_um"
+    (shape
+      (circle F.Cu 800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (padstack "Via[0-1]_4800:3100_um"
+    (shape
+      (circle F.Cu 4800.0 0.0 0.0)
+    )
+    (shape
+      (circle B.Cu 4800.0 0.0 0.0)
+    )
+    (attach off)
+  )
+  (via 
+    "Via[0-1]_800:400_um" "Via[0-1]_800:400_um" default
+  )
+  (via 
+    "Via[0-1]_4800:3100_um" "Via[0-1]_4800:3100_um" default
+  )
+  (via 
+    "Via[0-1]_800:400_um-kicad_default" "Via[0-1]_800:400_um" "kicad_default"
+  )
+  (via 
+    "Via[0-1]_4800:3100_um-kicad_default" "Via[0-1]_4800:3100_um" "kicad_default"
+  )
+  (via_rule
+    default "Via[0-1]_800:400_um"
+  )
+  (via_rule
+    "kicad_default" "Via[0-1]_800:400_um-kicad_default"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+  (class "kicad_default"
+    GNDD /KS1 /S1 /KS2 /S2 /S3 /KS3 /K1
+    /K2 /K3 /K4 /ROTB /ROTA +3V3 "/OSC_OUT" "/OSC_IN"
+    "/OSC32_OUT" "/OSC32_IN" /NRST /BOOT1 /BOOT0 /VBAT "/SP_L" "/SP_R"
+    /AD2 /AD3 /AD1 /STBY /MUTE /REMOTE /SCL /SDA
+    +5V +3.3VA "/DISP_CS" "/DISP_RST" "/DISP_DC" "Net-(J1-Pad6)" "/DISP_DIN" "/DISP_CLK"
+    "Net-(J1-Pad3)" /TX /RX "/SYNC_DATA" "/SYNC_SCK" "/SPI_NSS" "/SPI_SCK" "/SPI_MISO"
+    "/SPI_MOSI" "Net-(R6-Pad1)" "Net-(R7-Pad1)" "/IN_L" "Net-(C8-Pad1)" "Net-(C9-Pad1)" "/IN_R" "Net-(R12-Pad1)"
+    "Net-(R13-Pad1)" "Net-(R14-Pad2)" "Net-(R16-Pad1)" "Net-(R17-Pad1)"
+    (clearance_class "kicad_default")
+    (via_rule kicad_default)
+    (rule
+      (width 250.0)
+    )
+    (circuit 
+      (use_layer F.Cu B.Cu)
+    )
+  )
+)
