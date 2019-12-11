@@ -69,10 +69,13 @@ void pinsInit(void)
     initDef.Pull = LL_GPIO_PULL_NO;
 #endif
 
-    initDef.Pin = LED1_Pin;
-    LL_GPIO_Init(LED1_Port, &initDef);
-    initDef.Pin = LED3_Pin;
-    LL_GPIO_Init(LED1_Port, &initDef);
+    initDef.Pin = MUTE_Pin;
+    LL_GPIO_Init(MUTE_Port, &initDef);
+    SET(MUTE);
+
+    initDef.Pin = STBY_Pin;
+    LL_GPIO_Init(STBY_Port, &initDef);
+    CLR(STBY);
 
     pinsInitDisplay();
 }

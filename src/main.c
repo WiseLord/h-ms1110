@@ -1,5 +1,6 @@
 #include "display/glcd.h"
 #include "hwlibs.h"
+#include "input.h"
 #include "pins.h"
 #include "usart.h"
 #include "utils.h"
@@ -72,62 +73,7 @@ void SystemClock_Config(void)
 
 void SysTick_Handler(void)
 {
-    static uint16_t tick = 0;
-
-    if (++tick >= 200)
-        tick = 0;
-
-    switch (tick) {
-    case 0:
-        CLR(LED1);
-        SET(LED3);
-        break;
-    case 100:
-        CLR(LED3);
-        SET(LED1);
-        break;
-    }
-}
-
-void printDispRegs(void)
-{
-#ifdef _DISP_READ_ENABLED
-
-    const uint8_t num = 10;
-
-    uint16_t args[num];
-
-    for (uint16_t reg = 0x00; reg <= 0xFF; reg++) {
-        dispdrvReset();
-        dispdrvReadReg(reg, args, num);
-
-        bool hasData = false;
-        for (uint8_t i = 0; i < num; i++) {
-            if (args[i]) {
-                hasData = true;
-                break;
-            }
-        }
-
-        usartSendString(USART_DBG, utilMkStr("%02x: ", reg));
-
-        if (!hasData) {
-            usartSendString(USART_DBG, "\r");
-            continue;
-        }
-
-        for (uint8_t i = 0; i < num; i++) {
-            if (args[i]) {
-                usartSendString(USART_DBG, utilMkStr("%04x ", args[i]));
-            } else {
-                usartSendString(USART_DBG, "---- ");
-            }
-        }
-        usartSendString(USART_DBG, "\n\r");
-    }
-#else
-    usartSendString(USART_DBG, "\rRead pin is disabled\r\n");
-#endif
+    inputConvertADC();
 }
 
 int main(void)
@@ -141,40 +87,20 @@ int main(void)
 
     usartInit(USART_DBG, 115200);
     usartSendString(USART_DBG, "\rUsart init done\r\n");
-//    printDispRegs();
+
+    inputInit();
 
     static Glcd *glcd;
     glcdInit(&glcd);
-//    glcdRotate(LCD_ROTATE_180);
+
+//    SET(STBY);
+//    CLR(MUTE);
 
     // Graphics
     int16_t w = glcd->drv->width;
     int16_t h = glcd->drv->height;
 
     glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
-
-    if (h >= 240) {
-        glcdSetFont(&fontterminus32);
-    } else if (h >= 176) {
-        glcdSetFont(&fontterminus24);
-    } else {
-        glcdSetFont(&fontterminus16);
-    }
-
-    glcdSetFontColor(LCD_COLOR_RED);
-    glcdSetXY(0, h / 16 * 2);
-    glcdWriteString("Red line");
-    glcd->drv->update();
-
-    glcdSetFontColor(LCD_COLOR_LIME);
-    glcdSetXY(0, h / 16 * 7);
-    glcdWriteString("Green line");
-    glcd->drv->update();
-
-    glcdSetFontColor(LCD_COLOR_BLUE);
-    glcdSetXY(0, h / 16 * 12);
-    glcdWriteString("Blue line");
-    glcd->drv->update();
 
     int16_t tw = w / 16;
     int16_t th = h / 4;
@@ -183,30 +109,23 @@ int main(void)
     glcdDrawRect(w / 2 + tw * 3, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_LIME);
     glcdDrawRect(w / 2 + tw * 5, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_BLUE);
 
-    int16_t rx = w / 4 * 3;
-    int16_t ry = h / 4 * 1;
-    int16_t rr = ry - 8;
-    glcdDrawRing(rx, ry, ry - 2, 3, LCD_COLOR_WHITE);
+    glcdSetFont(&fontterminus16);
+    glcdSetFontColor(LCD_COLOR_WHITE);
 
     while (1) {
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_RED);
+        uint16_t *adcData = getAdcData();
+
+        glcdSetXY(0, h / 16 * 2);
+        glcdWriteString(utilMkStr("%4u", adcData[0]));
+
+        glcdSetXY(0, h / 16 * 7);
+        glcdWriteString(utilMkStr("%4u", adcData[1]));
+
+        glcdSetXY(0, h / 16 * 12);
+        glcdWriteString(utilMkStr("%4u", adcData[2]));
+
         glcd->drv->update();
-        LL_mDelay(500);
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_YELLOW);
-        glcd->drv->update();
-        LL_mDelay(500);
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_LIME);
-        glcd->drv->update();
-        LL_mDelay(500);
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_AQUA);
-        glcd->drv->update();
-        LL_mDelay(500);
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_BLUE);
-        glcd->drv->update();
-        LL_mDelay(500);
-        glcdDrawCircle(rx, ry, rr, LCD_COLOR_MAGENTA);
-        glcd->drv->update();
-        LL_mDelay(500);
+        LL_mDelay(50);
     }
 
     return 0;

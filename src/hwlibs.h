@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #ifdef _STM32F1
+#include <stm32f1xx_ll_adc.h>
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_cortex.h>
 #include <stm32f1xx_ll_gpio.h>
@@ -17,6 +18,7 @@ extern "C" {
 #endif
 
 #ifdef _STM32F3
+#include <stm32f3xx_ll_adc.h>
 #include <stm32f3xx_ll_bus.h>
 #include <stm32f3xx_ll_cortex.h>
 #include <stm32f3xx_ll_gpio.h>

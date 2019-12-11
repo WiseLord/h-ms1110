@@ -56,10 +56,10 @@ extern "C" {
 #define DISP_BCKL_Port          GPIOC
 #define DISP_BCKL_Pin           LL_GPIO_PIN_13
 
-#define LED1_Port               GPIOA
-#define LED1_Pin                LL_GPIO_PIN_2
-#define LED3_Port               GPIOA
-#define LED3_Pin                LL_GPIO_PIN_3
+#define STBY_Port               GPIOB
+#define STBY_Pin                LL_GPIO_PIN_0
+#define MUTE_Port               GPIOB
+#define MUTE_Pin                LL_GPIO_PIN_1
 
 void pinsInit(void);
 
