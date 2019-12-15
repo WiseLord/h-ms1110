@@ -140,12 +140,12 @@ void glcdSetFont(const tFont *font)
     glcd.font = font;
 }
 
-void glcdSetFontColor(uint16_t color)
+void glcdSetFontColor(color_t color)
 {
     glcd.fontFg = color;
 }
 
-void glcdSetFontBgColor(uint16_t color)
+void glcdSetFontBgColor(color_t color)
 {
     glcd.fontBg = color;
 }

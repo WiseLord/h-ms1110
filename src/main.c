@@ -100,17 +100,17 @@ int main(void)
     int16_t w = glcd->drv->width;
     int16_t h = glcd->drv->height;
 
-    glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
+    glcdDrawRect(0, 0, w, h, DISP_COLOR_BLACK);
 
     int16_t tw = w / 16;
     int16_t th = h / 4;
 
-    glcdDrawRect(w / 2 + tw * 1, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_RED);
-    glcdDrawRect(w / 2 + tw * 3, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_LIME);
-    glcdDrawRect(w / 2 + tw * 5, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_BLUE);
+    glcdDrawRect(w / 2 + tw * 1, h / 8 * 5, tw / 4 * 6, th, DISP_COLOR_DARKGRAY);
+    glcdDrawRect(w / 2 + tw * 3, h / 8 * 5, tw / 4 * 6, th, DISP_COLOR_GRAY);
+    glcdDrawRect(w / 2 + tw * 5, h / 8 * 5, tw / 4 * 6, th, DISP_COLOR_LIGHTGRAY);
 
     glcdSetFont(&fontterminus16);
-    glcdSetFontColor(LCD_COLOR_WHITE);
+    glcdSetFontColor(DISP_COLOR_WHITE);
 
     while (1) {
         uint16_t *adcData = getAdcData();

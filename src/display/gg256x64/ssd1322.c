@@ -135,10 +135,8 @@ void ssd1322SetWindow(int16_t x, int16_t y, int16_t w, int16_t h)
     yPos = yMin;
 }
 
-void ssd1322SendColor(uint16_t data)
+void ssd1322SendColor(color_t color)
 {
-    uint8_t color = (((data & 0x8000) >> 12) | ((data & 0x0400) >> 8) | (data & 0x0018) >> 3) & 0x0F;
-
     if (xPos % 2 == 0) {
         fb[128 * yPos + xPos / 2] &= 0x0F;
         fb[128 * yPos + xPos / 2] |= ((color << 4) & 0xF0);

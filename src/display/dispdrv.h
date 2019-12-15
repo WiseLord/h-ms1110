@@ -25,6 +25,8 @@ extern "C" {
 #define LCD_BR_MIN          1
 #define LCD_BR_MAX          32
 
+typedef uint8_t color_t;
+
 typedef struct {
     void (*init)(void);
     void (*sleep)(void);
@@ -35,7 +37,7 @@ typedef struct {
 
     void *fb;
     void (*update)(void);
-    void (*sendColor)(uint16_t data);
+    void (*sendColor)(color_t data);
 
     int16_t width;
     int16_t height;
