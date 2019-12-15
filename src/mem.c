@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
-static uint8_t static_mem[4096];
+static uint8_t static_mem[1024];
 
 void *mem_malloc(size_t size)
 {

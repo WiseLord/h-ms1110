@@ -1,4 +1,4 @@
-PROJECT = wl_lcd-f103
+PROJECT = h-ms1110
 
 DISPLAY = SSD1322
 DISPVAR = SPI
@@ -14,7 +14,6 @@ TARGET = $(call lc, $(PROJECT)_$(DISPLAY)_$(DISPVAR))
 
 C_DEFS = -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_FAMILY)
 
-#C_DEFS += -D_DISP_READ_ENABLED
 C_DEFS += -D_DISP_RST_ENABLED
 
 C_SOURCES = main.c
@@ -30,70 +29,6 @@ C_SOURCES += utils.c
 C_SOURCES += $(wildcard display/fonts/font*.c)
 
 DISPTYPE = gc
-
-ifneq (,$(filter $(DISPLAY), \
-  SSD1283A   \
-))
-  DISPSIZE = 130x130
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  ILI9163   \
-  S6D0144   \
-  ST7735    \
-))
-  DISPSIZE = 160x128
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  L2F50126  \
-  LPH9157   \
-  LS020     \
-  SSD1286A  \
-))
-  DISPSIZE = 176x132
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  HX8340    \
-  ILI9225   \
-  LGDP4524  \
-  S6D0164   \
-))
-  DISPSIZE = 220x176
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  HX8347A   \
-  HX8347D   \
-  ILI9320   \
-  ILI9341   \
-  MC2PA8201 \
-  S6D0129   \
-  S6D0139   \
-  SPFD5408  \
-  SSD1289   \
-  SSD2119   \
-))
-  DISPSIZE = 320x240
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  ILI9327   \
-  S6D04D1   \
-  ST7793    \
-))
-  DISPSIZE = 400x240
-endif
-
-ifneq (,$(filter $(DISPLAY), \
-  ILI9481   \
-  ILI9486   \
-  R61581    \
-  RM68140   \
-))
-  DISPSIZE = 480x320
-endif
 
 ifneq (,$(filter $(DISPLAY), \
   SSD1322   \

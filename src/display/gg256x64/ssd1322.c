@@ -8,12 +8,10 @@ static uint8_t fb[FB_SIZE];
 
 void ssd1322Init(void)
 {
-    dispdrvReset();
-
     CLR(DISP_CS);
 
     dispdrvSelectReg8(SSD1322_SET_COMMAND_LOCK);
-    dispdrvSendData8(0x12);// Unlock (reset)
+    dispdrvSendData8(0x12); // Unlock (reset)
 
     dispdrvSelectReg8(SSD1322_SET_DISPLAY_OFF);
 
