@@ -19,9 +19,8 @@ enum {
 
 void inputInit(void);
 
-void inputConvertADC(void);
-
-uint16_t *getAdcData(void);
+void inputAnalogConvert(void);
+uint16_t *inputAnalogGetData(void);
 
 #ifdef __cplusplus
 }

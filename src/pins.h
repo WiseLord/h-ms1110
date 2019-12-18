@@ -12,10 +12,6 @@ extern "C" {
 
 #define CONCAT(x,y)             x ## y
 
-#define OUT(p)                  (LL_GPIO_SetPinMode(CONCAT(p, _Port), CONCAT(p, _Pin), LL_GPIO_MODE_OUTPUT))
-#define IN_F(p)                 (LL_GPIO_SetPinMode(CONCAT(p, _Port), CONCAT(p, _Pin), LL_GPIO_MODE_FLOATING))
-#define IN_P(p)                 (LL_GPIO_SetPinMode(CONCAT(p, _Port), CONCAT(p, _Pin), LL_GPIO_MODE_INPUT))
-
 #define SET(p)                  (LL_GPIO_SetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
 #define CLR(p)                  (LL_GPIO_ResetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
 
@@ -33,6 +29,16 @@ extern "C" {
 #define STBY_Pin                LL_GPIO_PIN_0
 #define MUTE_Port               GPIOB
 #define MUTE_Pin                LL_GPIO_PIN_1
+
+#define AIN_BTN_Port            GPIOA
+#define AIN_BTN_Pin             LL_GPIO_PIN_4
+#define AIN_BTN_ADC_Channel     LL_ADC_CHANNEL_4
+#define AIN_POT_A_Port          GPIOA
+#define AIN_POT_A_Pin           LL_GPIO_PIN_2
+#define AIN_POT_A_Channel       LL_ADC_CHANNEL_2
+#define AIN_POT_B_Port          GPIOA
+#define AIN_POT_B_Pin           LL_GPIO_PIN_3
+#define AIN_POT_B_Channel       LL_ADC_CHANNEL_3
 
 void pinsInit(void);
 

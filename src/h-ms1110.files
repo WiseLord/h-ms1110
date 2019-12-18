@@ -52,6 +52,8 @@ mem.c
 mem.h
 pins.c
 pins.h
+settings.c
+settings.h
 spi.c
 spi.h
 system/startup_stm32f103xb.s

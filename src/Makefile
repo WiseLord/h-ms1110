@@ -20,6 +20,7 @@ C_SOURCES = main.c
 
 C_SOURCES += input.c
 C_SOURCES += pins.c
+C_SOURCES += settings.c
 C_SOURCES += spi.c
 C_SOURCES += usart.c
 C_SOURCES += utils.c

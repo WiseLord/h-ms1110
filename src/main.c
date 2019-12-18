@@ -73,7 +73,7 @@ void SystemClock_Config(void)
 
 void SysTick_Handler(void)
 {
-    inputConvertADC();
+    inputAnalogConvert();
 }
 
 int main(void)
@@ -113,16 +113,16 @@ int main(void)
     glcdSetFontColor(LCD_COLOR_WHITE);
 
     while (1) {
-        uint16_t *adcData = getAdcData();
+        uint16_t *adcData = inputAnalogGetData();
 
         glcdSetXY(0, h / 16 * 2);
-        glcdWriteString(utilMkStr("%4u", adcData[0]));
+        glcdWriteString(utilMkStr("%4u", adcData[AIN_BTN]));
 
         glcdSetXY(0, h / 16 * 7);
-        glcdWriteString(utilMkStr("%4u", adcData[1]));
+        glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_A]));
 
         glcdSetXY(0, h / 16 * 12);
-        glcdWriteString(utilMkStr("%4u", adcData[2]));
+        glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_B]));
 
         glcdUpdate();
         LL_mDelay(50);
