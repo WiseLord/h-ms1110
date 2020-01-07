@@ -124,7 +124,7 @@ int main(void)
         glcdSetXY(0, h / 16 * 12);
         glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_B]));
 
-        glcdUpdate();
+        glcdFbSync();
         LL_mDelay(50);
     }
 

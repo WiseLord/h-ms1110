@@ -35,6 +35,7 @@ ifneq (,$(filter $(DISPLAY), \
 ))
   DISPTYPE = gg
   DISPSIZE = 256x64
+  C_DEFS += -D_DISP_FB
 endif
 
 C_SOURCES += display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c

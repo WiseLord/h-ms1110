@@ -103,7 +103,7 @@ void ssd1322Clear(void)
     }
 }
 
-void ssd1322Update(void)
+void ssd1322FbSync(void)
 {
     CLR(DISP_CS);
 
@@ -125,33 +125,14 @@ void ssd1322Update(void)
     SET(DISP_CS);
 }
 
-static int16_t xMin, xMax, yMin, yMax, xPos, yPos;
-
-void ssd1322SetWindow(int16_t x, int16_t y, int16_t w, int16_t h)
+void ssd1322FbSetPixel(int16_t x, int16_t y, color_t color)
 {
-    xMin = x;
-    yMin = y;
-    xMax = x + w;
-    yMax = y + h;
-    xPos = xMin;
-    yPos = yMin;
-}
-
-void ssd1322SendColor(color_t color)
-{
-    if (xPos % 2 == 0) {
-        fb[128 * yPos + xPos / 2] &= 0x0F;
-        fb[128 * yPos + xPos / 2] |= ((color << 4) & 0xF0);
+    if (x % 2 == 0) {
+        fb[128 * y + x / 2] &= 0x0F;
+        fb[128 * y + x / 2] |= ((color << 4) & 0xF0);
     } else {
-        fb[128 * yPos + xPos / 2] &= 0xF0;
-        fb[128 * yPos + xPos / 2] |= ((color) & 0x0F);
-    }
-
-    if (++yPos >= yMax) {
-        yPos = yMin;
-        if (++xPos >= xMax) {
-            xPos = xMin;
-        }
+        fb[128 * y + x / 2] &= 0xF0;
+        fb[128 * y + x / 2] |= ((color) & 0x0F);
     }
 }
 
@@ -161,11 +142,11 @@ const DispDriver dispdrv = {
     .init = ssd1322Init,
 //    .sleep = ssd1322Sleep,
 //    .wakeup = ssd1322Wakeup,
-    .setWindow = ssd1322SetWindow,
+//    .setWindow = ssd1322SetWindow,
 //    .rotate = ssd1322Rotate,
 //    .shift = ssd1322Shift,
 
     .fb = fb,
-    .update = ssd1322Update,
-    .sendColor = ssd1322SendColor,
+    .fbSync = ssd1322FbSync,
+    .fbSetPixel = ssd1322FbSetPixel,
 };
