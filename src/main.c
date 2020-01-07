@@ -93,6 +93,8 @@ int main(void)
     static Glcd *glcd;
     glcdInit(&glcd);
 
+    glcdRotate(LCD_ROTATE_0);
+
 //    SET(STBY);
 //    CLR(MUTE);
 

@@ -8,8 +8,6 @@ static uint8_t fb[FB_SIZE];
 
 void ssd1322Init(void)
 {
-    dispdrvReset();
-
     CLR(DISP_CS);
 
     dispdrvSelectReg8(SSD1322_SET_COMMAND_LOCK);
@@ -87,20 +85,23 @@ void ssd1322Init(void)
 
     dispdrvSelectReg8(SSD1322_NORMAL_DISPLAY);
 
-    utilmDelay(1);
-
     dispdrvSelectReg8(SSD1322_SET_DISPLAY_ON);
-
-    utilmDelay(200);
 
     SET(DISP_CS);
 }
 
-void ssd1322Clear(void)
+void ssd1322Rotate(uint8_t rotate)
 {
-    for (int32_t i = 0; i < FB_SIZE; i++) {
-        fb[i] = 0x00;
-    }
+    CLR(DISP_CS);
+
+    dispdrvSelectReg8(SSD1322_SET_REMAP_AND_DUAL_COM_LINE_MODE);
+    dispdrvSendData8(rotate & LCD_ROTATE_180 ? 0x14 : 0x06);
+    dispdrvSendData8(0x11);
+
+    dispdrvSelectReg8(SSD1322_SET_PHASE_LENGTH);
+    dispdrvSendData8(0xE8); // 14 DCLKs phase 1, 17 DCLKs phase 2 (reset 0x74 => 7 + 9 DCLKs)
+
+    SET(DISP_CS);
 }
 
 void ssd1322FbSync(void)
@@ -142,8 +143,7 @@ const DispDriver dispdrv = {
     .init = ssd1322Init,
 //    .sleep = ssd1322Sleep,
 //    .wakeup = ssd1322Wakeup,
-//    .setWindow = ssd1322SetWindow,
-//    .rotate = ssd1322Rotate,
+    .rotate = ssd1322Rotate,
 //    .shift = ssd1322Shift,
 
     .fb = fb,
