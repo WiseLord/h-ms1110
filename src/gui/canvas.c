@@ -9,6 +9,7 @@ void canvasInit()
 {
     glcdInit(&canvas.glcd);
 
+    canvasClear();
 }
 
 void canvasClear(void)

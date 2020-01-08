@@ -3,6 +3,7 @@
 #include "hwlibs.h"
 #include "pins.h"
 #include "settings.h"
+#include "timers.h"
 
 static int8_t encRes = 0;
 
@@ -41,14 +42,7 @@ static void inputAnalogInit(void)
     }
 }
 
-void inputInit()
-{
-    inputAnalogInit();
-
-    encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
-}
-
-void inputAnalogConvert(void)
+static void inputAnalogConvert(void)
 {
     if (LL_ADC_IsEnabled(ADC2)) {
         static uint8_t chan = 0;
@@ -64,6 +58,25 @@ void inputAnalogConvert(void)
         // Run new conversion
         LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
         LL_ADC_REG_StartConversionSWStart(ADC2);
+    }
+}
+
+void inputInit()
+{
+    inputAnalogInit();
+
+    timerInit(TIM_INPUT, 199, 359);  // 1kHz polling
+
+    encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
+}
+
+void TIM_INPUT_HANDLER(void)
+{
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM_INPUT)) {
+        // Clear the update interrupt flag
+        LL_TIM_ClearFlag_UPDATE(TIM_INPUT);
+
+        inputAnalogConvert();
     }
 }
 

@@ -38,6 +38,7 @@ drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_i2c.h
 drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_rcc.h
 drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_spi.h
 drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_system.h
+drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_tim.h
 drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usart.h
 drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_utils.h
 drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_gpio.c
@@ -64,6 +65,8 @@ system/startup_stm32f103xb.s
 system/stm32f103c8_flash.ld
 system/stm32f103xb_openocd.cfg
 system/system_stm32f1xx.c
+timers.c
+timers.h
 usart.c
 usart.h
 utils.c
