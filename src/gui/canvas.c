@@ -33,13 +33,6 @@ void canvasShowStandby(bool clear)
 
     glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
 
-    int16_t tw = w / 16;
-    int16_t th = h / 4;
-
-    glcdDrawRect(w / 2 + tw * 1, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_NERO);
-    glcdDrawRect(w / 2 + tw * 3, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_GRAY);
-    glcdDrawRect(w / 2 + tw * 5, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_ECLIPSE);
-
     glcdSetFont(&fontterminus16);
 
     uint16_t *adcData = inputAnalogGetData();
@@ -52,4 +45,15 @@ void canvasShowStandby(bool clear)
 
     glcdSetXY(0, h / 16 * 12);
     glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_B]));
+
+
+    int16_t potA = 200 - 200 * adcData[AIN_POT_A] / 4096;
+    int16_t potB = 200 - 200 * adcData[AIN_POT_B] / 4096;
+
+    glcdDrawRect(40, h / 16 * 2, potA, 10, LCD_COLOR_WHITE);
+    glcdDrawRect(40 + potA, h / 16 * 2, 200 - potA, 10, LCD_COLOR_NAVI);
+
+    glcdDrawRect(40, h / 16 * 7, potB, 10, LCD_COLOR_WHITE);
+    glcdDrawRect(40 + potB, h / 16 * 7, 200 - potB, 10, LCD_COLOR_NAVI);
+
 }
