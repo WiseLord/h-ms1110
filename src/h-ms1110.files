@@ -1,3 +1,5 @@
+amp.c
+amp.h
 display/dispdrv.c
 display/dispdrv.h
 display/fonts/font-terminus-12.c
