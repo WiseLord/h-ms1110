@@ -19,6 +19,7 @@ C_DEFS += -D_DISP_RST_ENABLED
 C_SOURCES = main.c
 
 C_SOURCES += amp.c
+C_SOURCES += gui/canvas.c
 C_SOURCES += input.c
 C_SOURCES += pins.c
 C_SOURCES += settings.c

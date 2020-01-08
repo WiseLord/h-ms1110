@@ -1,4 +1,5 @@
-#include "display/glcd.h"
+#include "amp.h"
+#include "gui/canvas.h"
 #include "hwlibs.h"
 #include "input.h"
 #include "pins.h"
@@ -90,44 +91,12 @@ int main(void)
 
     inputInit();
 
-    static Glcd *glcd;
-    glcdInit(&glcd);
-
-    glcdRotate(LCD_ROTATE_0);
-
-//    SET(STBY);
-//    CLR(MUTE);
-
-    // Graphics
-    int16_t w = glcd->drv->width;
-    int16_t h = glcd->drv->height;
-
-    glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
-
-    int16_t tw = w / 16;
-    int16_t th = h / 4;
-
-    glcdDrawRect(w / 2 + tw * 1, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_NERO);
-    glcdDrawRect(w / 2 + tw * 3, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_GRAY);
-    glcdDrawRect(w / 2 + tw * 5, h / 8 * 5, tw / 4 * 6, th, LCD_COLOR_ECLIPSE);
-
-    glcdSetFont(&fontterminus16);
-    glcdSetFontColor(LCD_COLOR_WHITE);
+    canvasInit();
 
     while (1) {
-        uint16_t *adcData = inputAnalogGetData();
-
-        glcdSetXY(0, h / 16 * 2);
-        glcdWriteString(utilMkStr("%4u", adcData[AIN_BTN]));
-
-        glcdSetXY(0, h / 16 * 7);
-        glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_A]));
-
-        glcdSetXY(0, h / 16 * 12);
-        glcdWriteString(utilMkStr("%4u", adcData[AIN_POT_B]));
-
-        glcdFbSync();
-        LL_mDelay(50);
+        ampActionHandle();
+        ampShowScreen();
+        ampActionGet();
     }
 
     return 0;

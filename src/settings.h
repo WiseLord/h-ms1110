@@ -1,6 +1,10 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 typedef uint8_t Param;
@@ -13,5 +17,9 @@ enum {
 };
 
 int16_t settingsGet(Param param);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // SETTINGS_H

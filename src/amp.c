@@ -1,32 +1,71 @@
 #include "amp.h"
 
-typedef uint8_t ActionType;
-enum {
-    ACTION_NONE = 0,
+#include "gui/canvas.h"
+#include "pins.h"
 
-    ACTION_TYPE_END
+static Action action = {
+    .type = ACTION_INIT,
+    .screen = SCREEN_STANDBY,
 };
 
-typedef uint8_t ScreenMode;
-enum {
-    // Screens allowed to be default
-    SCREEN_SPECTRUM = 0,
-    SCREEN_TIME,
-
-    SCREEN_STANDBY,
-
-    SCREEN_END
+static Screen screen = {
+    .mode = SCREEN_STANDBY,
+    .def = SCREEN_STANDBY,
 };
 
-typedef struct {
-    ScreenMode mode;
-    ScreenMode def;
-} Screen;
+void ampPinMute(bool value)
+{
+    if (value) {
+        SET(MUTE);
+    } else {
+        CLR(MUTE);
+    }
+}
 
-typedef struct {
-    ActionType type;
-    ScreenMode screen;
+void ampPinStby(bool value)
+{
+    if (value) {
+        CLR(STBY);
+    } else {
+        SET(STBY);
+    }
+}
 
-    int16_t value;
-    int16_t timeout;
-} Action;
+static void ampInit()
+{
+    ampPinMute(true);
+    ampPinStby(true);
+}
+
+
+void ampActionGet(void)
+{
+
+}
+
+void ampActionHandle(void)
+{
+    action.timeout = 0;
+
+    switch (action.type) {
+    case ACTION_INIT:
+        ampInit();
+        break;
+    default:
+        break;
+    }
+
+}
+
+void ampShowScreen()
+{
+    switch (screen.mode) {
+    case SCREEN_STANDBY:
+        canvasShowStandby(false);
+        break;
+    default:
+        break;
+    }
+
+    glcdFbSync();
+}
