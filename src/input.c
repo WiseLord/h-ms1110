@@ -13,7 +13,7 @@ static const uint32_t analogInputs[] = {
     AIN_POT_B_Channel,
 };
 
-static uint16_t adcData[AIN_END];
+static int16_t adcData[AIN_END];
 
 static void inputAnalogInit(void)
 {
@@ -80,7 +80,7 @@ void TIM_INPUT_HANDLER(void)
     }
 }
 
-uint16_t *inputAnalogGetData()
+int16_t *inputAnalogGetData(void)
 {
     return adcData;
 }

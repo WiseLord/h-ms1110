@@ -19,7 +19,7 @@ enum {
 
 void inputInit(void);
 
-uint16_t *inputAnalogGetData(void);
+int16_t *inputAnalogGetData(void);
 
 #ifdef __cplusplus
 }
