@@ -42,8 +42,8 @@ static void inputAnalogInit(void)
     ctx.zoneCnt = 15; // TODO: calculate from audio grid
     int16_t zoneLen = POT_MAX / ctx.zoneCnt;
 
-    ctx.potData[AIN_POT_A] = POT_GAP + zoneLen;
-    ctx.potData[AIN_POT_B] = POT_GAP + zoneLen;
+    ctx.potData[AIN_POT_A] = zoneLen / 2;
+    ctx.potData[AIN_POT_B] = zoneLen / 2;
 }
 
 static void inputAnalogConvert(void)
@@ -56,9 +56,10 @@ static void inputAnalogConvert(void)
 
     if (chan < AIN_POT_END) {
         int16_t zoneLen = POT_MAX / ctx.zoneCnt;
-        adcData = ADC_MAX - adcData;
+        adcData = POT_MAX - adcData;
         // Filter data to nearest zone value
-        ctx.potData[chan] += ((adcData - ctx.potData[chan]) / zoneLen) * zoneLen;
+        int16_t filterWidth = zoneLen * 3 / 4;
+        ctx.potData[chan] += (adcData - ctx.potData[chan]) / filterWidth * filterWidth;
     }
 
     // Change input
@@ -97,5 +98,5 @@ InputCtx *inputGetCtx()
 
 int8_t inputGetPot(uint8_t chan)
 {
-    return (ctx.potData[chan] - POT_GAP) * ctx.zoneCnt / POT_MAX;
+    return ctx.potData[chan] * ctx.zoneCnt / POT_MAX;
 }

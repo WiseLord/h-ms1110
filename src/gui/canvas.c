@@ -58,8 +58,8 @@ void canvasShowStandby(bool clear)
         glcdDrawRect(0 + i * sw / zoneCnt, 32, sw / zoneCnt, 10, RGB_CONV(0xA0A0A0));
     }
 
-    glcdSetXY(40, 48);
-    glcdWriteString(utilMkStr("%4d %2d", inCtx->potData[AIN_POT_A], potA));
-    glcdSetXY(40 + sw / 2, 48);
-    glcdWriteString(utilMkStr("%4d %2d", inCtx->potData[AIN_POT_B], potB));
+    glcdSetXY(0, 48);
+    glcdWriteString(utilMkStr("%4d %4d %2d", inCtx->potData[AIN_POT_A], POT_MAX - inCtx->adcData[AIN_POT_A], potA));
+    glcdSetXY(sw / 2, 48);
+    glcdWriteString(utilMkStr("%4d %4d %2d", inCtx->potData[AIN_POT_B], POT_MAX - inCtx->adcData[AIN_POT_B], potB));
 }
