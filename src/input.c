@@ -5,15 +5,13 @@
 #include "settings.h"
 #include "timers.h"
 
-static int8_t encRes = 0;
+static InputCtx ctx;
 
 static const uint32_t analogInputs[] = {
-    AIN_BTN_ADC_Channel,
     AIN_POT_A_Channel,
     AIN_POT_B_Channel,
+    AIN_BTN_ADC_Channel,
 };
-
-static int16_t adcData[AIN_END];
 
 static void inputAnalogInit(void)
 {
@@ -40,25 +38,37 @@ static void inputAnalogInit(void)
         LL_ADC_StartCalibration(ADC2);
         while (LL_ADC_IsCalibrationOnGoing(ADC2) != 0);
     }
+
+    ctx.zoneCnt = 15; // TODO: calculate from audio grid
+    int16_t zoneLen = POT_MAX / ctx.zoneCnt;
+
+    ctx.potData[AIN_POT_A] = POT_GAP + zoneLen;
+    ctx.potData[AIN_POT_B] = POT_GAP + zoneLen;
 }
 
 static void inputAnalogConvert(void)
 {
-    if (LL_ADC_IsEnabled(ADC2)) {
-        static uint8_t chan = 0;
+    static uint8_t chan = 0;
 
-        // Read data from previous input
-        adcData[chan] = LL_ADC_REG_ReadConversionData12(ADC2);
+    // Read data from previous input
+    int16_t adcData = (int16_t)LL_ADC_REG_ReadConversionData12(ADC2);
+    ctx.adcData[chan] = adcData; // TODO: remove
 
-        // Change input
-        if (++chan >= AIN_END) {
-            chan = 0;
-        }
-
-        // Run new conversion
-        LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
-        LL_ADC_REG_StartConversionSWStart(ADC2);
+    if (chan < AIN_POT_END) {
+        int16_t zoneLen = POT_MAX / ctx.zoneCnt;
+        adcData = ADC_MAX - adcData;
+        // Filter data to nearest zone value
+        ctx.potData[chan] += ((adcData - ctx.potData[chan]) / zoneLen) * zoneLen;
     }
+
+    // Change input
+    if (++chan >= AIN_END) {
+        chan = 0;
+    }
+
+    // Run new conversion
+    LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
+    LL_ADC_REG_StartConversionSWStart(ADC2);
 }
 
 void inputInit()
@@ -67,7 +77,7 @@ void inputInit()
 
     timerInit(TIM_INPUT, 199, 359);  // 1kHz polling
 
-    encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
+    ctx.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
 }
 
 void TIM_INPUT_HANDLER(void)
@@ -80,7 +90,12 @@ void TIM_INPUT_HANDLER(void)
     }
 }
 
-int16_t *inputAnalogGetData(void)
+InputCtx *inputGetCtx()
 {
-    return adcData;
+    return &ctx;
+}
+
+int8_t inputGetPot(uint8_t chan)
+{
+    return (ctx.potData[chan] - POT_GAP) * ctx.zoneCnt / POT_MAX;
 }
