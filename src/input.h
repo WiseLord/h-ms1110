@@ -8,13 +8,6 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#define R_H             4700
-#define R_POT           100000
-
-#define ADC_MAX         4095
-#define POT_MAX         (ADC_MAX * R_POT / (R_POT + R_H))
-#define POT_GAP         (ADC_MAX - POT_MAX)
-
 typedef uint8_t AnalogInput;
 enum {
     AIN_POT_A,
@@ -27,11 +20,23 @@ enum {
     AIN_END
 };
 
+typedef int8_t AnalogBtn;
+enum {
+    ABTN_RELEASED = -1,
+
+    ABTN_STBY,
+    ABTN_IN_PREV,
+    ABTN_IN_NEXT,
+
+    ABTN_END
+};
+
 typedef struct {
     int16_t adcData[AIN_END];
     int16_t potData[AIN_POT_END];
     int8_t encRes;
     int8_t zoneCnt;
+    AnalogBtn aBtn;
 } InputCtx;
 
 void inputInit(void);
@@ -39,6 +44,7 @@ void inputInit(void);
 InputCtx *inputGetCtx(void);
 
 int8_t inputGetPot(uint8_t chan);
+AnalogBtn inputGetAnalogBtn(void);
 
 #ifdef __cplusplus
 }

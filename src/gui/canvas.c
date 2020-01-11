@@ -33,33 +33,32 @@ void canvasShowStandby(bool clear)
 
     glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
 
-    glcdSetFont(&fontterminus16);
+    glcdSetFont(&fontterminus12);
 
     InputCtx *inCtx = inputGetCtx();
 
-    const int16_t sw = 217;
+    const int16_t sw = 210;
     const int16_t zoneCnt = inCtx->zoneCnt;
 
-    int16_t len;
-    int8_t potA = inputGetPot(AIN_POT_A);
-    int8_t potB = inputGetPot(AIN_POT_B);
+    for (uint8_t i = AIN_POT_A; i < AIN_POT_END; i++) {
+        int8_t pot = inputGetPot(i);
+        int16_t len = (sw * pot + sw / 2) / zoneCnt;
 
-    len = (sw * potA + sw / 2) / zoneCnt;
-    glcdDrawRect(0, 0, len, 10, LCD_COLOR_WHITE);
-    glcdDrawRect(0 + len, 0, sw - len, 10, LCD_COLOR_GRAY);
+        int16_t xb = 0;
+        int16_t yb = 16 * i;
 
-    len = (sw * potB + sw / 2) / zoneCnt;
-    glcdDrawRect(0, 16, len, 10, LCD_COLOR_WHITE);
-    glcdDrawRect(0 + len, 16, sw - len, 10, LCD_COLOR_GRAY);
-
-
-    glcdDrawRect(0, 32, sw, 10, LCD_COLOR_GRAY);
-    for (int16_t i = 1; i < zoneCnt; i += 2) {
-        glcdDrawRect(0 + i * sw / zoneCnt, 32, sw / zoneCnt, 10, RGB_CONV(0xA0A0A0));
+        glcdDrawRect(xb, yb, len, 12, LCD_COLOR_WHITE);
+        glcdDrawRect(xb + len, yb, sw - len, 12, LCD_COLOR_GRAY);
+        glcdSetXY(xb + sw + 5, yb);
+        glcdWriteString(utilMkStr("%2d %4d", pot, inCtx->potData[i]));
+        for (int16_t j = 1; j < zoneCnt; j++) {
+            glcdDrawRect(xb + j * sw / zoneCnt, yb, 1, 12, RGB_CONV(0xA0A0A0));
+        }
     }
 
-    glcdSetXY(0, 48);
-    glcdWriteString(utilMkStr("%4d %4d %2d", inCtx->potData[AIN_POT_A], POT_MAX - inCtx->adcData[AIN_POT_A], potA));
-    glcdSetXY(sw / 2, 48);
-    glcdWriteString(utilMkStr("%4d %4d %2d", inCtx->potData[AIN_POT_B], POT_MAX - inCtx->adcData[AIN_POT_B], potB));
+    AnalogBtn aBtn = inputGetAnalogBtn();
+
+    for (AnalogBtn i = 0; i < ABTN_END; i++) {
+        glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? LCD_COLOR_WHITE : LCD_COLOR_GRAY);
+    }
 }

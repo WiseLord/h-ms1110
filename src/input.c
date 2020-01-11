@@ -5,13 +5,28 @@
 #include "settings.h"
 #include "timers.h"
 
-static InputCtx ctx;
+#define ADC_MAX         4095
+#define ABS(x)          ((x) > 0 ? (x) : -(x))
 
-static const uint32_t analogInputs[] = {
+#define BTN_THRESHOLD   20
+
+static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
+static const uint32_t R_POT     = 100000;       // Pot resistance
+
+/*static */const uint32_t R_BTN_H   = 10000;    // Analog buttons pull-up resistor
+/*static*/ const uint32_t R_BTNS[ABTN_END] = {  // Analog buttons resistance
+    100,
+    15000,
+    3900,
+};
+
+static const uint32_t analogInputs[AIN_END] = {
     AIN_POT_A_Channel,
     AIN_POT_B_Channel,
     AIN_BTN_ADC_Channel,
 };
+
+static InputCtx ctx;
 
 static void inputAnalogInit(void)
 {
@@ -40,7 +55,9 @@ static void inputAnalogInit(void)
     }
 
     ctx.zoneCnt = 15; // TODO: calculate from audio grid
-    int16_t zoneLen = POT_MAX / ctx.zoneCnt;
+
+    int16_t potMax = (ADC_MAX * R_POT / (R_POT + R_POT_H));
+    int16_t zoneLen = potMax / ctx.zoneCnt;
 
     ctx.potData[AIN_POT_A] = zoneLen / 2;
     ctx.potData[AIN_POT_B] = zoneLen / 2;
@@ -55,11 +72,24 @@ static void inputAnalogConvert(void)
     ctx.adcData[chan] = adcData; // TODO: remove
 
     if (chan < AIN_POT_END) {
-        int16_t zoneLen = POT_MAX / ctx.zoneCnt;
-        adcData = POT_MAX - adcData;
+        int16_t potMax = (ADC_MAX * R_POT / (R_POT + R_POT_H));
+        int16_t zoneLen = potMax / ctx.zoneCnt;
+
+        // Consider "reverted" potentiomener
+        adcData = potMax - adcData;
+
         // Filter data to nearest zone value
         int16_t filterWidth = zoneLen * 3 / 4;
         ctx.potData[chan] += (adcData - ctx.potData[chan]) / filterWidth * filterWidth;
+    } else if (chan == AIN_BTN) {
+        ctx.aBtn = ABTN_RELEASED;
+        for (AnalogBtn i = 0; i < ABTN_END; i++) {
+            int16_t btnDiff = (int16_t)(ADC_MAX * R_BTNS[i] / (R_BTNS[i] + R_BTN_H)) - adcData;
+            if (ABS(btnDiff) < BTN_THRESHOLD) {
+                ctx.aBtn = i;
+                break;
+            }
+        }
     }
 
     // Change input
@@ -98,5 +128,11 @@ InputCtx *inputGetCtx()
 
 int8_t inputGetPot(uint8_t chan)
 {
-    return ctx.potData[chan] * ctx.zoneCnt / POT_MAX;
+    int16_t potMax = (ADC_MAX * R_POT / (R_POT + R_POT_H));
+    return (int8_t)(ctx.potData[chan] * ctx.zoneCnt / potMax);
+}
+
+AnalogBtn inputGetAnalogBtn(void)
+{
+    return ctx.aBtn;
 }
