@@ -16,7 +16,7 @@
 
 void LL_Init(void)
 {
-#ifdef _STM32F1
+#ifdef STM32F1
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
 #endif
     LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
@@ -62,7 +62,7 @@ void SystemClock_Config(void)
     LL_Init1msTick(72000000);
     LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
     LL_SetSystemCoreClock(72000000);
-#ifdef _STM32F3
+#ifdef STM32F3
     LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART3_CLKSOURCE_SYSCLK);

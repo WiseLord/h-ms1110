@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-#ifdef _STM32F1
+#if defined(STM32F103xB)
+
 #include <stm32f1xx_ll_adc.h>
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_cortex.h>
@@ -16,6 +17,7 @@ extern "C" {
 #include <stm32f1xx_ll_tim.h>
 #include <stm32f1xx_ll_usart.h>
 #include <stm32f1xx_ll_utils.h>
+
 #endif
 
 #define USART_DBG               USART1

@@ -1,18 +1,25 @@
 PROJECT = h-ms1110
 
+STM32_MCU = F103C8
+
 DISPLAY = SSD1322
 DISPVAR = SPI
+
+DEBUG = 1
+OPT = -Os
+
 
 # Lowercase argument
 lc = $(shell echo $1 | tr '[:upper:]' '[:lower:]')
 
-STM32_FAMILY = STM32F1
-STM32_GROUP  = $(STM32_FAMILY)03xB
-STM32_DEV    = $(STM32_FAMILY)03C8
+ifeq "$(STM32_MCU)" "F103C8"
+  STM32_FAMILY = STM32F1
+  STM32_GROUP  = $(STM32_FAMILY)03xB
+endif
 
-TARGET = $(call lc, $(PROJECT)_$(DISPLAY)_$(DISPVAR))
+TARGET = $(call lc, $(PROJECT)_$(STM32_MCU)_$(DISPLAY)_$(DISPVAR))
 
-C_DEFS = -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_FAMILY)
+C_DEFS = -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 
 C_DEFS += -D_DISP_RST_ENABLED
 
@@ -55,40 +62,49 @@ C_SOURCES += \
   drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_gpio.c \
   drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_i2c.c \
   drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_rcc.c \
-  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_utils.c \
   drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_usart.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_utils.c \
   system/system_$(call lc, $(STM32_FAMILY))xx.c
 
 C_INCLUDES += \
   -Idrivers/$(STM32_FAMILY)xx_HAL_Driver/Inc \
   -Idrivers/CMSIS/Device/ST/$(STM32_FAMILY)xx/Include \
-  -Idrivers/CMSIS/Include
+  -Idrivers/CMSIS/Include \
+  -Isystem
 
-AS_DEFS =
+AS_DEFS +=
 
-ASM_SOURCES = \
+ASM_SOURCES += \
   system/startup_$(call lc, $(STM32_GROUP)).s
 
 # Build directory
 BUILD_DIR = build
 
-DEBUG = 1
+ifeq "$(STM32_FAMILY)" "STM32F1"
+  CPU = -mcpu=cortex-m3
+  FPU =
+  FLOAT-ABI =
+endif
+
+ifeq "$(STM32_FAMILY)" "STM32F3"
+  CPU = -mcpu=cortex-m4
+  FPU = -mfpu=fpv4-sp-d16
+  FLOAT-ABI = -mfloat-abi=hard
+endif
 
 # Compiler
-FPU =
-FLOAT-ABI =
-MCU = -mcpu=cortex-m3 -mthumb $(FPU) $(FLOAT-ABI)
-OPT = -Os -fshort-enums -ffunction-sections -fdata-sections
+MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
+OPT_FLAGS = $(OPT) -fshort-enums -ffunction-sections -fdata-sections -ffreestanding
 WARN = -Wall -Werror
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) $(WARN)
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) $(WARN)
+CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT_FLAGS) $(WARN)
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT_FLAGS) $(WARN)
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 endif
 # Dependency information
 CFLAGS += -MMD -MP -MT $(BUILD_DIR)/$(*F).o -MF $(BUILD_DIR)/$(*D)/$(*F).d
 
-LDSCRIPT = system/$(call lc, $(STM32_DEV))_flash.ld
+LDSCRIPT = system/$(call lc, STM32$(STM32_MCU))_flash.ld
 LIBS = -lc -lm -lnosys
 LIBDIR =
 LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
@@ -99,6 +115,7 @@ PREFIX = arm-none-eabi-
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
+OD = $(PREFIX)objdump
 AR = $(PREFIX)ar
 SZ = $(PREFIX)size
 
@@ -117,6 +134,7 @@ all: $(BIN) size
 
 $(BIN): $(ELF)
 	$(CP) -O binary $(ELF) $(BIN)
+	$(OD) -h -S $(ELF) > $(BUILD_DIR)/$(TARGET).lss
 
 $(ELF): $(OBJECTS)
 	@mkdir -p flash
@@ -134,7 +152,7 @@ $(BUILD_DIR)/%.o: %.s Makefile
 	$(AS) -c $(CFLAGS) $(AS_DEFS) -o $@ $<
 
 clean:
-	rm -rf $(BUILD_DIR)
+	@rm -rf $(BUILD_DIR)
 
 clean_disp:
 	@rm -f $(patsubst %.c,$(BUILD_DIR)/%.o, $(notdir $(wildcard display/gc*/*.c)))
