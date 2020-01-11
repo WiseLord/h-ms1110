@@ -72,11 +72,6 @@ void SystemClock_Config(void)
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
 }
 
-void SysTick_Handler(void)
-{
-
-}
-
 int main(void)
 {
     // System

@@ -18,6 +18,8 @@ void canvasInit(void);
 
 void canvasClear(void);
 
+void canvasShowSpectrum(bool clear);
+void canvasShowTime(bool clear);
 void canvasShowStandby(bool clear);
 
 #ifdef __cplusplus

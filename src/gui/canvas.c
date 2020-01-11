@@ -23,15 +23,31 @@ void canvasClear(void)
     glcdSetFontBgColor(LCD_COLOR_BLACK);
 }
 
-void canvasShowStandby(bool clear)
+void canvasShowSpectrum(bool clear)
 {
     (void)clear;
 
-    // Graphics
-    int16_t w = canvas.glcd->drv->width;
-    int16_t h = canvas.glcd->drv->height;
+    glcdSetFont(&fontterminus32);
 
-    glcdDrawRect(0, 0, w, h, LCD_COLOR_BLACK);
+    glcdSetXY(0, 0);
+
+    glcdWriteString("Spectrum");
+}
+
+void canvasShowTime(bool clear)
+{
+    (void)clear;
+
+    glcdSetFont(&fontterminus32);
+
+    glcdSetXY(0, 0);
+
+    glcdWriteString("Time");
+}
+
+void canvasShowStandby(bool clear)
+{
+    (void)clear;
 
     glcdSetFont(&fontterminus12);
 
