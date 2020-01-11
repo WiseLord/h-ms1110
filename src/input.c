@@ -8,13 +8,13 @@
 #define ADC_MAX         4095
 #define ABS(x)          ((x) > 0 ? (x) : -(x))
 
-#define BTN_THRESHOLD   20
+#define BTN_THRESHOLD   50
 
 static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
 static const uint32_t R_POT     = 100000;       // Pot resistance
 
-/*static */const uint32_t R_BTN_H   = 10000;    // Analog buttons pull-up resistor
-/*static*/ const uint32_t R_BTNS[ABTN_END] = {  // Analog buttons resistance
+static const uint32_t R_BTN_H   = 10000;    // Analog buttons pull-up resistor
+static const uint32_t R_BTNS[ABTN_END] = {  // Analog buttons resistance
     100,
     15000,
     3900,
@@ -27,6 +27,9 @@ static const uint32_t analogInputs[AIN_END] = {
 };
 
 static InputCtx ctx;
+
+static volatile int8_t encCnt;
+static volatile CmdBtn cmdBuf;
 
 static void inputAnalogInit(void)
 {
@@ -102,6 +105,65 @@ static void inputAnalogConvert(void)
     LL_ADC_REG_StartConversionSWStart(ADC2);
 }
 
+static uint16_t getAnalogButtons()
+{
+    if (ctx.aBtn >= 0) {
+        return (uint8_t)(BTN_STBY << ctx.aBtn);
+    }
+
+    return BTN_NO;
+}
+
+static void inputHandle(void)
+{
+    // Antibounce counter
+    static int16_t btnCnt = 0;
+
+    // Previous state
+    static uint16_t btnPrev = BTN_NO;
+    static uint16_t encPrev = ENC_NO;
+
+    uint16_t btnNow = getAnalogButtons();
+
+    // If encoder event has happened, inc/dec encoder counter
+    if (ctx.encRes) {
+        uint16_t encNow = btnNow & ENC_AB;
+        btnNow &= ~ENC_AB;
+
+        if ((encPrev == ENC_NO && encNow == ENC_A) ||
+            (encPrev == ENC_A && encNow == ENC_AB) ||
+            (encPrev == ENC_AB && encNow == ENC_B) ||
+            (encPrev == ENC_B && encNow == ENC_NO))
+            encCnt++;
+        if ((encPrev == ENC_NO && encNow == ENC_B) ||
+            (encPrev == ENC_B && encNow == ENC_AB) ||
+            (encPrev == ENC_AB && encNow == ENC_A) ||
+            (encPrev == ENC_A && encNow == ENC_NO))
+            encCnt--;
+        encPrev = encNow;
+    }
+
+    // On button event place it to command buffer
+    if (btnNow) {
+        if (btnNow == btnPrev) {
+            btnCnt++;
+            if (btnCnt == LONG_PRESS) {
+                cmdBuf.btn = btnPrev;
+                cmdBuf.flags |= BTN_FLAG_LONG_PRESS;
+                if (btnNow & (ENC_A | ENC_B)) {
+                    btnCnt -= AUTOREPEAT;
+                }
+            }
+        }
+    } else {
+        if ((btnCnt > SHORT_PRESS) && (btnCnt < LONG_PRESS - AUTOREPEAT)) {
+            cmdBuf.btn = btnPrev;
+        }
+        btnCnt = 0;
+    }
+    btnPrev = btnNow;
+}
+
 void inputInit()
 {
     inputAnalogInit();
@@ -111,6 +173,16 @@ void inputInit()
     ctx.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
 }
 
+void inputSetEncRes(int8_t value)
+{
+    ctx.encRes = value;
+}
+
+int8_t inputGetEncRes(void)
+{
+    return ctx.encRes;
+}
+
 void TIM_INPUT_HANDLER(void)
 {
     if (LL_TIM_IsActiveFlag_UPDATE(TIM_INPUT)) {
@@ -118,6 +190,7 @@ void TIM_INPUT_HANDLER(void)
         LL_TIM_ClearFlag_UPDATE(TIM_INPUT);
 
         inputAnalogConvert();
+        inputHandle();
     }
 }
 
@@ -132,6 +205,32 @@ int8_t inputGetPot(uint8_t chan)
     return (int8_t)(ctx.potData[chan] * ctx.zoneCnt / potMax);
 }
 
+int8_t getEncoder(void)
+{
+    int8_t ret = 0;
+
+    if (ctx.encRes) {
+        ret = encCnt / ctx.encRes;
+        encCnt -= (ret * ctx.encRes);
+    } else {
+        ret = encCnt;
+        encCnt = 0;
+    }
+
+    return ret;
+}
+
+CmdBtn getBtnCmd(void)
+{
+    CmdBtn ret = cmdBuf;
+
+    cmdBuf.btn = BTN_NO;
+    cmdBuf.flags = BTN_FLAG_NO;
+
+    return ret;
+}
+
+// TODO: remove
 AnalogBtn inputGetAnalogBtn(void)
 {
     return ctx.aBtn;

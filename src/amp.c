@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include "gui/canvas.h"
+#include "input.h"
 #include "pins.h"
 #include "rtc.h"
 #include "settings.h"
@@ -80,12 +81,15 @@ static void ampInit()
 {
     ampPinMute(true);
     ampPinStby(true);
+
+    amp.status = AMP_STATUS_STBY;
 }
 
 void ampExitStby(void)
 {
     ampPinStby(false);     // Power on amplifier
 
+    amp.status = AMP_STATUS_POWERED;
     swTimSet(SW_TIM_AMP_INIT, 600);
 }
 
@@ -133,6 +137,19 @@ void ampInitHw(void)
 }
 
 
+static void actionGetButtons(void)
+{
+    CmdBtn cmdBtn = getBtnCmd();
+
+    if (cmdBtn.btn) {
+        if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+        } else {
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+        }
+    }
+}
+
 static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_DISPLAY) == 0) {
@@ -148,13 +165,87 @@ static void actionGetTimers(void)
     }
 }
 
+static void actionRemapBtnShort(void)
+{
+    switch (action.value) {
+    case BTN_STBY:
+        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        break;
+    case ENC_A:
+        actionSet(ACTION_ENCODER, -1);
+        break;
+    case ENC_B:
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    default:
+        break;
+    }
+}
+
+static void actionRemapBtnLong(void)
+{
+    switch (action.value) {
+    case BTN_STBY:
+//        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        break;
+    case ENC_A:
+        actionSet(ACTION_ENCODER, -1);
+        break;
+    case ENC_B:
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    default:
+        break;
+    }
+}
+
+static void actionRemapCommon(void)
+{
+    switch (action.type) {
+    case ACTION_STANDBY:
+        if (FLAG_SWITCH == action.value) {
+            switch (amp.status) {
+            case AMP_STATUS_STBY:
+                action.value = FLAG_EXIT;
+                break;
+            case AMP_STATUS_ACTIVE:
+                action.value = FLAG_ENTER;
+                break;
+            default:
+                actionSet(ACTION_NONE, 0);
+                break;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 void ampActionGet(void)
 {
     actionSet(ACTION_NONE, 0);
 
     if (ACTION_NONE == action.type) {
+        actionGetButtons();
+    }
+
+    if (ACTION_NONE == action.type) {
         actionGetTimers();
     }
+
+    switch (action.type) {
+    case ACTION_BTN_SHORT:
+        actionRemapBtnShort();
+        break;
+    case ACTION_BTN_LONG:
+        actionRemapBtnLong();
+        break;
+    default:
+        break;
+    }
+
+    actionRemapCommon();
 }
 
 void ampActionHandle(void)
@@ -196,7 +287,12 @@ void ampActionHandle(void)
         break;
     }
 
+    screen.mode = action.screen;
+    if (action.timeout > 0) {
+        swTimSet(SW_TIM_DISPLAY, action.timeout);
+    }
 }
+
 static bool screenCheckClear(void)
 {
     bool clear = false;
