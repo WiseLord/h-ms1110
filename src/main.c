@@ -1,8 +1,8 @@
 #include "amp.h"
-#include "gui/canvas.h"
 #include "hwlibs.h"
 #include "input.h"
 #include "pins.h"
+#include "screen.h"
 #include "usart.h"
 #include "utils.h"
 
@@ -84,13 +84,13 @@ int main(void)
     usartInit(USART_DBG, 115200);
     usartSendString(USART_DBG, "\rUsart init done\r\n");
 
-    inputInit();
+    screenInit();
 
-    canvasInit();
+    inputInit();
 
     while (1) {
         ampActionHandle();
-        ampShowScreen();
+        screenShow();
         ampActionGet();
     }
 

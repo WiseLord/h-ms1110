@@ -31,6 +31,7 @@ C_SOURCES += gui/canvas.c
 C_SOURCES += input.c
 C_SOURCES += pins.c
 C_SOURCES += rtc.c
+C_SOURCES += screen.c
 C_SOURCES += settings.c
 C_SOURCES += spi.c
 C_SOURCES += swtimers.c

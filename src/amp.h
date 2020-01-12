@@ -8,6 +8,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "screen.h"
+
 #define FLAG_EXIT       0
 #define FLAG_ENTER      1
 #define FLAG_SWITCH     2
@@ -31,25 +33,9 @@ enum {
     ACTION_END
 };
 
-typedef uint8_t ScreenMode;
-enum {
-    // Screens allowed to be default
-    SCREEN_SPECTRUM = 0,
-    SCREEN_TIME,
-
-    SCREEN_STANDBY,
-
-    SCREEN_END
-};
-
-typedef struct {
-    ScreenMode mode;
-    ScreenMode def;
-} Screen;
-
 typedef struct {
     ActionType type;
-    ScreenMode screen;
+    ScrMode screen;
 
     int16_t value;
     int16_t timeout;
@@ -74,8 +60,6 @@ typedef struct {
 void ampActionGet(void);
 
 void ampActionHandle(void);
-
-void ampShowScreen(void);
 
 #ifdef __cplusplus
 }

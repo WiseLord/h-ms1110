@@ -1,6 +1,5 @@
 #include "amp.h"
 
-#include "gui/canvas.h"
 #include "input.h"
 #include "pins.h"
 #include "rtc.h"
@@ -10,11 +9,6 @@
 static Action action = {
     .type = ACTION_INIT,
     .screen = SCREEN_STANDBY,
-};
-
-static Screen screen = {
-    .mode = SCREEN_STANDBY,
-    .def = SCREEN_SPECTRUM,
 };
 
 static Amp amp = {
@@ -28,15 +22,17 @@ static void actionSet(ActionType type, int16_t value)
     action.value = value;
 }
 
-static void actionSetScreen(ScreenMode screen, int16_t timeout)
+static void actionSetScreen(ScrMode screen, int16_t timeout)
 {
     action.screen = screen;
     action.timeout = timeout;
 }
 
-static void actionDispExpired(ScreenMode scrMode)
+static void actionDispExpired(ScrMode scrMode)
 {
-    ScreenMode scrDef = screen.def;
+    Screen *screen = screenGet();
+
+    ScrMode scrDef = screen->def;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -250,7 +246,8 @@ void ampActionGet(void)
 
 void ampActionHandle(void)
 {
-    ScreenMode scrMode = screen.mode;
+    Screen *screen = screenGet();
+    ScrMode scrMode = screen->mode;
 
     action.timeout = 0;
 
@@ -287,48 +284,8 @@ void ampActionHandle(void)
         break;
     }
 
-    screen.mode = action.screen;
+    screenSetMode(action.screen);
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
-}
-
-static bool screenCheckClear(void)
-{
-    bool clear = false;
-
-    static ScreenMode scrPrev = SCREEN_END;
-
-    if (screen.mode != scrPrev) {
-        clear = true;
-    }
-
-    scrPrev = screen.mode;
-
-    return clear;
-}
-
-void ampShowScreen()
-{
-    bool clear = screenCheckClear();
-
-    if (clear) {
-        canvasClear();
-    }
-
-    switch (screen.mode) {
-    case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear);
-        break;
-    case SCREEN_TIME:
-        canvasShowTime(clear);
-        break;
-    case SCREEN_STANDBY:
-        canvasShowStandby(clear);
-        break;
-    default:
-        break;
-    }
-
-    glcdFbSync();
 }
