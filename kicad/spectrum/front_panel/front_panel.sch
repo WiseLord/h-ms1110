@@ -1507,17 +1507,6 @@ Entry Wire Line
 Text Label 9000 3350 1    50   ~ 0
 REMOTE
 $Comp
-L MCU_ST_STM32F3:STM32F303CCTx U1
-U 1 1 5DEDB09C
-P 3600 5400
-F 0 "U1" H 3050 6850 50  0000 C CNN
-F 1 "STM32F303CCTx" H 3600 5400 50  0000 C CNN
-F 2 "Package_QFP:LQFP-48_7x7mm_P0.5mm" H 3000 4000 50  0001 R CNN
-F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00058181.pdf" H 3600 5400 50  0001 C CNN
-	1    3600 5400
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:PWR_FLAG #FLG0101
 U 1 1 5DEE5868
 P 8600 1600
@@ -2876,6 +2865,17 @@ Entry Wire Line
 	9300 4450 9400 4550
 Wire Wire Line
 	9400 4350 10700 4350
+$Comp
+L power:+3V3 #PWR?
+U 1 1 5E144713
+P 10600 5850
+F 0 "#PWR?" H 10600 5700 50  0001 C CNN
+F 1 "+3V3" H 10615 6023 50  0000 C CNN
+F 2 "" H 10600 5850 50  0001 C CNN
+F 3 "" H 10600 5850 50  0001 C CNN
+	1    10600 5850
+	-1   0    0    -1  
+$EndComp
 Wire Bus Line
 	7600 3450 9300 3450
 Wire Bus Line
@@ -2895,14 +2895,14 @@ Wire Bus Line
 Wire Bus Line
 	2350 3450 2350 7400
 $Comp
-L power:+3V3 #PWR?
-U 1 1 5E144713
-P 10600 5850
-F 0 "#PWR?" H 10600 5700 50  0001 C CNN
-F 1 "+3V3" H 10615 6023 50  0000 C CNN
-F 2 "" H 10600 5850 50  0001 C CNN
-F 3 "" H 10600 5850 50  0001 C CNN
-	1    10600 5850
-	-1   0    0    -1  
+L MCU_ST_STM32F1:STM32F103CBTx U1
+U 1 1 5DEDB09C
+P 3600 5400
+F 0 "U1" H 3050 6850 50  0000 C CNN
+F 1 "STM32F103CBTx" H 3600 5400 50  0000 C CNN
+F 2 "Package_QFP:LQFP-48_7x7mm_P0.5mm" H 3000 4000 50  0001 R CNN
+F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00058181.pdf" H 3600 5400 50  0001 C CNN
+	1    3600 5400
+	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
