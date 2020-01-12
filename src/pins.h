@@ -40,6 +40,10 @@ extern "C" {
 #define AIN_POT_B_Pin           LL_GPIO_PIN_3
 #define AIN_POT_B_Channel       LL_ADC_CHANNEL_3
 
+#define ENCODER_Port            GPIOA
+#define ENCODER_A_Pin           LL_GPIO_PIN_11
+#define ENCODER_B_Pin           LL_GPIO_PIN_12
+
 void pinsInit(void);
 
 #ifdef __cplusplus

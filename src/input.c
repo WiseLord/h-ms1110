@@ -114,6 +114,34 @@ static uint16_t getAnalogButtons()
     return BTN_NO;
 }
 
+static void inputEncoderInit(void)
+{
+    LL_GPIO_InitTypeDef GPIO_InitStructf;
+
+    GPIO_InitStructf.Mode = LL_GPIO_MODE_INPUT;
+    GPIO_InitStructf.Pull = LL_GPIO_PULL_UP;
+
+    GPIO_InitStructf.Pin = ENCODER_A_Pin | ENCODER_B_Pin;
+
+    LL_GPIO_Init(ENCODER_Port, &GPIO_InitStructf);
+}
+
+static uint16_t readEncoder(void)
+{
+    uint16_t enc = ENC_NO;
+
+    uint32_t encPort = LL_GPIO_ReadInputPort(ENCODER_Port);
+
+    if (!(encPort & (ENCODER_A_Pin >> GPIO_PIN_MASK_POS) & 0x0000FFFFU)) {
+        enc |= ENC_A;
+    }
+    if (!(encPort & (ENCODER_B_Pin >> GPIO_PIN_MASK_POS) & 0x0000FFFFU)) {
+        enc |= ENC_B;
+    }
+
+    return enc;
+}
+
 static void inputHandle(void)
 {
     // Antibounce counter
@@ -122,8 +150,10 @@ static void inputHandle(void)
     // Previous state
     static uint16_t btnPrev = BTN_NO;
     static uint16_t encPrev = ENC_NO;
+    uint16_t btnNow = BTN_NO;
 
-    uint16_t btnNow = getAnalogButtons();
+    btnNow |= getAnalogButtons();
+    btnNow |= readEncoder();
 
     // If encoder event has happened, inc/dec encoder counter
     if (ctx.encRes) {
@@ -167,6 +197,7 @@ static void inputHandle(void)
 void inputInit()
 {
     inputAnalogInit();
+    inputEncoderInit();
 
     timerInit(TIM_INPUT, 199, 359);  // 1kHz polling
 
