@@ -72,12 +72,9 @@ void canvasShowStandby(bool clear)
         }
     }
 
-    AnalogBtn aBtn = inputGetAnalogBtn();
+    AnalogBtn aBtn = inputGetCtx()->aBtn;
 
     for (AnalogBtn i = 0; i < ABTN_END; i++) {
         glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? LCD_COLOR_WHITE : LCD_COLOR_GRAY);
     }
-
-    glcdSetXY(70, 48);
-    glcdWriteString(utilMkStr("%04d %04x", inputGetAnalogBtn(), 0/*getBtnCmd().btn*/));
 }

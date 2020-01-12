@@ -77,7 +77,6 @@ CmdBtn getBtnCmd(void);
 InputCtx *inputGetCtx(void);
 
 int8_t inputGetPot(uint8_t chan);
-AnalogBtn inputGetAnalogBtn(void);
 
 #ifdef __cplusplus
 }

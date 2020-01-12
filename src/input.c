@@ -8,7 +8,7 @@
 #define ADC_MAX         4095
 #define ABS(x)          ((x) > 0 ? (x) : -(x))
 
-#define BTN_THRESHOLD   50
+#define BTN_THRESHOLD   100
 
 static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
 static const uint32_t R_POT     = 100000;       // Pot resistance
@@ -228,10 +228,4 @@ CmdBtn getBtnCmd(void)
     cmdBuf.flags = BTN_FLAG_NO;
 
     return ret;
-}
-
-// TODO: remove
-AnalogBtn inputGetAnalogBtn(void)
-{
-    return ctx.aBtn;
 }
