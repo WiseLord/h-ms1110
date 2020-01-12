@@ -1,6 +1,6 @@
 PROJECT = h-ms1110
 
-STM32_MCU = F103C8
+STM32_MCU = F103CB
 
 DISPLAY = SSD1322
 DISPVAR = SPI
@@ -12,7 +12,7 @@ OPT = -Os
 # Lowercase argument
 lc = $(shell echo $1 | tr '[:upper:]' '[:lower:]')
 
-ifeq "$(STM32_MCU)" "F103C8"
+ifeq "$(STM32_MCU)" "F103CB"
   STM32_FAMILY = STM32F1
   STM32_GROUP  = $(STM32_FAMILY)03xB
 endif
