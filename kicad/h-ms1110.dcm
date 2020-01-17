@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP H-MS1110_Bus_connector
+D Main connector for connecting H-MS1110 blocks
+K connector
+F ~
+$ENDCMP
+#
+#End Doc Library

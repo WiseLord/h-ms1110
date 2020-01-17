@@ -1,0 +1,190 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L h-ms1110:TDA7719 U?
+U 1 1 5E221CCA
+P 5700 4550
+F 0 "U?" H 5675 5665 50  0000 C CNN
+F 1 "TDA7719" H 5675 5574 50  0000 C CNN
+F 2 "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm" H 8100 4950 50  0001 C CNN
+F 3 "" H 8100 4950 50  0001 C CNN
+	1    5700 4550
+	1    0    0    -1  
+$EndComp
+$Comp
+L h-ms1110:H-MS1110_Bus_connector J?
+U 1 1 5E2487D7
+P 4000 1100
+F 0 "J?" V 4350 2950 50  0000 L CNN
+F 1 "H-MS1110_Bus" V 4350 750 50  0000 L CNN
+F 2 "Connector_IDC:IDC-Header_2x20_P2.54mm_Horizontal" V 4350 1100 50  0001 C CNN
+F 3 "~" H 3800 1100 50  0001 C CNN
+	1    4000 1100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5E21D9E6
+P 10650 5150
+F 0 "J?" H 10650 5350 50  0000 C CNN
+F 1 "I2C" V 10750 5100 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 10650 5150 50  0001 C CNN
+F 3 "~" H 10650 5150 50  0001 C CNN
+	1    10650 5150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 3950 6950 3950
+Text Label 6950 3950 2    50   ~ 0
+SDA
+Wire Wire Line
+	6600 4050 6950 4050
+Text Label 6950 4050 2    50   ~ 0
+SCL
+Wire Wire Line
+	10450 5150 10250 5150
+Wire Wire Line
+	10450 5250 10250 5250
+Text Label 10250 5150 0    50   ~ 0
+SDA
+Text Label 10250 5250 0    50   ~ 0
+SCL
+$Comp
+L power:GNDD #PWR?
+U 1 1 5E22176D
+P 10300 5400
+F 0 "#PWR?" H 10300 5150 50  0001 C CNN
+F 1 "GNDD" H 10304 5245 50  0000 C CNN
+F 2 "" H 10300 5400 50  0001 C CNN
+F 3 "" H 10300 5400 50  0001 C CNN
+	1    10300 5400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	10450 5350 10300 5350
+Wire Wire Line
+	10300 5350 10300 5400
+NoConn ~ 10450 5050
+NoConn ~ 10950 5500
+$Comp
+L power:GNDA #PWR?
+U 1 1 5E222B52
+P 6800 5500
+F 0 "#PWR?" H 6800 5250 50  0001 C CNN
+F 1 "GNDA" H 6805 5327 50  0000 C CNN
+F 2 "" H 6800 5500 50  0001 C CNN
+F 3 "" H 6800 5500 50  0001 C CNN
+	1    6800 5500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6800 5500 6800 5300
+Wire Wire Line
+	6800 5300 6600 5300
+$Comp
+L Connector_Generic:Conn_01x05 J?
+U 1 1 5E22EB45
+P 950 1950
+F 0 "J?" H 950 2250 50  0000 C CNN
+F 1 "EXT_INPUT" V 1050 1950 50  0000 C CNN
+F 2 "" H 950 1950 50  0001 C CNN
+F 3 "~" H 950 1950 50  0001 C CNN
+	1    950  1950
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	2900 1500 2900 1750
+Wire Wire Line
+	2900 1750 1150 1750
+Wire Wire Line
+	1150 1850 2100 1850
+Wire Wire Line
+	2100 1850 2100 1500
+Wire Wire Line
+	1150 1950 2200 1950
+Wire Wire Line
+	2200 1950 2200 1500
+Wire Wire Line
+	1150 2050 3400 2050
+Wire Wire Line
+	3400 2050 3400 1500
+Wire Wire Line
+	3100 1500 3100 2150
+Text Label 1150 1750 0    50   ~ 0
++3.3VA
+Text Label 1150 1850 0    50   ~ 0
+AD2
+Text Label 1150 1950 0    50   ~ 0
+AD1
+Text Label 1150 2050 0    50   ~ 0
+AD3
+Text Label 1150 2150 0    50   ~ 0
+GNDD
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5E236DDB
+P 950 2700
+F 0 "J?" H 950 2900 50  0000 C CNN
+F 1 "SYNC" V 1050 2650 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 950 2700 50  0001 C CNN
+F 3 "~" H 950 2700 50  0001 C CNN
+	1    950  2700
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 2700 3600 2700
+Wire Wire Line
+	3600 2700 3600 1500
+Wire Wire Line
+	1150 2800 3700 2800
+Wire Wire Line
+	3700 2800 3700 1500
+Wire Wire Line
+	1650 2900 1150 2900
+Wire Wire Line
+	1150 2150 1650 2150
+Wire Wire Line
+	1650 2900 1650 2150
+Connection ~ 1650 2900
+Connection ~ 1650 2150
+Wire Wire Line
+	1650 2150 3100 2150
+Text Label 1150 2800 0    50   ~ 0
+SYNC_SCK
+Text Label 1150 2700 0    50   ~ 0
+SYNC_DATA
+Wire Wire Line
+	1650 3000 1650 2900
+$Comp
+L power:GNDD #PWR?
+U 1 1 5E238DAE
+P 1650 3000
+F 0 "#PWR?" H 1650 2750 50  0001 C CNN
+F 1 "GNDD" H 1654 2845 50  0000 C CNN
+F 2 "" H 1650 3000 50  0001 C CNN
+F 3 "" H 1650 3000 50  0001 C CNN
+	1    1650 3000
+	1    0    0    -1  
+$EndComp
+Text Label 1150 2900 0    50   ~ 0
+GNDD
+NoConn ~ 2300 1500
+NoConn ~ 2400 1500
+NoConn ~ 2500 1500
+NoConn ~ 2600 1500
+NoConn ~ 2700 1500
+NoConn ~ 2800 1500
+$EndSCHEMATC
