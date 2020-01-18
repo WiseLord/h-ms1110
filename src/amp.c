@@ -111,7 +111,6 @@ void ampEnterStby(void)
 //    screenSaveSettings();
 
     audioSetMute(true);
-    LL_mDelay(500);
     ampPinMute(true);
     audioSetPower(false);
 
@@ -141,7 +140,6 @@ void ampInitHw(void)
 //        inputEnable();
 
         ampPinMute(false);
-        LL_mDelay(500);
         audioSetMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
@@ -151,7 +149,7 @@ void ampInitHw(void)
     }
 }
 
-static void ampSetInput(uint8_t value)
+static void ampSetInput(int8_t value)
 {
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
@@ -175,15 +173,20 @@ static void actionNextAudioParam(AudioProc *aProc)
     } while (aProc->par.tune[aProc->tune].grid == NULL && aProc->tune != AUDIO_TUNE_VOLUME);
 }
 
-static uint8_t actionGetNextAudioInput(AudioProc *aProc)
+static int8_t actionGetNextAudioInput(int8_t diff)
 {
-    uint8_t ret = aProc->par.input + 1;
+    AudioProc *aProc = audioGet();
 
-    if (ret >= aProc->par.inCnt) {
+    int8_t ret = aProc->par.input + diff;
+    int8_t inCnt = aProc->par.inCnt;
+
+    if (ret < 0) {
+        ret = inCnt - 1;
+    } else if (ret >= inCnt) {
         ret = 0;
     }
 
-    return  ret;
+    return ret;
 }
 
 static void actionGetButtons(void)
@@ -415,11 +418,13 @@ void ampActionHandle(void)
         break;
 
     case ACTION_AUDIO_INPUT:
-//        if (scrMode == SCREEN_AUDIO_INPUT) {
-            ampSetInput(actionGetNextAudioInput(aProc));
+        if (scrMode == SCREEN_AUDIO_INPUT) {
+            ampSetInput(actionGetNextAudioInput((int8_t)action.value));
 //            controlReportAudioInput();
 //            controlReportAudioTune(AUDIO_TUNE_GAIN);
-//        }
+        }
+        screenToClear();
+        actionSetScreen(SCREEN_AUDIO_INPUT, 5000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)(action.value));

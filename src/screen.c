@@ -73,6 +73,9 @@ void screenShow(void)
     case SCREEN_AUDIO_PARAM:
         canvasShowTune(clear);
         break;
+    case SCREEN_AUDIO_INPUT:
+        canvasShowAudioInput(clear);
+        break;
     default:
         break;
     }

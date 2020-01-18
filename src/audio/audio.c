@@ -220,7 +220,7 @@ void audioChangeTune(AudioTune tune, int8_t diff)
     }
 }
 
-void audioSetInput(uint8_t value)
+void audioSetInput(int8_t value)
 {
     if (value >= aProc.par.inCnt)
         value = 0;

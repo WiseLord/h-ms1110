@@ -114,3 +114,15 @@ void canvasShowTune(bool clear)
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     glcdWriteString(utilMkStr("%3d", value * mStep / 8));
 }
+
+void canvasShowAudioInput(bool clear)
+{
+    AudioProc *aProc = audioGet();
+    InputType inType = aProc->par.inType[aProc->par.input];
+
+    const char *label = labelsGet(LABEL_IN_TUNER + inType);
+
+    glcdSetFont(&fontterminus32);
+    glcdSetXY(0, 0);
+    glcdWriteString(label);
+}
