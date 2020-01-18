@@ -1,7 +1,9 @@
 #include "settings.h"
 
+#include "audio/audio.h"
 #include "eemul.h"
 #include "rtc.h"
+#include "tr/labels.h"
 
 static uint8_t silenceTimer = 0;
 static int16_t rtcCorr = 0;
@@ -9,10 +11,46 @@ static int16_t rtcCorr = 0;
 static const EE_Map eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
 
+    [PARAM_AUDIO_IC]        =   {0x01,  AUDIO_IC_TDA7719},
+    [PARAM_AUDIO_INPUT]     =   {0x02,  0},
+    [PARAM_AUDIO_LOUDNESS]  =   {0x03,  false},
+    [PARAM_AUDIO_SURROUND]  =   {0x04,  false},
+    [PARAM_AUDIO_EFFECT3D]  =   {0x05,  false},
+    [PARAM_AUDIO_BYPASS]    =   {0x06,  false},
+
+    [PARAM_AUDIO_IN0]       =   {0x10,  0},
+    [PARAM_AUDIO_IN1]       =   {0x11,  1},
+    [PARAM_AUDIO_IN2]       =   {0x12,  2},
+    [PARAM_AUDIO_IN3]       =   {0x13,  3},
+    [PARAM_AUDIO_IN4]       =   {0x14,  4},
+    [PARAM_AUDIO_IN5]       =   {0x15,  5},
+    [PARAM_AUDIO_IN6]       =   {0x16,  6},
+    [PARAM_AUDIO_IN7]       =   {0x17,  7},
+
+    [PARAM_AUDIO_GAIN0]     =   {0x18,  0},
+    [PARAM_AUDIO_GAIN1]     =   {0x19,  0},
+    [PARAM_AUDIO_GAIN2]     =   {0x1A,  0},
+    [PARAM_AUDIO_GAIN3]     =   {0x1B,  0},
+    [PARAM_AUDIO_GAIN4]     =   {0x1C,  0},
+    [PARAM_AUDIO_GAIN5]     =   {0x1D,  0},
+    [PARAM_AUDIO_GAIN6]     =   {0x1E,  0},
+    [PARAM_AUDIO_GAIN7]     =   {0x1F,  0},
+
+    [PARAM_AUDIO_VOLUME]    =   {0x20,  0},
+    [PARAM_AUDIO_BASS]      =   {0x21,  0},
+    [PARAM_AUDIO_MIDDLE]    =   {0x22,  0},
+    [PARAM_AUDIO_TREBLE]    =   {0x23,  0},
+    [PARAM_AUDIO_FRONTREAR] =   {0x24,  0},
+    [PARAM_AUDIO_BALANCE]   =   {0x25,  0},
+    [PARAM_AUDIO_CENTER]    =   {0x26,  0},
+    [PARAM_AUDIO_SUBWOOFER] =   {0x27,  0},
+    [PARAM_AUDIO_PREAMP]    =   {0x28,  0},
+
     [PARAM_ALARM_HOUR]      =   {0x60,  7},
     [PARAM_ALARM_MINUTE]    =   {0x61,  30},
     [PARAM_ALARM_DAYS]      =   {0x62,  0},
 
+    [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_DEFAULT},
     [PARAM_SYSTEM_SIL_TIM]  =   {0x72,  5},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
     [PARAM_SYSTEM_ENC_RES]  =   {0x74,  2},
@@ -21,6 +59,9 @@ static const EE_Map eeMap[] = {
 void settingsInit(void)
 {
     eeInit();
+
+    audioReadSettings();
+//    tunerReadSettings();
 
     settingsSet(PARAM_ALARM_HOUR, settingsRead(PARAM_ALARM_HOUR));
     settingsSet(PARAM_ALARM_MINUTE, settingsRead(PARAM_ALARM_MINUTE));

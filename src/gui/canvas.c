@@ -1,7 +1,9 @@
 #include "canvas.h"
 
+#include "../audio/audio.h"
 #include "../input.h"
 #include "../display/glcd.h"
+#include "../tr/labels.h"
 
 static Canvas canvas;
 
@@ -77,4 +79,38 @@ void canvasShowStandby(bool clear)
     for (AnalogBtn i = 0; i < ABTN_END; i++) {
         glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? LCD_COLOR_WHITE : LCD_COLOR_GRAY);
     }
+}
+
+void canvasShowTune(bool clear)
+{
+    (void)clear;
+    canvasClear();
+
+    AudioProc *aProc = audioGet();
+    InputType inType = aProc->par.inType[aProc->par.input];
+
+    const char *label = labelsGet(LABEL_IN_TUNER + inType);
+
+    const int16_t value = aProc->par.tune[aProc->tune].value;
+//    Icon icon = (ICON_TUNER + inType);
+
+    if (aProc->tune < AUDIO_TUNE_GAIN) {
+        label = labelsGet(LABEL_VOLUME + aProc->tune);
+//        icon = ICON_VOLUME + aProc->tune;
+    }
+
+    const AudioGrid *grid = aProc->par.tune[aProc->tune].grid;
+//    const int8_t min = grid ? grid->min : 0;
+//    const int8_t max = grid ? grid->max : 0;
+    const uint8_t mStep = grid ? grid->mStep : 0;
+
+
+    glcdSetFont(&fontterminus32);
+    glcdSetXY(0, 0);
+    glcdWriteString(label);
+
+    glcdSetFont(&fontterminus32);
+    glcdSetXY(256, 0);
+    glcdSetFontAlign(GLCD_ALIGN_RIGHT);
+    glcdWriteString(utilMkStr("%3d", value * mStep / 8));
 }

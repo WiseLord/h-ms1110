@@ -1,5 +1,9 @@
 #include "amp.h"
 
+#include <stddef.h>
+
+#include "audio/audio.h"
+#include "i2c.h"
 #include "input.h"
 #include "pins.h"
 #include "rtc.h"
@@ -78,12 +82,23 @@ static void ampInit()
     ampPinMute(true);
     ampPinStby(true);
 
+//    i2cInit(I2C_AMP, 100000);
+//    inputSetPower(false);    // Power off input device
+//    i2cDeInit(I2C_AMP);
+
     amp.status = AMP_STATUS_STBY;
 }
 
 void ampExitStby(void)
 {
+    audioReadSettings();
+//    tunerReadSettings();
+
     ampPinStby(false);     // Power on amplifier
+
+//    i2cInit(I2C_AMP, 100000);
+//    inputSetPower(true);    // Power on input device
+//    i2cDeInit(I2C_AMP);
 
     amp.status = AMP_STATUS_POWERED;
     swTimSet(SW_TIM_AMP_INIT, 600);
@@ -95,8 +110,10 @@ void ampEnterStby(void)
 
 //    screenSaveSettings();
 
-//    audioSetMute(true);
-//    audioSetPower(false);
+    audioSetMute(true);
+    LL_mDelay(500);
+    ampPinMute(true);
+    audioSetPower(false);
 
 //    inputDisable();
 
@@ -110,10 +127,10 @@ void ampInitHw(void)
     switch (amp.status) {
     case AMP_STATUS_POWERED:
 //        pinsHwResetI2c();
-//        i2cInit(I2C_AMP, 100000);
+        i2cInit(I2C_AMP, 100000);
 
-//        audioInit();
-//        audioSetPower(true);
+        audioInit();
+        audioSetPower(true);
 //        tunerInit();
 
         amp.status = AMP_STATUS_HW_READY;
@@ -124,6 +141,8 @@ void ampInitHw(void)
 //        inputEnable();
 
         ampPinMute(false);
+        LL_mDelay(500);
+        audioSetMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
 
@@ -132,6 +151,40 @@ void ampInitHw(void)
     }
 }
 
+static void ampSetInput(uint8_t value)
+{
+    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
+
+    audioSetMute(true);
+
+//    inputDisable();
+//    inputSetPower(false);
+    audioSetInput(value);
+//    inputSetPower(true);
+
+    amp.status = AMP_STATUS_HW_READY;
+    swTimSet(SW_TIM_AMP_INIT, 400);
+}
+
+static void actionNextAudioParam(AudioProc *aProc)
+{
+    do {
+        aProc->tune++;
+        if (aProc->tune >= AUDIO_TUNE_END)
+            aProc->tune = AUDIO_TUNE_VOLUME;
+    } while (aProc->par.tune[aProc->tune].grid == NULL && aProc->tune != AUDIO_TUNE_VOLUME);
+}
+
+static uint8_t actionGetNextAudioInput(AudioProc *aProc)
+{
+    uint8_t ret = aProc->par.input + 1;
+
+    if (ret >= aProc->par.inCnt) {
+        ret = 0;
+    }
+
+    return  ret;
+}
 
 static void actionGetButtons(void)
 {
@@ -143,6 +196,15 @@ static void actionGetButtons(void)
         } else {
             actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
+    }
+}
+
+static void actionGetEncoder(void)
+{
+    int8_t encVal = getEncoder();
+
+    if (encVal) {
+        actionSet(ACTION_ENCODER, encVal);
     }
 }
 
@@ -165,7 +227,14 @@ static void actionRemapBtnShort(void)
 {
     switch (action.value) {
     case BTN_STBY:
-        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+//        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        actionSet(ACTION_OPEN_MENU, 0);
+        break;
+    case BTN_IN_PREV:
+        actionSet(ACTION_AUDIO_INPUT, -1);
+        break;
+    case BTN_IN_NEXT:
+        actionSet(ACTION_AUDIO_INPUT, +1);
         break;
     case ENC_A:
         actionSet(ACTION_ENCODER, -1);
@@ -182,7 +251,7 @@ static void actionRemapBtnLong(void)
 {
     switch (action.value) {
     case BTN_STBY:
-//        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
     case ENC_A:
         actionSet(ACTION_ENCODER, -1);
@@ -192,6 +261,49 @@ static void actionRemapBtnLong(void)
         break;
     default:
         break;
+    }
+}
+
+static void actionRemapEncoder(void)
+{
+    ScrMode scrMode = screenGet()->mode;
+    AudioProc *aProc = audioGet();
+
+    if (SCREEN_STANDBY == scrMode)
+        return;
+
+    int16_t encCnt = action.value;
+
+    switch (scrMode) {
+    case SCREEN_TIME:
+        if (rtcGetMode() == RTC_NOEDIT) {
+            actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
+        } else {
+//            actionSet(ACTION_RTC_CHANGE, encCnt);
+        }
+        break;
+//    case SCREEN_MENU:
+//        actionSet(ACTION_MENU_CHANGE, encCnt);
+//        break;
+//    case SCREEN_TEXTEDIT:
+//        actionSet(ACTION_TEXTEDIT_CHANGE, encCnt);
+//        break;
+    default:
+        actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
+        break;
+    }
+
+    if (ACTION_AUDIO_PARAM_CHANGE == action.type) {
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        switch (scrMode) {
+        case SCREEN_SPECTRUM:
+//        case SCREEN_AUDIO_FLAG:
+//        case SCREEN_AUDIO_INPUT:
+            aProc->tune = AUDIO_TUNE_VOLUME;
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -227,6 +339,10 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
+        actionGetEncoder();
+    }
+
+    if (ACTION_NONE == action.type) {
         actionGetTimers();
     }
 
@@ -242,12 +358,19 @@ void ampActionGet(void)
     }
 
     actionRemapCommon();
+
+    if (ACTION_ENCODER == action.type) {
+        actionRemapEncoder();
+    }
 }
 
 void ampActionHandle(void)
 {
     Screen *screen = screenGet();
     ScrMode scrMode = screen->mode;
+
+    AudioProc *aProc = audioGet();
+//    InputType inType = aProc->par.inType[aProc->par.input];
 
     action.timeout = 0;
 
@@ -280,6 +403,30 @@ void ampActionHandle(void)
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);
         break;
+
+    case ACTION_OPEN_MENU:
+        if (scrMode == SCREEN_AUDIO_PARAM) {
+            screenToClear();
+            actionNextAudioParam(aProc);
+        } else {
+            aProc->tune = AUDIO_TUNE_VOLUME;
+        }
+        actionSetScreen(SCREEN_AUDIO_PARAM, 5000);
+        break;
+
+    case ACTION_AUDIO_INPUT:
+//        if (scrMode == SCREEN_AUDIO_INPUT) {
+            ampSetInput(actionGetNextAudioInput(aProc));
+//            controlReportAudioInput();
+//            controlReportAudioTune(AUDIO_TUNE_GAIN);
+//        }
+        break;
+    case ACTION_AUDIO_PARAM_CHANGE:
+        audioChangeTune(aProc->tune, (int8_t)(action.value));
+        actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
+//        controlReportAudioTune(aProc->tune);
+        break;
+
     default:
         break;
     }

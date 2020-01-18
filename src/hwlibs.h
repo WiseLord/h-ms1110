@@ -25,10 +25,12 @@ extern "C" {
 
 #endif
 
-#define USART_DBG               USART1
+#define I2C_AMP                 I2C1
 
 #define TIM_INPUT               TIM4
 #define TIM_INPUT_HANDLER       TIM4_IRQHandler
+
+#define USART_DBG               USART1
 
 #ifdef __cplusplus
 }

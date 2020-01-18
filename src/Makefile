@@ -5,6 +5,8 @@ STM32_MCU = F103CB
 DISPLAY = SSD1322
 DISPVAR = SPI
 
+APROC_LIST = TDA7439 TDA731X PT232X TDA7418 TDA7719
+
 DEBUG = 1
 OPT = -Os
 
@@ -28,6 +30,7 @@ C_SOURCES += main.c
 C_SOURCES += amp.c
 C_SOURCES += eemul.c
 C_SOURCES += gui/canvas.c
+C_SOURCES += i2c.c
 C_SOURCES += input.c
 C_SOURCES += pins.c
 C_SOURCES += rtc.c
@@ -38,6 +41,9 @@ C_SOURCES += swtimers.c
 C_SOURCES += timers.c
 C_SOURCES += usart.c
 C_SOURCES += utils.c
+
+C_SOURCES += tr/labels.c
+C_SOURCES += $(wildcard tr/labels_*.c)
 
 # Display source files
 C_SOURCES += $(wildcard display/fonts/font*.c)
@@ -55,6 +61,11 @@ C_SOURCES += display/dispdrv.c
 C_SOURCES += display/glcd.c
 C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
+
+# Audio source files
+C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
+C_SOURCES += audio/audio.c
+C_DEFS += $(addprefix -D_, $(APROC_LIST))
 
 C_INCLUDES += \
   -Idisplay

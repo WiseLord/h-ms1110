@@ -16,6 +16,8 @@ enum {
 
     SCREEN_STANDBY,
 
+    SCREEN_AUDIO_PARAM,
+
     SCREEN_END
 };
 
@@ -29,6 +31,8 @@ void screenInit(void);
 Screen *screenGet(void);
 
 void screenSetMode(ScrMode value);
+
+void screenToClear(void);
 
 void screenShow(void);
 

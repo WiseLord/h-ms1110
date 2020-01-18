@@ -2,6 +2,7 @@
 #include "hwlibs.h"
 #include "input.h"
 #include "pins.h"
+#include "settings.h"
 #include "screen.h"
 #include "usart.h"
 #include "utils.h"
@@ -79,6 +80,7 @@ int main(void)
     SystemClock_Config();
     LL_SYSTICK_EnableIT();
 
+    settingsInit();
     pinsInit();
 
     usartInit(USART_DBG, 115200);

@@ -1,5 +1,18 @@
 amp.c
 amp.h
+audio/audio.c
+audio/audio.h
+audio/audiodefs.h
+audio/pt232x.c
+audio/pt232x.h
+audio/tda731x.c
+audio/tda731x.h
+audio/tda7418.c
+audio/tda7418.h
+audio/tda7439.c
+audio/tda7439.h
+audio/tda7719.c
+audio/tda7719.h
 display/dispdrv.c
 display/dispdrv.h
 display/fonts/font-terminus-12.c
@@ -57,6 +70,8 @@ eemul.h
 gui/canvas.c
 gui/canvas.h
 hwlibs.h
+i2c.c
+i2c.h
 input.c
 input.h
 main.c
@@ -81,6 +96,8 @@ system/stm32f103xb_openocd.cfg
 system/system_stm32f1xx.c
 timers.c
 timers.h
+tr/labels.c
+tr/labels.h
 usart.c
 usart.h
 utils.c
