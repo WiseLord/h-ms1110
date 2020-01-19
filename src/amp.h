@@ -23,7 +23,6 @@ enum {
     ACTION_ENCODER,
     ACTION_REMOTE,
 
-    ACTION_INIT,
     ACTION_INIT_HW,
     ACTION_INIT_RTC,
     ACTION_STANDBY,
@@ -37,8 +36,6 @@ enum {
 
     ACTION_AUDIO_MUTE,
     ACTION_AUDIO_LOUDNESS,
-    ACTION_AUDIO_SURROUND,
-    ACTION_AUDIO_EFFECT3D,
     ACTION_AUDIO_BYPASS,
 
     ACTION_END
@@ -67,6 +64,10 @@ typedef struct {
     AmpStatus status;
     uint8_t inputStatus;
 } Amp;
+
+void ampInitMuteStby(void);
+
+void ampInit(void);
 
 void ampActionGet(void);
 

@@ -1,7 +1,9 @@
 #include "amp.h"
+#include "debug.h"
 #include "hwlibs.h"
 #include "input.h"
 #include "pins.h"
+#include "rtc.h"
 #include "settings.h"
 #include "screen.h"
 #include "usart.h"
@@ -15,23 +17,15 @@
 #define NVIC_PRIORITYGROUP_4    ((uint32_t)0x00000003)
 #endif
 
-void LL_Init(void)
+static void NVIC_Init(void)
 {
-#ifdef STM32F1
-    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
-#endif
-    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-
-    NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
     // System interrupt init
-    NVIC_SetPriority(MemoryManagement_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(BusFault_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(UsageFault_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(SVCall_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(DebugMonitor_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(PendSV_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
-    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+    NVIC_SetPriority(MemoryManagement_IRQn, 0);
+    NVIC_SetPriority(BusFault_IRQn, 0);
+    NVIC_SetPriority(UsageFault_IRQn, 0);
+    NVIC_SetPriority(SVCall_IRQn, 0);
+    NVIC_SetPriority(DebugMonitor_IRQn, 0);
+    NVIC_SetPriority(PendSV_IRQn, 0);
 }
 
 void SystemClock_Config(void)
@@ -63,37 +57,73 @@ void SystemClock_Config(void)
     LL_Init1msTick(72000000);
     LL_SYSTICK_SetClkSource(LL_SYSTICK_CLKSOURCE_HCLK);
     LL_SetSystemCoreClock(72000000);
+
+    // SysTick_IRQn interrupt configuration
+    NVIC_SetPriority(SysTick_IRQn, 0);
+}
+
+static void sysInit(void)
+{
+    // System
+    NVIC_Init();
+    SystemClock_Config();
+
+    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
+
+    // Enable clock for all GPIO peripherials
+#ifdef STM32F1
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA);
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB);
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOC);
+#endif
+#ifdef STM32F3
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOC);
+#endif
+
+#ifdef STM32F1
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
+#endif
+
 #ifdef STM32F3
     LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART3_CLKSOURCE_SYSCLK);
     LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_SYSCLK);
 #endif
-    // SysTick_IRQn interrupt configuration
-    NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
+
+#ifdef STM32F1
+    // JTAG-DP Disabled and SW-DP Enabled
+    LL_GPIO_AF_Remap_SWJ_NOJTAG();
+#endif
 }
 
 int main(void)
 {
-    // System
-    LL_Init();
-    SystemClock_Config();
-    LL_SYSTICK_EnableIT();
+    sysInit();
 
     settingsInit();
+    ampInitMuteStby();
+
     pinsInit();
 
-    usartInit(USART_DBG, 115200);
-    usartSendString(USART_DBG, "\rUsart init done\r\n");
+    rtcInit();
+
+    dbgInit();
 
     screenInit();
+    //spInit();
 
     inputInit();
+    //rcInit();
+
+    ampInit();
 
     while (1) {
+        ampActionGet();
         ampActionHandle();
         screenShow();
-        ampActionGet();
     }
 
     return 0;

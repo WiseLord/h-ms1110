@@ -9,10 +9,22 @@
 #include "rtc.h"
 #include "settings.h"
 #include "swtimers.h"
+#include "timers.h"
+
+static void actionGetButtons(void);
+static void actionGetEncoder(void);
+static void actionGetRemote(void);
+static void actionGetTimers(void);
+static void actionRemapBtnShort(void);
+static void actionRemapBtnLong(void);
+static void actionRemapRemote(void);
+static void actionRemapCommon(void);
+static void actionRemapEncoder(void);
 
 static Action action = {
-    .type = ACTION_INIT,
+    .type = ACTION_STANDBY,
     .screen = SCREEN_STANDBY,
+    .value = FLAG_ENTER,
 };
 
 static Amp amp = {
@@ -59,6 +71,28 @@ static void actionResetSilenceTimer(void)
     }
 }
 
+static void inputDisable(void)
+{
+    // TODO: Power off current input device
+}
+
+static void inputEnable(void)
+{
+    // TODO: Power on current input device
+}
+
+static void inputSetPower(bool value)
+{
+    AudioProc *aProc = audioGet();
+    int8_t input = aProc->par.input;
+
+    if (value) {
+        amp.inputStatus = (uint8_t)(1 << input);
+    } else {
+        amp.inputStatus = 0x00;
+    }
+}
+
 static void ampPinMute(bool value)
 {
     if (value) {
@@ -77,28 +111,14 @@ static void ampPinStby(bool value)
     }
 }
 
-static void ampInit()
-{
-    ampPinMute(true);
-    ampPinStby(true);
-
-//    i2cInit(I2C_AMP, 100000);
-//    inputSetPower(false);    // Power off input device
-//    i2cDeInit(I2C_AMP);
-
-    amp.status = AMP_STATUS_STBY;
-}
-
 void ampExitStby(void)
 {
     audioReadSettings();
 //    tunerReadSettings();
 
-    ampPinStby(false);     // Power on amplifier
+    ampPinStby(false);      // Power on amplifier
 
-//    i2cInit(I2C_AMP, 100000);
-//    inputSetPower(true);    // Power on input device
-//    i2cDeInit(I2C_AMP);
+    inputSetPower(true);    // Power on input device
 
     amp.status = AMP_STATUS_POWERED;
     swTimSet(SW_TIM_AMP_INIT, 600);
@@ -108,15 +128,20 @@ void ampEnterStby(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
 
-//    screenSaveSettings();
+    screenSaveSettings();
 
     audioSetMute(true);
     ampPinMute(true);
     audioSetPower(false);
 
-//    inputDisable();
+    inputDisable();
 
-    ampInit();
+    ampPinStby(true);
+
+    inputSetPower(false);   // Power off input device
+
+    amp.status = AMP_STATUS_STBY;
+//    controlReportAmpStatus();
 }
 
 void ampInitHw(void)
@@ -137,7 +162,7 @@ void ampInitHw(void)
 //        controlReportAll();
         break;
     case AMP_STATUS_HW_READY:
-//        inputEnable();
+        inputEnable();
 
         ampPinMute(false);
         audioSetMute(false);
@@ -154,11 +179,12 @@ static void ampSetInput(int8_t value)
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
     audioSetMute(true);
+    ampPinMute(true);
 
-//    inputDisable();
-//    inputSetPower(false);
+    inputDisable();
+    inputSetPower(false);
     audioSetInput(value);
-//    inputSetPower(true);
+    inputSetPower(true);
 
     amp.status = AMP_STATUS_HW_READY;
     swTimSet(SW_TIM_AMP_INIT, 400);
@@ -211,6 +237,11 @@ static void actionGetEncoder(void)
     }
 }
 
+static void actionGetRemote(void)
+{
+
+}
+
 static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_DISPLAY) == 0) {
@@ -230,7 +261,6 @@ static void actionRemapBtnShort(void)
 {
     switch (action.value) {
     case BTN_STBY:
-//        actionSet(ACTION_STANDBY, FLAG_SWITCH);
         actionSet(ACTION_OPEN_MENU, 0);
         break;
     case BTN_IN_PREV:
@@ -265,6 +295,11 @@ static void actionRemapBtnLong(void)
     default:
         break;
     }
+}
+
+static void actionRemapRemote(void)
+{
+
 }
 
 static void actionRemapEncoder(void)
@@ -312,6 +347,9 @@ static void actionRemapEncoder(void)
 
 static void actionRemapCommon(void)
 {
+    ScrMode scrMode = screenGet()->mode;
+    AudioProc *aProc = audioGet();
+
     switch (action.type) {
     case ACTION_STANDBY:
         if (FLAG_SWITCH == action.value) {
@@ -328,9 +366,66 @@ static void actionRemapCommon(void)
             }
         }
         break;
+    case ACTION_AUDIO_MUTE:
+        if (FLAG_SWITCH == action.value) {
+            action.value = !aProc->par.mute;
+        }
+        break;
+    case ACTION_AUDIO_LOUDNESS:
+        if (FLAG_SWITCH == action.value) {
+            action.value = !aProc->par.loudness;
+        }
+        break;
+    case ACTION_AUDIO_BYPASS:
+        if (FLAG_SWITCH == action.value) {
+            action.value = !aProc->par.bypass;
+        }
+        break;
     default:
         break;
     }
+
+    if (SCREEN_STANDBY == scrMode &&
+        (ACTION_STANDBY != action.type &&
+         ACTION_REMOTE != action.type &&
+         ACTION_INIT_RTC != action.type)) {
+        actionSet(ACTION_NONE, 0);
+    }
+}
+
+void ampInitMuteStby(void)
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+#ifdef STM32F3
+    GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+#endif
+
+    GPIO_InitStruct.Pin = MUTE_Pin;
+    LL_GPIO_Init(MUTE_Port, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = STBY_Pin;
+    LL_GPIO_Init(STBY_Port, &GPIO_InitStruct);
+
+    ampPinMute(true);
+    ampPinStby(true);
+}
+
+void ampInit(void)
+{
+    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
+    swTimInit();
+
+    ampPinMute(true);
+    ampPinStby(true);
+
+    inputSetPower(false);    // Power off input device
+
+    swTimSet(SW_TIM_RTC_INIT, 500);
+
+    amp.status = AMP_STATUS_STBY;
 }
 
 void ampActionGet(void)
@@ -346,6 +441,18 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
+        actionGetRemote();
+    }
+
+    if (ACTION_NONE == action.type) {
+        ScrMode scrMode = screenGet()->mode;
+
+        if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
+            actionSet(ACTION_STANDBY, FLAG_EXIT);
+        }
+    }
+
+    if (ACTION_NONE == action.type) {
         actionGetTimers();
     }
 
@@ -355,6 +462,9 @@ void ampActionGet(void)
         break;
     case ACTION_BTN_LONG:
         actionRemapBtnLong();
+        break;
+    case ACTION_REMOTE:
+        actionRemapRemote();
         break;
     default:
         break;
@@ -378,10 +488,6 @@ void ampActionHandle(void)
     action.timeout = 0;
 
     switch (action.type) {
-    case ACTION_INIT:
-        ampInit();
-        swTimSet(SW_TIM_RTC_INIT, 500);
-        break;
     case ACTION_INIT_HW:
         ampInitHw();
         actionResetSilenceTimer();
@@ -439,5 +545,16 @@ void ampActionHandle(void)
     screenSetMode(action.screen);
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
+    }
+}
+
+void TIM_SPECTRUM_HANDLER(void)
+{
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
+        // Clear the update interrupt flag
+        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
+
+        // Callbacks
+//        spConvertADC();
     }
 }

@@ -27,6 +27,9 @@ typedef struct {
     ScrMode def;
 } Screen;
 
+void screenReadSettings(void);
+void screenSaveSettings(void);
+
 void screenInit(void);
 
 Screen *screenGet(void);

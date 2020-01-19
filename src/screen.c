@@ -1,6 +1,7 @@
 #include "screen.h"
 
 #include "gui/canvas.h"
+#include "settings.h"
 
 static bool scrToClear = false;
 
@@ -29,12 +30,22 @@ static bool screenCheckClear(void)
     return clear;
 }
 
+void screenReadSettings(void)
+{
+    screen.def = (ScrMode)settingsRead(PARAM_DISPLAY_DEF);
+}
+
+void screenSaveSettings(void)
+{
+    settingsStore(PARAM_DISPLAY_DEF, screen.def);
+}
+
 void screenInit(void)
 {
 //    labelsInit();
     canvasInit();
 
-//    screenReadSettings();
+    screenReadSettings();
 }
 
 Screen *screenGet(void)

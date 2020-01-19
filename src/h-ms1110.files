@@ -13,6 +13,8 @@ audio/tda7439.c
 audio/tda7439.h
 audio/tda7719.c
 audio/tda7719.h
+debug.c
+debug.h
 display/dispdrv.c
 display/dispdrv.h
 display/fonts/font-terminus-12.c

@@ -28,6 +28,7 @@ C_DEFS += -D_DISP_RST_ENABLED
 C_SOURCES += main.c
 
 C_SOURCES += amp.c
+C_SOURCES += debug.c
 C_SOURCES += eemul.c
 C_SOURCES += gui/canvas.c
 C_SOURCES += i2c.c
