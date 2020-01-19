@@ -1,5 +1,6 @@
 #include "input.h"
 
+#include "audio/audio.h"
 #include "hwlibs.h"
 #include "pins.h"
 #include "settings.h"
@@ -12,6 +13,9 @@
 
 static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
 static const uint32_t R_POT     = 100000;       // Pot resistance
+
+static const int16_t R_POT_TH   = 20;           // Experimental threshold
+static const int16_t R_POT_MAX  = (ADC_MAX * R_POT / (R_POT + R_POT_H)) - R_POT_TH;
 
 static const uint32_t R_BTN_H   = 10000;    // Analog buttons pull-up resistor
 static const uint32_t R_BTNS[ABTN_END] = {  // Analog buttons resistance
@@ -57,10 +61,10 @@ static void inputAnalogInit(void)
         while (LL_ADC_IsCalibrationOnGoing(ADC2) != 0);
     }
 
-    ctx.zoneCnt = 15; // TODO: calculate from audio grid
+    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
+    ctx.zoneCnt = grid->max - grid->min + 1;
 
-    int16_t potMax = (ADC_MAX * R_POT / (R_POT + R_POT_H));
-    int16_t zoneLen = potMax / ctx.zoneCnt;
+    int16_t zoneLen = R_POT_MAX / ctx.zoneCnt;
 
     ctx.potData[AIN_POT_A] = zoneLen / 2;
     ctx.potData[AIN_POT_B] = zoneLen / 2;
@@ -75,11 +79,10 @@ static void inputAnalogConvert(void)
     ctx.adcData[chan] = adcData; // TODO: remove
 
     if (chan < AIN_POT_END) {
-        int16_t potMax = (ADC_MAX * R_POT / (R_POT + R_POT_H));
-        int16_t zoneLen = potMax / ctx.zoneCnt;
+        int16_t zoneLen = R_POT_MAX / ctx.zoneCnt;
 
         // Consider "reverted" potentiomener
-        adcData = potMax - adcData;
+        adcData = R_POT_MAX - adcData;
 
         // Filter data to nearest zone value
         int16_t filterWidth = zoneLen * 3 / 4;
