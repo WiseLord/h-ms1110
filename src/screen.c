@@ -78,14 +78,17 @@ void screenShow(void)
     case SCREEN_TIME:
         canvasShowTime(clear);
         break;
+    case SCREEN_AUDIO_INPUT:
+        canvasShowAudioInput(clear);
+        break;
     case SCREEN_STANDBY:
         canvasShowStandby(clear);
         break;
     case SCREEN_AUDIO_PARAM:
         canvasShowTune(clear);
         break;
-    case SCREEN_AUDIO_INPUT:
-        canvasShowAudioInput(clear);
+    case SCREEN_MENU:
+        canvasShowMenu(clear);
         break;
     default:
         break;

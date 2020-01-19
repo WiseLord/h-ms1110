@@ -5,6 +5,7 @@
 #include "audio/audio.h"
 #include "i2c.h"
 #include "input.h"
+#include "menu.h"
 #include "pins.h"
 #include "rtc.h"
 #include "settings.h"
@@ -290,9 +291,18 @@ static void actionGetTimers(void)
 
 static void actionRemapBtnShort(void)
 {
+    ScrMode scrMode = screenGet()->mode;
+
     switch (action.value) {
     case BTN_STBY:
-        actionSet(ACTION_OPEN_MENU, 0);
+        switch (scrMode) {
+        case SCREEN_STANDBY:
+            actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
+            break;
+        default:
+            actionSet(ACTION_OPEN_MENU, 0);
+            break;
+        }
         break;
     case BTN_IN_PREV:
         actionSet(ACTION_AUDIO_INPUT, -1);
@@ -419,7 +429,8 @@ static void actionRemapCommon(void)
     if (SCREEN_STANDBY == scrMode &&
         (ACTION_STANDBY != action.type &&
          ACTION_REMOTE != action.type &&
-         ACTION_INIT_RTC != action.type)) {
+         ACTION_INIT_RTC != action.type &&
+         ACTION_MENU_SELECT != action.type)) {
         actionSet(ACTION_NONE, 0);
     }
 }
@@ -575,6 +586,20 @@ void ampActionHandle(void)
     case ACTION_AUDIO_PARAM_SET:
         audioSetTune(aProc->tune, (int8_t)action.value);
         actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
+        break;
+
+    case ACTION_MENU_SELECT: {
+        MenuIdx parent = menuGet()->parent;
+        menuSetActive((MenuIdx)action.value);
+        if (parent != menuGet()->parent) {
+            screenToClear();
+        }
+        actionSetScreen(SCREEN_MENU, 10000);
+        break;
+    }
+    case ACTION_MENU_CHANGE:
+        menuChange((int8_t)action.value);
+        actionSetScreen(SCREEN_MENU, 10000);
         break;
 
     default:

@@ -23,6 +23,7 @@ void canvasShowTime(bool clear);
 void canvasShowStandby(bool clear);
 void canvasShowTune(bool clear);
 void canvasShowAudioInput(bool clear);
+void canvasShowMenu(bool clear);
 
 #ifdef __cplusplus
 }
