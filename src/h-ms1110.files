@@ -13,6 +13,7 @@ audio/tda7439.c
 audio/tda7439.h
 audio/tda7719.c
 audio/tda7719.h
+cmd.h
 debug.c
 debug.h
 display/dispdrv.c
@@ -80,6 +81,8 @@ main.c
 Makefile
 mem.c
 mem.h
+menu.c
+menu.h
 pins.c
 pins.h
 rtc.c

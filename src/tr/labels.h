@@ -7,7 +7,7 @@ extern "C" {
 
 #include "../audio/audio.h"
 //#include "../gui/palette.h"
-//#include "../menu.h"
+#include "../menu.h"
 #include "../pins.h"
 #include "../rtc.h"
 #include "../screen.h"
@@ -71,10 +71,10 @@ typedef enum {
     LABEL_ALARM_DAY_END = LABEL_ALARM_DAY + (ALARM_DAY_END - ALARM_DAY_OFF),
 
     // Menu
-//    LABEL_MENU = LABEL_MUTESTBY_END,
-//    LABEL_MENU_END = LABEL_MENU + (MENU_END - MENU_NULL),
+    LABEL_MENU = LABEL_ALARM_DAY_END,
+    LABEL_MENU_END = LABEL_MENU + (MENU_END - MENU_NULL),
 
-    LABEL_END = LABEL_ALARM_DAY_END,
+    LABEL_END = LABEL_MENU_END,
 } Label;
 
 //extern const char *const labels_by[LABEL_END];

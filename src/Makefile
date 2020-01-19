@@ -33,6 +33,7 @@ C_SOURCES += eemul.c
 C_SOURCES += gui/canvas.c
 C_SOURCES += i2c.c
 C_SOURCES += input.c
+C_SOURCES += menu.c
 C_SOURCES += pins.c
 C_SOURCES += rtc.c
 C_SOURCES += screen.c
