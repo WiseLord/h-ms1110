@@ -62,7 +62,6 @@ typedef struct {
     int16_t adcData[AIN_END];
     int16_t potData[AIN_POT_END];
     int8_t encRes;
-    int8_t zoneCnt;
     AnalogBtn aBtn;
 } InputCtx;
 

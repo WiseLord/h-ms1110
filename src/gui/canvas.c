@@ -50,25 +50,26 @@ void canvasShowTime(bool clear)
 void canvasShowStandby(bool clear)
 {
     (void)clear;
+    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
 
     glcdSetFont(&fontterminus12);
 
     InputCtx *inCtx = inputGetCtx();
 
     const int16_t sw = 210;
-    const int16_t zoneCnt = inCtx->zoneCnt;
+    const int16_t zoneCnt = grid->max - grid->min + 1;
 
     for (uint8_t i = AIN_POT_A; i < AIN_POT_END; i++) {
         int8_t pot = inputGetPot(i);
-        int16_t len = (sw * pot + sw / 2) / zoneCnt;
+        int16_t len = (sw * (pot - grid->min) + sw / 2) / zoneCnt;
 
         int16_t xb = 0;
         int16_t yb = 16 * i;
 
         glcdDrawRect(xb, yb, len, 12, LCD_COLOR_WHITE);
         glcdDrawRect(xb + len, yb, sw - len, 12, LCD_COLOR_GRAY);
-        glcdSetXY(xb + sw + 5, yb);
-        glcdWriteString(utilMkStr("%2d %4d", pot, inCtx->potData[i]));
+        glcdSetXY(xb + sw + 2, yb);
+        glcdWriteString(utilMkStr("%2d.%4d", pot, inCtx->potData[i]));
         for (int16_t j = 1; j < zoneCnt; j++) {
             glcdDrawRect(xb + j * sw / zoneCnt, yb, 1, 12, RGB_CONV(0xA0A0A0));
         }
