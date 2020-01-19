@@ -244,6 +244,35 @@ static void actionGetRemote(void)
 
 }
 
+static void actionGetPots(void)
+{
+    static int8_t potPrev[AIN_POT_END];
+
+    AudioProc *aProc = audioGet();
+
+    for (AnalogInput ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
+        int8_t pot = inputGetPot(ain);
+        if (pot != potPrev[ain]) {
+            if (amp.status == AMP_STATUS_ACTIVE) {
+                screenSetMode(SCREEN_AUDIO_PARAM);
+                switch (ain) {
+                case  AIN_POT_A:
+                    aProc->tune = AUDIO_TUNE_BASS;
+                    actionSet(ACTION_AUDIO_PARAM_SET, pot);
+                    break;
+                case AIN_POT_B:
+                    aProc->tune = AUDIO_TUNE_TREBLE;
+                    actionSet(ACTION_AUDIO_PARAM_SET, pot);
+                    break;
+                default:
+                    break;
+                }
+            }
+            potPrev[ain] = pot;
+        }
+    }
+}
+
 static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_DISPLAY) == 0) {
@@ -447,6 +476,10 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
+        actionGetPots();
+    }
+
+    if (ACTION_NONE == action.type) {
         ScrMode scrMode = screenGet()->mode;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
@@ -535,9 +568,13 @@ void ampActionHandle(void)
         actionSetScreen(SCREEN_AUDIO_INPUT, 5000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
-        audioChangeTune(aProc->tune, (int8_t)(action.value));
+        audioChangeTune(aProc->tune, (int8_t)action.value);
         actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
 //        controlReportAudioTune(aProc->tune);
+        break;
+    case ACTION_AUDIO_PARAM_SET:
+        audioSetTune(aProc->tune, (int8_t)action.value);
+        actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
         break;
 
     default:
