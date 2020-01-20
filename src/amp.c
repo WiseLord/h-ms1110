@@ -15,6 +15,7 @@
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetRemote(void);
+static void actionGetPots(void);
 static void actionGetTimers(void);
 static void actionRemapBtnShort(void);
 static void actionRemapBtnLong(void);
@@ -197,9 +198,12 @@ static void actionNextAudioParam(AudioProc *aProc)
 {
     do {
         aProc->tune++;
-        if (aProc->tune >= AUDIO_TUNE_END)
+        if (aProc->tune >= AUDIO_TUNE_END) {
             aProc->tune = AUDIO_TUNE_VOLUME;
-    } while (aProc->par.tune[aProc->tune].grid == NULL && aProc->tune != AUDIO_TUNE_VOLUME);
+        }
+    } while (aProc->par.tune[aProc->tune].grid == NULL ||
+             aProc->tune == AUDIO_TUNE_BASS ||
+             aProc->tune == AUDIO_TUNE_TREBLE);
 }
 
 static int8_t actionGetNextAudioInput(int8_t diff)
@@ -258,11 +262,17 @@ static void actionGetPots(void)
                 screenSetMode(SCREEN_AUDIO_PARAM);
                 switch (ain) {
                 case  AIN_POT_A:
-                    aProc->tune = AUDIO_TUNE_BASS;
+                    if (aProc->tune != AUDIO_TUNE_BASS) {
+                        aProc->tune = AUDIO_TUNE_BASS;
+                        screenToClear();
+                    }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot);
                     break;
                 case AIN_POT_B:
-                    aProc->tune = AUDIO_TUNE_TREBLE;
+                    if (aProc->tune != AUDIO_TUNE_TREBLE) {
+                        aProc->tune = AUDIO_TUNE_TREBLE;
+                        screenToClear();
+                    }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot);
                     break;
                 default:
@@ -291,6 +301,23 @@ static void actionGetTimers(void)
 
 static void actionRemapBtnShort(void)
 {
+    switch (action.value) {
+    case BTN_STBY:
+        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        break;
+    case BTN_IN_PREV:
+        actionSet(ACTION_AUDIO_INPUT, -1);
+        break;
+    case BTN_IN_NEXT:
+        actionSet(ACTION_AUDIO_INPUT, +1);
+        break;
+    default:
+        break;
+    }
+}
+
+static void actionRemapBtnLong(void)
+{
     ScrMode scrMode = screenGet()->mode;
 
     switch (action.value) {
@@ -303,35 +330,6 @@ static void actionRemapBtnShort(void)
             actionSet(ACTION_OPEN_MENU, 0);
             break;
         }
-        break;
-    case BTN_IN_PREV:
-        actionSet(ACTION_AUDIO_INPUT, -1);
-        break;
-    case BTN_IN_NEXT:
-        actionSet(ACTION_AUDIO_INPUT, +1);
-        break;
-    case ENC_A:
-        actionSet(ACTION_ENCODER, -1);
-        break;
-    case ENC_B:
-        actionSet(ACTION_ENCODER, +1);
-        break;
-    default:
-        break;
-    }
-}
-
-static void actionRemapBtnLong(void)
-{
-    switch (action.value) {
-    case BTN_STBY:
-        actionSet(ACTION_STANDBY, FLAG_SWITCH);
-        break;
-    case ENC_A:
-        actionSet(ACTION_ENCODER, -1);
-        break;
-    case ENC_B:
-        actionSet(ACTION_ENCODER, +1);
         break;
     default:
         break;
@@ -368,6 +366,10 @@ static void actionRemapEncoder(void)
 //        actionSet(ACTION_TEXTEDIT_CHANGE, encCnt);
 //        break;
     default:
+        if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
+            screenToClear();
+            aProc->tune = AUDIO_TUNE_VOLUME;
+        }
         actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
         break;
     }
@@ -377,7 +379,7 @@ static void actionRemapEncoder(void)
         switch (scrMode) {
         case SCREEN_SPECTRUM:
 //        case SCREEN_AUDIO_FLAG:
-//        case SCREEN_AUDIO_INPUT:
+        case SCREEN_AUDIO_INPUT:
             aProc->tune = AUDIO_TUNE_VOLUME;
             break;
         default:

@@ -100,48 +100,59 @@ void canvasShowStandby(bool clear)
 
 void canvasShowTune(bool clear)
 {
-    (void)clear;
-    canvasClear();
+    const Layout *lt = canvas.layout;
 
     AudioProc *aProc = audioGet();
     InputType inType = aProc->par.inType[aProc->par.input];
 
     const char *label = labelsGet(LABEL_IN_TUNER + inType);
 
-    const int16_t value = aProc->par.tune[aProc->tune].value;
-//    Icon icon = (ICON_TUNER + inType);
-
     if (aProc->tune < AUDIO_TUNE_GAIN) {
         label = labelsGet(LABEL_VOLUME + aProc->tune);
-//        icon = ICON_VOLUME + aProc->tune;
     }
 
+    const int16_t value = aProc->par.tune[aProc->tune].value;
+
     const AudioGrid *grid = aProc->par.tune[aProc->tune].grid;
-//    const int8_t min = grid ? grid->min : 0;
-//    const int8_t max = grid ? grid->max : 0;
+    const int8_t min = grid ? grid->min : 0;
+    const int8_t max = grid ? grid->max : 0;
     const uint8_t mStep = grid ? grid->mStep : 0;
 
+    if (clear) {
+        // Label
+        glcdSetFont(lt->lblFont);
+        glcdSetFontColor(canvas.pal->fg);
+        glcdSetXY(0, 0);
+        glcdWriteString(label);
+    }
 
-    glcdSetFont(&fontterminus32);
-    glcdSetXY(0, 0);
-    glcdWriteString(label);
+    // Bar
+    StripedBar bar = {value, min, max};
+    stripedBarDraw(&bar, &lt->tune.bar, clear);
 
-    glcdSetFont(&fontterminus32);
-    glcdSetXY(256, 0);
+    // Value
+    glcdSetXY(lt->rect.w, lt->tune.valY);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
+    glcdSetFont(lt->tune.valFont);
     glcdWriteString(utilMkStr("%3d", value * mStep / 8));
 }
 
 void canvasShowAudioInput(bool clear)
 {
+    const Layout *lt = canvas.layout;
+
     AudioProc *aProc = audioGet();
     InputType inType = aProc->par.inType[aProc->par.input];
 
     const char *label = labelsGet(LABEL_IN_TUNER + inType);
 
-    glcdSetFont(&fontterminus32);
-    glcdSetXY(0, 0);
-    glcdWriteString(label);
+    if (clear) {
+        // Label
+        glcdSetFont(lt->lblFont);
+        glcdSetFontColor(canvas.pal->fg);
+        glcdSetXY(0, 0);
+        glcdWriteString(label);
+    }
 }
 
 static void drawMenuItem(uint8_t idx, const tFont *fontItem)

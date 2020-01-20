@@ -13,9 +13,8 @@ extern "C" {
 
 typedef struct {
     Glcd *glcd;
-	const Palette *pal;
-	const Layout *layout;
-	TextEdit te;
+    const Palette *pal;
+    const Layout *layout;
 } Canvas;
 
 void canvasInit(void);
