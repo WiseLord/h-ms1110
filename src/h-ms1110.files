@@ -72,6 +72,10 @@ eemul.c
 eemul.h
 gui/canvas.c
 gui/canvas.h
+gui/layout.c
+gui/layout.h
+gui/palette.c
+gui/palette.h
 hwlibs.h
 i2c.c
 i2c.h

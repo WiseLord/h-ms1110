@@ -30,7 +30,6 @@ C_SOURCES += main.c
 C_SOURCES += amp.c
 C_SOURCES += debug.c
 C_SOURCES += eemul.c
-C_SOURCES += gui/canvas.c
 C_SOURCES += i2c.c
 C_SOURCES += input.c
 C_SOURCES += menu.c
@@ -63,6 +62,11 @@ C_SOURCES += display/dispdrv.c
 C_SOURCES += display/glcd.c
 C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
+
+C_SOURCES += gui/canvas.c
+C_SOURCES += gui/layout.c
+C_SOURCES += gui/palette.c
+C_SOURCES += $(wildcard gui/widget/*.c)
 
 # Audio source files
 C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))

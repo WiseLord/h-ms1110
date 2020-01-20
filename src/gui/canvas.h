@@ -8,13 +8,18 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../display/glcd.h"
+#include "layout.h"
+#include "palette.h"
 
 typedef struct {
     Glcd *glcd;
+	const Palette *pal;
+	const Layout *layout;
+	TextEdit te;
 } Canvas;
 
 void canvasInit(void);
+Canvas *canvasGet(void);
 
 void canvasClear(void);
 
