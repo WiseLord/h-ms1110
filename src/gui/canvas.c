@@ -48,8 +48,41 @@ void canvasShowSpectrum(bool clear)
     glcdSetFont(&fontterminus32);
 
     glcdSetXY(0, 0);
-
     glcdWriteString("Spectrum");
+
+    glcdSetFont(&fontterminus16);
+
+    static int16_t adcDataMin[AIN_END];
+    static int16_t adcDataMax[AIN_END];
+
+    InputCtx *inCtx = inputGetCtx();
+
+    for (AnalogInput ain = AIN_POT_A; ain < AIN_END; ain++) {
+        if (inCtx->adcData[ain] < adcDataMin[ain] || adcDataMin[ain] == 0) {
+            adcDataMin[ain] = inCtx->adcData[ain];
+        }
+        if (inCtx->adcData[ain] > adcDataMax[ain] || adcDataMax[ain] == 0) {
+            adcDataMax[ain] = inCtx->adcData[ain];
+        }
+    }
+
+    glcdSetXY(0, 32);
+    glcdWriteString(utilMkStr("%4d %4d", 3844 - inCtx->potData[0], 3844 - inCtx->potData[1]));
+
+    glcdSetXY(0, 48);
+    glcdWriteString(utilMkStr("%4d %4d", 3844 - inCtx->adcData[0], 3844 - inCtx->adcData[1]));
+
+    glcdSetXY(150, 0);
+    glcdWriteString(utilMkStr("%4d %4d %4d", inCtx->adcData[0], inCtx->adcData[1], inCtx->adcData[2]));
+
+    glcdSetXY(150, 16);
+    glcdWriteString(utilMkStr("%4d %4d %4d", adcDataMin[0], adcDataMin[1], adcDataMin[2]));
+
+    glcdSetXY(150, 32);
+    glcdWriteString(utilMkStr("%4d %4d %4d", adcDataMax[0], adcDataMax[1], adcDataMax[2]));
+
+    glcdSetXY(150, 48);
+    glcdWriteString(utilMkStr("%4d %4d %4d", inputGetPot(0), inputGetPot(1), inputGetPot(2)));
 }
 
 void canvasShowTime(bool clear)

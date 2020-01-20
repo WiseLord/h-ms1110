@@ -1,6 +1,7 @@
 #include "screen.h"
 
 #include "gui/canvas.h"
+#include "tr/labels.h"
 #include "settings.h"
 
 static bool scrToClear = false;
@@ -42,7 +43,7 @@ void screenSaveSettings(void)
 
 void screenInit(void)
 {
-//    labelsInit();
+    labelsInit();
     canvasInit();
 
     screenReadSettings();

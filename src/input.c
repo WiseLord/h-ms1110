@@ -15,8 +15,8 @@ static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
 static const uint32_t R_POT     = 100000;       // Pot resistance
 
 // TODO: calibration settings for potentiomenters
-static const int32_t R_POT_TH   = (20 << 3);    // Experimental threshold
-static const int32_t R_POT_MAX  = (((ADC_MAX << 3) * R_POT / (R_POT + R_POT_H)) - R_POT_TH);
+static const int32_t R_POT_TH   = 67;           // Experimental threshold
+static const int32_t R_POT_MAX  = (((ADC_MAX) * R_POT / (R_POT + R_POT_H)) - R_POT_TH);
 
 static const uint32_t R_BTN_H   = 10000;        // Analog buttons pull-up resistor
 static const uint32_t R_BTNS[ABTN_END] = {      // Analog buttons resistance
@@ -52,7 +52,7 @@ static void inputAnalogInit(void)
         LL_ADC_REG_SetSequencerLength(ADC2, LL_ADC_REG_SEQ_SCAN_DISABLE);
 
         for (uint8_t i = 0; i < AIN_END; i++) {
-            LL_ADC_SetChannelSamplingTime(ADC2, analogInputs[i], LL_ADC_SAMPLINGTIME_71CYCLES_5);
+            LL_ADC_SetChannelSamplingTime(ADC2, analogInputs[i], LL_ADC_SAMPLINGTIME_239CYCLES_5);
         }
 
         LL_ADC_Enable(ADC2);
@@ -83,14 +83,17 @@ static void inputAnalogConvert(void)
         const int16_t zoneCnt = grid->max - grid->min + 1;
         int16_t zoneLen = R_POT_MAX / zoneCnt;
 
-        adcData <<= 3;
-
         // Consider "reverted" potentiomener
         adcData = R_POT_MAX - adcData;
 
-        // Filter data to nearest zone value
-        int16_t filterWidth = zoneLen * 3 / 4;
-        ctx.potData[chan] += (adcData - ctx.potData[chan]) / filterWidth * filterWidth;
+        int16_t diff = adcData - ctx.potData[chan];
+
+        if (diff >= 0) {
+            ctx.potData[chan] += ABS(diff) / zoneLen * zoneLen;
+        } else {
+            ctx.potData[chan] -= ABS(diff) / zoneLen * zoneLen;
+        }
+
     } else if (chan == AIN_BTN) {
         ctx.aBtn = ABTN_RELEASED;
         for (AnalogBtn i = 0; i < ABTN_END; i++) {
@@ -242,7 +245,16 @@ int8_t inputGetPot(uint8_t chan)
     const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
     const int16_t zoneCnt = grid->max - grid->min + 1;
 
-    return (int8_t)(ctx.potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
+    int8_t pot = (int8_t)(ctx.potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
+
+    if (pot < grid->min) {
+        pot = grid->min;
+    }
+    if (pot > grid->max) {
+        pot = grid->max;
+    }
+
+    return pot;
 }
 
 int8_t getEncoder(void)

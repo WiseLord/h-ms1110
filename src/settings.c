@@ -46,7 +46,7 @@ static const EE_Map eeMap[] = {
     [PARAM_AUDIO_SUBWOOFER] =   {0x27,  0},
     [PARAM_AUDIO_PREAMP]    =   {0x28,  0},
 
-    [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_AUDIO_INPUT},
+    [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
 
     [PARAM_ALARM_HOUR]      =   {0x60,  7},
     [PARAM_ALARM_MINUTE]    =   {0x61,  30},
