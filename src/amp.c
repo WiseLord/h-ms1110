@@ -326,6 +326,9 @@ static void actionRemapBtnLong(void)
         case SCREEN_STANDBY:
             actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
             break;
+        case SCREEN_MENU:
+            actionSet(ACTION_MENU_SELECT, (int16_t)(menuGetFirstChild()));
+            break;
         default:
             actionSet(ACTION_OPEN_MENU, 0);
             break;
@@ -359,9 +362,9 @@ static void actionRemapEncoder(void)
 //            actionSet(ACTION_RTC_CHANGE, encCnt);
         }
         break;
-//    case SCREEN_MENU:
-//        actionSet(ACTION_MENU_CHANGE, encCnt);
-//        break;
+    case SCREEN_MENU:
+        actionSet(ACTION_MENU_CHANGE, encCnt);
+        break;
 //    case SCREEN_TEXTEDIT:
 //        actionSet(ACTION_TEXTEDIT_CHANGE, encCnt);
 //        break;
@@ -433,6 +436,15 @@ static void actionRemapCommon(void)
          ACTION_REMOTE != action.type &&
          ACTION_INIT_RTC != action.type &&
          ACTION_MENU_SELECT != action.type)) {
+        actionSet(ACTION_NONE, 0);
+    }
+
+    if (SCREEN_MENU == scrMode &&
+        (ACTION_STANDBY != action.type &&
+//         ACTION_NAVIGATE != action.type &&
+         ACTION_MENU_CHANGE != action.type &&
+         ACTION_MENU_SELECT != action.type &&
+         ACTION_ENCODER != action.type)) {
         actionSet(ACTION_NONE, 0);
     }
 }
