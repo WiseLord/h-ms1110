@@ -16,12 +16,12 @@ $EndDescr
 $Comp
 L h-ms1110:TDA7719 U?
 U 1 1 5E221CCA
-P 5700 4550
-F 0 "U?" H 5675 5665 50  0000 C CNN
-F 1 "TDA7719" H 5675 5574 50  0000 C CNN
-F 2 "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm" H 8100 4950 50  0001 C CNN
-F 3 "" H 8100 4950 50  0001 C CNN
-	1    5700 4550
+P 7100 4850
+F 0 "U?" H 7075 5965 50  0000 C CNN
+F 1 "TDA7719" H 7075 5874 50  0000 C CNN
+F 2 "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm" H 9500 5250 50  0001 C CNN
+F 3 "" H 9500 5250 50  0001 C CNN
+	1    7100 4850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -47,20 +47,20 @@ F 3 "~" H 10650 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6600 3950 6950 3950
-Text Label 6950 3950 2    50   ~ 0
+	8000 4250 8350 4250
+Text Label 8100 4250 0    50   ~ 0
 SDA
 Wire Wire Line
-	6600 4050 6950 4050
-Text Label 6950 4050 2    50   ~ 0
+	8000 4350 8350 4350
+Text Label 8100 4350 0    50   ~ 0
 SCL
 Wire Wire Line
 	10450 5150 10250 5150
 Wire Wire Line
 	10450 5250 10250 5250
-Text Label 10250 5150 0    50   ~ 0
+Text Label 10400 5150 2    50   ~ 0
 SDA
-Text Label 10250 5250 0    50   ~ 0
+Text Label 10400 5250 2    50   ~ 0
 SCL
 $Comp
 L power:GNDD #PWR?
@@ -82,18 +82,18 @@ NoConn ~ 10950 5500
 $Comp
 L power:GNDA #PWR?
 U 1 1 5E222B52
-P 6800 5500
-F 0 "#PWR?" H 6800 5250 50  0001 C CNN
-F 1 "GNDA" H 6805 5327 50  0000 C CNN
-F 2 "" H 6800 5500 50  0001 C CNN
-F 3 "" H 6800 5500 50  0001 C CNN
-	1    6800 5500
+P 8200 5800
+F 0 "#PWR?" H 8200 5550 50  0001 C CNN
+F 1 "GNDA" H 8205 5627 50  0000 C CNN
+F 2 "" H 8200 5800 50  0001 C CNN
+F 3 "" H 8200 5800 50  0001 C CNN
+	1    8200 5800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6800 5500 6800 5300
+	8200 5800 8200 5600
 Wire Wire Line
-	6800 5300 6600 5300
+	8200 5600 8000 5600
 $Comp
 L Connector_Generic:Conn_01x05 J?
 U 1 1 5E22EB45
@@ -123,63 +123,52 @@ Wire Wire Line
 	3400 2050 3400 1500
 Wire Wire Line
 	3100 1500 3100 2150
-Text Label 1150 1750 0    50   ~ 0
+Text Label 1200 1750 0    50   ~ 0
 +3.3VA
-Text Label 1150 1850 0    50   ~ 0
+Text Label 1200 1850 0    50   ~ 0
 AD2
-Text Label 1150 1950 0    50   ~ 0
+Text Label 1200 1950 0    50   ~ 0
 AD1
-Text Label 1150 2050 0    50   ~ 0
+Text Label 1200 2050 0    50   ~ 0
 AD3
-Text Label 1150 2150 0    50   ~ 0
+Text Label 1200 2150 0    50   ~ 0
 GNDD
 $Comp
 L Connector_Generic:Conn_01x04 J?
 U 1 1 5E236DDB
-P 950 2700
-F 0 "J?" H 950 2900 50  0000 C CNN
-F 1 "SYNC" V 1050 2650 50  0000 C CNN
-F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 950 2700 50  0001 C CNN
-F 3 "~" H 950 2700 50  0001 C CNN
-	1    950  2700
+P 950 2550
+F 0 "J?" H 950 2750 50  0000 C CNN
+F 1 "SYNC" V 1050 2500 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 950 2550 50  0001 C CNN
+F 3 "~" H 950 2550 50  0001 C CNN
+	1    950  2550
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	1150 2700 3600 2700
+	1150 2550 3600 2550
 Wire Wire Line
-	3600 2700 3600 1500
-Wire Wire Line
-	1150 2800 3700 2800
-Wire Wire Line
-	3700 2800 3700 1500
-Wire Wire Line
-	1650 2900 1150 2900
+	1650 2750 1150 2750
 Wire Wire Line
 	1150 2150 1650 2150
-Wire Wire Line
-	1650 2900 1650 2150
-Connection ~ 1650 2900
 Connection ~ 1650 2150
 Wire Wire Line
 	1650 2150 3100 2150
-Text Label 1150 2800 0    50   ~ 0
+Text Label 1200 2650 0    50   ~ 0
 SYNC_SCK
-Text Label 1150 2700 0    50   ~ 0
+Text Label 1200 2550 0    50   ~ 0
 SYNC_DATA
-Wire Wire Line
-	1650 3000 1650 2900
 $Comp
 L power:GNDD #PWR?
 U 1 1 5E238DAE
-P 1650 3000
-F 0 "#PWR?" H 1650 2750 50  0001 C CNN
-F 1 "GNDD" H 1654 2845 50  0000 C CNN
-F 2 "" H 1650 3000 50  0001 C CNN
-F 3 "" H 1650 3000 50  0001 C CNN
-	1    1650 3000
+P 1650 4200
+F 0 "#PWR?" H 1650 3950 50  0001 C CNN
+F 1 "GNDD" H 1654 4045 50  0000 C CNN
+F 2 "" H 1650 4200 50  0001 C CNN
+F 3 "" H 1650 4200 50  0001 C CNN
+	1    1650 4200
 	1    0    0    -1  
 $EndComp
-Text Label 1150 2900 0    50   ~ 0
+Text Label 1200 2750 0    50   ~ 0
 GNDD
 NoConn ~ 2300 1500
 NoConn ~ 2400 1500
@@ -187,4 +176,275 @@ NoConn ~ 2500 1500
 NoConn ~ 2600 1500
 NoConn ~ 2700 1500
 NoConn ~ 2800 1500
+$Comp
+L Connector_Generic:Conn_01x03 J?
+U 1 1 5E26FD50
+P 950 3150
+F 0 "J?" H 950 3350 50  0000 C CNN
+F 1 "ROT" V 1050 3150 50  0000 C CNN
+F 2 "" H 950 3150 50  0001 C CNN
+F 3 "~" H 950 3150 50  0001 C CNN
+	1    950  3150
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	1150 3050 3000 3050
+Wire Wire Line
+	1150 3250 3200 3250
+Text Label 1200 3050 0    50   ~ 0
+ROT-B
+Text Label 1200 3250 0    50   ~ 0
+ROT-A
+Wire Wire Line
+	1150 3150 1650 3150
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5E277273
+P 950 3650
+F 0 "J?" H 950 3850 50  0000 C CNN
+F 1 "CONTROL" V 1050 3600 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 950 3650 50  0001 C CNN
+F 3 "~" H 950 3650 50  0001 C CNN
+	1    950  3650
+	-1   0    0    -1  
+$EndComp
+Connection ~ 1650 2750
+Wire Wire Line
+	1650 2750 1650 2150
+Wire Wire Line
+	3600 2550 3600 1500
+Wire Wire Line
+	3800 2650 3800 1500
+Wire Wire Line
+	1650 2750 1650 3150
+Connection ~ 1650 3150
+Wire Wire Line
+	3000 3050 3000 1500
+Wire Wire Line
+	3200 3250 3200 1500
+Wire Wire Line
+	1650 3150 1650 3850
+Wire Wire Line
+	1150 3850 1650 3850
+Connection ~ 1650 3850
+Wire Wire Line
+	1650 3850 1650 4200
+Text Label 1200 3550 0    50   ~ 0
+MUTE
+Text Label 1200 3650 0    50   ~ 0
+STBY
+Text Label 1200 3750 0    50   ~ 0
+REMOTE
+Wire Wire Line
+	4400 1500 4400 3550
+Wire Wire Line
+	1150 3550 4400 3550
+Wire Wire Line
+	4200 1500 4200 3650
+Wire Wire Line
+	1150 3650 4200 3650
+Wire Wire Line
+	3500 1500 3500 3750
+Wire Wire Line
+	1150 3750 3500 3750
+$Comp
+L power:GNDA #PWR?
+U 1 1 5E2818B0
+P 5800 2100
+F 0 "#PWR?" H 5800 1850 50  0001 C CNN
+F 1 "GNDA" H 5805 1927 50  0000 C CNN
+F 2 "" H 5800 2100 50  0001 C CNN
+F 3 "" H 5800 2100 50  0001 C CNN
+	1    5800 2100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5800 1500 5800 2100
+$Comp
+L power:GNDA #PWR?
+U 1 1 5E2828C7
+P 5500 2100
+F 0 "#PWR?" H 5500 1850 50  0001 C CNN
+F 1 "GNDA" H 5505 1927 50  0000 C CNN
+F 2 "" H 5500 2100 50  0001 C CNN
+F 3 "" H 5500 2100 50  0001 C CNN
+	1    5500 2100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5500 2100 5500 1500
+$Comp
+L Connector_Generic:Conn_01x03 J?
+U 1 1 5E284892
+P 8700 1700
+F 0 "J?" H 8700 1900 50  0000 C CNN
+F 1 "AUDIO" V 8800 1700 50  0000 C CNN
+F 2 "" H 8700 1700 50  0001 C CNN
+F 3 "~" H 8700 1700 50  0001 C CNN
+	1    8700 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8500 1600 4700 1600
+Wire Wire Line
+	4700 1600 4700 1500
+Wire Wire Line
+	8500 1800 5400 1800
+Wire Wire Line
+	5400 1800 5400 1500
+Text Label 1200 3150 0    50   ~ 0
+GNDD
+Text Label 1200 3850 0    50   ~ 0
+GNDD
+$Comp
+L power:GNDD #PWR?
+U 1 1 5E289601
+P 8200 1900
+F 0 "#PWR?" H 8200 1650 50  0001 C CNN
+F 1 "GNDD" H 8204 1745 50  0000 C CNN
+F 2 "" H 8200 1900 50  0001 C CNN
+F 3 "" H 8200 1900 50  0001 C CNN
+	1    8200 1900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8500 1700 8200 1700
+Wire Wire Line
+	8200 1700 8200 1900
+Text Label 8450 1700 2    50   ~ 0
+GNDD
+Text Label 8450 1600 2    50   ~ 0
+SP_L
+Text Label 8450 1800 2    50   ~ 0
+SP_R
+Wire Wire Line
+	8000 5350 8350 5350
+Wire Wire Line
+	8000 5450 8350 5450
+Text Label 8100 5350 0    50   ~ 0
+SP_L
+Text Label 8100 5450 0    50   ~ 0
+SP_R
+Wire Wire Line
+	8000 4900 8350 4900
+Wire Wire Line
+	8000 5200 8350 5200
+Text Label 8100 4900 0    50   ~ 0
+OUT_L
+Text Label 8100 5200 0    50   ~ 0
+OUT_R
+Wire Wire Line
+	4900 1500 4900 2100
+Wire Wire Line
+	5000 1500 5000 2100
+Text Label 4900 1700 3    50   ~ 0
+OUT_L
+Text Label 5000 1700 3    50   ~ 0
+OUT_R
+$Comp
+L Regulator_Linear:L78L12_TO92 U?
+U 1 1 5E293B44
+P 5700 2900
+F 0 "U?" H 5700 3142 50  0000 C CNN
+F 1 "L78L12_TO92" H 5700 3051 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-92_Inline" H 5700 3125 50  0001 C CIN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/15/55/e5/aa/23/5b/43/fd/CD00000446.pdf/files/CD00000446.pdf/jcr:content/translations/en.CD00000446.pdf" H 5700 2850 50  0001 C CNN
+	1    5700 2900
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 1500 5200 2900
+Wire Wire Line
+	5200 2900 5400 2900
+Wire Wire Line
+	8750 2900 6000 2900
+$Comp
+L power:GNDA #PWR?
+U 1 1 5E297AC6
+P 5700 3350
+F 0 "#PWR?" H 5700 3100 50  0001 C CNN
+F 1 "GNDA" H 5705 3177 50  0000 C CNN
+F 2 "" H 5700 3350 50  0001 C CNN
+F 3 "" H 5700 3350 50  0001 C CNN
+	1    5700 3350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5700 3350 5700 3200
+Wire Wire Line
+	8000 4500 8750 4500
+Wire Wire Line
+	8750 2900 8750 4500
+Wire Wire Line
+	1150 2650 3800 2650
+Wire Wire Line
+	3700 1500 3700 4200
+Wire Wire Line
+	3900 1500 3900 4200
+$Comp
+L Connector_Generic:Conn_01x04 J?
+U 1 1 5E2A2176
+P 5500 4750
+F 0 "J?" H 5500 4950 50  0000 C CNN
+F 1 "FP_POWER" V 5600 4700 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical" H 5500 4750 50  0001 C CNN
+F 3 "~" H 5500 4750 50  0001 C CNN
+	1    5500 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR?
+U 1 1 5E2A286B
+P 5200 4550
+F 0 "#PWR?" H 5200 4400 50  0001 C CNN
+F 1 "+5V" H 5215 4723 50  0000 C CNN
+F 2 "" H 5200 4550 50  0001 C CNN
+F 3 "" H 5200 4550 50  0001 C CNN
+	1    5200 4550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 4650 5200 4650
+Wire Wire Line
+	5200 4650 5200 4550
+Wire Wire Line
+	5300 4750 5200 4750
+Wire Wire Line
+	5200 4750 5200 4650
+Connection ~ 5200 4650
+$Comp
+L power:GNDD #PWR?
+U 1 1 5E2A577C
+P 5200 5050
+F 0 "#PWR?" H 5200 4800 50  0001 C CNN
+F 1 "GNDD" H 5204 4895 50  0000 C CNN
+F 2 "" H 5200 5050 50  0001 C CNN
+F 3 "" H 5200 5050 50  0001 C CNN
+	1    5200 5050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5300 4950 5200 4950
+Wire Wire Line
+	5200 4950 5200 5050
+Wire Wire Line
+	5300 4850 5200 4850
+Wire Wire Line
+	5200 4850 5200 4950
+Connection ~ 5200 4950
+Wire Wire Line
+	5200 4650 4850 4650
+Wire Wire Line
+	5200 4950 4850 4950
+$Comp
+L Regulator_Linear:LM7805_TO220 U?
+U 1 1 5E2ABDFC
+P 4300 4650
+F 0 "U?" H 4300 4892 50  0000 C CNN
+F 1 "LM7805_TO220" H 4300 4801 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Vertical" H 4300 4875 50  0001 C CIN
+F 3 "http://www.fairchildsemi.com/ds/LM/LM7805.pdf" H 4300 4600 50  0001 C CNN
+	1    4300 4650
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

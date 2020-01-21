@@ -60,26 +60,9 @@ F 3 "~" H 6000 1200 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6600 1850 6600 1750
-$Comp
-L Device:R_POT RV1
-U 1 1 5DFBA495
-P 6600 1600
-F 0 "RV1" H 6530 1646 50  0000 R CNN
-F 1 "22k" H 6530 1555 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 1600 50  0001 C CNN
-F 3 "~" H 6600 1600 50  0001 C CNN
-	1    6600 1600
-	-1   0    0    -1  
-$EndComp
-Text Label 7300 1000 2    50   ~ 0
-IN_R
 Wire Wire Line
 	5100 2500 4800 2500
 Connection ~ 5100 2500
-Text Label 4800 2500 0    50   ~ 0
-SP_L
-Text Label 4800 1500 0    50   ~ 0
-SP_R
 Wire Wire Line
 	5100 2800 5100 2500
 Wire Wire Line
@@ -89,30 +72,8 @@ Wire Wire Line
 	5800 2800 5800 2600
 Wire Wire Line
 	5500 2800 5800 2800
-$Comp
-L Device:R R13
-U 1 1 5DFBA483
-P 5350 2800
-F 0 "R13" H 5420 2846 50  0000 L CNN
-F 1 "220k" H 5420 2755 50  0000 L CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 5280 2800 50  0001 C CNN
-F 3 "~" H 5350 2800 50  0001 C CNN
-	1    5350 2800
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	5700 2600 5800 2600
-$Comp
-L Device:R R17
-U 1 1 5DFBA475
-P 6200 2600
-F 0 "R17" H 6250 2650 50  0000 L CNN
-F 1 "22k" H 6250 2550 50  0000 L CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 6130 2600 50  0001 C CNN
-F 3 "~" H 6200 2600 50  0001 C CNN
-	1    6200 2600
-	0    1    -1   0   
-$EndComp
 Wire Wire Line
 	5050 1500 5100 1500
 Wire Wire Line
@@ -126,43 +87,10 @@ Wire Wire Line
 	5750 1850 5750 1600
 Wire Wire Line
 	5450 1850 5750 1850
-$Comp
-L Device:R R12
-U 1 1 5DFBA468
-P 5300 1850
-F 0 "R12" H 5370 1896 50  0000 L CNN
-F 1 "220k" H 5370 1805 50  0000 L CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 5230 1850 50  0001 C CNN
-F 3 "~" H 5300 1850 50  0001 C CNN
-	1    5300 1850
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	6000 2000 6000 1950
-$Comp
-L Device:C C8
-U 1 1 5DFBA45B
-P 6950 1000
-F 0 "C8" H 6835 954 50  0000 R CNN
-F 1 "2.2" H 6835 1045 50  0000 R CNN
-F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 850 50  0001 C CNN
-F 3 "~" H 6950 1000 50  0001 C CNN
-	1    6950 1000
-	0    -1   1    0   
-$EndComp
 Wire Wire Line
 	5700 1600 5750 1600
-$Comp
-L Device:R R16
-U 1 1 5DFBA454
-P 6200 1600
-F 0 "R16" H 6250 1650 50  0000 L CNN
-F 1 "22k" H 6250 1550 50  0000 L CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 6130 1600 50  0001 C CNN
-F 3 "~" H 6200 1600 50  0001 C CNN
-	1    6200 1600
-	0    1    -1   0   
-$EndComp
 Wire Wire Line
 	5700 1400 5850 1400
 $Comp
@@ -176,54 +104,8 @@ F 3 "~" H 6000 1800 50  0001 C CNN
 	1    6000 1800
 	1    0    0    -1  
 $EndComp
-$Comp
-L Amplifier_Operational:MCP602 U2
-U 2 1 5DFBA447
-P 5400 2500
-F 0 "U2" H 5550 2750 50  0000 C CNN
-F 1 "MCP602" H 5550 2650 50  0000 C CNN
-F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 5400 2500 50  0001 C CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 2500 50  0001 C CNN
-	2    5400 2500
-	-1   0    0    -1  
-$EndComp
-$Comp
-L Amplifier_Operational:MCP602 U2
-U 1 1 5DFBA441
-P 5400 1500
-F 0 "U2" H 5550 1750 50  0000 C CNN
-F 1 "MCP602" H 5550 1650 50  0000 C CNN
-F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 5400 1500 50  0001 C CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 1500 50  0001 C CNN
-	1    5400 1500
-	-1   0    0    -1  
-$EndComp
 Wire Wire Line
 	5800 2600 6050 2600
-$Comp
-L Device:C C9
-U 1 1 5DFBA47C
-P 6950 2350
-F 0 "C9" H 6835 2304 50  0000 R CNN
-F 1 "2.2" H 6835 2395 50  0000 R CNN
-F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 2200 50  0001 C CNN
-F 3 "~" H 6950 2350 50  0001 C CNN
-	1    6950 2350
-	0    -1   1    0   
-$EndComp
-Text Label 7300 2350 2    50   ~ 0
-IN_L
-$Comp
-L Device:R_POT RV2
-U 1 1 5DFBA4A4
-P 6600 2600
-F 0 "RV2" H 6530 2646 50  0000 R CNN
-F 1 "22k" H 6530 2555 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 2600 50  0001 C CNN
-F 3 "~" H 6600 2600 50  0001 C CNN
-	1    6600 2600
-	-1   0    0    -1  
-$EndComp
 Wire Wire Line
 	6600 2850 6600 2750
 Wire Wire Line
@@ -2876,6 +2758,17 @@ F 3 "" H 10600 5850 50  0001 C CNN
 	1    10600 5850
 	-1   0    0    -1  
 $EndComp
+$Comp
+L MCU_ST_STM32F1:STM32F103CBTx U1
+U 1 1 5DEDB09C
+P 3600 5400
+F 0 "U1" H 3050 6850 50  0000 C CNN
+F 1 "STM32F103CBTx" H 3600 5400 50  0000 C CNN
+F 2 "Package_QFP:LQFP-48_7x7mm_P0.5mm" H 3000 4000 50  0001 R CNN
+F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00058181.pdf" H 3600 5400 50  0001 C CNN
+	1    3600 5400
+	1    0    0    -1  
+$EndComp
 Wire Bus Line
 	7600 3450 9300 3450
 Wire Bus Line
@@ -2894,15 +2787,122 @@ Wire Bus Line
 	4700 3450 4700 7400
 Wire Bus Line
 	2350 3450 2350 7400
+Text Label 4800 1500 0    50   ~ 0
+SP_R
+Text Label 4800 2500 0    50   ~ 0
+SP_L
 $Comp
-L MCU_ST_STM32F1:STM32F103CBTx U1
-U 1 1 5DEDB09C
-P 3600 5400
-F 0 "U1" H 3050 6850 50  0000 C CNN
-F 1 "STM32F103CBTx" H 3600 5400 50  0000 C CNN
-F 2 "Package_QFP:LQFP-48_7x7mm_P0.5mm" H 3000 4000 50  0001 R CNN
-F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/datasheet/DM00058181.pdf" H 3600 5400 50  0001 C CNN
-	1    3600 5400
-	1    0    0    -1  
+L Device:R R13
+U 1 1 5DFBA483
+P 5350 2800
+F 0 "R13" H 5420 2846 50  0000 L CNN
+F 1 "220k" H 5420 2755 50  0000 L CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 5280 2800 50  0001 C CNN
+F 3 "~" H 5350 2800 50  0001 C CNN
+	1    5350 2800
+	0    1    1    0   
 $EndComp
+$Comp
+L Amplifier_Operational:MCP602 U2
+U 2 1 5DFBA447
+P 5400 2500
+F 0 "U2" H 5550 2750 50  0000 C CNN
+F 1 "MCP602" H 5550 2650 50  0000 C CNN
+F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 5400 2500 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 2500 50  0001 C CNN
+	2    5400 2500
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:R R17
+U 1 1 5DFBA475
+P 6200 2600
+F 0 "R17" H 6250 2650 50  0000 L CNN
+F 1 "22k" H 6250 2550 50  0000 L CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 6130 2600 50  0001 C CNN
+F 3 "~" H 6200 2600 50  0001 C CNN
+	1    6200 2600
+	0    1    -1   0   
+$EndComp
+$Comp
+L Device:R_POT RV2
+U 1 1 5DFBA4A4
+P 6600 2600
+F 0 "RV2" H 6530 2646 50  0000 R CNN
+F 1 "22k" H 6530 2555 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 2600 50  0001 C CNN
+F 3 "~" H 6600 2600 50  0001 C CNN
+	1    6600 2600
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:C C9
+U 1 1 5DFBA47C
+P 6950 2350
+F 0 "C9" H 6835 2304 50  0000 R CNN
+F 1 "2.2" H 6835 2395 50  0000 R CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 2200 50  0001 C CNN
+F 3 "~" H 6950 2350 50  0001 C CNN
+	1    6950 2350
+	0    -1   1    0   
+$EndComp
+$Comp
+L Device:C C8
+U 1 1 5DFBA45B
+P 6950 1000
+F 0 "C8" H 6835 954 50  0000 R CNN
+F 1 "2.2" H 6835 1045 50  0000 R CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 850 50  0001 C CNN
+F 3 "~" H 6950 1000 50  0001 C CNN
+	1    6950 1000
+	0    -1   1    0   
+$EndComp
+$Comp
+L Device:R_POT RV1
+U 1 1 5DFBA495
+P 6600 1600
+F 0 "RV1" H 6530 1646 50  0000 R CNN
+F 1 "22k" H 6530 1555 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 1600 50  0001 C CNN
+F 3 "~" H 6600 1600 50  0001 C CNN
+	1    6600 1600
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Device:R R12
+U 1 1 5DFBA468
+P 5300 1850
+F 0 "R12" H 5370 1896 50  0000 L CNN
+F 1 "220k" H 5370 1805 50  0000 L CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 5230 1850 50  0001 C CNN
+F 3 "~" H 5300 1850 50  0001 C CNN
+	1    5300 1850
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R16
+U 1 1 5DFBA454
+P 6200 1600
+F 0 "R16" H 6250 1650 50  0000 L CNN
+F 1 "22k" H 6250 1550 50  0000 L CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 6130 1600 50  0001 C CNN
+F 3 "~" H 6200 1600 50  0001 C CNN
+	1    6200 1600
+	0    1    -1   0   
+$EndComp
+$Comp
+L Amplifier_Operational:MCP602 U2
+U 1 1 5DFBA441
+P 5400 1500
+F 0 "U2" H 5550 1750 50  0000 C CNN
+F 1 "MCP602" H 5550 1650 50  0000 C CNN
+F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 5400 1500 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 1500 50  0001 C CNN
+	1    5400 1500
+	-1   0    0    -1  
+$EndComp
+Text Label 7300 2350 2    50   ~ 0
+IN_L
+Text Label 7300 1000 2    50   ~ 0
+IN_R
 $EndSCHEMATC
