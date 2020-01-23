@@ -7,6 +7,7 @@
 #include "input.h"
 #include "menu.h"
 #include "pins.h"
+#include "rc.h"
 #include "rtc.h"
 #include "settings.h"
 #include "swtimers.h"
@@ -244,9 +245,71 @@ static void actionGetEncoder(void)
     }
 }
 
+static bool isRemoteCmdRepeatable(RcCmd cmd)
+{
+    ScrMode scrMode = screenGet()->mode;
+    AudioProc *aProc = audioGet();
+    InputType inType = aProc->par.inType[aProc->par.input];
+
+    switch (cmd) {
+    case RC_CMD_VOL_UP:
+    case RC_CMD_VOL_DOWN:
+        return true;
+    case RC_CMD_NAV_UP:
+    case RC_CMD_NAV_DOWN:
+        switch (scrMode) {
+        case SCREEN_AUDIO_PARAM:
+            return true;
+        }
+        break;
+    case RC_CMD_NAV_LEFT:
+    case RC_CMD_NAV_RIGHT:
+        switch (scrMode) {
+        case SCREEN_AUDIO_INPUT:
+            if (inType == IN_TUNER) {
+                return true;
+            }
+        }
+        break;
+    }
+
+    return false;
+}
+
 static void actionGetRemote(void)
 {
+    RcData rcData = rcRead(true);
+    static RcCmd cmdPrev = RC_CMD_END;
 
+    if (rcData.ready) {
+        swTimSet(SW_TIM_RC_NOACION, 200);
+
+        RcCmd cmd = rcGetCmd(&rcData);
+        int32_t repTime = swTimGet(SW_TIM_RC_REPEAT);
+
+        if (cmd != cmdPrev) {
+            actionSet(ACTION_REMOTE, (int16_t)cmd);
+            swTimSet(SW_TIM_RC_REPEAT, 1000);
+            cmdPrev = cmd;
+        } else {
+            if (isRemoteCmdRepeatable(cmd)) {
+                if (repTime < 500) {
+                    actionSet(ACTION_REMOTE, (int16_t)cmd);
+                }
+            } else {
+                if (repTime == 0) {
+                    actionSet(ACTION_REMOTE, (int16_t)cmd);
+                    swTimSet(SW_TIM_RC_REPEAT, 1000);
+                }
+            }
+        }
+    } else {
+        if (swTimGet(SW_TIM_RC_NOACION) == 0) {
+            swTimSet(SW_TIM_RC_NOACION, SW_TIM_OFF);
+            swTimSet(SW_TIM_RC_REPEAT, 0);
+            cmdPrev = RC_CMD_END;
+        }
+    }
 }
 
 static void actionGetPots(void)
@@ -341,7 +404,171 @@ static void actionRemapBtnLong(void)
 
 static void actionRemapRemote(void)
 {
+    Screen *screen = screenGet();
+    ScrMode scrMode = screen->mode;
 
+    AudioProc *aProc = audioGet();
+
+    if (scrMode == SCREEN_MENU) {
+        Menu *menu = menuGet();
+        if ((menu->parent == MENU_SETUP_RC) && (menu->selected)) {
+            actionSet(ACTION_MENU_CHANGE, 0);
+            return;
+        }
+    }
+
+    if (SCREEN_STANDBY == scrMode &&
+        action.value == RC_CMD_MENU) {
+        actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
+        return;
+    }
+
+    if (SCREEN_STANDBY == scrMode &&
+        action.value != RC_CMD_STBY_SWITCH)
+        return;
+
+    switch (action.value) {
+    case RC_CMD_STBY_SWITCH:
+        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        break;
+
+    case RC_CMD_MUTE:
+        actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
+        break;
+    case RC_CMD_VOL_UP:
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    case RC_CMD_VOL_DOWN:
+        actionSet(ACTION_ENCODER, -1);
+        break;
+
+    case RC_CMD_MENU:
+        action.type = ACTION_OPEN_MENU;
+        break;
+
+//    case RC_CMD_CHAN_NEXT:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_NEXT_TRACK);
+//        break;
+//    case RC_CMD_CHAN_PREV:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PREV_TRACK);
+//        break;
+
+//    case RC_CMD_DIG_0:
+//    case RC_CMD_DIG_1:
+//    case RC_CMD_DIG_2:
+//    case RC_CMD_DIG_3:
+//    case RC_CMD_DIG_4:
+//    case RC_CMD_DIG_5:
+//    case RC_CMD_DIG_6:
+//    case RC_CMD_DIG_7:
+//    case RC_CMD_DIG_8:
+//    case RC_CMD_DIG_9:
+//        actionSet(ACTION_DIGIT, action.value - RC_CMD_DIG_0);
+//        break;
+
+    case RC_CMD_IN_NEXT:
+        actionSet(ACTION_AUDIO_INPUT, +1);
+        break;
+
+//    case RC_CMD_NAV_OK:
+//    case RC_CMD_NAV_BACK:
+//    case RC_CMD_NAV_RIGHT:
+//    case RC_CMD_NAV_UP:
+//    case RC_CMD_NAV_LEFT:
+//    case RC_CMD_NAV_DOWN:
+//        actionSet(ACTION_NAVIGATE, action.value);
+//        break;
+
+    case RC_CMD_BASS_UP:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_BASS) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_BASS;
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    case RC_CMD_BASS_DOWN:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_BASS) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_BASS;
+        actionSet(ACTION_ENCODER, -1);
+        break;
+    case RC_CMD_MIDDLE_UP:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_MIDDLE) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_MIDDLE;
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    case RC_CMD_MIDDLE_DOWN:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_MIDDLE) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_MIDDLE;
+        actionSet(ACTION_ENCODER, -1);
+        break;
+    case RC_CMD_TREBLE_UP:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_TREBLE) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_TREBLE;
+        actionSet(ACTION_ENCODER, +1);
+        break;
+    case RC_CMD_TREBLE_DOWN:
+        screenSetMode(SCREEN_AUDIO_PARAM);
+        if (aProc->tune != AUDIO_TUNE_TREBLE) {
+            screenToClear();
+        }
+        aProc->tune = AUDIO_TUNE_TREBLE;
+        actionSet(ACTION_ENCODER, -1);
+        break;
+
+    case RC_CMD_LOUDNESS:
+        actionSet(ACTION_AUDIO_LOUDNESS, FLAG_SWITCH);
+        break;
+//    case RC_CMD_SURROUND:
+//        actionSet(ACTION_AUDIO_SURROUND, FLAG_SWITCH);
+//        break;
+//    case RC_CMD_EFFECT_3D:
+//        actionSet(ACTION_AUDIO_EFFECT3D, FLAG_SWITCH);
+//        break;
+    case RC_CMD_TONE_BYPASS:
+        actionSet(ACTION_AUDIO_BYPASS, FLAG_SWITCH);
+        break;
+
+//    case RC_CMD_TIME:
+//        actionSet(ACTION_RTC_MODE, 0);
+//        break;
+
+//    case RC_CMD_STOP:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_STOP);
+//        break;
+//    case RC_CMD_PLAY_PAUSE:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PLAY);
+//        break;
+//    case RC_CMD_REW:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_REWIND);
+//        break;
+//    case RC_CMD_FWD:
+//        actionSet(ACTION_MEDIA, HIDMEDIAKEY_FFWD);
+//        break;
+//    case RC_CMD_TIMER:
+//        actionSet(ACTION_TIMER, 0);
+//        break;
+//    case RC_CMD_SP_MODE:
+//        actionSet(ACTION_SP_MODE, 0);
+//        break;
+//    case RC_CMD_SCR_DEF:
+//        actionSet(ACTION_SCR_DEF, 0);
+//        break;
+    default:
+        break;
+    }
 }
 
 static void actionRemapEncoder(void)

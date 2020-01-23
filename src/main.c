@@ -3,6 +3,7 @@
 #include "hwlibs.h"
 #include "input.h"
 #include "pins.h"
+#include "rc.h"
 #include "rtc.h"
 #include "settings.h"
 #include "screen.h"
@@ -123,7 +124,7 @@ int main(void)
     //spInit();
 
     inputInit();
-    //rcInit();
+    rcInit();
 
     ampInit();
 

@@ -44,6 +44,13 @@ extern "C" {
 #define ENCODER_A_Pin           LL_GPIO_PIN_11
 #define ENCODER_B_Pin           LL_GPIO_PIN_12
 
+// Remote control pins
+#define RC_Port                 GPIOA
+#define RC_Pin                  LL_GPIO_PIN_8
+#define RC_ExtiLine             LL_EXTI_LINE_8
+#define RC_AR_ExtiPort          LL_GPIO_AF_EXTI_PORTA
+#define RC_AR_ExtiLine          LL_GPIO_AF_EXTI_LINE8
+
 void pinsInit(void);
 
 #ifdef __cplusplus

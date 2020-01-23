@@ -7,7 +7,7 @@
 #include "gui/canvas.h"
 //#include "i2cexp.h"
 #include "input.h"
-//#include "rc.h"
+#include "rc.h"
 #include "screen.h"
 #include "settings.h"
 //#include "spectrum.h"
@@ -37,7 +37,7 @@ static const MenuItem menuItems[MENU_END] = {
 //    [MENU_SETUP_SPECTRUM]   = {MENU_SETUP,              MENU_TYPE_PARENT,   PARAM_NULL},
     [MENU_SETUP_DISPLAY]    = {MENU_SETUP,              MENU_TYPE_PARENT,   PARAM_NULL},
     [MENU_SETUP_ALARM]      = {MENU_SETUP,              MENU_TYPE_PARENT,   PARAM_NULL},
-//    [MENU_SETUP_RC]         = {MENU_SETUP,              MENU_TYPE_PARENT,   PARAM_NULL},
+    [MENU_SETUP_RC]         = {MENU_SETUP,              MENU_TYPE_PARENT,   PARAM_NULL},
 
     [MENU_SYSTEM_LANG]      = {MENU_SETUP_SYSTEM,       MENU_TYPE_ENUM,     PARAM_SYSTEM_LANG},
 //    [MENU_SYSTEM_MUTESTBY]  = {MENU_SETUP_SYSTEM,       MENU_TYPE_ENUM,     PARAM_SYSTEM_MUTESTBY},
@@ -82,7 +82,7 @@ static const MenuItem menuItems[MENU_END] = {
     [MENU_DISPLAY_DEF]      = {MENU_SETUP_DISPLAY,      MENU_TYPE_ENUM,     PARAM_DISPLAY_DEF},
 //    [MENU_DISPLAY_PALETTE]  = {MENU_SETUP_DISPLAY,      MENU_TYPE_ENUM,     PARAM_DISPLAY_PALETTE},
 
-//    FOREACH_CMD(GENERATE_MENU_ITEM)
+    FOREACH_CMD(GENERATE_MENU_ITEM)
 };
 
 static void menuMove(int8_t diff)
@@ -157,10 +157,10 @@ static void menuValueChange(int8_t diff)
     }
 
     if (menuItems[menu.active].type == MENU_TYPE_RC) {
-//        RcData rcData = rcRead(false);
+        RcData rcData = rcRead(false);
 
-//        menu.value = (int16_t)(((rcData.addr & 0xFF) << 8) | rcData.cmd);
-//        return;
+        menu.value = (int16_t)(((rcData.addr & 0xFF) << 8) | rcData.cmd);
+        return;
     }
 
     menu.value += diff;
@@ -505,10 +505,10 @@ const char *menuGetName(MenuIdx index)
         name = utilMkStr("%s %d",
                          labelsGet((Label)(LABEL_MENU + MENU_AUDIO_IN)),
                          index - MENU_AUDIO_IN);
-//    } else if (index >= MENU_RC_DIG_0 && index <= MENU_RC_DIG_9) {
-//        name = utilMkStr("%s %d",
-//                         labelsGet((Label)(LABEL_MENU + MENU_RC_DIG)),
-//                         index - MENU_RC_DIG);
+    } else if (index >= MENU_RC_DIG_0 && index <= MENU_RC_DIG_9) {
+        name = utilMkStr("%s %d",
+                         labelsGet((Label)(LABEL_MENU + MENU_RC_DIG)),
+                         index - MENU_RC_DIG);
     } else {
         name = utilMkStr("%s",
                          labelsGet((Label)(LABEL_MENU + (index - MENU_NULL))));

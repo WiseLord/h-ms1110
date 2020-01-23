@@ -1,12 +1,16 @@
 #include "settings.h"
 
 #include "audio/audio.h"
+#include "cmd.h"
 #include "eemul.h"
+#include "rc.h"
 #include "rtc.h"
 #include "tr/labels.h"
 
 static uint8_t silenceTimer = 0;
 static int16_t rtcCorr = 0;
+
+#define GENERATE_EE_RC_MAP(CMD)  [PARAM_RC_ ## CMD] = {0x80 + RC_CMD_ ## CMD, (int16_t)EE_NOT_FOUND},
 
 static const EE_Map eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
@@ -56,6 +60,8 @@ static const EE_Map eeMap[] = {
     [PARAM_SYSTEM_SIL_TIM]  =   {0x72,  5},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
     [PARAM_SYSTEM_ENC_RES]  =   {0x74,  2},
+
+    FOREACH_CMD(GENERATE_EE_RC_MAP)
 };
 
 void settingsInit(void)
@@ -104,6 +110,10 @@ int16_t settingsGet(Param param)
         break;
     }
 
+    if (param >= PARAM_RC_STBY_SWITCH && param < PARAM_RC_STBY_SWITCH + RC_CMD_END) {
+        ret = (int16_t)rcGetCode(param - PARAM_RC_STBY_SWITCH);
+    }
+
     return  ret;
 }
 
@@ -131,6 +141,10 @@ void settingsSet(Param param, int16_t value)
 
     default:
         break;
+    }
+
+    if (param >= PARAM_RC_STBY_SWITCH && param < PARAM_RC_STBY_SWITCH + RC_CMD_END) {
+        rcSaveCode((uint16_t)(param - PARAM_RC_STBY_SWITCH), (uint16_t)value);
     }
 }
 
