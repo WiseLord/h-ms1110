@@ -4,14 +4,14 @@ static PalIdx palIdx = PAL_DEFAULT;
 
 static const Palette palette[PAL_END] = {
     [PAL_DEFAULT] = {
-        .fg = LCD_COLOR_WHITE,
-        .bg = LCD_COLOR_BLACK,
-        .active = LCD_COLOR_WHITE,
-        .inactive = RGB_CONV(0x222222),
-        .selected =  RGB_CONV(0x444444),
-        .spColB = LCD_COLOR_WHITE,
-        .spColG = LCD_COLOR_WHITE,
-        .spPeak = LCD_COLOR_WHITE,
+        .fg = COLOR_WHITE,
+        .bg = COLOR_BLACK,
+        .active = COLOR_WHITE,
+        .inactive = COLOR_GRAY16(2),
+        .selected =  COLOR_GRAY16(4),
+        .spColB = COLOR_WHITE,
+        .spColG = COLOR_WHITE,
+        .spPeak = COLOR_WHITE,
     },
 };
 

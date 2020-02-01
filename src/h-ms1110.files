@@ -16,6 +16,7 @@ audio/tda7719.h
 cmd.h
 debug.c
 debug.h
+display/colors.h
 display/dispdrv.c
 display/dispdrv.h
 display/fonts/font-terminus-12.c

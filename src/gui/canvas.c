@@ -34,11 +34,11 @@ void canvasClear(void)
 {
     GlcdRect rect = canvas.glcd->rect;
 
-    glcdDrawRect(0, 0, rect.w, rect.h, LCD_COLOR_BLACK);
+    glcdDrawRect(0, 0, rect.w, rect.h, COLOR_BLACK);
     glcdShift(0);
 
-    glcdSetFontColor(LCD_COLOR_WHITE);
-    glcdSetFontBgColor(LCD_COLOR_BLACK);
+    glcdSetFontColor(COLOR_WHITE);
+    glcdSetFontBgColor(COLOR_BLACK);
 }
 
 void canvasShowSpectrum(bool clear)
@@ -115,8 +115,8 @@ void canvasShowStandby(bool clear)
         int16_t xb = 0;
         int16_t yb = 16 * i;
 
-        glcdDrawRect(xb, yb, len, 12, LCD_COLOR_WHITE);
-        glcdDrawRect(xb + len, yb, sw - len, 12, LCD_COLOR_GRAY);
+        glcdDrawRect(xb, yb, len, 12, COLOR_WHITE);
+        glcdDrawRect(xb + len, yb, sw - len, 12, COLOR_GRAY);
         glcdSetXY(xb + sw + 2, yb);
         glcdWriteString(utilMkStr("%2d.%4d", pot, inCtx->potData[i]));
         for (int16_t j = 1; j < zoneCnt; j++) {
@@ -127,7 +127,7 @@ void canvasShowStandby(bool clear)
     AnalogBtn aBtn = inputGetCtx()->aBtn;
 
     for (AnalogBtn i = 0; i < ABTN_END; i++) {
-        glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? LCD_COLOR_WHITE : LCD_COLOR_GRAY);
+        glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? COLOR_WHITE : COLOR_GRAY);
     }
 }
 
