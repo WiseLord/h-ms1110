@@ -100,13 +100,6 @@ static void sysInit(void)
     LL_RCC_SetUSARTClockSource(LL_RCC_USART3_CLKSOURCE_SYSCLK);
     LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_SYSCLK);
 #endif
-
-#ifdef STM32F1
-    // JTAG-DP Disabled and SW-DP Enabled
-//    LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    // JTAG-DP Disabled and SW-DP Disabled
-    LL_GPIO_AF_DisableRemap_SWJ();
-#endif
 }
 
 int main(void)
