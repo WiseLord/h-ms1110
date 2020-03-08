@@ -103,7 +103,9 @@ static void sysInit(void)
 
 #ifdef STM32F1
     // JTAG-DP Disabled and SW-DP Enabled
-    LL_GPIO_AF_Remap_SWJ_NOJTAG();
+//    LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    // JTAG-DP Disabled and SW-DP Disabled
+    LL_GPIO_AF_DisableRemap_SWJ();
 #endif
 }
 

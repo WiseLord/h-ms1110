@@ -30,6 +30,7 @@ extern "C" {
 #define MUTE_Port               GPIOB
 #define MUTE_Pin                LL_GPIO_PIN_1
 
+// Input
 #define AIN_BTN_Port            GPIOA
 #define AIN_BTN_Pin             LL_GPIO_PIN_4
 #define AIN_BTN_ADC_Channel     LL_ADC_CHANNEL_4
@@ -43,6 +44,22 @@ extern "C" {
 #define ENCODER_Port            GPIOA
 #define ENCODER_A_Pin           LL_GPIO_PIN_11
 #define ENCODER_B_Pin           LL_GPIO_PIN_12
+
+#define MATRIX_S1_Port          GPIOA
+#define MATRIX_S1_Pin           LL_GPIO_PIN_13
+#define MATRIX_S2_Port          GPIOA
+#define MATRIX_S2_Pin           LL_GPIO_PIN_14
+#define MATRIX_S3_Port          GPIOB
+#define MATRIX_S3_Pin           LL_GPIO_PIN_3
+
+#define MATRIX_K1_Port          GPIOB
+#define MATRIX_K1_Pin           LL_GPIO_PIN_4
+#define MATRIX_K2_Port          GPIOB
+#define MATRIX_K2_Pin           LL_GPIO_PIN_5
+#define MATRIX_K3_Port          GPIOB
+#define MATRIX_K3_Pin           LL_GPIO_PIN_6
+#define MATRIX_K4_Port          GPIOB
+#define MATRIX_K4_Pin           LL_GPIO_PIN_7
 
 // Remote control pins
 #define RC_Port                 GPIOA

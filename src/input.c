@@ -36,6 +36,37 @@ static InputCtx ctx;
 static volatile int8_t encCnt;
 static volatile CmdBtn cmdBuf;
 
+static void inputMatrixInit(void)
+{
+    LL_GPIO_InitTypeDef initDef;
+
+    initDef.Mode = LL_GPIO_MODE_OUTPUT;
+    initDef.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    initDef.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+
+    initDef.Pin = MATRIX_S1_Pin;
+    LL_GPIO_Init(MATRIX_S1_Port, &initDef);
+    initDef.Pin = MATRIX_S2_Pin;
+    LL_GPIO_Init(MATRIX_S2_Port, &initDef);
+    initDef.Pin = MATRIX_S3_Pin;
+    LL_GPIO_Init(MATRIX_S3_Port, &initDef);
+
+    initDef.Mode = LL_GPIO_MODE_FLOATING;
+
+    initDef.Pin = MATRIX_K1_Pin;
+    LL_GPIO_Init(MATRIX_K1_Port, &initDef);
+    initDef.Pin = MATRIX_K2_Pin;
+    LL_GPIO_Init(MATRIX_K2_Port, &initDef);
+    initDef.Pin = MATRIX_K3_Pin;
+    LL_GPIO_Init(MATRIX_K3_Port, &initDef);
+    initDef.Pin = MATRIX_K4_Pin;
+    LL_GPIO_Init(MATRIX_K4_Port, &initDef);
+
+    CLR(MATRIX_S1);
+    CLR(MATRIX_S2);
+    CLR(MATRIX_S3);
+}
+
 static void inputAnalogInit(void)
 {
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
@@ -68,6 +99,51 @@ static void inputAnalogInit(void)
 
     ctx.potData[AIN_POT_A] = zoneLen / 2;
     ctx.potData[AIN_POT_B] = zoneLen / 2;
+}
+
+static void inputMatrixRead(void)
+{
+    static uint8_t row = 0;
+
+    uint16_t matrix = 0;
+
+    if (READ(MATRIX_K1)) {
+        matrix |= 0x01;
+    }
+    if (READ(MATRIX_K2)) {
+        matrix |= 0x02;
+    }
+    if (READ(MATRIX_K3)) {
+        matrix |= 0x04;
+    }
+    if (READ(MATRIX_K4)) {
+        matrix |= 0x08;
+    }
+
+    switch (row) {
+    case 0: // S1
+        ctx.matrix &= ~0x000F;
+        ctx.matrix |= (matrix << 0);
+        CLR(MATRIX_S1);
+        SET(MATRIX_S2);
+        break;
+    case 1: // S2
+        ctx.matrix &= ~0x00F0;
+        ctx.matrix |= (matrix << 4);
+        CLR(MATRIX_S2);
+        SET(MATRIX_S3);
+        break;
+    case 2: // S3
+        ctx.matrix &= ~0x0F00;
+        ctx.matrix |= (matrix << 8);
+        CLR(MATRIX_S3);
+        SET(MATRIX_S1);
+        break;
+    }
+
+    if (++row >= KEY_MATRIX_ROWS) {
+        row = 0;
+    }
 }
 
 static void inputAnalogConvert(void)
@@ -118,10 +194,15 @@ static void inputAnalogConvert(void)
 static uint16_t getAnalogButtons()
 {
     if (ctx.aBtn >= 0) {
-        return (uint8_t)(BTN_STBY << ctx.aBtn);
+        return (uint16_t)(BTN_STBY << ctx.aBtn);
     }
 
     return BTN_NO;
+}
+
+static uint16_t getMatrixButtons()
+{
+    return ctx.matrix;
 }
 
 static void inputEncoderInit(void)
@@ -160,16 +241,17 @@ static void inputHandle(void)
     // Previous state
     static uint16_t btnPrev = BTN_NO;
     static uint16_t encPrev = ENC_NO;
-    uint16_t btnNow = BTN_NO;
 
+    uint16_t btnNow = BTN_NO;
+    uint16_t encNow = BTN_NO;
+
+    btnNow |= getMatrixButtons();
     btnNow |= getAnalogButtons();
-    btnNow |= readEncoder();
+
+    encNow |= readEncoder();
 
     // If encoder event has happened, inc/dec encoder counter
     if (ctx.encRes) {
-        uint16_t encNow = btnNow & ENC_AB;
-        btnNow &= ~ENC_AB;
-
         if ((encPrev == ENC_NO && encNow == ENC_A) ||
             (encPrev == ENC_A && encNow == ENC_AB) ||
             (encPrev == ENC_AB && encNow == ENC_B) ||
@@ -190,9 +272,6 @@ static void inputHandle(void)
             if (btnCnt == LONG_PRESS) {
                 cmdBuf.btn = btnPrev;
                 cmdBuf.flags |= BTN_FLAG_LONG_PRESS;
-                if (btnNow & (ENC_A | ENC_B)) {
-                    btnCnt -= AUTOREPEAT;
-                }
             }
         }
     } else {
@@ -206,6 +285,7 @@ static void inputHandle(void)
 
 void inputInit()
 {
+    inputMatrixInit();
     inputAnalogInit();
     inputEncoderInit();
 
@@ -230,6 +310,7 @@ void TIM_INPUT_HANDLER(void)
         // Clear the update interrupt flag
         LL_TIM_ClearFlag_UPDATE(TIM_INPUT);
 
+        inputMatrixRead();
         inputAnalogConvert();
         inputHandle();
     }

@@ -129,6 +129,9 @@ void canvasShowStandby(bool clear)
     for (AnalogBtn i = 0; i < ABTN_END; i++) {
         glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? COLOR_WHITE : COLOR_GRAY);
     }
+
+    glcdSetXY(200, 40);
+    glcdWriteString(utilMkStr("0x%04x", inCtx->matrix));
 }
 
 void canvasShowTune(bool clear)
