@@ -42,7 +42,7 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 1500 50 
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	6800 1000 6600 1000
+	7100 1000 6900 1000
 Wire Wire Line
 	6000 1350 6000 1400
 Wire Wire Line
@@ -59,7 +59,7 @@ F 3 "~" H 6000 1200 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	6600 1850 6600 1750
+	6900 1850 6900 1750
 Wire Wire Line
 	5100 2500 4800 2500
 Connection ~ 5100 2500
@@ -107,15 +107,15 @@ $EndComp
 Wire Wire Line
 	5800 2600 6050 2600
 Wire Wire Line
-	6600 2850 6600 2750
+	6900 2850 6900 2750
 Wire Wire Line
-	6800 2350 6600 2350
+	7100 2350 6900 2350
 Wire Wire Line
-	6600 2350 6600 2450
+	6900 2350 6900 2450
 Wire Wire Line
-	6450 1600 6350 1600
+	6750 1600 6700 1600
 Wire Wire Line
-	6450 2600 6350 2600
+	6750 2600 6700 2600
 Entry Wire Line
 	4800 1500 4700 1600
 Entry Wire Line
@@ -153,12 +153,12 @@ $EndComp
 $Comp
 L power:GNDD #PWR0107
 U 1 1 5DFBA49C
-P 6600 1850
-F 0 "#PWR0107" H 6600 1600 50  0001 C CNN
-F 1 "GNDD" H 6604 1695 50  0000 C CNN
-F 2 "" H 6600 1850 50  0001 C CNN
-F 3 "" H 6600 1850 50  0001 C CNN
-	1    6600 1850
+P 6900 1850
+F 0 "#PWR0107" H 6900 1600 50  0001 C CNN
+F 1 "GNDD" H 6904 1695 50  0000 C CNN
+F 2 "" H 6900 1850 50  0001 C CNN
+F 3 "" H 6900 1850 50  0001 C CNN
+	1    6900 1850
 	-1   0    0    -1  
 $EndComp
 $Comp
@@ -186,12 +186,12 @@ $EndComp
 $Comp
 L power:GNDD #PWR0108
 U 1 1 5DFBA4AB
-P 6600 2850
-F 0 "#PWR0108" H 6600 2600 50  0001 C CNN
-F 1 "GNDD" H 6604 2695 50  0000 C CNN
-F 2 "" H 6600 2850 50  0001 C CNN
-F 3 "" H 6600 2850 50  0001 C CNN
-	1    6600 2850
+P 6900 2850
+F 0 "#PWR0108" H 6900 2600 50  0001 C CNN
+F 1 "GNDD" H 6904 2695 50  0000 C CNN
+F 2 "" H 6900 2850 50  0001 C CNN
+F 3 "" H 6900 2850 50  0001 C CNN
+	1    6900 2850
 	-1   0    0    -1  
 $EndComp
 $Comp
@@ -1200,7 +1200,7 @@ Connection ~ 4700 3450
 Text Label 7700 6100 0    50   ~ 0
 AD3
 Wire Wire Line
-	7100 2350 7400 2350
+	7400 2350 7750 2350
 $Comp
 L power:GNDD #PWR?
 U 1 1 5E2B14B8
@@ -2477,13 +2477,13 @@ F 3 "~" H 9400 2050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6600 1000 6600 1450
+	6900 1000 6900 1450
 Wire Wire Line
-	7100 1000 10700 1000
+	7400 1000 10700 1000
 Wire Wire Line
-	7400 800  7400 2350
+	7750 800  7750 2350
 Wire Wire Line
-	7400 800  10700 800 
+	7750 800  10700 800 
 $Comp
 L Device:R R21
 U 1 1 5DEF572E
@@ -2748,10 +2748,10 @@ Entry Wire Line
 Wire Wire Line
 	9400 4350 10700 4350
 $Comp
-L power:+3V3 #PWR?
+L power:+3V3 #PWR029
 U 1 1 5E144713
 P 10600 5850
-F 0 "#PWR?" H 10600 5700 50  0001 C CNN
+F 0 "#PWR029" H 10600 5700 50  0001 C CNN
 F 1 "+3V3" H 10615 6023 50  0000 C CNN
 F 2 "" H 10600 5850 50  0001 C CNN
 F 3 "" H 10600 5850 50  0001 C CNN
@@ -2769,24 +2769,6 @@ F 3 "http://www.st.com/st-web-ui/static/active/en/resource/technical/document/da
 	1    3600 5400
 	1    0    0    -1  
 $EndComp
-Wire Bus Line
-	7600 3450 9300 3450
-Wire Bus Line
-	4700 1600 4700 3450
-Wire Bus Line
-	800  850  800  3450
-Wire Bus Line
-	4700 7400 6450 7400
-Wire Bus Line
-	800  850  3500 850 
-Wire Bus Line
-	7600 3450 7600 6000
-Wire Bus Line
-	9300 3450 9300 6000
-Wire Bus Line
-	4700 3450 4700 7400
-Wire Bus Line
-	2350 3450 2350 7400
 Text Label 4800 1500 0    50   ~ 0
 SP_R
 Text Label 4800 2500 0    50   ~ 0
@@ -2827,45 +2809,23 @@ $EndComp
 $Comp
 L Device:R_POT RV2
 U 1 1 5DFBA4A4
-P 6600 2600
-F 0 "RV2" H 6530 2646 50  0000 R CNN
-F 1 "22k" H 6530 2555 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 2600 50  0001 C CNN
-F 3 "~" H 6600 2600 50  0001 C CNN
-	1    6600 2600
+P 6900 2600
+F 0 "RV2" H 6830 2646 50  0000 R CNN
+F 1 "22k" H 6830 2555 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6900 2600 50  0001 C CNN
+F 3 "~" H 6900 2600 50  0001 C CNN
+	1    6900 2600
 	-1   0    0    -1  
-$EndComp
-$Comp
-L Device:C C9
-U 1 1 5DFBA47C
-P 6950 2350
-F 0 "C9" H 6835 2304 50  0000 R CNN
-F 1 "2.2" H 6835 2395 50  0000 R CNN
-F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 2200 50  0001 C CNN
-F 3 "~" H 6950 2350 50  0001 C CNN
-	1    6950 2350
-	0    -1   1    0   
-$EndComp
-$Comp
-L Device:C C8
-U 1 1 5DFBA45B
-P 6950 1000
-F 0 "C8" H 6835 954 50  0000 R CNN
-F 1 "2.2" H 6835 1045 50  0000 R CNN
-F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6988 850 50  0001 C CNN
-F 3 "~" H 6950 1000 50  0001 C CNN
-	1    6950 1000
-	0    -1   1    0   
 $EndComp
 $Comp
 L Device:R_POT RV1
 U 1 1 5DFBA495
-P 6600 1600
-F 0 "RV1" H 6530 1646 50  0000 R CNN
-F 1 "22k" H 6530 1555 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6600 1600 50  0001 C CNN
-F 3 "~" H 6600 1600 50  0001 C CNN
-	1    6600 1600
+P 6900 1600
+F 0 "RV1" H 6830 1646 50  0000 R CNN
+F 1 "22k" H 6830 1555 50  0000 R CNN
+F 2 "Potentiometer_THT:Potentiometer_Piher_PT-6-V_Vertical" H 6900 1600 50  0001 C CNN
+F 3 "~" H 6900 1600 50  0001 C CNN
+	1    6900 1600
 	-1   0    0    -1  
 $EndComp
 $Comp
@@ -2901,8 +2861,77 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21314g.pdf" H 5400 1500 50 
 	1    5400 1500
 	-1   0    0    -1  
 $EndComp
-Text Label 7300 2350 2    50   ~ 0
+Text Label 7600 2350 2    50   ~ 0
 IN_L
-Text Label 7300 1000 2    50   ~ 0
+Text Label 7600 1000 2    50   ~ 0
 IN_R
+Connection ~ 10700 1000
+Wire Wire Line
+	10700 1000 11000 1000
+Wire Wire Line
+	6400 1600 6350 1600
+Wire Wire Line
+	6400 2600 6350 2600
+$Comp
+L Device:C C22
+U 1 1 5E759476
+P 6550 2600
+F 0 "C22" H 6650 2650 50  0000 L CNN
+F 1 "2.2" H 6650 2550 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6588 2450 50  0001 C CNN
+F 3 "~" H 6550 2600 50  0001 C CNN
+	1    6550 2600
+	0    -1   -1   0   
+$EndComp
+Wire Bus Line
+	7600 3450 9300 3450
+Wire Bus Line
+	4700 1600 4700 3450
+Wire Bus Line
+	800  850  800  3450
+Wire Bus Line
+	4700 7400 6450 7400
+Wire Bus Line
+	800  850  3500 850 
+Wire Bus Line
+	7600 3450 7600 6000
+Wire Bus Line
+	9300 3450 9300 6000
+Wire Bus Line
+	4700 3450 4700 7400
+Wire Bus Line
+	2350 3450 2350 7400
+$Comp
+L Device:C C21
+U 1 1 5E7BFBB9
+P 6550 1600
+F 0 "C21" H 6650 1650 50  0000 L CNN
+F 1 "2.2" H 6650 1550 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6588 1450 50  0001 C CNN
+F 3 "~" H 6550 1600 50  0001 C CNN
+	1    6550 1600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C C8
+U 1 1 5E7BFF6C
+P 7250 1000
+F 0 "C8" H 7350 1050 50  0000 L CNN
+F 1 "2.2" H 7350 950 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 7288 850 50  0001 C CNN
+F 3 "~" H 7250 1000 50  0001 C CNN
+	1    7250 1000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:C C9
+U 1 1 5E7C01BF
+P 7250 2350
+F 0 "C9" H 7350 2400 50  0000 L CNN
+F 1 "2.2" H 7350 2300 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 7288 2200 50  0001 C CNN
+F 3 "~" H 7250 2350 50  0001 C CNN
+	1    7250 2350
+	0    -1   -1   0   
+$EndComp
 $EndSCHEMATC
