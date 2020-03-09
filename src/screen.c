@@ -3,6 +3,8 @@
 #include "gui/canvas.h"
 #include "tr/labels.h"
 #include "settings.h"
+#include "spectrum.h"
+#include "swtimers.h"
 
 static bool scrToClear = false;
 
@@ -66,7 +68,15 @@ void screenToClear(void)
 
 void screenShow(void)
 {
+    Spectrum *spectrum = spGet();
+
     bool clear = screenCheckClear();
+
+    if (swTimGet(SW_TIM_SP_CONVERT) <= 0) {
+        swTimSet(SW_TIM_SP_CONVERT, 20);
+        spGetADC(spectrum);
+        spectrum->ready = true;
+    }
 
     if (clear) {
         canvasClear();

@@ -5,8 +5,9 @@
 #include "pins.h"
 #include "rc.h"
 #include "rtc.h"
-#include "settings.h"
 #include "screen.h"
+#include "settings.h"
+#include "spectrum.h"
 #include "usart.h"
 #include "utils.h"
 
@@ -116,7 +117,7 @@ int main(void)
     dbgInit();
 
     screenInit();
-    //spInit();
+    spInit();
 
     inputInit();
     rcInit();

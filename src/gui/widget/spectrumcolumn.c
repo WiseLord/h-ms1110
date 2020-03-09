@@ -2,7 +2,7 @@
 
 #include "../canvas.h"
 
-void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear, color_t *grad)
+void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear)
 {
     Canvas *canvas = canvasGet();
 
@@ -34,7 +34,7 @@ void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear, color_t
 
     // Full redraw the column
     if (clear) {
-        glcdDrawVertGrad(x, y - s, w, s, grad);
+        glcdDrawRect(x, y - s, w, s, pal->spColB);
 
         if (p > s) {
             glcdDrawRect(x, y - p, w, 1, pal->spPeak);
@@ -44,7 +44,7 @@ void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear, color_t
 
     // Draw part of changed column
     if (s > os) {
-        glcdDrawVertGrad(x, y - s, w, s - os, &grad[rect->h - s]);
+        glcdDrawRect(x, y - s, w, s - os, pal->spColB);
     } else if (s < os) {
         glcdDrawRect(x, y - os, w, os - s, pal->bg);
     }

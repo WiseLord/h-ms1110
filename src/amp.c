@@ -10,6 +10,7 @@
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
+#include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
 
@@ -869,6 +870,6 @@ void TIM_SPECTRUM_HANDLER(void)
         LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
 
         // Callbacks
-//        spConvertADC();
+        spConvertADC();
     }
 }
