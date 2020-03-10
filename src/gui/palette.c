@@ -11,7 +11,7 @@ static const Palette palette[PAL_END] = {
         .selected =  COLOR_GRAY16(4),
         .spColB = COLOR_WHITE,
         .spColG = COLOR_WHITE,
-        .spPeak = COLOR_WHITE,
+        .spPeak = COLOR_GRAY,
     },
 };
 

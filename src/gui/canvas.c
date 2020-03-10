@@ -149,7 +149,7 @@ static void drawSpectrum(Spectrum *sp, SpChan chan, GlcdRect *rect)
             spCol.peakW = 0;
         }
         GlcdRect rect = {x, y, colW, height};
-        spectrumColumnDraw(&spCol, &rect, sp->redraw);
+        spectrumColumnDraw(&spCol, &rect, sp->redraw, NULL);
     }
 }
 
@@ -160,7 +160,14 @@ void canvasShowSpectrum(bool clear)
     Spectrum *sp = spGet();
     GlcdRect rect = canvas.glcd->rect;
 
+    if (!sp->ready) {
+        return;
+    }
+
     drawSpectrum(sp, SP_CHAN_BOTH, &rect);
+
+    sp->redraw = false;
+    sp->ready = false;
 }
 
 void canvasShowTime(bool clear)

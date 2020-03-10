@@ -5,6 +5,7 @@
 #include "eemul.h"
 #include "rc.h"
 #include "rtc.h"
+#include "spectrum.h"
 #include "tr/labels.h"
 
 static uint8_t silenceTimer = 0;
@@ -52,6 +53,8 @@ static const EE_Map eeMap[] = {
 
     [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
 
+    [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
+
     [PARAM_ALARM_HOUR]      =   {0x60,  7},
     [PARAM_ALARM_MINUTE]    =   {0x61,  30},
     [PARAM_ALARM_DAYS]      =   {0x62,  0},
@@ -71,6 +74,8 @@ void settingsInit(void)
     audioReadSettings();
 //    tunerReadSettings();
 
+    settingsSet(PARAM_SPECTRUM_PEAKS, settingsRead(PARAM_SPECTRUM_PEAKS));
+
     settingsSet(PARAM_ALARM_HOUR, settingsRead(PARAM_ALARM_HOUR));
     settingsSet(PARAM_ALARM_MINUTE, settingsRead(PARAM_ALARM_MINUTE));
     settingsSet(PARAM_ALARM_DAYS, settingsRead(PARAM_ALARM_DAYS));
@@ -84,8 +89,13 @@ int16_t settingsGet(Param param)
     int16_t ret = 0;
 
     Alarm *alarm = rtcGetAlarm(0);
+    Spectrum *sp = spGet();
 
     switch (param) {
+    case PARAM_SPECTRUM_PEAKS:
+        ret = sp->peaks;
+        break;
+
     case PARAM_ALARM_HOUR:
         ret = alarm->hour;
         break;
@@ -120,8 +130,13 @@ int16_t settingsGet(Param param)
 void settingsSet(Param param, int16_t value)
 {
     Alarm *alarm = rtcGetAlarm(0);
+    Spectrum *sp = spGet();
 
     switch (param) {
+    case PARAM_SPECTRUM_PEAKS:
+        sp->peaks = (bool)value;
+        break;
+
     case PARAM_ALARM_HOUR:
         alarm->hour = (int8_t)value;
         break;

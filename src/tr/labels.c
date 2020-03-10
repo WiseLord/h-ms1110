@@ -73,7 +73,7 @@ static const char *const labels_default[LABEL_END] = {
     [LABEL_MENU + MENU_SETUP_SYSTEM]    = "System",
     [LABEL_MENU + MENU_SETUP_AUDIO]     = "Audio",
 //    [LABEL_MENU + MENU_SETUP_TUNER]     = "Tuner",
-//    [LABEL_MENU + MENU_SETUP_SPECTRUM]  = "Spectrum",
+    [LABEL_MENU + MENU_SETUP_SPECTRUM]  = "Spectrum",
     [LABEL_MENU + MENU_SETUP_DISPLAY]   = "Display",
     [LABEL_MENU + MENU_SETUP_ALARM]     = "Alarm",
     [LABEL_MENU + MENU_SETUP_RC]        = "Remote",
@@ -105,7 +105,7 @@ static const char *const labels_default[LABEL_END] = {
     [LABEL_MENU + MENU_ALARM_DAYS]      = "Days",
 
 //    [LABEL_MENU + MENU_SPECTURM_MODE]   = "Display mode",
-//    [LABEL_MENU + MENU_SPECTRUM_PEAKS]  = "Peak level",
+    [LABEL_MENU + MENU_SPECTRUM_PEAKS]  = "Peak level",
 //    [LABEL_MENU + MENU_SPECTRUM_GRAD]   = "Gradient",
 
 //    [LABEL_MENU + MENU_DISPLAY_BR_STBY] = "STBY brightness",

@@ -80,6 +80,7 @@ void screenShow(void)
 
     if (clear) {
         canvasClear();
+        spectrum->redraw = true;
     }
 
     switch (screen.mode) {

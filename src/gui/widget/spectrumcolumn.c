@@ -2,7 +2,7 @@
 
 #include "../canvas.h"
 
-void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear)
+void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear, color_t *grad)
 {
     Canvas *canvas = canvasGet();
 
@@ -34,24 +34,28 @@ void spectrumColumnDraw(SpectrumColumn *col, GlcdRect *rect, bool clear)
 
     // Full redraw the column
     if (clear) {
-        glcdDrawRect(x, y - s, w, s, pal->spColB);
-
-        if (p > s) {
-            glcdDrawRect(x, y - p, w, 1, pal->spPeak);
+        if (NULL != grad) {
+            glcdDrawVertGrad(x, y - s, w, s, grad);
+        } else {
+            glcdDrawRect(x, y - s, w, s, pal->spColB);
         }
-        return;
-    }
+    } else {
 
-    // Draw part of changed column
-    if (s > os) {
-        glcdDrawRect(x, y - s, w, s - os, pal->spColB);
-    } else if (s < os) {
-        glcdDrawRect(x, y - os, w, os - s, pal->bg);
-    }
+        // Draw part of changed column
+        if (s > os) {
+            if (NULL != grad) {
+                glcdDrawVertGrad(x, y - s, w, s - os, &grad[rect->h - s]);
+            } else {
+                glcdDrawRect(x, y - s, w, s - os, pal->spColB);
+            }
+        } else if (s < os) {
+            glcdDrawRect(x, y - os, w, os - s, pal->bg);
+        }
 
-    // Clear old peak
-    if (p >= s) {
-        glcdDrawRect(x, y - p - 1, w, 1, pal->bg);
+        // Clear old peak
+        if (p >= s) {
+            glcdDrawRect(x, y - p - 1, w, 1, pal->bg);
+        }
     }
 
     // Draw new peak
