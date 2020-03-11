@@ -7,11 +7,11 @@ static const Palette palette[PAL_END] = {
         .fg = COLOR_WHITE,
         .bg = COLOR_BLACK,
         .active = COLOR_WHITE,
-        .inactive = COLOR_GRAY16(2),
+        .inactive = COLOR_GRAY16(6),
         .selected =  COLOR_GRAY16(4),
         .spColB = COLOR_WHITE,
         .spColG = COLOR_WHITE,
-        .spPeak = COLOR_GRAY,
+        .spPeak = COLOR_WHITE,
     },
 };
 

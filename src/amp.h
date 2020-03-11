@@ -73,6 +73,8 @@ void ampInitMuteStby(void);
 
 void ampInit(void);
 
+Amp *ampGet(void);
+
 void ampActionGet(void);
 
 void ampActionHandle(void);

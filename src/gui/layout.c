@@ -6,12 +6,12 @@ static const Layout lt160x128 = {
     .rect.w = 256,
     .rect.h = 64,
 
-    .time.hmsFont = &fontterminus20,
-    .time.dmyFont = &fontterminus20,
-    .time.wdFont = &fontterminus14,
-    .time.hmsY = 4,
-    .time.dmyY = 54,
-    .time.wdY = 96,
+    .time.hmsFont = &fontterminus24b,
+    .time.dmyFont = &fontterminus24b,
+    .time.wdFont = &fontterminus16b,
+    .time.hmsY = 0,
+    .time.dmyY = 20,
+    .time.wdY = 40,
 
     .menu.headFont = &fontterminus12,
     .menu.menuFont = &fontterminus12,

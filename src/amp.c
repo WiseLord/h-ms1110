@@ -721,6 +721,11 @@ void ampInit(void)
     amp.status = AMP_STATUS_STBY;
 }
 
+Amp *ampGet(void)
+{
+    return &amp;
+}
+
 void ampActionGet(void)
 {
     actionSet(ACTION_NONE, 0);
