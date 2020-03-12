@@ -1,23 +1,5 @@
 #include "amp.h"
-#include "debug.h"
 #include "hwlibs.h"
-#include "input.h"
-#include "pins.h"
-#include "rc.h"
-#include "rtc.h"
-#include "screen.h"
-#include "settings.h"
-#include "spectrum.h"
-#include "usart.h"
-#include "utils.h"
-
-#ifndef NVIC_PRIORITYGROUP_0
-#define NVIC_PRIORITYGROUP_0    ((uint32_t)0x00000007)
-#define NVIC_PRIORITYGROUP_1    ((uint32_t)0x00000006)
-#define NVIC_PRIORITYGROUP_2    ((uint32_t)0x00000005)
-#define NVIC_PRIORITYGROUP_3    ((uint32_t)0x00000004)
-#define NVIC_PRIORITYGROUP_4    ((uint32_t)0x00000003)
-#endif
 
 static void NVIC_Init(void)
 {
@@ -95,11 +77,12 @@ static void sysInit(void)
 #ifdef STM32F1
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_AFIO);
 #endif
+
 #ifdef STM32F3
     LL_RCC_SetUSARTClockSource(LL_RCC_USART1_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_SYSCLK);
     LL_RCC_SetUSARTClockSource(LL_RCC_USART3_CLKSOURCE_SYSCLK);
-    LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_SYSCLK);
+    LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_HSI);
 #endif
 }
 
@@ -107,28 +90,8 @@ int main(void)
 {
     sysInit();
 
-    settingsInit();
-    ampInitMuteStby();
-
-    pinsInit();
-
-    rtcInit();
-
-    dbgInit();
-
-    screenInit();
-    spInit();
-
-    inputInit();
-    rcInit();
-
     ampInit();
-
-    while (1) {
-        ampActionGet();
-        ampActionHandle();
-        screenShow();
-    }
+    ampRun();
 
     return 0;
 }

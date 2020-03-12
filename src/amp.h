@@ -39,6 +39,8 @@ enum {
     ACTION_AUDIO_LOUDNESS,
     ACTION_AUDIO_BYPASS,
 
+    ACTION_RESTORE_VOLUME,
+
     ACTION_MENU_SELECT,
     ACTION_MENU_CHANGE,
 
@@ -67,17 +69,15 @@ enum {
 typedef struct {
     AmpStatus status;
     uint8_t inputStatus;
+    int8_t volume;
 } Amp;
 
 void ampInitMuteStby(void);
 
 void ampInit(void);
+void ampRun(void);
 
 Amp *ampGet(void);
-
-void ampActionGet(void);
-
-void ampActionHandle(void);
 
 #ifdef __cplusplus
 }

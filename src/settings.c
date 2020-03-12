@@ -71,17 +71,9 @@ void settingsInit(void)
 {
     eeInit();
 
-    audioReadSettings();
-//    tunerReadSettings();
-
-    settingsSet(PARAM_SPECTRUM_PEAKS, settingsRead(PARAM_SPECTRUM_PEAKS));
-
-    settingsSet(PARAM_ALARM_HOUR, settingsRead(PARAM_ALARM_HOUR));
-    settingsSet(PARAM_ALARM_MINUTE, settingsRead(PARAM_ALARM_MINUTE));
-    settingsSet(PARAM_ALARM_DAYS, settingsRead(PARAM_ALARM_DAYS));
-
-    settingsSet(PARAM_SYSTEM_SIL_TIM, settingsRead(PARAM_SYSTEM_SIL_TIM));
-    settingsSet(PARAM_SYSTEM_RTC_CORR, settingsRead(PARAM_SYSTEM_RTC_CORR));
+    for (Param par = PARAM_NULL + 1; par < PARAM_END; par++) {
+        settingsSet(par, settingsRead(par));
+    }
 }
 
 int16_t settingsGet(Param param)

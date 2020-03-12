@@ -3,6 +3,7 @@
 #include <stddef.h>
 
 #include "audio/audio.h"
+#include "debug.h"
 #include "i2c.h"
 #include "input.h"
 #include "menu.h"
@@ -19,11 +20,18 @@ static void actionGetEncoder(void);
 static void actionGetRemote(void);
 static void actionGetPots(void);
 static void actionGetTimers(void);
+
 static void actionRemapBtnShort(void);
 static void actionRemapBtnLong(void);
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
+//static void actionRemapNavigate(void);
 static void actionRemapEncoder(void);
+
+static void ampActionGet(void);
+static void ampActionRemap(void);
+static void ampActionHandle(void);
+
 
 static Action action = {
     .type = ACTION_STANDBY,
@@ -124,10 +132,38 @@ static void ampPinStby(bool value)
 #endif
 }
 
-void ampExitStby(void)
+static void ampMute(bool value)
 {
+    AudioProc *aProc = audioGet();
+
+    if (value) {
+        swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
+    } else {
+        audioSetTune(AUDIO_TUNE_VOLUME, aProc->par.tune[AUDIO_TUNE_VOLUME].grid->min);
+        swTimSet(SW_TIM_SOFT_VOLUME, 25);
+    }
+
+    ampPinMute(value);
+    audioSetMute(value);
+
+    if (value) {
+        aProc->par.tune[AUDIO_TUNE_VOLUME].value = amp.volume;
+    }
+}
+
+static void ampReadSettings(void)
+{
+    AudioProc *aProc = audioGet();
+
     audioReadSettings();
 //    tunerReadSettings();
+
+    amp.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
+}
+
+void ampExitStby(void)
+{
+    ampReadSettings();
 
     ampPinStby(false);      // Power on amplifier
 
@@ -143,7 +179,6 @@ void ampEnterStby(void)
 
     screenSaveSettings();
 
-    audioSetMute(true);
     ampPinMute(true);
     audioSetPower(false);
 
@@ -369,6 +404,8 @@ static void actionGetTimers(void)
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
         actionSet(ACTION_INIT_RTC, 0);
+    } else if (swTimGet(SW_TIM_SOFT_VOLUME) == 0) {
+        actionSet(ACTION_RESTORE_VOLUME, amp.volume);
     }
 }
 
@@ -708,6 +745,21 @@ void ampInitMuteStby(void)
 
 void ampInit(void)
 {
+    dbgInit();
+
+    settingsInit();
+    ampInitMuteStby();
+    pinsInit();
+    rtcInit();
+
+    screenInit();
+    spInit();
+
+    inputInit();
+    rcInit();
+
+    ampReadSettings();
+
     timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
     swTimInit();
 
@@ -719,6 +771,21 @@ void ampInit(void)
     swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp.status = AMP_STATUS_STBY;
+}
+
+void ampRun(void)
+{
+    while (1) {
+//        controlGetData();
+//        karadioGetData();
+//        btReleaseKey();
+
+        ampActionGet();
+        ampActionRemap();
+        ampActionHandle();
+
+        screenShow();
+    }
 }
 
 Amp *ampGet(void)
@@ -757,7 +824,10 @@ void ampActionGet(void)
     if (ACTION_NONE == action.type) {
         actionGetTimers();
     }
+}
 
+static void ampActionRemap(void)
+{
     switch (action.type) {
     case ACTION_BTN_SHORT:
         actionRemapBtnShort();
@@ -836,12 +906,29 @@ void ampActionHandle(void)
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
+        if (aProc->tune == AUDIO_TUNE_VOLUME) {
+            amp.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
+        }
+        if (aProc->par.mute) {
+            ampMute(false);
+        }
         actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
 //        controlReportAudioTune(aProc->tune);
+        swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
     case ACTION_AUDIO_PARAM_SET:
         audioSetTune(aProc->tune, (int8_t)action.value);
         actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
+        break;
+
+
+    case ACTION_RESTORE_VOLUME:
+        if (aProc->par.tune[AUDIO_TUNE_VOLUME].value < action.value) {
+            audioChangeTune(AUDIO_TUNE_VOLUME, +1);
+            swTimSet(SW_TIM_SOFT_VOLUME, 25);
+        } else {
+            swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
+        }
         break;
 
     case ACTION_MENU_SELECT: {
