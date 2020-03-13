@@ -26,7 +26,7 @@ enum {
     SP_MODE_END
 };
 
-#define SPECTRUM_SIZE   128
+#define SPECTRUM_SIZE   43
 #define N_DB            256
 
 typedef struct {

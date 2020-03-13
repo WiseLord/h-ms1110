@@ -59,6 +59,15 @@ static const uint16_t dbTable[N_DB] = {
     56281, 57519, 58783, 60075, 61396, 62746, 64125, 65535,
 };
 
+// First/last indexes of spectrum indexes moving to output
+static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
+    0,   1,   2,   3,   4,   5,   6,   7,   8,  9,
+    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
+    20,  21,  23,  27,  31,  36,  42,  49,  57,  66,
+    76,  88,  102, 119, 137, 159, 184, 213, 246, 285,
+    330, 382, 441, 512,
+};
+
 static void spInitDMA(void)
 {
     // DMA controller clock enable
@@ -196,27 +205,16 @@ static inline uint8_t spGetDb(uint16_t value, uint8_t min, uint8_t max)
 
 static void spCplx2dB(FftSample *sp, uint8_t *out)
 {
-    uint8_t db;
-    uint8_t *po = out;
-
-    memset(po, 0, SPECTRUM_SIZE);
-
-    for (int16_t i = 0; i < FFT_SIZE / 2; i++) {
-        uint16_t calc = (uint16_t)((sp[i].fr * sp[i].fr + sp[i].fi * sp[i].fi) >> 15);
-
-        db = spGetDb(calc, 0, N_DB - 1);
-
-        if (*po < db) {
-            *po = db;
+    for (int16_t s = 0; s < SPECTRUM_SIZE; s++) {
+        int32_t max = 0;
+        for (int16_t i = spIdx[s]; i < spIdx[s + 1]; i++) {
+            int32_t calc = sp[i].fr * sp[i].fr + sp[i].fi * sp[i].fi;
+            if (calc > max) {
+                max = calc;
+            }
         }
-
-        if ((i < 48) ||
-            ((i < 96) && (i & 0x01) == 0x01) ||
-            ((i < 192) && (i & 0x03) == 0x03) ||
-            ((i < 384) && (i & 0x07) == 0x07) ||
-            ((i & 0x0F) == 0x0F)) {
-            po++;
-        }
+        uint16_t ret = (uint16_t)(max >> 15);
+        out[s] = spGetDb(ret, 0, N_DB - 1);
     }
 }
 

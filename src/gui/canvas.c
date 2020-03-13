@@ -125,14 +125,10 @@ static uint8_t calcSpCol(Spectrum *sp, int16_t chan, int16_t scale, uint8_t col,
 
 static void drawSpectrum(Spectrum *sp, SpChan chan, GlcdRect *rect)
 {
-    const int16_t step = /*(rect->w  + 1) / SPECTRUM_SIZE + 1*/6;    // Step of columns
-    const int16_t colW = /*step - (step / 2)*/4;                     // Column width
-    const int16_t num = (rect->w + colW - 1) / step;            // Number of columns
+    const int16_t step = 6;             // Step of columns
+    const int16_t colW = 4;             // Column width
 
-    const int16_t width = (num - 1) * step + colW;              // Width of spectrum
-    const int16_t height = rect->h;                             // Height of spectrum
-
-    const int16_t oft = (rect->w - width) / 2;                  // Spectrum offset for symmetry
+    const int16_t height = rect->h;     // Height of spectrum
 
     const int16_t y = rect->y;
 
@@ -141,8 +137,8 @@ static void drawSpectrum(Spectrum *sp, SpChan chan, GlcdRect *rect)
         memset(sp->data, 0, sizeof (SpData) * SP_CHAN_END);
     }
 
-    for (uint8_t col = 0; col < num; col++) {
-        int16_t x = oft + col * step;
+    for (uint8_t col = 0; col < SPECTRUM_SIZE; col++) {
+        int16_t x = col * step;
 
         SpectrumColumn spCol;
         calcSpCol(sp, chan, height, col, &spCol);
