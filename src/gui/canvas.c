@@ -109,7 +109,7 @@ static uint8_t calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColum
         spCol->fallW = spDrawCol->fall[chan];
     }
 
-    raw = (scale * raw) >> 8; // / N_DB = 256
+    raw = raw * scale / N_DB;
 
     spCol->prevW = spCol->showW;
     if (raw < spCol->showW) {

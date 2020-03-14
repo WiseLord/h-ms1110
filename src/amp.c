@@ -951,7 +951,20 @@ void ampActionHandle(void)
         break;
     }
 
+    // Reset silence timer on any user action
+    if (action.type != ACTION_NONE && action.type != ACTION_DISP_EXPIRED) {
+        actionResetSilenceTimer();
+    }
+
+    // Reset silence timer on signal
+    if (scrMode != SCREEN_STANDBY) {
+        if (spCheckSignal()) {
+            actionResetSilenceTimer();
+        }
+    }
+
     screenSetMode(action.screen);
+
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
