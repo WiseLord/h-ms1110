@@ -170,12 +170,18 @@ void ampExitStby(void)
     inputSetPower(true);    // Power on input device
 
     amp.status = AMP_STATUS_POWERED;
+
     swTimSet(SW_TIM_AMP_INIT, 600);
+    swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
 void ampEnterStby(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+    swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
+    swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
+    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
+    swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
     screenSaveSettings();
 
@@ -872,10 +878,6 @@ void ampActionHandle(void)
             ampExitStby();
             actionSetScreen(SCREEN_TIME, 1000);
         } else {
-            swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
-            swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
-            swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
-
             ampEnterStby();
             actionDispExpired(SCREEN_STANDBY);
         }

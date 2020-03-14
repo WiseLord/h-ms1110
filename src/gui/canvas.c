@@ -6,10 +6,13 @@
 #include "../input.h"
 #include "../menu.h"
 #include "../spectrum.h"
+#include "../swtimers.h"
 #include "../tr/labels.h"
 
 #include <stdlib.h>
 #include <string.h>
+
+#define SPECTRUM_SIZE   43
 
 typedef union {
     struct {
@@ -25,9 +28,30 @@ typedef struct {
     SpCol col[SPECTRUM_SIZE];
 } SpDrawData;
 
+typedef struct {
+    uint8_t raw[SPECTRUM_SIZE];
+} SpData;
+
+
+static void drawMenuItem(uint8_t idx, const tFont *fontItem);
+static uint8_t calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *spCol);
+static void drawSpectrum(bool clear, bool check, SpChan chan, GlcdRect *rect);
+
+
 static SpDrawData spDrawData;
+static SpData spData[SP_CHAN_END];
 
 static Canvas canvas;
+
+
+// First/last indexes of spectrum indexes moving to output
+static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
+    0,   1,   2,   3,   4,   5,   6,   7,   8,  9,
+    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
+    20,  21,  23,  27,  31,  36,  42,  49,  57,  66,
+    76,  88,  102, 119, 137, 159, 184, 213, 246, 285,
+    330, 382, 441, 512,
+};
 
 void canvasInit()
 {
@@ -62,16 +86,15 @@ void canvasClear(void)
     glcdSetFontBgColor(COLOR_BLACK);
 }
 
-static uint8_t calcSpCol(Spectrum *sp, int16_t chan, int16_t scale, uint8_t col,
-                         SpectrumColumn *spCol)
+static uint8_t calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *spCol)
 {
     int16_t raw;
 
     SpCol *spDrawCol = &spDrawData.col[col];
 
     if (chan == SP_CHAN_BOTH) {
-        uint8_t rawL = sp->data[SP_CHAN_LEFT].raw[col];
-        uint8_t rawR = sp->data[SP_CHAN_RIGHT].raw[col];
+        uint8_t rawL = spData[SP_CHAN_LEFT].raw[col];
+        uint8_t rawR = spData[SP_CHAN_RIGHT].raw[col];
         if (rawL > rawR) {
             raw = rawL;
         } else {
@@ -79,7 +102,7 @@ static uint8_t calcSpCol(Spectrum *sp, int16_t chan, int16_t scale, uint8_t col,
         }
         *spCol = spDrawCol->col;
     } else {
-        raw = sp->data[chan].raw[col];
+        raw = spData[chan].raw[col];
         spCol->showW = spDrawCol->show[chan];
         spCol->prevW = spDrawCol->prev[chan];
         spCol->peakW = spDrawCol->peak[chan];
@@ -123,8 +146,46 @@ static uint8_t calcSpCol(Spectrum *sp, int16_t chan, int16_t scale, uint8_t col,
     return (uint8_t)raw;
 }
 
-static void drawSpectrum(Spectrum *sp, SpChan chan, GlcdRect *rect)
+static bool checkSpectrumReady(void)
 {
+    if (swTimGet(SW_TIM_SP_CONVERT) == 0) {
+        swTimSet(SW_TIM_SP_CONVERT, 20);
+        return true;
+    }
+
+    return false;
+}
+
+static void fftGet43(FftSample *sp, uint8_t *out, size_t size)
+{
+    for (size_t s = 0; s < size; s++) {
+        int32_t max = 0;
+        for (int16_t i = spIdx[s]; i < spIdx[s + 1]; i++) {
+            int32_t calc = sp[i].fr * sp[i].fr + sp[i].fi * sp[i].fi;
+            if (calc > max) {
+                max = calc;
+            }
+        }
+        uint16_t ret = (uint16_t)(max >> 15);
+        out[s] = spGetDb(ret, 0, N_DB - 1);
+    }
+}
+
+static void drawSpectrum(bool clear, bool check, SpChan chan, GlcdRect *rect)
+{
+    Spectrum *sp = spGet();
+
+    if (check && !checkSpectrumReady()) {
+        return;
+    }
+
+    if (chan == SP_CHAN_LEFT || chan == SP_CHAN_BOTH) {
+        spGetADC(SP_CHAN_LEFT, spData[SP_CHAN_LEFT].raw, SPECTRUM_SIZE, fftGet43);
+    }
+    if (chan == SP_CHAN_RIGHT || chan == SP_CHAN_BOTH) {
+        spGetADC(SP_CHAN_RIGHT, spData[SP_CHAN_RIGHT].raw, SPECTRUM_SIZE, fftGet43);
+    }
+
     const int16_t step = 6;             // Step of columns
     const int16_t colW = 4;             // Column width
 
@@ -132,39 +193,33 @@ static void drawSpectrum(Spectrum *sp, SpChan chan, GlcdRect *rect)
 
     const int16_t y = rect->y;
 
-    if (sp->redraw) {
+    if (clear) {
         memset(&spDrawData, 0, sizeof (SpDrawData));
-        memset(sp->data, 0, sizeof (SpData) * SP_CHAN_END);
+        memset(spData, 0, sizeof (SpData) * SP_CHAN_END);
     }
 
     for (uint8_t col = 0; col < SPECTRUM_SIZE; col++) {
         int16_t x = col * step;
 
         SpectrumColumn spCol;
-        calcSpCol(sp, chan, height, col, &spCol);
+        calcSpCol(chan, height, col, &spCol);
         if (!sp->peaks) {
             spCol.peakW = 0;
         }
         GlcdRect rect = {x, y, colW, height};
-        spectrumColumnDraw(&spCol, &rect, sp->redraw, NULL);
+        spectrumColumnDraw(&spCol, &rect, clear, NULL);
     }
 }
 
 void canvasShowSpectrum(bool clear)
 {
-    (void)clear;
-
     Spectrum *sp = spGet();
     GlcdRect rect = canvas.glcd->rect;
 
-    if (!sp->ready) {
-        return;
+    switch (sp->mode) {
+    default:
+        drawSpectrum(clear, true, SP_CHAN_BOTH, &rect);
     }
-
-    drawSpectrum(sp, SP_CHAN_BOTH, &rect);
-
-    sp->redraw = false;
-    sp->ready = false;
 }
 
 static void drawTmSpacer(char spacer, bool clear)

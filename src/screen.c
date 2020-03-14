@@ -72,15 +72,9 @@ void screenShow(void)
 
     bool clear = screenCheckClear();
 
-    if (swTimGet(SW_TIM_SP_CONVERT) <= 0) {
-        swTimSet(SW_TIM_SP_CONVERT, 20);
-        spGetADC(spectrum);
-        spectrum->ready = true;
-    }
-
     if (clear) {
         canvasClear();
-        spectrum->redraw = true;
+        spectrum->wtfX = 0;
     }
 
     switch (screen.mode) {

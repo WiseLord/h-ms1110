@@ -6,7 +6,10 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+
+#include "fft.h"
 
 typedef uint8_t SpChan;
 enum {
@@ -26,31 +29,28 @@ enum {
     SP_MODE_END
 };
 
-#define SPECTRUM_SIZE   43
 #define N_DB            256
 
 typedef struct {
-    uint8_t raw[SPECTRUM_SIZE];
-    uint8_t avg;
-    uint8_t max;
-} SpData;
-
-typedef struct {
-    SpData data[SP_CHAN_END];
     SpMode mode;
     bool peaks;
     bool grad;
     int16_t wtfX;  // waterfall X position
-    bool ready;
-    bool redraw;
 } Spectrum;
+
+// Callback to convert FFT data
+typedef void (*fftGet)(FftSample *sp, uint8_t *out, size_t size);
 
 void spInit(void);
 Spectrum *spGet(void);
 
-void spGetADC(Spectrum *sp);
+uint8_t spGetDb(uint16_t value, uint8_t min, uint8_t max);
+
+void spGetADC(SpChan chan, uint8_t *out, size_t size, fftGet fn);
 
 void spConvertADC(void);
+
+bool spCheckSignal(void);
 
 #ifdef __cplusplus
 }

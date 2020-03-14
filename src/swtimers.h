@@ -7,7 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 
-#define SW_TIM_OFF       -1
+#define SW_TIM_OFF      -1
+#define SW_TIM_ON       0
 
 typedef uint8_t SwTimer;
 enum {
@@ -21,6 +22,7 @@ enum {
     SW_TIM_SILENCE_TIMER,
     SW_TIM_RTC_INIT,
     SW_TIM_SOFT_VOLUME,
+    SW_TIM_BT_KEY,
 
     SW_TIM_END,
 };

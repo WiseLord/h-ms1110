@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fft.h"
 #include "settings.h"
 #include "utils.h"
 
@@ -57,15 +56,6 @@ static const uint16_t dbTable[N_DB] = {
     39743, 40617, 41510, 42422, 43355, 44308, 45282, 46277,
     47295, 48334, 49397, 50483, 51593, 52727, 53886, 55071,
     56281, 57519, 58783, 60075, 61396, 62746, 64125, 65535,
-};
-
-// First/last indexes of spectrum indexes moving to output
-static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
-    0,   1,   2,   3,   4,   5,   6,   7,   8,  9,
-    10,  11,  12,  13,  14,  15,  16,  17,  18,  19,
-    20,  21,  23,  27,  31,  36,  42,  49,  57,  66,
-    76,  88,  102, 119, 137, 159, 184, 213, 246, 285,
-    330, 382, 441, 512,
 };
 
 static void spInitDMA(void)
@@ -169,6 +159,9 @@ static void spInitADC(void)
         ADC1->DIFSEL &= ~ADC_DIFSEL_DIFSEL_2;
 #endif
 
+        LL_ADC_SetAnalogWDThresholds(ADC1, 0, 2047 + 512);
+        LL_ADC_SetAnalogWDMonitChannels(ADC1, LL_ADC_AWD_ALL_CHANNELS_REG);
+
 #ifdef STM32F1
         LL_ADC_Enable(ADC1);
         while (!LL_ADC_IsEnabled(ADC1));
@@ -191,76 +184,32 @@ static void spInitADC(void)
     }
 }
 
-
-static inline uint8_t spGetDb(uint16_t value, uint8_t min, uint8_t max)
-{
-    uint8_t mid = (min + max) / 2;
-
-    if (dbTable[mid] < value) {
-        return mid == min ? mid : spGetDb(value, mid, max);
-    } else {
-        return mid == max ? mid : spGetDb(value, min, mid);
-    }
-}
-
-static void spCplx2dB(FftSample *sp, uint8_t *out)
-{
-    for (int16_t s = 0; s < SPECTRUM_SIZE; s++) {
-        int32_t max = 0;
-        for (int16_t i = spIdx[s]; i < spIdx[s + 1]; i++) {
-            int32_t calc = sp[i].fr * sp[i].fr + sp[i].fi * sp[i].fi;
-            if (calc > max) {
-                max = calc;
-            }
-        }
-        uint16_t ret = (uint16_t)(max >> 15);
-        out[s] = spGetDb(ret, 0, N_DB - 1);
-    }
-}
-
-static void spGetData(int16_t *dma, SpData *chan)
+static void spDoFft(int16_t *dma, FftSample *smpl)
 {
     int32_t dcOft = 0;
 
-    FftSample *sp = malloc(sizeof (FftSample) * FFT_SIZE);
-
     for (int16_t i = 0; i < FFT_SIZE; i++) {
-        sp[i].fr = dma[2 * i];
-        dcOft += sp[i].fr;
+        smpl[i].fr = dma[2 * i];
+        dcOft += smpl[i].fr;
     }
     dcOft /= FFT_SIZE;
 
     for (int16_t i = 0; i < FFT_SIZE; i++) {
-        sp[i].fr -= dcOft;
-        sp[i].fr >>= 2; // Use only 10 most significant bits for FFT
-        sp[i].fi = 0;
+        smpl[i].fr -= dcOft;
+        smpl[i].fr >>= 2; // Use only 10 most significant bits for FFT
+        smpl[i].fi = 0;
     }
 
-    fft_hamm_window(sp);
-    fft_rev_bin(sp);
-    fft_radix4(sp);
-
-    spCplx2dB(sp, chan->raw);
-
-    int16_t total = 0;
-    chan->max = 0;
-    for (int16_t i = 0; i < SPECTRUM_SIZE; i++) {
-        uint8_t raw = chan->raw[i];
-        total += raw;
-        if (chan->max < raw) {
-            chan->max = raw;
-        }
-    }
-    chan->avg = (uint8_t)(total / SPECTRUM_SIZE);
-
-    free(sp);
+    fft_hamm_window(smpl);
+    fft_rev_bin(smpl);
+    fft_radix4(smpl);
 }
 
 static void spReadSettings(void)
 {
-//    spectrum.mode = (SpMode)settingsGet(PARAM_SPECTRUM_MODE);
+    spectrum.mode = (SpMode)settingsGet(PARAM_SPECTRUM_MODE);
     spectrum.peaks = (uint8_t)settingsGet(PARAM_SPECTRUM_PEAKS);
-//    spectrum.grad = (uint8_t)settingsGet(PARAM_SPECTRUM_GRAD);
+    spectrum.grad = (uint8_t)settingsGet(PARAM_SPECTRUM_GRAD);
 }
 
 void spInit(void)
@@ -276,11 +225,30 @@ Spectrum *spGet(void)
     return &spectrum;
 }
 
-void spGetADC(Spectrum *sp)
+uint8_t spGetDb(uint16_t value, uint8_t min, uint8_t max)
 {
-    for (SpChan chan = SP_CHAN_LEFT; chan < SP_CHAN_BOTH; chan++) {
-        spGetData(&dmaData.dataSet->chan[chan], &sp->data[chan]);
+    uint8_t mid = (min + max) / 2;
+
+    if (dbTable[mid] < value) {
+        return mid == min ? mid : spGetDb(value, mid, max);
+    } else {
+        return mid == max ? mid : spGetDb(value, min, mid);
     }
+}
+
+void spGetADC(SpChan chan, uint8_t *out, size_t size, fftGet fn)
+{
+    int16_t *dma = &dmaData.dataSet->chan[chan];
+
+    FftSample *smpl = malloc(sizeof (FftSample) * FFT_SIZE);
+
+    spDoFft(dma, smpl);
+
+    if (NULL != fn) {
+        fn(smpl, out, size);
+    }
+
+    free(smpl);
 }
 
 void spConvertADC(void)
@@ -293,4 +261,13 @@ void spConvertADC(void)
         LL_ADC_REG_StartConversion(ADC1);
 #endif
     }
+}
+
+bool spCheckSignal()
+{
+    bool ret = LL_ADC_IsActiveFlag_AWD1(ADC1);
+
+    LL_ADC_ClearFlag_AWD1(ADC1);
+
+    return ret;
 }
