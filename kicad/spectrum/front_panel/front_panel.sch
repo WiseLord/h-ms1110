@@ -2865,9 +2865,6 @@ Text Label 7600 2350 2    50   ~ 0
 IN_L
 Text Label 7600 1000 2    50   ~ 0
 IN_R
-Connection ~ 10700 1000
-Wire Wire Line
-	10700 1000 11000 1000
 Wire Wire Line
 	6400 1600 6350 1600
 Wire Wire Line
@@ -2883,24 +2880,6 @@ F 3 "~" H 6550 2600 50  0001 C CNN
 	1    6550 2600
 	0    -1   -1   0   
 $EndComp
-Wire Bus Line
-	7600 3450 9300 3450
-Wire Bus Line
-	4700 1600 4700 3450
-Wire Bus Line
-	800  850  800  3450
-Wire Bus Line
-	4700 7400 6450 7400
-Wire Bus Line
-	800  850  3500 850 
-Wire Bus Line
-	7600 3450 7600 6000
-Wire Bus Line
-	9300 3450 9300 6000
-Wire Bus Line
-	4700 3450 4700 7400
-Wire Bus Line
-	2350 3450 2350 7400
 $Comp
 L Device:C C21
 U 1 1 5E7BFBB9
@@ -2934,4 +2913,22 @@ F 3 "~" H 7250 2350 50  0001 C CNN
 	1    7250 2350
 	0    -1   -1   0   
 $EndComp
+Wire Bus Line
+	7600 3450 9300 3450
+Wire Bus Line
+	4700 1600 4700 3450
+Wire Bus Line
+	800  850  800  3450
+Wire Bus Line
+	4700 7400 6450 7400
+Wire Bus Line
+	800  850  3500 850 
+Wire Bus Line
+	7600 3450 7600 6000
+Wire Bus Line
+	9300 3450 9300 6000
+Wire Bus Line
+	4700 3450 4700 7400
+Wire Bus Line
+	2350 3450 2350 7400
 $EndSCHEMATC
