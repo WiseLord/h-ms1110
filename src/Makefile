@@ -1,4 +1,4 @@
-PROJECT = h-ms1110
+PROJECT = h-ms1110_audio
 
 STM32_MCU = F103CB
 
@@ -19,7 +19,7 @@ ifeq "$(STM32_MCU)" "F103CB"
   STM32_GROUP  = $(STM32_FAMILY)03xB
 endif
 
-TARGET = $(call lc, $(PROJECT)_$(STM32_MCU)_$(DISPLAY)_$(DISPVAR))
+TARGET = $(call lc, $(PROJECT))
 
 C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 

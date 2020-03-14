@@ -1,0 +1,5 @@
+src
+src/drivers/CMSIS/Device/ST/STM32F1xx/Include
+src/drivers/CMSIS/Include
+src/drivers/STM32F1xx_HAL_Driver/Inc
+src/display
