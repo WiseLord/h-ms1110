@@ -36,15 +36,6 @@
 #define SSD1322_ENABLE_VSL_EXTERN                       0xB4
 #define SSD1322_ENHANCE_DRIVING_SCHEME_CAPABILITY       0xD1
 
-// Scrolling #defines
-#define SSD1322_ACTIVATE_SCROLL                         0x2F
-#define SSD1322_DEACTIVATE_SCROLL                       0x2E
-#define SSD1322_SET_VERTICAL_SCROLL_AREA                0xA3
-#define SSD1322_RIGHT_HORIZONTAL_SCROLL                 0x26
-#define SSD1322_LEFT_HORIZONTAL_SCROLL                  0x27
-#define SSD1322_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL    0x29
-#define SSD1322_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL     0x2A
-
 #define DISP_WIDTH      256
 #define DISP_HEIGHT     64
 
