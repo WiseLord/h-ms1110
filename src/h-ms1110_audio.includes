@@ -1,0 +1,9 @@
+common
+common/display/fonts
+common/drivers/CMSIS/Device/ST/STM32F1xx/Include
+common/drivers/CMSIS/Include
+common/drivers/STM32F1xx_HAL_Driver/Inc
+common/gui
+h-ms1110_audio
+h-ms1110_audio/gui
+h-ms1110_audio/tr
