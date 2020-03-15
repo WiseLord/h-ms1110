@@ -55,8 +55,9 @@ static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
 
 void canvasInit()
 {
-    glcdInit(&canvas.glcd);
+    glcdInit();
 
+    canvas.glcd = glcdGet();
     canvas.layout = layoutGet();
 
     PalIdx palIdx = PAL_DEFAULT;//(PalIdx)settingsRead(PARAM_DISPLAY_PALETTE);
@@ -218,7 +219,7 @@ void canvasShowSpectrum(bool clear)
 
     switch (sp->mode) {
     default:
-        drawSpectrum(clear, true, SP_CHAN_BOTH, &rect);
+        drawSpectrum(clear, true, SP_CHAN_RIGHT, &rect);
     }
 }
 

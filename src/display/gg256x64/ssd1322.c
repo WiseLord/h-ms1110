@@ -42,7 +42,7 @@ void ssd1322Init(void)
     dispdrvSendData8(0xFD); // Enhanced low GS display quality; (reset 0xB5 (normal)),
 
     dispdrvSelectReg8(SSD1322_SET_CONTRAST_CURRENT);
-    dispdrvSendData8(0xBF); // (reset 0x7F)
+    dispdrvSendData8(0xFF); // (reset 0x7F)
 
     dispdrvSelectReg8(SSD1322_MASTER_CURRENT_CONTROL);
     dispdrvSendData8(0x0F); // (reset)
