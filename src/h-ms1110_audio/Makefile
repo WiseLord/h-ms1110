@@ -75,8 +75,8 @@ C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
 
 # Audio source files
-C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
-C_SOURCES += audio/audio.c
+C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
+C_SOURCES += $(COMMON)/audio/audio.c
 C_DEFS += $(addprefix -D_, $(APROC_LIST))
 
 C_INCLUDES += \
