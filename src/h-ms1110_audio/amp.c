@@ -209,7 +209,6 @@ void ampInitHw(void)
 
         audioSetMute(true);
         audioSetPower(true);
-//        tunerInit();
 
         amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 500);

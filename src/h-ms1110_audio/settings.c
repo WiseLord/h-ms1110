@@ -3,21 +3,14 @@
 #include "audio/audio.h"
 #include "display/glcd.h"
 #include "eemul.h"
-//#include "i2cexp.h"
 #include "input.h"
 #include "rc.h"
 #include "screen.h"
 #include "spectrum.h"
 #include "tr/labels.h"
-//#include "tuner/tunerdefs.h"
 
 static uint8_t silenceTimer = 0;
 static int16_t rtcCorr = 0;
-//static uint8_t muteStby = 0;
-//static I2cAddrIdx i2cExtInIdx = I2C_ADDR_DISABLED;
-//static I2cAddrIdx i2cBtIdx = I2C_ADDR_DISABLED;
-static int8_t brStby = 3;
-static int8_t brWork = LCD_BR_MAX;
 
 #define GENERATE_EE_RC_MAP(CMD)  [PARAM_RC_ ## CMD] = {0x80 + RC_CMD_ ## CMD, (int16_t)EE_NOT_FOUND},
 
@@ -59,22 +52,7 @@ static const EE_Map eeMap[] = {
     [PARAM_AUDIO_SUBWOOFER] =   {0x27,  0},
     [PARAM_AUDIO_PREAMP]    =   {0x28,  0},
 
-//    [PARAM_TUNER_IC]        =   {0x30,  TUNER_IC_TEST},
-//    [PARAM_TUNER_BAND]      =   {0x31,  TUNER_BAND_FM_US_EUROPE},
-//    [PARAM_TUNER_STEP]      =   {0x32,  TUNER_STEP_100K},
-//    [PARAM_TUNER_DEEMPH]    =   {0x33,  TUNER_DEEMPH_50u},
-//    [PARAM_TUNER_STA_MODE]  =   {0x34,  true},
-//    [PARAM_TUNER_FMONO]     =   {0x35,  false},
-//    [PARAM_TUNER_RDS]       =   {0x36,  true},
-//    [PARAM_TUNER_BASS]      =   {0x37,  false},
-//    [PARAM_TUNER_VOLUME]    =   {0x38,  TUNER_VOLUME_MAX},
-//    [PARAM_TUNER_FREQ]      =   {0x39,  9950},
-
-    [PARAM_DISPLAY_BR_STBY] =   {0x40,  3},
-    [PARAM_DISPLAY_BR_WORK] =   {0x41,  LCD_BR_MAX},
-    [PARAM_DISPLAY_ROTATE]  =   {0x42,  false},
     [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_AUDIO_INPUT},
-//    [PARAM_DISPLAY_PALETTE] =   {0x44,  PAL_DEFAULT},
 
     [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_STEREO},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
@@ -85,13 +63,9 @@ static const EE_Map eeMap[] = {
     [PARAM_ALARM_DAYS]      =   {0x62,  0},
 
     [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_DEFAULT},
-//    [PARAM_SYSTEM_MUTESTBY] =   {0x71,  MUTESTBY_POS},
     [PARAM_SYSTEM_SIL_TIM]  =   {0x72,  5},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
     [PARAM_SYSTEM_ENC_RES]  =   {0x74,  4},
-
-//    [PARAM_I2C_EXT_IN_STAT] =   {0x78,  I2C_ADDR_DISABLED},
-//    [PARAM_I2C_EXT_BT]      =   {0x79,  I2C_ADDR_DISABLED},
 
     FOREACH_CMD(GENERATE_EE_RC_MAP)
 };
@@ -110,7 +84,6 @@ int16_t settingsGet(Param param)
     int16_t ret = 0;
 
     AudioProc *aProc = audioGet();
-//    Tuner *tuner = tunerGet();
     Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
 
@@ -169,52 +142,9 @@ int16_t settingsGet(Param param)
         ret = aProc->par.tune[param - PARAM_AUDIO_VOLUME].value;
         break;
 
-//    case PARAM_TUNER_IC:
-//        ret = tuner->par.ic;
-//        break;
-//    case PARAM_TUNER_BAND:
-//        ret = tuner->par.band;
-//        break;
-//    case PARAM_TUNER_STEP:
-//        ret = tuner->par.step;
-//        break;
-//    case PARAM_TUNER_DEEMPH:
-//        ret = tuner->par.deemph;
-//        break;
-//    case PARAM_TUNER_STA_MODE:
-//        ret = tuner->par.stationMode;
-//        break;
-//    case PARAM_TUNER_FMONO:
-//        ret = tuner->par.forcedMono;
-//        break;
-//    case PARAM_TUNER_RDS:
-//        ret = tuner->par.rds;
-//        break;
-//    case PARAM_TUNER_BASS:
-//        ret = tuner->par.bassBoost;
-//        break;
-//    case PARAM_TUNER_VOLUME:
-//        ret = tuner->par.volume;
-//        break;
-//    case PARAM_TUNER_FREQ:
-//        ret = (int16_t)tuner->status.freq;
-//        break;
-
-    case PARAM_DISPLAY_BR_STBY:
-        ret = brStby;
-        break;
-    case PARAM_DISPLAY_BR_WORK:
-        ret = brWork;
-        break;
-    case PARAM_DISPLAY_ROTATE:
-        ret = glcdGet()->rotate;
-        break;
     case PARAM_DISPLAY_DEF:
         ret = screenGet()->def;
         break;
-//    case PARAM_DISPLAY_PALETTE:
-//        ret = paletteGetIndex();
-//        break;
 
     case PARAM_SPECTRUM_MODE:
         ret = sp->mode;
@@ -239,9 +169,6 @@ int16_t settingsGet(Param param)
     case PARAM_SYSTEM_LANG:
         ret = labelsGetLang();
         break;
-//    case PARAM_SYSTEM_MUTESTBY:
-//        ret = muteStby;
-//        break;
     case PARAM_SYSTEM_ENC_RES:
         ret = inputGetEncRes();
         break;
@@ -251,13 +178,6 @@ int16_t settingsGet(Param param)
     case PARAM_SYSTEM_RTC_CORR:
         ret = rtcCorr;
         break;
-
-//    case PARAM_I2C_EXT_IN_STAT:
-//        ret = i2cExtInIdx;
-//        break;
-//    case PARAM_I2C_EXT_BT:
-//        ret = i2cBtIdx;
-//        break;
 
     default:
         break;
@@ -273,7 +193,6 @@ int16_t settingsGet(Param param)
 void settingsSet(Param param, int16_t value)
 {
     AudioProc *aProc = audioGet();
-//    Tuner *tuner = tunerGet();
     Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
 
@@ -332,52 +251,9 @@ void settingsSet(Param param, int16_t value)
         aProc->par.tune[param - PARAM_AUDIO_VOLUME].value = (int8_t)value;
         break;
 
-//    case PARAM_TUNER_IC:
-//        tuner->par.ic = (TunerIC)value;
-//        break;
-//    case PARAM_TUNER_BAND:
-//        tuner->par.band = (TunerBand)value;
-//        break;
-//    case PARAM_TUNER_STEP:
-//        tuner->par.step = (TunerStep)value;
-//        break;
-//    case PARAM_TUNER_DEEMPH:
-//        tuner->par.deemph = (TunerDeemph)value;
-//        break;
-//    case PARAM_TUNER_STA_MODE:
-//        tuner->par.stationMode = (bool)value;
-//        break;
-//    case PARAM_TUNER_FMONO:
-//        tuner->par.forcedMono = (bool)value;
-//        break;
-//    case PARAM_TUNER_RDS:
-//        tuner->par.rds = (bool)value;
-//        break;
-//    case PARAM_TUNER_BASS:
-//        tuner->par.bassBoost = (bool)value;
-//        break;
-//    case PARAM_TUNER_VOLUME:
-//        tuner->par.volume = (int8_t)value;
-//        break;
-//    case PARAM_TUNER_FREQ:
-//        tuner->status.freq = (uint16_t)value;
-//        break;
-
-    case PARAM_DISPLAY_BR_STBY:
-        brStby = (int8_t)value;
-        break;
-    case PARAM_DISPLAY_BR_WORK:
-        brWork = (int8_t)value;
-        break;
-    case PARAM_DISPLAY_ROTATE:
-        glcdGet()->rotate = (bool)value;
-        break;
     case PARAM_DISPLAY_DEF:
         screenGet()->def = (ScrMode)value;
         break;
-//    case PARAM_DISPLAY_PALETTE:
-//        paletteSetIndex((PalIdx)value);
-//        break;
 
     case PARAM_SPECTRUM_MODE:
         sp->mode = (SpMode)value;
@@ -402,9 +278,6 @@ void settingsSet(Param param, int16_t value)
     case PARAM_SYSTEM_LANG:
         labelsSetLang((Lang)value);
         break;
-//    case PARAM_SYSTEM_MUTESTBY:
-//        muteStby = (uint8_t)value;
-//        break;
     case PARAM_SYSTEM_ENC_RES:
         inputSetEncRes((int8_t)value);
         break;
@@ -414,13 +287,6 @@ void settingsSet(Param param, int16_t value)
     case PARAM_SYSTEM_RTC_CORR:
         rtcCorr = value;
         break;
-
-//    case PARAM_I2C_EXT_IN_STAT:
-//        i2cExtInIdx = (I2cAddrIdx)value;
-//        break;
-//    case PARAM_I2C_EXT_BT:
-//        i2cBtIdx = (I2cAddrIdx)value;
-//        break;
 
     default:
         break;

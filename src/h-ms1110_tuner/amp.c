@@ -70,15 +70,6 @@ static void actionDispExpired(ScrMode scrMode)
     }
 }
 
-static void actionResetSilenceTimer(void)
-{
-    int16_t silenceTimer = settingsGet(PARAM_SYSTEM_SIL_TIM);
-
-    if (silenceTimer) {
-        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * silenceTimer + 999);
-    }
-}
-
 static void ampPinMute(bool value)
 {
     if (value) {
@@ -96,12 +87,12 @@ static void ampPinStby(bool value)
         SET(STBY);
     }
 
-//    // Enable SWD interface in standby mode
-//    if (value) {
-//        LL_GPIO_AF_Remap_SWJ_NOJTAG();
-//    } else {
+    // Enable SWD interface in standby mode
+    if (value) {
+        LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    } else {
         LL_GPIO_AF_DisableRemap_SWJ();
-//    }
+    }
 }
 
 static void ampReadSettings(void)
@@ -414,7 +405,6 @@ void ampActionHandle(void)
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
-        actionResetSilenceTimer();
         break;
     case ACTION_INIT_RTC:
         rtcInit();
@@ -452,18 +442,6 @@ void ampActionHandle(void)
 
     default:
         break;
-    }
-
-    // Reset silence timer on any user action
-    if (action.type != ACTION_NONE && action.type != ACTION_DISP_EXPIRED) {
-        actionResetSilenceTimer();
-    }
-
-    // Reset silence timer on signal
-    if (scrMode != SCREEN_STANDBY) {
-        if (spCheckSignal()) {
-            actionResetSilenceTimer();
-        }
     }
 
     screenSetMode(action.screen);

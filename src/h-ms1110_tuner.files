@@ -4,7 +4,6 @@ common/debug.h
 common/display/colors.h
 common/display/dispdrv.c
 common/display/dispdrv.h
-common/display/fonts.h
 common/display/fonts/font-terminus-12.c
 common/display/fonts/font-terminus-14.c
 common/display/fonts/font-terminus-14b.c
@@ -22,6 +21,7 @@ common/display/fonts/font-terminus-28.c
 common/display/fonts/font-terminus-28b.c
 common/display/fonts/font-terminus-32.c
 common/display/fonts/font-terminus-32b.c
+common/display/fonts/fonts.h
 common/display/gc130x130/ssd1283a.c
 common/display/gc160x128/ili9163.c
 common/display/gc160x128/s6d0144.c
@@ -87,8 +87,6 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
-common/gui/layout.c
-common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/spectrumcolumn.c
@@ -99,7 +97,6 @@ common/gui/widget/textedit.c
 common/gui/widget/textedit.h
 common/i2c.c
 common/i2c.h
-common/main.c
 common/rc.c
 common/rc.h
 common/rtc.c
@@ -110,11 +107,6 @@ common/spi.c
 common/spi.h
 common/swtimers.c
 common/swtimers.h
-common/system/startup_stm32f103xb.s
-common/system/stm32f103cb_flash.ld
-common/system/stm32f103xb_openocd_jlink.cfg
-common/system/stm32f103xb_openocd_stlink.cfg
-common/system/system_stm32f1xx.c
 common/timers.c
 common/timers.h
 common/usart.c
@@ -126,6 +118,8 @@ h-ms1110_tuner/amp.c
 h-ms1110_tuner/amp.h
 h-ms1110_tuner/gui/canvas.c
 h-ms1110_tuner/gui/canvas.h
+h-ms1110_tuner/gui/layout.c
+h-ms1110_tuner/gui/layout.h
 h-ms1110_tuner/hwlibs.h
 h-ms1110_tuner/input.c
 h-ms1110_tuner/input.h
@@ -140,3 +134,20 @@ h-ms1110_tuner/settings.c
 h-ms1110_tuner/settings.h
 h-ms1110_tuner/tr/labels.c
 h-ms1110_tuner/tr/labels.h
+h-ms1110_tuner/tr/labels_en.c
+h-ms1110_tuner/tuner/rda580x.c
+h-ms1110_tuner/tuner/rda580x.h
+h-ms1110_tuner/tuner/rda580x_regs.h
+h-ms1110_tuner/tuner/rds.c
+h-ms1110_tuner/tuner/rds.h
+h-ms1110_tuner/tuner/si470x.c
+h-ms1110_tuner/tuner/si470x.h
+h-ms1110_tuner/tuner/si470x_regs.h
+h-ms1110_tuner/tuner/stations.c
+h-ms1110_tuner/tuner/stations.h
+h-ms1110_tuner/tuner/tea5767.c
+h-ms1110_tuner/tuner/tea5767.h
+h-ms1110_tuner/tuner/tea5767_regs.h
+h-ms1110_tuner/tuner/tuner.c
+h-ms1110_tuner/tuner/tuner.h
+h-ms1110_tuner/tuner/tunerdefs.h

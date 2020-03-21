@@ -50,7 +50,7 @@ C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 
 C_SOURCES += tr/labels.c
-C_SOURCES += $(wildcard $(COMMON)/tr/labels_*.c)
+C_SOURCES += $(wildcard tr/labels_*.c)
 
 # Display source files
 C_SOURCES += $(wildcard $(COMMON)/display/fonts/font*.c)
@@ -70,9 +70,16 @@ C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
 
 C_SOURCES += gui/canvas.c
-C_SOURCES += $(COMMON)/gui/layout.c
+C_SOURCES += gui/layout.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
+
+# Tuner source files
+C_SOURCES += $(addprefix tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
+C_SOURCES += tuner/rds.c
+C_SOURCES += tuner/stations.c
+C_SOURCES += tuner/tuner.c
+C_DEFS += $(addprefix -D_, $(TUNER_LIST))
 
 C_INCLUDES += \
   -I$(COMMON)/display/fonts \

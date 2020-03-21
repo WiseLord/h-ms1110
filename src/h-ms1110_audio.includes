@@ -5,17 +5,3 @@ common/drivers/CMSIS/Include
 common/drivers/STM32F1xx_HAL_Driver/Inc
 common/gui
 h-ms1110_audio
-h-ms1110_audio/gui
-h-ms1110_audio/tr
-h-ms1110_audio/audio
-common/display/gc130x130
-common/display/gc400x240
-common/display/gc176x132
-common/display
-common/display/gg256x64
-common/display/gc320x240
-common/gui/widget
-common/display/gc480x320
-common/display/gc160x128
-common/display/gc220x176
-common/drivers/STM32F1xx_HAL_Driver/Src
