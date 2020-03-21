@@ -5,22 +5,25 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
 #include <stdbool.h>
-#include <stddef.h>
+#include <stdint.h>
 
 #define LINE_SIZE       128
 
 typedef struct {
     char line[LINE_SIZE];
-    int32_t idx;
+    int16_t idx;
+    int16_t size;
 } LineParse;
 
 void utilmDelay(uint32_t delay);
 
 char *utilMkStr(const char *fmt, ...);
 
-bool utilReadChar(LineParse *lp, char data);
+bool utilReadChar(LineParse *lp, char ch);
+
+bool utilIsPrefix(const char *line, const char *prefix);
+void utilTrimLineEnd(char *line);
 
 #ifdef __cplusplus
 }

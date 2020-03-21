@@ -4,7 +4,6 @@ common/debug.h
 common/display/colors.h
 common/display/dispdrv.c
 common/display/dispdrv.h
-common/display/fonts.h
 common/display/fonts/font-terminus-12.c
 common/display/fonts/font-terminus-14.c
 common/display/fonts/font-terminus-14b.c
@@ -22,6 +21,7 @@ common/display/fonts/font-terminus-28.c
 common/display/fonts/font-terminus-28b.c
 common/display/fonts/font-terminus-32.c
 common/display/fonts/font-terminus-32b.c
+common/display/fonts/fonts.h
 common/display/gc130x130/ssd1283a.c
 common/display/gc160x128/ili9163.c
 common/display/gc160x128/s6d0144.c
@@ -87,8 +87,6 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
-common/gui/layout.c
-common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/spectrumcolumn.c
@@ -109,11 +107,6 @@ common/spi.c
 common/spi.h
 common/swtimers.c
 common/swtimers.h
-common/system/startup_stm32f103xb.s
-common/system/stm32f103cb_flash.ld
-common/system/stm32f103xb_openocd_jlink.cfg
-common/system/stm32f103xb_openocd_stlink.cfg
-common/system/system_stm32f1xx.c
 common/timers.c
 common/timers.h
 common/usart.c
@@ -138,6 +131,8 @@ h-ms1110_audio/audio/tda7719.c
 h-ms1110_audio/audio/tda7719.h
 h-ms1110_audio/gui/canvas.c
 h-ms1110_audio/gui/canvas.h
+h-ms1110_audio/gui/layout.c
+h-ms1110_audio/gui/layout.h
 h-ms1110_audio/hwlibs.h
 h-ms1110_audio/input.c
 h-ms1110_audio/input.h
@@ -150,3 +145,6 @@ h-ms1110_audio/screen.c
 h-ms1110_audio/screen.h
 h-ms1110_audio/settings.c
 h-ms1110_audio/settings.h
+h-ms1110_audio/tr/labels.c
+h-ms1110_audio/tr/labels.h
+h-ms1110_audio/tr/labels_en.c

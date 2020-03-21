@@ -122,12 +122,12 @@ static void ampPinStby(bool value)
         SET(STBY);
     }
 
-//    // Enable SWD interface in standby mode
-//    if (value) {
-//        LL_GPIO_AF_Remap_SWJ_NOJTAG();
-//    } else {
+    // Enable SWD interface in standby mode
+    if (value) {
+        LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    } else {
         LL_GPIO_AF_DisableRemap_SWJ();
-//    }
+    }
 }
 
 static void ampMute(bool value)

@@ -5,27 +5,26 @@
 extern "C" {
 #endif
 
-#include "audio/audiodefs.h"
-//#include "gui/palette.h"
+#include "amp.h"
+#include "audio/audio.h"
+#include "gui/palette.h"
 #include "menu.h"
-#include "pins.h"
 #include "rtc.h"
 #include "screen.h"
-//#include "spectrum.h"
-//#include "tuner/tuner.h"
+#include "spectrum.h"
+
+#define GENERATE_MENU_RC_TEXT(CMD)  [LABEL_MENU + MENU_RC_ ## CMD] = # CMD,
+#define GENERATE_AUDIO_IC_TEXT(IC)  [LABEL_AUDIO_IC + AUDIO_IC_ ## IC] = # IC,
 
 typedef uint8_t Lang;
 enum {
-    LANG_DEFAULT = 0,
+    LANG_EN,
+//    LANG_BY,
+//    LANG_RU,
 
-    LANG_BY,
-    LANG_FR,
-    LANG_RO,
-    LANG_RU,
-    LANG_TR,
-    LANG_UA,
+    LANG_END,
 
-    LANG_END
+    LANG_DEFAULT = LANG_EN,
 };
 
 typedef enum {
@@ -56,7 +55,7 @@ typedef enum {
     LABEL_IN_MICROPHONE,
     LABEL_IN_GUITAR,
     LABEL_IN_TURNTABLES,
-    LABEL_IN_CASSETTE,
+    LABEL_IN_SDCARD,
     LABEL_IN_PROJECTOR,
     LABEL_IN_SATELLITE,
     LABEL_IN_MIXER,
@@ -65,7 +64,10 @@ typedef enum {
     LABEL_BOOL_OFF,
     LABEL_BOOL_ON,
 
-    LABEL_AUDIO_IC,
+    LABEL_SPECTRUM_MODE,
+    LABEL_SPECTRUM_MODE_END = LABEL_SPECTRUM_MODE + (SP_MODE_END - SP_MODE_STEREO),
+
+    LABEL_AUDIO_IC = LABEL_SPECTRUM_MODE_END,
     LABEL_AUDIO_IC_END = LABEL_AUDIO_IC + (AUDIO_IC_END - AUDIO_IC_NO),
 
     LABEL_ALARM_DAY = LABEL_AUDIO_IC_END,
@@ -78,17 +80,15 @@ typedef enum {
     LABEL_END = LABEL_MENU_END,
 } Label;
 
+extern const char *const labels_en[LABEL_END];
 //extern const char *const labels_by[LABEL_END];
-//extern const char *const labels_fr[LABEL_END];
 //extern const char *const labels_ru[LABEL_END];
-//extern const char *const labels_tr[LABEL_END];
-//extern const char *const labels_ua[LABEL_END];
-//extern const char *const labels_ro[LABEL_END];
 
 void labelsSetLang(Lang value);
 Lang labelsGetLang(void);
 const char *labelsGetLangName(Lang value);
 
+const char *labelsGetDefault(Label value);
 const char *labelsGet(Label value);
 
 void labelsInit(void);

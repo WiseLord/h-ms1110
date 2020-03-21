@@ -8,10 +8,9 @@ extern "C" {
 #include <stdint.h>
 
 #include "display/glcd.h"
-//#include "icons.h"
-#include "widget/spectrumcolumn.h"
-#include "widget/stripedbar.h"
-#include "widget/textedit.h"
+#include "gui/widget/spectrumcolumn.h"
+#include "gui/widget/stripedbar.h"
+#include "gui/widget/textedit.h"
 
 typedef struct {
     const tFont *hmsFont;       // Font to draw hours/minutes/seconds
