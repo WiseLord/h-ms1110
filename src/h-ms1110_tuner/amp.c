@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include "debug.h"
 #include "i2c.h"
@@ -13,7 +14,10 @@
 #include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
+#include "tuner/tuner.h"
+#include "utils.h"
 
+static void actionGetMaster(void);
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
@@ -28,17 +32,29 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
-
 static Action action = {
     .type = ACTION_STANDBY,
     .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
 };
 
+static Action slaveInputAction = {
+    .type = ACTION_NONE,
+    .value = 0,
+};
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
     .inputStatus = 0x00,
 };
+
+
+static uint8_t rxBuf[3];
+
+void ampSyncRxCb(void)
+{
+
+}
 
 static void actionSet(ActionType type, int16_t value)
 {
@@ -87,17 +103,17 @@ static void ampPinStby(bool value)
         SET(STBY);
     }
 
-    // Enable SWD interface in standby mode
-    if (value) {
+//    // Enable SWD interface in standby mode
+//    if (value) {
         LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    } else {
-        LL_GPIO_AF_DisableRemap_SWJ();
-    }
+//    } else {
+//        LL_GPIO_AF_DisableRemap_SWJ();
+//    }
 }
 
 static void ampReadSettings(void)
 {
-    //    tunerReadSettings();
+    tunerReadSettings();
 }
 
 void ampExitStby(void)
@@ -154,16 +170,29 @@ void ampInitHw(void)
     }
 }
 
+static void actionGetMaster(void)
+{
+    Action masterAction;
+
+    masterAction.type = rxBuf[0];
+
+    if (masterAction.type != ACTION_NONE) {
+        masterAction.value = (int16_t)((rxBuf[1] << 8) | (rxBuf[2] << 0));
+        actionSet(masterAction.type, masterAction.value);
+        memset(rxBuf, 0, sizeof(rxBuf));
+    }
+}
 
 static void actionGetButtons(void)
 {
     CmdBtn cmdBtn = getBtnCmd();
 
     if (cmdBtn.btn) {
+        slaveInputAction.value = (int16_t)cmdBtn.btn;
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+            slaveInputAction.type = ACTION_BTN_LONG;
         } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+            slaveInputAction.type = ACTION_BTN_SHORT;
         }
     }
 }
@@ -311,7 +340,7 @@ void ampInitMuteStby(void)
 
 void ampInit(void)
 {
-//    dbgInit();
+    dbgInit();
 
     settingsInit();
     ampInitMuteStby();
@@ -323,6 +352,11 @@ void ampInit(void)
 
     inputInit();
     rcInit();
+
+    i2cInit(I2C_SYNC, 400000);
+    i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
+    i2cBegin(I2C_SYNC, 0x28);
+    i2cSlaveTransmitReceive(I2C_SYNC, rxBuf, sizeof(rxBuf));
 
     ampReadSettings();
 
@@ -353,6 +387,8 @@ Amp *ampGet(void)
 void ampActionGet(void)
 {
     actionSet(ACTION_NONE, 0);
+
+    actionGetMaster();
 
     if (ACTION_NONE == action.type) {
         actionGetButtons();

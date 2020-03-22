@@ -14,6 +14,7 @@
 #include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
+#include "utils.h"
 
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
@@ -123,11 +124,11 @@ static void ampPinStby(bool value)
     }
 
     // Enable SWD interface in standby mode
-    if (value) {
+//    if (value) {
         LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    } else {
-        LL_GPIO_AF_DisableRemap_SWJ();
-    }
+//    } else {
+//        LL_GPIO_AF_DisableRemap_SWJ();
+//    }
 }
 
 static void ampMute(bool value)
@@ -758,6 +759,8 @@ void ampInit(void)
     inputInit();
     rcInit();
 
+    i2cInit(I2C_SYNC, 400000);
+
     ampReadSettings();
 
     timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
@@ -846,6 +849,15 @@ static void ampActionRemap(void)
     }
 }
 
+static void ampTunerSendAction(ActionType type, int16_t value)
+{
+    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
+    i2cSend(I2C_SYNC, (uint8_t)type);
+    i2cSend(I2C_SYNC, (uint8_t)(value >> 8) & 0xFF);
+    i2cSend(I2C_SYNC, (uint8_t)(value >> 0) & 0xFF);
+    i2cTransmit(I2C_SYNC);
+}
+
 void ampActionHandle(void)
 {
     Screen *screen = screenGet();
@@ -865,6 +877,7 @@ void ampActionHandle(void)
         rtcInit();
         break;
     case ACTION_STANDBY:
+        ampTunerSendAction(action.type, action.value);
         if (action.value == FLAG_EXIT) {
             ampExitStby();
             actionSetScreen(SCREEN_TIME, 1000);
@@ -872,7 +885,6 @@ void ampActionHandle(void)
             ampEnterStby();
             actionDispExpired(SCREEN_STANDBY);
         }
-        break;
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);

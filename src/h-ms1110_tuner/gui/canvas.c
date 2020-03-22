@@ -349,6 +349,7 @@ void canvasShowStandby(bool clear)
 
 //    return;
 //    canvasShowTest1(clear);
+//    canvasShowTestI2C(clear);
 }
 
 static void drawMenuItem(uint8_t idx, const tFont *fontItem)
@@ -437,4 +438,17 @@ void canvasShowMenu(bool clear)
             drawMenuItem(idx, lt->menu.menuFont);
         }
     }
+}
+
+void canvasShowTestI2C(bool clear)
+{
+    (void)clear;
+
+    const Layout *lt = canvas.layout;
+    glcdSetFont(lt->lblFont);
+    glcdSetFontColor(canvas.pal->fg);
+    glcdSetXY(0, 0);
+    glcdWriteString("RX: ");
+
+    glcdWriteString(utilMkStr("%4d", ampGet()->volume));
 }

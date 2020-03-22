@@ -1,5 +1,7 @@
 #include "canvas.h"
 
+#include "i2c.h"
+
 #include "amp.h"
 #include "audio/audio.h"
 #include "display/glcd.h"
@@ -349,7 +351,7 @@ void canvasShowStandby(bool clear)
 //    canvasShowSpectrum(clear);
 
 //    return;
-//    canvasShowTest1(clear);
+//    canvasShowTestI2C(clear);
 }
 
 void canvasShowTune(bool clear)
@@ -577,4 +579,24 @@ void canvasShowTest2(bool clear)
 
     glcdSetXY(150, 48);
     glcdWriteString(utilMkStr("%4d %4d %4d", inputGetPot(0), inputGetPot(1), inputGetPot(2)));
+}
+
+void canvasShowTestI2C(bool clear)
+{
+    (void)clear;
+
+    const Layout *lt = canvas.layout;
+    glcdSetFont(lt->lblFont);
+    glcdSetFontColor(canvas.pal->fg);
+    glcdSetXY(0, 0);
+    glcdWriteString("TX: ");
+
+    static int8_t num = 0;
+
+    if (swTimGet(SW_TIM_BT_KEY) <= 0) {
+        swTimSet(SW_TIM_BT_KEY, 5);
+        num++;
+    }
+
+    glcdWriteString(utilMkStr("%4d", num));
 }

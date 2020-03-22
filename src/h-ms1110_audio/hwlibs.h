@@ -28,6 +28,7 @@ extern "C" {
 #define EXTI_RC_HANDLER         EXTI9_5_IRQHandler
 
 #define I2C_AMP                 I2C1
+#define I2C_SYNC                I2C2
 
 #define LL_I2C1_SCL_PIN         LL_GPIO_PIN_8
 #define LL_I2C1_SDA_PIN         LL_GPIO_PIN_9

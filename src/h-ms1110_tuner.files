@@ -1,3 +1,4 @@
+common/action.h
 common/cmd.h
 common/debug.c
 common/debug.h

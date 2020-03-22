@@ -1,3 +1,4 @@
+common/action.h
 common/audio/audio.c
 common/audio/audio.h
 common/audio/audiodefs.h

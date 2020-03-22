@@ -8,33 +8,12 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "action.h"
 #include "screen.h"
 
 #define FLAG_EXIT       0
 #define FLAG_ENTER      1
 #define FLAG_SWITCH     2
-
-typedef uint8_t ActionType;
-enum {
-    ACTION_NONE = 0,
-
-    ACTION_BTN_SHORT,
-    ACTION_BTN_LONG,
-    ACTION_ENCODER,
-
-    ACTION_INIT_HW,
-    ACTION_INIT_RTC,
-    ACTION_STANDBY,
-
-    ACTION_DISP_EXPIRED,
-
-    ACTION_OPEN_MENU,
-
-    ACTION_MENU_SELECT,
-    ACTION_MENU_CHANGE,
-
-    ACTION_END
-};
 
 typedef struct {
     ActionType type;

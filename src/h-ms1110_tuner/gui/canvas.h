@@ -27,6 +27,8 @@ void canvasShowTime(bool clear);
 void canvasShowStandby(bool clear);
 void canvasShowMenu(bool clear);
 
+void canvasShowTestI2C(bool clear);
+
 #ifdef __cplusplus
 }
 #endif
