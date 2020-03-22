@@ -44,8 +44,9 @@ static Action action = {
 };
 
 static AmpSync ampSync;
+static AmpSync ampReport;
 
-static SyncAction syncAction;
+static SyncAction syncRxAction;
 
 void ampSyncRxCb(int16_t bytes)
 {
@@ -53,10 +54,26 @@ void ampSyncRxCb(int16_t bytes)
 
     switch (ampSync.type) {
     case SYNC_ACTION:
-        syncAction = ampSync.action;
+        syncRxAction = ampSync.action;
         break;
     }
     ampSync.type = SYNC_NONE;
+}
+
+void ampSyncTxCb(int16_t bytes)
+{
+    if (ampReport.type != SYNC_NONE) {
+        i2cBegin(I2C_SYNC, 0x28);
+        for (size_t i = 0; i < sizeof(ampReport); i++) {
+            i2cSend(I2C_SYNC, ampReport.data[i]);
+        }
+    } else {
+        i2cBegin(I2C_SYNC, 0x28);
+        for (size_t i = 0; i < sizeof (ampReport); i++) {
+            i2cSend(I2C_SYNC, 0x00);
+        }
+    }
+    memset(&ampReport, 0x00, sizeof(ampReport));
 }
 
 static void actionSet(ActionType type, int16_t value)
@@ -106,12 +123,12 @@ static void ampPinStby(bool value)
         SET(STBY);
     }
 
-//    // Enable SWD interface in standby mode
-//    if (value) {
+    // Enable SWD interface in standby mode
+    if (value) {
         LL_GPIO_AF_Remap_SWJ_NOJTAG();
-//    } else {
-//        LL_GPIO_AF_DisableRemap_SWJ();
-//    }
+    } else {
+        LL_GPIO_AF_DisableRemap_SWJ();
+    }
 }
 
 static void ampReadSettings(void)
@@ -175,9 +192,9 @@ void ampInitHw(void)
 
 static void actionGetMaster(void)
 {
-    if (syncAction.type != ACTION_NONE) {
-        actionSet(syncAction.type, syncAction.value);
-        syncAction.type = ACTION_NONE;
+    if (syncRxAction.type != ACTION_NONE) {
+        actionSet(syncRxAction.type, syncRxAction.value);
+        syncRxAction.type = ACTION_NONE;
     }
 }
 
@@ -186,11 +203,10 @@ static void actionGetButtons(void)
     CmdBtn cmdBtn = getBtnCmd();
 
     if (cmdBtn.btn) {
-//        slaveInputAction.value = (int16_t)cmdBtn.btn;
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-//            slaveInputAction.type = ACTION_BTN_LONG;
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-//            slaveInputAction.type = ACTION_BTN_SHORT;
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
     }
 }
@@ -223,7 +239,7 @@ static void actionRemapBtnShort(void)
 {
     switch (action.value) {
     case BTN_MWFM:
-        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        actionSet(ACTION_TUNER_BAND, action.value);
         break;
     default:
         break;
@@ -235,7 +251,7 @@ static void actionRemapBtnLong(void)
     ScrMode scrMode = screenGet()->mode;
 
     switch (action.value) {
-    case BTN_MWFM:
+    case BTN_ENC:
         switch (scrMode) {
         case SCREEN_STANDBY:
             actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
@@ -353,6 +369,7 @@ void ampInit(void)
 
     i2cInit(I2C_SYNC, 400000);
     i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
+    i2cSetTxCb(I2C_SYNC, ampSyncTxCb);
     i2cBegin(I2C_SYNC, 0x28);
     i2cSlaveTransmitReceive(I2C_SYNC, ampSync.data, sizeof(ampSync));
 
@@ -429,6 +446,14 @@ static void ampActionRemap(void)
     }
 }
 
+static void ampReportAction(ActionType type, int16_t value)
+{
+    ampReport.action.type = type;
+    ampReport.action.value = value;
+
+    ampReport.type = SYNC_ACTION;
+}
+
 void ampActionHandle(void)
 {
     Screen *screen = screenGet();
@@ -472,6 +497,11 @@ void ampActionHandle(void)
     case ACTION_MENU_CHANGE:
         menuChange((int8_t)action.value);
         actionSetScreen(SCREEN_MENU, 10000);
+        break;
+
+    case ACTION_TUNER_BAND:
+        // Do tuner band change
+        ampReportAction(ACTION_TUNER_BAND, action.value);
         break;
 
     default:

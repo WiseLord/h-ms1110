@@ -95,3 +95,14 @@ int main(void)
 
     return 0;
 }
+
+void USART_DBG_HANDLER(void)
+{
+    // Check RXNE flag value in SR register
+    if (LL_USART_IsActiveFlag_RXNE(USART_DBG) && LL_USART_IsEnabledIT_RXNE(USART_DBG)) {
+        char data = LL_USART_ReceiveData8(USART_DBG);
+        (void)data;
+    } else {
+        // Call Error function
+    }
+}

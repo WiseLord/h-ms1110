@@ -34,6 +34,10 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static Amp amp = {
+    .status = AMP_STATUS_STBY,
+    .inputStatus = 0x00,
+};
 
 static Action action = {
     .type = ACTION_STANDBY,
@@ -41,10 +45,7 @@ static Action action = {
     .value = FLAG_ENTER,
 };
 
-static Amp amp = {
-    .status = AMP_STATUS_STBY,
-    .inputStatus = 0x00,
-};
+static AmpSync ampSync;
 
 static void actionSet(ActionType type, int16_t value)
 {
@@ -125,11 +126,11 @@ static void ampPinStby(bool value)
     }
 
     // Enable SWD interface in standby mode
-//    if (value) {
-    LL_GPIO_AF_Remap_SWJ_NOJTAG();
-//    } else {
-//        LL_GPIO_AF_DisableRemap_SWJ();
-//    }
+    if (value) {
+        LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    } else {
+        LL_GPIO_AF_DisableRemap_SWJ();
+    }
 }
 
 static void ampMute(bool value)
@@ -271,6 +272,18 @@ static int8_t actionGetNextAudioInput(int8_t diff)
     }
 
     return ret;
+}
+
+static void actionGetTuner(void)
+{
+    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
+    i2cReceive(I2C_SYNC, ampSync.data, sizeof (ampSync.data));
+
+    if (ampSync.type == SYNC_ACTION) {
+        if (ampSync.action.type == ACTION_TUNER_BAND) {
+            actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        }
+    }
 }
 
 static void actionGetButtons(void)
@@ -799,6 +812,10 @@ void ampActionGet(void)
     actionSet(ACTION_NONE, 0);
 
     if (ACTION_NONE == action.type) {
+        actionGetTuner();
+    }
+
+    if (ACTION_NONE == action.type) {
         actionGetButtons();
     }
 
@@ -853,11 +870,12 @@ static void ampActionRemap(void)
 static void ampTunerSendAction(ActionType type, int16_t value)
 {
     AmpSync sync;
-    memset(&sync, 0, sizeof(sync));
+    memset(&sync, 0xFF, sizeof(sync));
 
-    sync.type = SYNC_ACTION;
     sync.action.type = type;
     sync.action.value = value;
+
+    sync.type = SYNC_ACTION;
 
     i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
     for (size_t i = 0; i < sizeof(sync); i++) {

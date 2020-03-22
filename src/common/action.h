@@ -31,6 +31,8 @@ enum {
     ACTION_MENU_SELECT,
     ACTION_MENU_CHANGE,
 
+    ACTION_TUNER_BAND,
+
     ACTION_END
 };
 
@@ -40,6 +42,7 @@ enum {
 
     SYNC_ACTION,
     SYNC_DISPLAY,
+    SYNC_REPORT,
 
     SYNC_END
 };
