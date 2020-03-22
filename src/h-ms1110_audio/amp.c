@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include "audio/audio.h"
 #include "debug.h"
@@ -125,7 +126,7 @@ static void ampPinStby(bool value)
 
     // Enable SWD interface in standby mode
 //    if (value) {
-        LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    LL_GPIO_AF_Remap_SWJ_NOJTAG();
 //    } else {
 //        LL_GPIO_AF_DisableRemap_SWJ();
 //    }
@@ -851,10 +852,17 @@ static void ampActionRemap(void)
 
 static void ampTunerSendAction(ActionType type, int16_t value)
 {
+    AmpSync sync;
+    memset(&sync, 0, sizeof(sync));
+
+    sync.type = SYNC_ACTION;
+    sync.action.type = type;
+    sync.action.value = value;
+
     i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    i2cSend(I2C_SYNC, (uint8_t)type);
-    i2cSend(I2C_SYNC, (uint8_t)(value >> 8) & 0xFF);
-    i2cSend(I2C_SYNC, (uint8_t)(value >> 0) & 0xFF);
+    for (size_t i = 0; i < sizeof(sync); i++) {
+        i2cSend(I2C_SYNC, sync.data[i]);
+    }
     i2cTransmit(I2C_SYNC);
 }
 

@@ -32,28 +32,31 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static Amp amp = {
+    .status = AMP_STATUS_STBY,
+    .inputStatus = 0x00,
+};
+
 static Action action = {
     .type = ACTION_STANDBY,
     .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
 };
 
-static Action slaveInputAction = {
-    .type = ACTION_NONE,
-    .value = 0,
-};
+static AmpSync ampSync;
 
-static Amp amp = {
-    .status = AMP_STATUS_STBY,
-    .inputStatus = 0x00,
-};
+static SyncAction syncAction;
 
-
-static uint8_t rxBuf[3];
-
-void ampSyncRxCb(void)
+void ampSyncRxCb(int16_t bytes)
 {
+    (void)bytes;
 
+    switch (ampSync.type) {
+    case SYNC_ACTION:
+        syncAction = ampSync.action;
+        break;
+    }
+    ampSync.type = SYNC_NONE;
 }
 
 static void actionSet(ActionType type, int16_t value)
@@ -172,14 +175,9 @@ void ampInitHw(void)
 
 static void actionGetMaster(void)
 {
-    Action masterAction;
-
-    masterAction.type = rxBuf[0];
-
-    if (masterAction.type != ACTION_NONE) {
-        masterAction.value = (int16_t)((rxBuf[1] << 8) | (rxBuf[2] << 0));
-        actionSet(masterAction.type, masterAction.value);
-        memset(rxBuf, 0, sizeof(rxBuf));
+    if (syncAction.type != ACTION_NONE) {
+        actionSet(syncAction.type, syncAction.value);
+        syncAction.type = ACTION_NONE;
     }
 }
 
@@ -188,11 +186,11 @@ static void actionGetButtons(void)
     CmdBtn cmdBtn = getBtnCmd();
 
     if (cmdBtn.btn) {
-        slaveInputAction.value = (int16_t)cmdBtn.btn;
+//        slaveInputAction.value = (int16_t)cmdBtn.btn;
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            slaveInputAction.type = ACTION_BTN_LONG;
+//            slaveInputAction.type = ACTION_BTN_LONG;
         } else {
-            slaveInputAction.type = ACTION_BTN_SHORT;
+//            slaveInputAction.type = ACTION_BTN_SHORT;
         }
     }
 }
@@ -356,7 +354,7 @@ void ampInit(void)
     i2cInit(I2C_SYNC, 400000);
     i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
     i2cBegin(I2C_SYNC, 0x28);
-    i2cSlaveTransmitReceive(I2C_SYNC, rxBuf, sizeof(rxBuf));
+    i2cSlaveTransmitReceive(I2C_SYNC, ampSync.data, sizeof(ampSync));
 
     ampReadSettings();
 
