@@ -111,6 +111,8 @@ common/gui/widget/textedit.c
 common/gui/widget/textedit.h
 common/i2c.c
 common/i2c.h
+common/input.c
+common/input.h
 common/rc.c
 common/rc.h
 common/rtc.c
@@ -135,8 +137,6 @@ h-ms1110_audio/gui/canvas.h
 h-ms1110_audio/gui/layout.c
 h-ms1110_audio/gui/layout.h
 h-ms1110_audio/hwlibs.h
-h-ms1110_audio/input.c
-h-ms1110_audio/input.h
 h-ms1110_audio/main.c
 h-ms1110_audio/menu.c
 h-ms1110_audio/menu.h

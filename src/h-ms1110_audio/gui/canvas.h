@@ -29,10 +29,6 @@ void canvasShowTune(bool clear);
 void canvasShowAudioInput(bool clear);
 void canvasShowMenu(bool clear);
 
-void canvasShowTest1(bool clear);
-void canvasShowTest2(bool clear);
-void canvasShowTestI2C(bool clear);
-
 #ifdef __cplusplus
 }
 #endif

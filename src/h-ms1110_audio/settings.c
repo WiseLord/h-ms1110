@@ -170,7 +170,7 @@ int16_t settingsGet(Param param)
         ret = labelsGetLang();
         break;
     case PARAM_SYSTEM_ENC_RES:
-        ret = inputGetEncRes();
+        ret = inputGet()->encRes;
         break;
     case PARAM_SYSTEM_SIL_TIM:
         ret = silenceTimer;
@@ -279,7 +279,7 @@ void settingsSet(Param param, int16_t value)
         labelsSetLang((Lang)value);
         break;
     case PARAM_SYSTEM_ENC_RES:
-        inputSetEncRes((int8_t)value);
+        inputGet()->encRes = (int8_t)value;
         break;
     case PARAM_SYSTEM_SIL_TIM:
         silenceTimer = (uint8_t)value;

@@ -6,6 +6,8 @@
 #include "settings.h"
 #include "timers.h"
 
+#ifdef _INPUT_ANALOG
+
 #define ADC_MAX         4095
 #define ABS(x)          ((x) > 0 ? (x) : -(x))
 
@@ -31,10 +33,9 @@ static const uint32_t analogInputs[AIN_END] = {
     AIN_BTN_ADC_Channel,
 };
 
-static InputCtx ctx;
+#endif // _INPUT_ANALOG
 
-static volatile int8_t encCnt;
-static volatile CmdBtn cmdBuf;
+static Input input;
 
 static void inputMatrixInit(void)
 {
@@ -67,6 +68,8 @@ static void inputMatrixInit(void)
     CLR(MATRIX_S3);
 }
 
+#ifdef _INPUT_ANALOG
+
 static void inputAnalogInit(void)
 {
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
@@ -95,87 +98,40 @@ static void inputAnalogInit(void)
 
     const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
     const int16_t zoneCnt = grid->max - grid->min + 1;
-    int16_t zoneLen = R_POT_MAX / zoneCnt;
+    input.potZone = R_POT_MAX / zoneCnt;
 
-    ctx.potData[AIN_POT_A] = zoneLen / 2;
-    ctx.potData[AIN_POT_B] = zoneLen / 2;
+    input.potData[AIN_POT_A] = input.potZone / 2;
+    input.potData[AIN_POT_B] = input.potZone / 2;
 }
 
-static void inputMatrixRead(void)
-{
-    static uint8_t row = 0;
-
-    uint16_t matrix = 0;
-
-    if (READ(MATRIX_K1)) {
-        matrix |= 0x01;
-    }
-    if (READ(MATRIX_K2)) {
-        matrix |= 0x02;
-    }
-    if (READ(MATRIX_K3)) {
-        matrix |= 0x04;
-    }
-    if (READ(MATRIX_K4)) {
-        matrix |= 0x08;
-    }
-
-    switch (row) {
-    case 0: // S1
-        ctx.matrix &= ~0x000F;
-        ctx.matrix |= (matrix << 0);
-        CLR(MATRIX_S1);
-        SET(MATRIX_S2);
-        break;
-    case 1: // S2
-        ctx.matrix &= ~0x00F0;
-        ctx.matrix |= (matrix << 4);
-        CLR(MATRIX_S2);
-        SET(MATRIX_S3);
-        break;
-    case 2: // S3
-        ctx.matrix &= ~0x0F00;
-        ctx.matrix |= (matrix << 8);
-        CLR(MATRIX_S3);
-        SET(MATRIX_S1);
-        break;
-    }
-
-    if (++row >= KEY_MATRIX_ROWS) {
-        row = 0;
-    }
-}
-
-static void inputAnalogConvert(void)
+static uint16_t getAnalogInput()
 {
     static uint8_t chan = 0;
+    static AnalogBtn aBtn = ABTN_RELEASED;
 
     // Read data from previous input
     int16_t adcData = (int16_t)LL_ADC_REG_ReadConversionData12(ADC2);
-    ctx.adcData[chan] = adcData; // TODO: remove
 
     if (chan < AIN_POT_END) {
-        const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-        const int16_t zoneCnt = grid->max - grid->min + 1;
-        int16_t zoneLen = R_POT_MAX / zoneCnt;
+        int16_t potZone = input.potZone;
 
         // Consider "reverted" potentiomener
         adcData = R_POT_MAX - adcData;
 
-        int16_t diff = adcData - ctx.potData[chan];
+        int16_t diff = adcData - input.potData[chan];
 
         if (diff >= 0) {
-            ctx.potData[chan] += ABS(diff) / zoneLen * zoneLen;
+            input.potData[chan] += ABS(diff) / potZone * potZone;
         } else {
-            ctx.potData[chan] -= ABS(diff) / zoneLen * zoneLen;
+            input.potData[chan] -= ABS(diff) / potZone * potZone;
         }
 
     } else if (chan == AIN_BTN) {
-        ctx.aBtn = ABTN_RELEASED;
+        aBtn = ABTN_RELEASED;
         for (AnalogBtn i = 0; i < ABTN_END; i++) {
             int16_t btnDiff = (int16_t)(ADC_MAX * R_BTNS[i] / (R_BTNS[i] + R_BTN_H)) - adcData;
             if (ABS(btnDiff) < BTN_THRESHOLD) {
-                ctx.aBtn = i;
+                aBtn = i;
                 break;
             }
         }
@@ -189,20 +145,60 @@ static void inputAnalogConvert(void)
     // Run new conversion
     LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
     LL_ADC_REG_StartConversionSWStart(ADC2);
-}
 
-static uint16_t getAnalogButtons()
-{
-    if (ctx.aBtn >= 0) {
-        return (uint16_t)(BTN_STBY << ctx.aBtn);
+
+    if (aBtn >= 0) {
+        return (uint16_t)(BTN_STBY << aBtn);
     }
 
     return BTN_NO;
 }
 
+#endif // _INPUT_ANALOG
+
 static uint16_t getMatrixButtons()
 {
-    return ctx.matrix;
+    static uint8_t row = 0;
+
+    static uint16_t matrix;
+    uint16_t cols = 0;
+
+    if (READ(MATRIX_K1)) {
+        cols |= 0x01;
+    }
+    if (READ(MATRIX_K2)) {
+        cols |= 0x02;
+    }
+    if (READ(MATRIX_K3)) {
+        cols |= 0x04;
+    }
+    if (READ(MATRIX_K4)) {
+        cols |= 0x08;
+    }
+
+    switch (row) {
+    case 0: // S1
+        CLR(MATRIX_S1);
+        SET(MATRIX_S2);
+        break;
+    case 1: // S2
+        CLR(MATRIX_S2);
+        SET(MATRIX_S3);
+        break;
+    case 2: // S3
+        CLR(MATRIX_S3);
+        SET(MATRIX_S1);
+        break;
+    }
+
+    matrix &= ~(0x000F << (KEY_MATRIX_COLS * row));
+    matrix |= (cols << (KEY_MATRIX_COLS * row));
+
+    if (++row >= KEY_MATRIX_ROWS) {
+        row = 0;
+    }
+
+    return matrix;
 }
 
 static void inputEncoderInit(void)
@@ -233,75 +229,78 @@ static uint16_t readEncoder(void)
     return enc;
 }
 
-static void inputHandle(void)
+static void inputHandleButtons(void)
 {
     // Antibounce counter
     static int16_t btnCnt = 0;
 
     // Previous state
     static uint16_t btnPrev = BTN_NO;
-    static uint16_t encPrev = ENC_NO;
 
     uint16_t btnNow = BTN_NO;
-    uint16_t encNow = BTN_NO;
 
     btnNow |= getMatrixButtons();
-    btnNow |= getAnalogButtons();
-
-    encNow |= readEncoder();
-
-    // If encoder event has happened, inc/dec encoder counter
-    if (ctx.encRes) {
-        if ((encPrev == ENC_NO && encNow == ENC_A) ||
-            (encPrev == ENC_A && encNow == ENC_AB) ||
-            (encPrev == ENC_AB && encNow == ENC_B) ||
-            (encPrev == ENC_B && encNow == ENC_NO))
-            encCnt++;
-        if ((encPrev == ENC_NO && encNow == ENC_B) ||
-            (encPrev == ENC_B && encNow == ENC_AB) ||
-            (encPrev == ENC_AB && encNow == ENC_A) ||
-            (encPrev == ENC_A && encNow == ENC_NO))
-            encCnt--;
-        encPrev = encNow;
-    }
+#ifdef _INPUT_ANALOG
+    btnNow |= getAnalogInput();
+#endif // _INPUT_ANALOG
 
     // On button event place it to command buffer
     if (btnNow) {
         if (btnNow == btnPrev) {
             btnCnt++;
             if (btnCnt == LONG_PRESS) {
-                cmdBuf.btn = btnPrev;
-                cmdBuf.flags |= BTN_FLAG_LONG_PRESS;
+                input.btn = btnPrev;
+                input.flags |= BTN_FLAG_LONG_PRESS;
             }
         }
     } else {
         if ((btnCnt > SHORT_PRESS) && (btnCnt < LONG_PRESS - AUTOREPEAT)) {
-            cmdBuf.btn = btnPrev;
+            input.btn = btnPrev;
         }
         btnCnt = 0;
     }
     btnPrev = btnNow;
 }
 
+static void inputHandleEncoder(void)
+{
+    // Previous state
+    static uint16_t encPrev = ENC_NO;
+
+    uint16_t encNow = readEncoder();
+
+    // If encoder event has happened, inc/dec encoder counter
+    if (input.encRes) {
+        if ((encPrev == ENC_NO && encNow == ENC_A) ||
+            (encPrev == ENC_A && encNow == ENC_AB) ||
+            (encPrev == ENC_AB && encNow == ENC_B) ||
+            (encPrev == ENC_B && encNow == ENC_NO))
+            input.encCnt++;
+        if ((encPrev == ENC_NO && encNow == ENC_B) ||
+            (encPrev == ENC_B && encNow == ENC_AB) ||
+            (encPrev == ENC_AB && encNow == ENC_A) ||
+            (encPrev == ENC_A && encNow == ENC_NO))
+            input.encCnt--;
+        encPrev = encNow;
+    }
+}
+
 void inputInit()
 {
     inputMatrixInit();
+#ifdef _INPUT_ANALOG
     inputAnalogInit();
+#endif // _INPUT_ANALOG
     inputEncoderInit();
 
     timerInit(TIM_INPUT, 199, 359);  // 1kHz polling
 
-    ctx.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
+    input.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
 }
 
-void inputSetEncRes(int8_t value)
+Input *inputGet()
 {
-    ctx.encRes = value;
-}
-
-int8_t inputGetEncRes(void)
-{
-    return ctx.encRes;
+    return &input;
 }
 
 void TIM_INPUT_HANDLER(void)
@@ -310,23 +309,19 @@ void TIM_INPUT_HANDLER(void)
         // Clear the update interrupt flag
         LL_TIM_ClearFlag_UPDATE(TIM_INPUT);
 
-        inputMatrixRead();
-        inputAnalogConvert();
-        inputHandle();
+        inputHandleButtons();
+        inputHandleEncoder();
     }
 }
 
-InputCtx *inputGetCtx()
-{
-    return &ctx;
-}
+#ifdef _INPUT_ANALOG
 
-int8_t inputGetPot(uint8_t chan)
+int8_t inputGetPots(uint8_t chan)
 {
     const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
     const int16_t zoneCnt = grid->max - grid->min + 1;
 
-    int8_t pot = (int8_t)(ctx.potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
+    int8_t pot = (int8_t)(input.potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
 
     if (pot < grid->min) {
         pot = grid->min;
@@ -338,27 +333,29 @@ int8_t inputGetPot(uint8_t chan)
     return pot;
 }
 
-int8_t getEncoder(void)
+#endif // _INPUT_ANALOG
+
+int8_t inputGetEncoder(void)
 {
     int8_t ret = 0;
 
-    if (ctx.encRes) {
-        ret = encCnt / ctx.encRes;
-        encCnt -= (ret * ctx.encRes);
+    if (input.encRes) {
+        ret = input.encCnt / input.encRes;
+        input.encCnt -= (ret * input.encRes);
     } else {
-        ret = encCnt;
-        encCnt = 0;
+        ret = input.encCnt;
+        input.encCnt = 0;
     }
 
     return ret;
 }
 
-CmdBtn getBtnCmd(void)
+CmdBtn inputGetBtnCmd(void)
 {
-    CmdBtn ret = cmdBuf;
+    CmdBtn ret =  { .btn = input.btn, .flags = input.flags };
 
-    cmdBuf.btn = BTN_NO;
-    cmdBuf.flags = BTN_FLAG_NO;
+    input.btn = BTN_NO;
+    input.flags = BTN_FLAG_NO;
 
     return ret;
 }

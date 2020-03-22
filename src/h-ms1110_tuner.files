@@ -98,6 +98,8 @@ common/gui/widget/textedit.c
 common/gui/widget/textedit.h
 common/i2c.c
 common/i2c.h
+common/input.c
+common/input.h
 common/rc.c
 common/rc.h
 common/rtc.c
@@ -138,8 +140,6 @@ h-ms1110_tuner/gui/canvas.h
 h-ms1110_tuner/gui/layout.c
 h-ms1110_tuner/gui/layout.h
 h-ms1110_tuner/hwlibs.h
-h-ms1110_tuner/input.c
-h-ms1110_tuner/input.h
 h-ms1110_tuner/main.c
 h-ms1110_tuner/menu.c
 h-ms1110_tuner/menu.h

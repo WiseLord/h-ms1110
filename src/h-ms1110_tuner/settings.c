@@ -103,7 +103,7 @@ int16_t settingsGet(Param param)
         ret = labelsGetLang();
         break;
     case PARAM_SYSTEM_ENC_RES:
-        ret = inputGetEncRes();
+        ret = inputGet()->encRes;
         break;
     case PARAM_SYSTEM_RTC_CORR:
         ret = rtcCorr;
@@ -172,7 +172,7 @@ void settingsSet(Param param, int16_t value)
         labelsSetLang((Lang)value);
         break;
     case PARAM_SYSTEM_ENC_RES:
-        inputSetEncRes((int8_t)value);
+        inputGet()->encRes = (int8_t)value;
         break;
     case PARAM_SYSTEM_RTC_CORR:
         rtcCorr = value;

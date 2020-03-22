@@ -344,14 +344,7 @@ void canvasShowTime(bool clear)
 
 void canvasShowStandby(bool clear)
 {
-    (void)clear;
-
     canvasShowTime(clear);
-
-//    canvasShowSpectrum(clear);
-
-//    return;
-//    canvasShowTestI2C(clear);
 }
 
 void canvasShowTune(bool clear)
@@ -372,7 +365,7 @@ void canvasShowTune(bool clear)
     const AudioGrid *grid = aProc->par.tune[aProc->tune].grid;
     const int8_t min = grid ? grid->min : 0;
     const int8_t max = grid ? grid->max : 0;
-    const uint8_t mStep = grid ? grid->mStep : 0;
+    const int8_t mStep = grid ? grid->mStep : 0;
 
     if (clear) {
         // Label
@@ -497,106 +490,4 @@ void canvasShowMenu(bool clear)
             drawMenuItem(idx, lt->menu.menuFont);
         }
     }
-}
-
-void canvasShowTest1(bool clear)
-{
-    (void)clear;
-    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-
-    glcdSetFont(&fontterminus12);
-
-    InputCtx *inCtx = inputGetCtx();
-
-    const int16_t sw = 210;
-    const int16_t zoneCnt = grid->max - grid->min + 1;
-
-    for (uint8_t i = AIN_POT_A; i < AIN_POT_END; i++) {
-        int8_t pot = inputGetPot(i);
-        int16_t len = (sw * (pot - grid->min) + sw / 2) / zoneCnt;
-
-        int16_t xb = 0;
-        int16_t yb = 16 * i;
-
-        glcdDrawRect(xb, yb, len, 12, COLOR_WHITE);
-        glcdDrawRect(xb + len, yb, sw - len, 12, COLOR_GRAY);
-        glcdSetXY(xb + sw + 2, yb);
-        glcdWriteString(utilMkStr("%2d.%4d", pot, inCtx->potData[i]));
-        for (int16_t j = 1; j < zoneCnt; j++) {
-            glcdDrawRect(xb + j * sw / zoneCnt, yb, 1, 12, RGB_CONV(0xA0A0A0));
-        }
-    }
-
-    AnalogBtn aBtn = inputGetCtx()->aBtn;
-
-    for (AnalogBtn i = 0; i < ABTN_END; i++) {
-        glcdDrawCircle(16 + 20 * i, 40, 6, i == aBtn ? COLOR_WHITE : COLOR_GRAY);
-    }
-
-    glcdSetXY(200, 40);
-    glcdWriteString(utilMkStr("0x%04x", inCtx->matrix));
-}
-
-void canvasShowTest2(bool clear)
-{
-    (void)clear;
-
-    glcdSetFont(&fontterminus32);
-
-    glcdSetXY(0, 0);
-    glcdWriteString("Spectrum");
-
-    glcdSetFont(&fontterminus16);
-
-    static int16_t adcDataMin[AIN_END];
-    static int16_t adcDataMax[AIN_END];
-
-    InputCtx *inCtx = inputGetCtx();
-
-    for (AnalogInput ain = AIN_POT_A; ain < AIN_END; ain++) {
-        if (inCtx->adcData[ain] < adcDataMin[ain] || adcDataMin[ain] == 0) {
-            adcDataMin[ain] = inCtx->adcData[ain];
-        }
-        if (inCtx->adcData[ain] > adcDataMax[ain] || adcDataMax[ain] == 0) {
-            adcDataMax[ain] = inCtx->adcData[ain];
-        }
-    }
-
-    glcdSetXY(0, 32);
-    glcdWriteString(utilMkStr("%4d %4d", 3844 - inCtx->potData[0], 3844 - inCtx->potData[1]));
-
-    glcdSetXY(0, 48);
-    glcdWriteString(utilMkStr("%4d %4d", 3844 - inCtx->adcData[0], 3844 - inCtx->adcData[1]));
-
-    glcdSetXY(150, 0);
-    glcdWriteString(utilMkStr("%4d %4d %4d", inCtx->adcData[0], inCtx->adcData[1], inCtx->adcData[2]));
-
-    glcdSetXY(150, 16);
-    glcdWriteString(utilMkStr("%4d %4d %4d", adcDataMin[0], adcDataMin[1], adcDataMin[2]));
-
-    glcdSetXY(150, 32);
-    glcdWriteString(utilMkStr("%4d %4d %4d", adcDataMax[0], adcDataMax[1], adcDataMax[2]));
-
-    glcdSetXY(150, 48);
-    glcdWriteString(utilMkStr("%4d %4d %4d", inputGetPot(0), inputGetPot(1), inputGetPot(2)));
-}
-
-void canvasShowTestI2C(bool clear)
-{
-    (void)clear;
-
-    const Layout *lt = canvas.layout;
-    glcdSetFont(lt->lblFont);
-    glcdSetFontColor(canvas.pal->fg);
-    glcdSetXY(0, 0);
-    glcdWriteString("TX: ");
-
-    static int8_t num = 0;
-
-    if (swTimGet(SW_TIM_BT_KEY) <= 0) {
-        swTimSet(SW_TIM_BT_KEY, 5);
-        num++;
-    }
-
-    glcdWriteString(utilMkStr("%4d", num));
 }

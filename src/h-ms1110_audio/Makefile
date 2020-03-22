@@ -24,6 +24,7 @@ TARGET = $(call lc, $(PROJECT))
 
 C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 
+C_DEFS += -D_INPUT_ANALOG
 C_DEFS += -D_DISP_RST_ENABLED
 
 COMMON = ../common
@@ -35,7 +36,7 @@ C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
-C_SOURCES += input.c
+C_SOURCES += $(COMMON)/input.c
 C_SOURCES += menu.c
 C_SOURCES += pins.c
 C_SOURCES += $(COMMON)/rc.c

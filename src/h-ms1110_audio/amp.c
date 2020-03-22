@@ -20,7 +20,9 @@
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetRemote(void);
+#ifdef _INPUT_ANALOG
 static void actionGetPots(void);
+#endif
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(void);
@@ -288,7 +290,7 @@ static void actionGetTuner(void)
 
 static void actionGetButtons(void)
 {
-    CmdBtn cmdBtn = getBtnCmd();
+    CmdBtn cmdBtn = inputGetBtnCmd();
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
@@ -301,7 +303,7 @@ static void actionGetButtons(void)
 
 static void actionGetEncoder(void)
 {
-    int8_t encVal = getEncoder();
+    int8_t encVal = inputGetEncoder();
 
     if (encVal) {
         actionSet(ACTION_ENCODER, encVal);
@@ -375,6 +377,8 @@ static void actionGetRemote(void)
     }
 }
 
+#ifdef _INPUT_ANALOG
+
 static void actionGetPots(void)
 {
     static int8_t potPrev[AIN_POT_END];
@@ -382,7 +386,7 @@ static void actionGetPots(void)
     AudioProc *aProc = audioGet();
 
     for (AnalogInput ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
-        int8_t pot = inputGetPot(ain);
+        int8_t pot = inputGetPots(ain);
         if (pot != potPrev[ain]) {
             if (amp.status == AMP_STATUS_ACTIVE) {
                 screenSetMode(SCREEN_AUDIO_PARAM);
@@ -409,6 +413,8 @@ static void actionGetPots(void)
         }
     }
 }
+
+#endif // _INPUT_ANALOG
 
 static void actionGetTimers(void)
 {
@@ -827,9 +833,11 @@ void ampActionGet(void)
         actionGetRemote();
     }
 
+#ifdef _INPUT_ANALOG
     if (ACTION_NONE == action.type) {
         actionGetPots();
     }
+#endif // _INPUT_ANALOG
 
     if (ACTION_NONE == action.type) {
         ScrMode scrMode = screenGet()->mode;
