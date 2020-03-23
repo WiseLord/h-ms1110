@@ -88,7 +88,7 @@ common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_rcc.h
 common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_rtc.h
 common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_spi.h
 common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_system.h
-common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_tim.h
+common/drivers/STM32F1xx_HAL_Driver/Inc/stcanm32f1xx_ll_tim.h
 common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_usart.h
 common/drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_ll_utils.h
 common/drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_gpio.c
@@ -101,6 +101,8 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
+common/gui/canvas.c
+common/gui/canvas.h
 common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
@@ -134,8 +136,7 @@ common/utils.h
 h-ms1110_audio/Makefile
 h-ms1110_audio/amp.c
 h-ms1110_audio/amp.h
-h-ms1110_audio/gui/canvas.c
-h-ms1110_audio/gui/canvas.h
+h-ms1110_audio/canvas.c
 h-ms1110_audio/hwlibs.h
 h-ms1110_audio/main.c
 h-ms1110_audio/menu.c

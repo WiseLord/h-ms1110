@@ -1,9 +1,6 @@
-#include "canvas.h"
-
-#include "i2c.h"
+#include "gui/canvas.h"
 
 #include "amp.h"
-#include "audio/audio.h"
 #include "display/glcd.h"
 #include "input.h"
 #include "menu.h"
@@ -43,8 +40,6 @@ static void drawSpectrum(bool clear, bool check, SpChan chan, GlcdRect *rect);
 static SpDrawData spDrawData;
 static SpData spData[SP_CHAN_END];
 
-static Canvas canvas;
-
 
 // First/last indexes of spectrum indexes moving to output
 static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
@@ -54,40 +49,6 @@ static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
     76,  88,  102, 119, 137, 159, 184, 213, 246, 285,
     330, 382, 441, 512,
 };
-
-void canvasInit()
-{
-    glcdInit();
-
-    canvas.glcd = glcdGet();
-    canvas.layout = layoutGet();
-
-    PalIdx palIdx = PAL_DEFAULT;//(PalIdx)settingsRead(PARAM_DISPLAY_PALETTE);
-    paletteSetIndex(palIdx);
-    canvas.pal = paletteGet(palIdx);
-
-    glcdDrawRect(0, 0, dispdrv.width, dispdrv.height, canvas.pal->bg);
-
-    canvas.glcd->rect = canvas.layout->rect;
-
-    menuGet()->dispSize = 3/*canvas.layout->menu.itemCnt*/;
-}
-
-Canvas *canvasGet(void)
-{
-    return &canvas;
-}
-
-void canvasClear(void)
-{
-    GlcdRect rect = canvas.glcd->rect;
-
-    glcdDrawRect(0, 0, rect.w, rect.h, COLOR_BLACK);
-    glcdShift(0);
-
-    glcdSetFontColor(COLOR_WHITE);
-    glcdSetFontBgColor(COLOR_BLACK);
-}
 
 static uint8_t calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *spCol)
 {
@@ -217,11 +178,11 @@ static void drawSpectrum(bool clear, bool check, SpChan chan, GlcdRect *rect)
 void canvasShowSpectrum(bool clear)
 {
     Spectrum *sp = spGet();
-    GlcdRect rect = canvas.glcd->rect;
+    GlcdRect rect = canvasGet()->glcd->rect;
 
     switch (sp->mode) {
     default:
-        drawSpectrum(clear, true, SP_CHAN_LEFT, &rect);
+        drawSpectrum(clear, true, SP_CHAN_RIGHT, &rect);
     }
 }
 
@@ -239,9 +200,9 @@ static void drawTm(RTC_type *rtc, RtcMode tm, color_t fg)
     int8_t time = *((int8_t *)rtc + tm);
 
     glcdSetFontColor(fg);
-    glcdSetFontBgColor(canvas.pal->bg);
+    glcdSetFontBgColor(canvasGet()->pal->bg);
     if (rtc->etm == tm) {
-        glcdSetFontColor(canvas.pal->bg);
+        glcdSetFontColor(canvasGet()->pal->bg);
         glcdSetFontBgColor(fg);
     }
     glcdWriteUChar(LETTER_SPACE_CHAR);
@@ -256,7 +217,7 @@ static void drawTm(RTC_type *rtc, RtcMode tm, color_t fg)
     }
     glcdWriteUChar(LETTER_SPACE_CHAR);
     glcdSetFontColor(fg);
-    glcdSetFontBgColor(canvas.pal->bg);
+    glcdSetFontBgColor(canvasGet()->pal->bg);
 }
 
 void canvasShowTime(bool clear)
@@ -270,9 +231,9 @@ void canvasShowTime(bool clear)
 //    glcdWriteString("Time");
 
     AmpStatus status = ampGet()->status;
-    color_t fg = (status == AMP_STATUS_STBY ? canvas.pal->inactive : canvas.pal->fg);
+    color_t fg = (status == AMP_STATUS_STBY ? canvasGet()->pal->inactive : canvasGet()->pal->fg);
 
-    const Layout *lt = canvas.layout;
+    const Layout *lt = canvasGet()->layout;
 
     RTC_type rtcStruct; // TODO: Use one struct in rtc driver
     rtcStruct.etm = rtcGetMode();
@@ -334,7 +295,7 @@ void canvasShowTime(bool clear)
 
     // Clear the area with weekday label
     glcdDrawRect(0, lt->time.wdY, lt->rect.w,
-                 (int16_t)lt->time.wdFont->chars[0].image->height, canvas.pal->bg);
+                 (int16_t)lt->time.wdFont->chars[0].image->height, canvasGet()->pal->bg);
 
     const char *wdayLabel = labelsGet((Label)(LABEL_SUNDAY + rtc->wday));
     glcdSetXY(lt->rect.w / 2, lt->time.wdY);
@@ -347,66 +308,9 @@ void canvasShowStandby(bool clear)
     canvasShowTime(clear);
 }
 
-void canvasShowTune(bool clear)
-{
-    const Layout *lt = canvas.layout;
-
-    AudioProc *aProc = audioGet();
-    InputType inType = aProc->par.inType[aProc->par.input];
-
-    const char *label = labelsGet(LABEL_IN_TUNER + inType);
-
-    if (aProc->tune < AUDIO_TUNE_GAIN) {
-        label = labelsGet(LABEL_VOLUME + aProc->tune);
-    }
-
-    const int16_t value = aProc->par.tune[aProc->tune].value;
-
-    const AudioGrid *grid = aProc->par.tune[aProc->tune].grid;
-    const int8_t min = grid ? grid->min : 0;
-    const int8_t max = grid ? grid->max : 0;
-    const int8_t mStep = grid ? grid->mStep : 0;
-
-    if (clear) {
-        // Label
-        glcdSetFont(lt->lblFont);
-        glcdSetFontColor(canvas.pal->fg);
-        glcdSetXY(0, 0);
-        glcdWriteString(label);
-    }
-
-    // Bar
-    StripedBar bar = {value, min, max};
-    stripedBarDraw(&bar, &lt->tune.bar, clear);
-
-    // Value
-    glcdSetXY(lt->rect.w, lt->tune.valY);
-    glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    glcdSetFont(lt->tune.valFont);
-    glcdWriteString(utilMkStr("%3d", value * mStep / 8));
-}
-
-void canvasShowAudioInput(bool clear)
-{
-    const Layout *lt = canvas.layout;
-
-    AudioProc *aProc = audioGet();
-    InputType inType = aProc->par.inType[aProc->par.input];
-
-    const char *label = labelsGet(LABEL_IN_TUNER + inType);
-
-    if (clear) {
-        // Label
-        glcdSetFont(lt->lblFont);
-        glcdSetFontColor(canvas.pal->fg);
-        glcdSetXY(0, 0);
-        glcdWriteString(label);
-    }
-}
-
 static void drawMenuItem(uint8_t idx, const tFont *fontItem)
 {
-    const Layout *lt = canvas.layout;
+    const Layout *lt = canvasGet()->layout;
 
     uint8_t fIh = (uint8_t)fontItem->chars[0].image->height;
 
@@ -421,11 +325,11 @@ static void drawMenuItem(uint8_t idx, const tFont *fontItem)
     int16_t y_pos = lt->rect.h - ih * (items - idx + menu->dispOft);
 
     // Draw selection frame
-    glcdDrawFrame(0, y_pos, width, ih, 1, active ? canvas.pal->fg : canvas.pal->bg);
+    glcdDrawFrame(0, y_pos, width, ih, 1, active ? canvasGet()->pal->fg : canvasGet()->pal->bg);
 
     // Draw menu name
     glcdSetFont(fontItem);
-    glcdSetFontColor(canvas.pal->fg);
+    glcdSetFontColor(canvasGet()->pal->fg);
 
     glcdSetXY(4, y_pos + 2);
     if (menu->list[idx] != MENU_NULL) {
@@ -437,13 +341,13 @@ static void drawMenuItem(uint8_t idx, const tFont *fontItem)
     glcdWriteString(menuGetName(menuIdx));
 
     // Draw menu value
-    int16_t x = canvas.glcd->x;
+    int16_t x = canvasGet()->glcd->x;
     glcdSetXY(width - 2, y_pos + 2);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
 
     // Inverse value color if selected
-    color_t color = canvas.glcd->fontFg;
-    color_t bgColor = canvas.glcd->fontBg;
+    color_t color = canvasGet()->glcd->fontFg;
+    color_t bgColor = canvasGet()->glcd->fontBg;
     if (active && menu->selected) {
         glcdSetFontColor(bgColor);
         glcdSetFontBgColor(color);
@@ -456,14 +360,14 @@ static void drawMenuItem(uint8_t idx, const tFont *fontItem)
     glcdSetFontBgColor(bgColor);
 
     // Fill space between name and value
-    glcdDrawRect(x, y_pos + 2, width - 2 - x - strLen, fIh, canvas.pal->bg);
+    glcdDrawRect(x, y_pos + 2, width - 2 - x - strLen, fIh, canvasGet()->pal->bg);
 }
 
 void canvasShowMenu(bool clear)
 {
     (void)clear;
 
-    const Layout *lt = canvas.layout;
+    const Layout *lt = canvasGet()->layout;
 
     Menu *menu = menuGet();
 
@@ -476,14 +380,14 @@ void canvasShowMenu(bool clear)
     // Show header
     const char *parentName = menuGetName(menu->parent);
     glcdSetFont(lt->menu.headFont);
-    glcdSetFontColor(canvas.pal->fg);
+    glcdSetFontColor(canvasGet()->pal->fg);
 
     glcdSetXY(2, 0);
     glcdWriteString(parentName);
     // Fill free space after header
-    glcdDrawRect(canvas.glcd->x, canvas.glcd->y, lt->rect.w - canvas.glcd->x, fHh, canvas.pal->bg);
+    glcdDrawRect(canvasGet()->glcd->x, canvasGet()->glcd->y, lt->rect.w - canvasGet()->glcd->x, fHh, canvasGet()->pal->bg);
 
-    glcdDrawRect(0, dividerPos, lt->rect.w, 1, canvas.glcd->fontFg);
+    glcdDrawRect(0, dividerPos, lt->rect.w, 1, canvasGet()->glcd->fontFg);
 
     for (uint8_t idx = 0; idx < menu->listSize; idx++) {
         if (idx >= menu->dispOft && idx < items + menu->dispOft) {

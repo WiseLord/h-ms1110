@@ -88,6 +88,8 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
+common/gui/canvas.c
+common/gui/canvas.h
 common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
@@ -110,7 +112,7 @@ common/spectrum.c
 common/spectrum.h
 common/spi.c
 common/spi.h
-common/swtimers.c
+common/swtimers.cc
 common/swtimers.h
 common/timers.c
 common/timers.h
@@ -137,8 +139,7 @@ common/utils.h
 h-ms1110_tuner/Makefile
 h-ms1110_tuner/amp.c
 h-ms1110_tuner/amp.h
-h-ms1110_tuner/gui/canvas.c
-h-ms1110_tuner/gui/canvas.h
+h-ms1110_tuner/canvas.c
 h-ms1110_tuner/hwlibs.h
 h-ms1110_tuner/main.c
 h-ms1110_tuner/menu.c

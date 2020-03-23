@@ -4,7 +4,6 @@
 
 #include "amp.h"
 #include "audio/audio.h"
-#include "gui/canvas.h"
 //#include "i2cexp.h"
 #include "input.h"
 #include "rc.h"
@@ -278,7 +277,7 @@ static void menuUpdate(MenuIdx index)
         return;
     }
 
-    canvasClear();
+    screenToClear();
     menuSelect(index);
     menu.active = index;
 }

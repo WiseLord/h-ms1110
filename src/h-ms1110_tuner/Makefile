@@ -69,7 +69,8 @@ C_SOURCES += $(COMMON)/display/glcd.c
 C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
 
-C_SOURCES += gui/canvas.c
+C_SOURCES += canvas.c
+C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/layout.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
@@ -126,7 +127,7 @@ endif
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 OPT_FLAGS = $(OPT) -fshort-enums -ffunction-sections -fdata-sections -ffreestanding
 #OPT_FLAGS += -flto
-WARN = -Wall
+WARN = -Wall -Werror
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT_FLAGS) $(WARN)
 ASFLAGS = $(MCU) $(AS_DEFS) $(WARN)

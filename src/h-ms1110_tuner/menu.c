@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "amp.h"
-#include "gui/canvas.h"
 #include "input.h"
 #include "rc.h"
 #include "screen.h"
@@ -238,7 +237,7 @@ static void menuUpdate(MenuIdx index)
         return;
     }
 
-    canvasClear();
+    screenToClear();
     menuSelect(index);
     menu.active = index;
 }

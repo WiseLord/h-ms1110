@@ -22,6 +22,8 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
+
+// TODO: rework
 void canvasShowSpectrum(bool clear);
 void canvasShowTime(bool clear);
 void canvasShowStandby(bool clear);
