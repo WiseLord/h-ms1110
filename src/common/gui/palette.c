@@ -6,8 +6,9 @@ static const Palette palette[PAL_END] = {
     [PAL_DEFAULT] = {
         .fg = COLOR_WHITE,
         .bg = COLOR_BLACK,
+        .inactive = COLOR_GRAY16(8),
+
         .active = COLOR_WHITE,
-        .inactive = COLOR_GRAY16(6),
         .selected =  COLOR_GRAY16(4),
         .spColB = COLOR_WHITE,
         .spColG = COLOR_WHITE,

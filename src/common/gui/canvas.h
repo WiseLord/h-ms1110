@@ -22,10 +22,13 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
+void canvasShowTime(bool clear);
+void canvasShowDate(bool clear);
+
+void canvasDebugFPS(void);
 
 // TODO: rework
 void canvasShowSpectrum(bool clear);
-void canvasShowTime(bool clear);
 void canvasShowStandby(bool clear);
 void canvasShowTune(bool clear);
 void canvasShowAudioInput(bool clear);

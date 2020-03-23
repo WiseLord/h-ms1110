@@ -7,11 +7,12 @@ extern "C" {
 
 #include <stdint.h>
 
-#include "display/glcd.h"
+#include "display/colors.h"
 
 typedef struct {
-    color_t fg;
-    color_t bg;
+    color_t fg;     // Foreground
+    color_t bg;     // Background
+
     color_t active;
     color_t inactive;
     color_t selected;

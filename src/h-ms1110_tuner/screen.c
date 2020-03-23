@@ -91,5 +91,7 @@ void screenShow(void)
         break;
     }
 
+    canvasDebugFPS();
+
     glcdFbSync();
 }

@@ -4,7 +4,6 @@
 #include "tr/labels.h"
 #include "settings.h"
 #include "spectrum.h"
-#include "swtimers.h"
 
 static bool scrToClear = false;
 
@@ -79,7 +78,7 @@ void screenShow(void)
         canvasShowSpectrum(clear);
         break;
     case SCREEN_TIME:
-        canvasShowTime(clear);
+        canvasShowDate(clear);
         break;
     case SCREEN_AUDIO_INPUT:
         canvasShowAudioInput(clear);
@@ -96,6 +95,8 @@ void screenShow(void)
     default:
         break;
     }
+
+    canvasDebugFPS();
 
     glcdFbSync();
 }

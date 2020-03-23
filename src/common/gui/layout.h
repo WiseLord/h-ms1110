@@ -8,9 +8,14 @@ extern "C" {
 #include <stdint.h>
 
 #include "display/glcd.h"
+
 #include "gui/widget/spectrumcolumn.h"
 #include "gui/widget/stripedbar.h"
 #include "gui/widget/textedit.h"
+
+typedef struct {
+    const tFont *font;
+} LtTime;
 
 typedef struct {
     const tFont *hmsFont;       // Font to draw hours/minutes/seconds
@@ -19,7 +24,7 @@ typedef struct {
     uint8_t hmsY;               // Y position of hours/minutes/seconds
     uint8_t dmyY;               // Y position of day/month/year
     uint8_t wdY;                // Y position of weekday
-} LayoutTime;
+} LayoutDTime;
 
 typedef struct {
     const tFont *headFont;      // Font to draw menu header
@@ -36,7 +41,9 @@ typedef struct {
 typedef struct {
     GlcdRect rect;
 
-    LayoutTime time;
+    LtTime time;
+
+    LayoutDTime dTime;
     LayoutMenu menu;
     LayoutTune tune;
 

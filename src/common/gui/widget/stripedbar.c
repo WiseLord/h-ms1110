@@ -1,5 +1,6 @@
 #include "stripedbar.h"
 
+#include "display/glcd.h"
 #include "gui/palette.h"
 
 void stripedBarDraw(StripedBar *bar, LayoutStripedBar *lt, bool clear)
