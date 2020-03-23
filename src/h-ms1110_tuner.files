@@ -88,6 +88,8 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
+common/gui/layout.c
+common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/spectrumcolumn.c
@@ -137,8 +139,6 @@ h-ms1110_tuner/amp.c
 h-ms1110_tuner/amp.h
 h-ms1110_tuner/gui/canvas.c
 h-ms1110_tuner/gui/canvas.h
-h-ms1110_tuner/gui/layout.c
-h-ms1110_tuner/gui/layout.h
 h-ms1110_tuner/hwlibs.h
 h-ms1110_tuner/main.c
 h-ms1110_tuner/menu.c

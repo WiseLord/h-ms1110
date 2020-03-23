@@ -101,6 +101,8 @@ common/eemul.c
 common/eemul.h
 common/fft.c
 common/fft.h
+common/gui/layout.c
+common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/spectrumcolumn.c
@@ -134,8 +136,6 @@ h-ms1110_audio/amp.c
 h-ms1110_audio/amp.h
 h-ms1110_audio/gui/canvas.c
 h-ms1110_audio/gui/canvas.h
-h-ms1110_audio/gui/layout.c
-h-ms1110_audio/gui/layout.h
 h-ms1110_audio/hwlibs.h
 h-ms1110_audio/main.c
 h-ms1110_audio/menu.c

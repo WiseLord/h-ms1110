@@ -71,7 +71,7 @@ C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
 
 C_SOURCES += gui/canvas.c
-C_SOURCES += gui/layout.c
+C_SOURCES += $(COMMON)/gui/layout.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
 
