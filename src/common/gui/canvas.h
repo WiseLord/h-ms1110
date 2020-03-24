@@ -22,6 +22,8 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
+void canvasShowSpectrum(bool clear);
+
 void canvasShowTime(bool clear);
 void canvasShowDate(bool clear);
 

@@ -54,7 +54,7 @@ static const EE_Map eeMap[] = {
 
     [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
 
-    [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_STEREO},
+    [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_MIRROR},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
 
