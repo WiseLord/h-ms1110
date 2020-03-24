@@ -82,7 +82,7 @@ void screenShow(void)
         canvasShowTime(clear);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear);
+        canvasShowStandby(clear, false);
         break;
     case SCREEN_MENU:
         canvasShowMenu(clear);

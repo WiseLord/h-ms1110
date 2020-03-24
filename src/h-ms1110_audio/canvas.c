@@ -18,11 +18,6 @@
 
 static void drawMenuItem(uint8_t idx, const tFont *fontItem);
 
-void canvasShowStandby(bool clear)
-{
-    canvasShowDate(clear);
-}
-
 void canvasShowTune(bool clear)
 {
     const Layout *lt = canvasGet()->layout;

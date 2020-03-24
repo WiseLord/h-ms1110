@@ -13,13 +13,6 @@
 
 #define SPECTRUM_SIZE   43
 
-static void drawMenuItem(uint8_t idx, const tFont *fontItem);
-
-void canvasShowStandby(bool clear)
-{
-    canvasShowTime(clear);
-}
-
 static void drawMenuItem(uint8_t idx, const tFont *fontItem)
 {
     const Layout *lt = canvasGet()->layout;

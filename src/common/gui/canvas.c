@@ -314,6 +314,15 @@ void canvasShowDate(bool clear)
     glcdWriteString(utilMkStr("%02d.%02d.%04d", rtc.date, rtc.month, 2000 + rtc.year));
 }
 
+void canvasShowStandby(bool clear, bool ymd)
+{
+    if (ymd) {
+        canvasShowDate(clear);
+    } else {
+        canvasShowTime(clear);
+    }
+}
+
 void canvasDebugFPS(void)
 {
     const Layout *lt = layoutGet();

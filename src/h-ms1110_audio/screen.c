@@ -84,7 +84,7 @@ void screenShow(void)
         canvasShowAudioInput(clear);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear);
+        canvasShowStandby(clear, true);
         break;
     case SCREEN_AUDIO_PARAM:
         canvasShowTune(clear);
