@@ -2,5 +2,5 @@
 *-bak
 *.bck
 fp-info-cache
-front_panel-cache.lib
+*-cache.lib
 *.net
