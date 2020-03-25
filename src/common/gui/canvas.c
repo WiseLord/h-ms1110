@@ -200,16 +200,8 @@ static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdR
         spGetADC(SP_CHAN_RIGHT, spData[SP_CHAN_RIGHT].raw, SPECTRUM_SIZE, fftGet43);
     }
 
-    const int16_t step = (rect->w  + 1) / SPECTRUM_SIZE + 1;    // Step of columns
-    const int16_t colW = step - (step / 2);                     // Column width
-    const int16_t num = (rect->w + colW - 1) / step;            // Number of columns
-
-    const int16_t width = (num - 1) * step + colW;              // Width of spectrum
-    const int16_t height = rect->h;                             // Height of spectrum
-
-    const int16_t oft = (rect->w - width) / 2;                  // Spectrum offset for symmetry
-
-    const int16_t y = rect->y;
+    const int16_t step = 6;                                     // Step of columns
+    const int16_t width = 4;                                    // Width of spectrum
 
     if (clear) {
         memset(&spDrawData, 0, sizeof (SpDrawData));
@@ -220,16 +212,16 @@ static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdR
 
     color_t *grad = NULL;
 
-    for (uint8_t col = 0; col < num; col++) {
-        int16_t x = oft + col * step;
+    for (uint8_t col = 0; col < SPECTRUM_SIZE; col++) {
+        int16_t x = col * step;
 
         SpectrumColumn spCol;
-        calcSpCol(chan, height, col, &spCol);
+        calcSpCol(chan, rect->h, col, &spCol);
         if (!sp->peaks) {
             spCol.peakW = 0;
         }
-        GlcdRect rect = {x, y, colW, height};
-        spectrumColumnDraw(&spCol, &rect, clear, mirror, grad);
+        GlcdRect colRect = {x, rect->y, width, rect->h};
+        spectrumColumnDraw(&spCol, &colRect, clear, mirror, grad);
     }
 }
 
