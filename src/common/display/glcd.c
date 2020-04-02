@@ -304,8 +304,9 @@ int16_t glcdWriteUChar(UChar code)
 
     int16_t pos = glcdFontSymbolPos(code);
 
-    if (pos < 0)
+    if (pos < 0) {
         return 0;
+    }
 
     img = glcd.font->chars[pos].image;
 
@@ -314,12 +315,23 @@ int16_t glcdWriteUChar(UChar code)
     return img->width;
 }
 
+int16_t glcdCalcUCharLen(UChar code)
+{
+    int16_t pos = glcdFontSymbolPos(code);
+
+    if (pos < 0) {
+        return 0;
+    }
+
+    return glcd.font->chars[pos].image->width;
+}
+
 void glcdSetStringFramed(bool framed)
 {
     glcd.strFramed = framed;
 }
 
-uint16_t glcdWriteString(const char *string)
+int16_t glcdWriteString(const char *string)
 {
     if (string == NULL) {
         return 0;
@@ -327,7 +339,7 @@ uint16_t glcdWriteString(const char *string)
 
     UChar code = 0;
     const char *str = string;
-    uint16_t ret = 0;
+    int16_t ret = 0;
 
     const tFont *font = glcd.font;
 
@@ -337,7 +349,7 @@ uint16_t glcdWriteString(const char *string)
         int16_t sWidth = font->chars[pos].image->width;
 
         if (glcd.strFramed) {
-            strLength += sWidth;
+            strLength += 2 * sWidth;
         }
         while (*str) {
             code = findSymbolCode(&str);
@@ -346,9 +358,6 @@ uint16_t glcdWriteString(const char *string)
             if (*str) {
                 strLength += sWidth;
             }
-        }
-        if (glcd.strFramed) {
-            strLength += sWidth;
         }
 
         if (glcd.fontAlign == GLCD_ALIGN_CENTER) {
@@ -376,6 +385,32 @@ uint16_t glcdWriteString(const char *string)
     }
     if (glcd.strFramed) {
         ret += glcdWriteUChar(LETTER_SPACE_CHAR);
+    }
+
+    return ret;
+}
+
+int16_t glcdCalcStringLen(const char *string)
+{
+    if (string == NULL) {
+        return 0;
+    }
+
+    UChar code = 0;
+    const char *str = string;
+    int16_t ret = 0;
+
+    if (glcd.strFramed) {
+        ret += 2 * glcdCalcUCharLen(LETTER_SPACE_CHAR);
+    }
+
+    while (*str) {
+        code = findSymbolCode(&str);
+
+        ret += glcdCalcUCharLen(code);
+        if (*str) {
+            ret += glcdCalcUCharLen(LETTER_SPACE_CHAR);
+        }
     }
 
     return ret;
