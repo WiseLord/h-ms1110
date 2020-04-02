@@ -74,6 +74,7 @@ C_SOURCES += canvas.c
 C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/layout.c
 C_SOURCES += $(COMMON)/gui/palette.c
+C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
 
 # Audio source files

@@ -6,9 +6,11 @@ static const Layout lt256x64 = {
     .rect.w = 256,
     .rect.h = 64,
 
-    .time.font = &fontterminus32b,
+    .time.font = &fontterminusdig64,
+    .time.posY = 0,
 
-
+    .date.font = &fontterminusdig40,
+    .date.posY = 12,
 
     .dTime.hmsFont = &fontterminus24b,
     .dTime.dmyFont = &fontterminus24b,

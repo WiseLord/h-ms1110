@@ -273,18 +273,20 @@ void canvasShowTime(bool clear)
     (void)clear;
 
     const Layout *lt = layoutGet();
-    const Palette *pal = paletteGet(paletteGetIndex());
-    AmpStatus status = ampGet()->status;
+//    const Palette *pal = paletteGet(paletteGetIndex());
 
     RTC_type rtc;
     rtcGetTime(&rtc);
 
     glcdSetXY(0, 0);
     glcdSetFont(lt->time.font);
-    glcdSetFontColor(status == AMP_STATUS_STBY ? pal->inactive : pal->fg);
-    glcdSetFontAlign(GLCD_ALIGN_LEFT);
+    glcdSetFontColor(COLOR_GRAY16(10));
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
 
-    glcdWriteString(utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec));
+    char *str = utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec);
+
+    glcdSetXY(lt->rect.w / 2, lt->time.posY);
+    glcdWriteString(str);
 }
 
 void canvasShowDate(bool clear)
@@ -292,18 +294,19 @@ void canvasShowDate(bool clear)
     (void)clear;
 
     const Layout *lt = layoutGet();
-    const Palette *pal = paletteGet(paletteGetIndex());
-    AmpStatus status = ampGet()->status;
+//    const Palette *pal = paletteGet(paletteGetIndex());
 
     RTC_type rtc;
     rtcGetTime(&rtc);
 
-    glcdSetXY(0, 0);
-    glcdSetFont(lt->time.font);
-    glcdSetFontColor(status == AMP_STATUS_STBY ? pal->inactive : pal->fg);
-    glcdSetFontAlign(GLCD_ALIGN_LEFT);
+    glcdSetFont(lt->date.font);
+    glcdSetFontColor(COLOR_GRAY16(10));
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
 
-    glcdWriteString(utilMkStr("%02d.%02d.%04d", rtc.date, rtc.month, 2000 + rtc.year));
+    char *str = utilMkStr("%02d.%02d.%04d", rtc.date, rtc.month, 2000 + rtc.year);
+
+    glcdSetXY(lt->rect.w / 2, lt->date.posY);
+    glcdWriteString(str);
 }
 
 void canvasShowStandby(bool clear, bool ymd)

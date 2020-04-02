@@ -15,6 +15,7 @@ extern "C" {
 
 typedef struct {
     const tFont *font;
+    uint8_t posY;
 } LtTime;
 
 typedef struct {
@@ -42,6 +43,7 @@ typedef struct {
     GlcdRect rect;
 
     LtTime time;
+    LtTime date;
 
     LayoutDTime dTime;
     LayoutMenu menu;
@@ -52,6 +54,9 @@ typedef struct {
 } Layout;
 
 const Layout *layoutGet(void);
+
+extern const tFont fontterminusdig40;
+extern const tFont fontterminusdig64;
 
 #ifdef __cplusplus
 }
