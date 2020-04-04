@@ -24,17 +24,8 @@ void canvasClear(void);
 
 void canvasShowSpectrum(bool clear);
 
-void canvasShowTime(bool clear);
-void canvasShowDate(bool clear);
-
-void canvasShowStandby(bool clear, bool ymd);
 
 void canvasDebugFPS(void);
-
-// TODO: rework
-void canvasShowTune(bool clear);
-void canvasShowAudioInput(bool clear);
-void canvasShowMenu(bool clear);
 
 #ifdef __cplusplus
 }

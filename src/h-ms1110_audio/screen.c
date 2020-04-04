@@ -78,19 +78,14 @@ void screenShow(void)
         canvasShowSpectrum(clear);
         break;
     case SCREEN_TIME:
-        canvasShowDate(clear);
         break;
     case SCREEN_AUDIO_INPUT:
-        canvasShowAudioInput(clear);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear, true);
         break;
     case SCREEN_AUDIO_PARAM:
-        canvasShowTune(clear);
         break;
     case SCREEN_MENU:
-        canvasShowMenu(clear);
         break;
     default:
         break;

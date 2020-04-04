@@ -79,13 +79,10 @@ void screenShow(void)
         canvasShowSpectrum(clear);
         break;
     case SCREEN_TIME:
-        canvasShowTime(clear);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear, false);
         break;
     case SCREEN_MENU:
-        canvasShowMenu(clear);
         break;
     default:
         break;

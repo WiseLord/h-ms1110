@@ -69,7 +69,6 @@ C_SOURCES += $(COMMON)/display/glcd.c
 C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
 
-C_SOURCES += canvas.c
 C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/layout.c
 C_SOURCES += $(COMMON)/gui/palette.c

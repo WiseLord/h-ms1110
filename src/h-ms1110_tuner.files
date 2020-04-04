@@ -139,7 +139,6 @@ common/utils.h
 h-ms1110_tuner/Makefile
 h-ms1110_tuner/amp.c
 h-ms1110_tuner/amp.h
-h-ms1110_tuner/canvas.c
 h-ms1110_tuner/hwlibs.h
 h-ms1110_tuner/main.c
 h-ms1110_tuner/menu.c

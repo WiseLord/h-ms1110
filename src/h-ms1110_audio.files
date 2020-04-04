@@ -136,7 +136,6 @@ common/utils.h
 h-ms1110_audio/Makefile
 h-ms1110_audio/amp.c
 h-ms1110_audio/amp.h
-h-ms1110_audio/canvas.c
 h-ms1110_audio/hwlibs.h
 h-ms1110_audio/main.c
 h-ms1110_audio/menu.c
