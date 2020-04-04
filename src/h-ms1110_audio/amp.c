@@ -6,6 +6,7 @@
 #include "audio/audio.h"
 #include "debug.h"
 #include "i2c.h"
+#include "input/analog.h"
 #include "input.h"
 #include "menu.h"
 #include "pins.h"
@@ -386,7 +387,7 @@ static void actionGetPots(void)
     AudioProc *aProc = audioGet();
 
     for (AnalogInput ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
-        int8_t pot = inputGetPots(ain);
+        int8_t pot = inputAnalogGetPots(ain);
         if (pot != potPrev[ain]) {
             if (amp.status == AMP_STATUS_ACTIVE) {
                 screenSetMode(SCREEN_AUDIO_PARAM);

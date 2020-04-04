@@ -117,6 +117,8 @@ common/i2c.c
 common/i2c.h
 common/input.c
 common/input.h
+common/input/analog.c
+common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
 common/rc.c

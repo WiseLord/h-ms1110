@@ -57,40 +57,11 @@ typedef struct {
     uint16_t flags;
 } CmdBtn;
 
-#ifdef _INPUT_ANALOG
-typedef uint8_t AnalogInput;
-enum {
-    AIN_POT_A,
-    AIN_POT_B,
-
-    AIN_POT_END,
-
-    AIN_BTN = AIN_POT_END,
-
-    AIN_END
-};
-
-typedef int8_t AnalogBtn;
-enum {
-    ABTN_RELEASED = -1,
-
-    ABTN_STBY,
-    ABTN_IN_PREV,
-    ABTN_IN_NEXT,
-
-    ABTN_END
-};
-#endif // _INPUT_ANALOG
-
 typedef struct {
     uint16_t btn;
     uint16_t flags;
     int8_t encCnt;
     int8_t encRes;
-#ifdef _INPUT_ANALOG
-    int16_t potZone;
-    int16_t potData[AIN_POT_END];
-#endif // _INPUT_ANALOG
 } Input;
 
 void inputInit(void);
@@ -98,9 +69,6 @@ Input *inputGet(void);
 
 int8_t inputGetEncoder(void);
 CmdBtn inputGetBtnCmd(void);
-#ifdef _INPUT_ANALOG
-int8_t inputGetPots(uint8_t chan);
-#endif // _INPUT_ANALOG
 
 #ifdef __cplusplus
 }

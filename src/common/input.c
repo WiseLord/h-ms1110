@@ -2,129 +2,13 @@
 
 #include "audio/audio.h"
 #include "hwlibs.h"
+#include "input/analog.h"
 #include "input/matrix.h"
 #include "pins.h"
 #include "settings.h"
 #include "timers.h"
 
-#ifdef _INPUT_ANALOG
-
-#define ADC_MAX         4095
-#define ABS(x)          ((x) > 0 ? (x) : -(x))
-
-#define BTN_THRESHOLD   100
-
-static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
-static const uint32_t R_POT     = 100000;       // Pot resistance
-
-// TODO: calibration settings for potentiomenters
-static const int32_t R_POT_TH   = 67;           // Experimental threshold
-static const int32_t R_POT_MAX  = (((ADC_MAX) * R_POT / (R_POT + R_POT_H)) - R_POT_TH);
-
-static const uint32_t R_BTN_H   = 10000;        // Analog buttons pull-up resistor
-static const uint32_t R_BTNS[ABTN_END] = {      // Analog buttons resistance
-    100,
-    15000,
-    3900,
-};
-
-static const uint32_t analogInputs[AIN_END] = {
-    AIN_POT_A_Channel,
-    AIN_POT_B_Channel,
-    AIN_BTN_ADC_Channel,
-};
-
-#endif // _INPUT_ANALOG
-
 static Input input;
-
-#ifdef _INPUT_ANALOG
-
-static void inputAnalogInit(void)
-{
-    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_ADC2);
-
-    LL_GPIO_SetPinMode(AIN_BTN_Port, AIN_BTN_Pin, LL_GPIO_MODE_ANALOG);
-    LL_GPIO_SetPinMode(AIN_POT_A_Port, AIN_POT_A_Pin, LL_GPIO_MODE_ANALOG);
-    LL_GPIO_SetPinMode(AIN_POT_B_Port, AIN_POT_B_Pin, LL_GPIO_MODE_ANALOG);
-
-    if (!LL_ADC_IsEnabled(ADC2)) {
-        LL_ADC_SetDataAlignment(ADC2, LL_ADC_DATA_ALIGN_RIGHT);
-        LL_ADC_SetSequencersScanMode(ADC2, LL_ADC_SEQ_SCAN_DISABLE);
-        LL_ADC_REG_SetTriggerSource(ADC2, LL_ADC_REG_TRIG_SOFTWARE);
-        LL_ADC_REG_SetContinuousMode(ADC2, LL_ADC_REG_CONV_SINGLE);
-        LL_ADC_REG_SetSequencerLength(ADC2, LL_ADC_REG_SEQ_SCAN_DISABLE);
-
-        for (uint8_t i = 0; i < AIN_END; i++) {
-            LL_ADC_SetChannelSamplingTime(ADC2, analogInputs[i], LL_ADC_SAMPLINGTIME_239CYCLES_5);
-        }
-
-        LL_ADC_Enable(ADC2);
-        while (!LL_ADC_IsEnabled(ADC2));
-
-        LL_ADC_StartCalibration(ADC2);
-        while (LL_ADC_IsCalibrationOnGoing(ADC2) != 0);
-    }
-
-    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-    const int16_t zoneCnt = grid->max - grid->min + 1;
-    input.potZone = R_POT_MAX / zoneCnt;
-
-    input.potData[AIN_POT_A] = input.potZone / 2;
-    input.potData[AIN_POT_B] = input.potZone / 2;
-}
-
-static uint16_t getAnalogInput()
-{
-    static uint8_t chan = 0;
-    static AnalogBtn aBtn = ABTN_RELEASED;
-
-    // Read data from previous input
-    int16_t adcData = (int16_t)LL_ADC_REG_ReadConversionData12(ADC2);
-
-    if (chan < AIN_POT_END) {
-        int16_t potZone = input.potZone;
-
-        // Consider "reverted" potentiomener
-        adcData = R_POT_MAX - adcData;
-
-        int16_t diff = adcData - input.potData[chan];
-
-        if (diff >= 0) {
-            input.potData[chan] += ABS(diff) / potZone * potZone;
-        } else {
-            input.potData[chan] -= ABS(diff) / potZone * potZone;
-        }
-
-    } else if (chan == AIN_BTN) {
-        aBtn = ABTN_RELEASED;
-        for (AnalogBtn i = 0; i < ABTN_END; i++) {
-            int16_t btnDiff = (int16_t)(ADC_MAX * R_BTNS[i] / (R_BTNS[i] + R_BTN_H)) - adcData;
-            if (ABS(btnDiff) < BTN_THRESHOLD) {
-                aBtn = i;
-                break;
-            }
-        }
-    }
-
-    // Change input
-    if (++chan >= AIN_END) {
-        chan = 0;
-    }
-
-    // Run new conversion
-    LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
-    LL_ADC_REG_StartConversionSWStart(ADC2);
-
-
-    if (aBtn >= 0) {
-        return (uint16_t)(BTN_STBY << aBtn);
-    }
-
-    return BTN_NO;
-}
-
-#endif // _INPUT_ANALOG
 
 static void inputEncoderInit(void)
 {
@@ -166,7 +50,7 @@ static void inputHandleButtons(void)
 
     btnNow |= inputMatrixGet();
 #ifdef _INPUT_ANALOG
-    btnNow |= getAnalogInput();
+    btnNow |= inputAnalogGet();
 #endif // _INPUT_ANALOG
 
     // On button event place it to command buffer
@@ -238,27 +122,6 @@ void TIM_INPUT_HANDLER(void)
         inputHandleEncoder();
     }
 }
-
-#ifdef _INPUT_ANALOG
-
-int8_t inputGetPots(uint8_t chan)
-{
-    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-    const int16_t zoneCnt = grid->max - grid->min + 1;
-
-    int8_t pot = (int8_t)(input.potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
-
-    if (pot < grid->min) {
-        pot = grid->min;
-    }
-    if (pot > grid->max) {
-        pot = grid->max;
-    }
-
-    return pot;
-}
-
-#endif // _INPUT_ANALOG
 
 int8_t inputGetEncoder(void)
 {

@@ -54,6 +54,7 @@ C_SOURCES += tr/labels.c
 C_SOURCES += $(wildcard tr/labels_*.c)
 
 # Input source files
+C_SOURCES += $(COMMON)/input/analog.c
 C_SOURCES += $(COMMON)/input/matrix.c
 
 # Display source files
