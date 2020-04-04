@@ -8,9 +8,6 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#define KEY_MATRIX_ROWS         3
-#define KEY_MATRIX_COLS         4
-
 #define BTN_NO                  0x0000
 
 // Spectrum matrix buttons

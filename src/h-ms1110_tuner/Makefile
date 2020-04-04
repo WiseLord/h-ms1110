@@ -52,6 +52,9 @@ C_SOURCES += $(COMMON)/utils.c
 C_SOURCES += tr/labels.c
 C_SOURCES += $(wildcard tr/labels_*.c)
 
+# Input source files
+C_SOURCES += $(COMMON)/input/matrix.c
+
 # Display source files
 C_SOURCES += $(wildcard $(COMMON)/display/fonts/font*.c)
 

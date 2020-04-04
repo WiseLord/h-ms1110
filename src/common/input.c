@@ -2,6 +2,7 @@
 
 #include "audio/audio.h"
 #include "hwlibs.h"
+#include "input/matrix.h"
 #include "pins.h"
 #include "settings.h"
 #include "timers.h"
@@ -36,37 +37,6 @@ static const uint32_t analogInputs[AIN_END] = {
 #endif // _INPUT_ANALOG
 
 static Input input;
-
-static void inputMatrixInit(void)
-{
-    LL_GPIO_InitTypeDef initDef;
-
-    initDef.Mode = LL_GPIO_MODE_OUTPUT;
-    initDef.Speed = LL_GPIO_SPEED_FREQ_HIGH;
-    initDef.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-
-    initDef.Pin = MATRIX_S1_Pin;
-    LL_GPIO_Init(MATRIX_S1_Port, &initDef);
-    initDef.Pin = MATRIX_S2_Pin;
-    LL_GPIO_Init(MATRIX_S2_Port, &initDef);
-    initDef.Pin = MATRIX_S3_Pin;
-    LL_GPIO_Init(MATRIX_S3_Port, &initDef);
-
-    initDef.Mode = LL_GPIO_MODE_FLOATING;
-
-    initDef.Pin = MATRIX_K1_Pin;
-    LL_GPIO_Init(MATRIX_K1_Port, &initDef);
-    initDef.Pin = MATRIX_K2_Pin;
-    LL_GPIO_Init(MATRIX_K2_Port, &initDef);
-    initDef.Pin = MATRIX_K3_Pin;
-    LL_GPIO_Init(MATRIX_K3_Port, &initDef);
-    initDef.Pin = MATRIX_K4_Pin;
-    LL_GPIO_Init(MATRIX_K4_Port, &initDef);
-
-    CLR(MATRIX_S1);
-    CLR(MATRIX_S2);
-    CLR(MATRIX_S3);
-}
 
 #ifdef _INPUT_ANALOG
 
@@ -156,51 +126,6 @@ static uint16_t getAnalogInput()
 
 #endif // _INPUT_ANALOG
 
-static uint16_t getMatrixButtons()
-{
-    static uint8_t row = 0;
-
-    static uint16_t matrix;
-    uint16_t cols = 0;
-
-    if (READ(MATRIX_K1)) {
-        cols |= 0x01;
-    }
-    if (READ(MATRIX_K2)) {
-        cols |= 0x02;
-    }
-    if (READ(MATRIX_K3)) {
-        cols |= 0x04;
-    }
-    if (READ(MATRIX_K4)) {
-        cols |= 0x08;
-    }
-
-    switch (row) {
-    case 0: // S1
-        CLR(MATRIX_S1);
-        SET(MATRIX_S2);
-        break;
-    case 1: // S2
-        CLR(MATRIX_S2);
-        SET(MATRIX_S3);
-        break;
-    case 2: // S3
-        CLR(MATRIX_S3);
-        SET(MATRIX_S1);
-        break;
-    }
-
-    matrix &= ~(0x000F << (KEY_MATRIX_COLS * row));
-    matrix |= (cols << (KEY_MATRIX_COLS * row));
-
-    if (++row >= KEY_MATRIX_ROWS) {
-        row = 0;
-    }
-
-    return matrix;
-}
-
 static void inputEncoderInit(void)
 {
     LL_GPIO_InitTypeDef GPIO_InitStructf;
@@ -239,7 +164,7 @@ static void inputHandleButtons(void)
 
     uint16_t btnNow = BTN_NO;
 
-    btnNow |= getMatrixButtons();
+    btnNow |= inputMatrixGet();
 #ifdef _INPUT_ANALOG
     btnNow |= getAnalogInput();
 #endif // _INPUT_ANALOG
