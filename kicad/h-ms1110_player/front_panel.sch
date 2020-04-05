@@ -462,9 +462,9 @@ Wire Wire Line
 Text Label 4600 5600 2    50   ~ 0
 AD2
 Text Label 4600 5200 2    50   ~ 0
-AD3
+ROTA
 Text Label 4600 5300 2    50   ~ 0
-AD1
+ROTB
 $Comp
 L Device:R R5
 U 1 1 5ECEC2E6
@@ -2259,50 +2259,44 @@ Wire Wire Line
 Wire Wire Line
 	2150 1600 2150 2550
 Text Label 4600 5400 2    50   ~ 0
-TX2
+AD3
 Text Label 4600 5500 2    50   ~ 0
-RX2
+AD1
 Connection ~ 4700 3450
-Text Label 4800 2900 0    50   ~ 0
-RX2
 Text Label 4800 2800 0    50   ~ 0
-TX2
+ROTB
+Text Label 4800 3000 0    50   ~ 0
+ROTA
 $Comp
 L Connector_Generic:Conn_01x03 J6
 U 1 1 5E940308
 P 6300 2900
 F 0 "J6" H 6300 3100 50  0000 C CNN
-F 1 "UART2" V 6400 2900 50  0000 C CNN
+F 1 "ENCODER" V 6400 2900 50  0000 C CNN
 F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 6300 2900 50  0001 C CNN
 F 3 "~" H 6300 2900 50  0001 C CNN
 	1    6300 2900
 	1    0    0    -1  
 $EndComp
 Entry Wire Line
-	4700 3000 4800 2900
-Entry Wire Line
 	4700 2900 4800 2800
+Entry Wire Line
+	4700 3100 4800 3000
 Wire Wire Line
 	4800 2800 6100 2800
-Wire Wire Line
-	4800 2900 6100 2900
 $Comp
 L power:GNDD #PWR?
 U 1 1 5E940316
 P 6000 3050
 AR Path="/5E0648E0/5E940316" Ref="#PWR?"  Part="1" 
-AR Path="/5E940316" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 6000 2800 50  0001 C CNN
+AR Path="/5E940316" Ref="#PWR035"  Part="1" 
+F 0 "#PWR035" H 6000 2800 50  0001 C CNN
 F 1 "GNDD" H 6004 2895 50  0000 C CNN
 F 2 "" H 6000 3050 50  0001 C CNN
 F 3 "" H 6000 3050 50  0001 C CNN
 	1    6000 3050
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	6100 3000 6000 3000
-Wire Wire Line
-	6000 3000 6000 3050
 $Comp
 L Connector_Generic:Conn_01x04 J?
 U 1 1 5E958B95
@@ -2333,8 +2327,8 @@ L power:GNDD #PWR?
 U 1 1 5E958BAA
 P 6000 2250
 AR Path="/5DED214C/5E958BAA" Ref="#PWR?"  Part="1" 
-AR Path="/5E958BAA" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 6000 2000 50  0001 C CNN
+AR Path="/5E958BAA" Ref="#PWR034"  Part="1" 
+F 0 "#PWR034" H 6000 2000 50  0001 C CNN
 F 1 "GNDD" H 6004 2095 50  0000 C CNN
 F 2 "" H 6000 2250 50  0001 C CNN
 F 3 "" H 6000 2250 50  0001 C CNN
@@ -2348,8 +2342,8 @@ L power:+5V #PWR?
 U 1 1 5E9D58B7
 P 6000 1550
 AR Path="/5E0648E0/5E9D58B7" Ref="#PWR?"  Part="1" 
-AR Path="/5E9D58B7" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 6000 1400 50  0001 C CNN
+AR Path="/5E9D58B7" Ref="#PWR030"  Part="1" 
+F 0 "#PWR030" H 6000 1400 50  0001 C CNN
 F 1 "+5V" H 6015 1723 50  0000 C CNN
 F 2 "" H 6000 1550 50  0001 C CNN
 F 3 "" H 6000 1550 50  0001 C CNN
@@ -2369,8 +2363,8 @@ L power:+5V #PWR?
 U 1 1 5E9BC34C
 P 5700 1550
 AR Path="/5E0648E0/5E9BC34C" Ref="#PWR?"  Part="1" 
-AR Path="/5E9BC34C" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 5700 1400 50  0001 C CNN
+AR Path="/5E9BC34C" Ref="#PWR022"  Part="1" 
+F 0 "#PWR022" H 5700 1400 50  0001 C CNN
 F 1 "+5V" H 5715 1723 50  0000 C CNN
 F 2 "" H 5700 1550 50  0001 C CNN
 F 3 "" H 5700 1550 50  0001 C CNN
@@ -2419,6 +2413,12 @@ S3
 NoConn ~ 1100 2300
 Wire Wire Line
 	900  2300 1100 2300
+Wire Wire Line
+	4800 3000 6100 3000
+Wire Wire Line
+	6100 2900 6000 2900
+Wire Wire Line
+	6000 2900 6000 3050
 Wire Bus Line
 	7600 3450 9300 3450
 Wire Bus Line

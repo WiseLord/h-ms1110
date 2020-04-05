@@ -2608,13 +2608,6 @@ Wire Wire Line
 	1350 950  1350 2550
 Wire Wire Line
 	1300 2300 2400 2300
-Wire Wire Line
-	1300 1850 2400 1850
-Wire Wire Line
-	2400 1850 2950 1850
-Connection ~ 2400 1850
-Wire Wire Line
-	2400 1800 2400 1850
 $Comp
 L Connector_Generic:Conn_01x03 J11
 U 1 1 5E7D122A
@@ -2652,4 +2645,6 @@ Wire Bus Line
 	4700 3450 4700 7400
 Wire Bus Line
 	2350 3450 2350 7400
+Wire Wire Line
+	1300 1850 2950 1850
 $EndSCHEMATC
