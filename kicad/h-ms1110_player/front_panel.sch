@@ -2437,4 +2437,8 @@ Wire Bus Line
 	4700 3450 4700 7400
 Wire Bus Line
 	2350 3450 2350 7400
+Text Label 6100 2000 2    50   ~ 0
+DM
+Text Label 6100 2100 2    50   ~ 0
+DP
 $EndSCHEMATC
