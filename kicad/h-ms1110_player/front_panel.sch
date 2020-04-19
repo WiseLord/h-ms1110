@@ -2396,7 +2396,7 @@ L Device:R R8
 U 1 1 5E12EE00
 P 5700 1750
 F 0 "R8" H 5750 1800 50  0000 L CNN
-F 1 "10k" H 5750 1700 50  0000 L CNN
+F 1 "1.5k" H 5750 1700 50  0000 L CNN
 F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 5630 1750 50  0001 C CNN
 F 3 "~" H 5700 1750 50  0001 C CNN
 	1    5700 1750
@@ -2419,6 +2419,10 @@ Wire Wire Line
 	6100 2900 6000 2900
 Wire Wire Line
 	6000 2900 6000 3050
+Text Label 6100 2000 2    50   ~ 0
+DM
+Text Label 6100 2100 2    50   ~ 0
+DP
 Wire Bus Line
 	7600 3450 9300 3450
 Wire Bus Line
@@ -2437,8 +2441,4 @@ Wire Bus Line
 	4700 3450 4700 7400
 Wire Bus Line
 	2350 3450 2350 7400
-Text Label 6100 2000 2    50   ~ 0
-DM
-Text Label 6100 2100 2    50   ~ 0
-DP
 $EndSCHEMATC
