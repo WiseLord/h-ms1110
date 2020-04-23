@@ -11,6 +11,8 @@ extern "C" {
 #include "gui/layout.h"
 #include "gui/palette.h"
 
+#include "spectrum.h"
+
 typedef struct {
     Glcd *glcd;
     const Palette *pal;
@@ -22,7 +24,7 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
-void canvasShowSpectrum(bool clear);
+void canvasShowSpectrum(Spectrum *sp, bool clear);
 
 
 void canvasDebugFPS(void);

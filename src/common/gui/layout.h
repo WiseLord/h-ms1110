@@ -40,8 +40,6 @@ typedef struct {
 } LayoutTune;
 
 typedef struct {
-    GlcdRect rect;
-
     LtTime time;
     LtTime date;
 

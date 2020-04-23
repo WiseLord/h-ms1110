@@ -1,11 +1,6 @@
 #include "layout.h"
 
 static const Layout lt256x64 = {
-    .rect.x = 0,
-    .rect.y = 0,
-    .rect.w = 256,
-    .rect.h = 64,
-
     .time.font = &fontterminusdig64,
     .time.posY = 0,
 

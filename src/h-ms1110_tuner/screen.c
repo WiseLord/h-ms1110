@@ -74,9 +74,11 @@ void screenShow(void)
         canvasClear();
     }
 
+    Spectrum *sp = spGet();
+
     switch (screen.mode) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear);
+        canvasShowSpectrum(sp, clear);
         break;
     case SCREEN_TIME:
         break;

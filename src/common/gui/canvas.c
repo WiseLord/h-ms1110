@@ -2,11 +2,6 @@
 
 #include <string.h>
 
-#include "amp.h"
-#include "display/glcd.h"
-#include "menu.h"
-#include "rtc.h"
-#include "spectrum.h"
 #include "swtimers.h"
 
 #define SPECTRUM_SIZE   43
@@ -45,9 +40,8 @@ static const int16_t spIdx[SPECTRUM_SIZE + 1] = {
 };
 
 static void calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *spCol);
-static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdRect *rect);
-static void drawSpectrumMode(bool clear, GlcdRect rect);
-static void drawWaterfall(bool clear);
+static void drawSpectrum(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect);
+static void drawSpectrumMode(Spectrum *sp, bool clear, GlcdRect rect);
 
 void canvasInit()
 {
@@ -60,31 +54,12 @@ void canvasInit()
     paletteSetIndex(palIdx);
     canvas.pal = paletteGet(palIdx);
 
-    glcdDrawRect(0, 0, dispdrv.width, dispdrv.height, canvas.pal->bg);
-
-    canvas.glcd->rect = canvas.layout->rect;
-
-    menuGet()->dispSize = 3/*canvas.layout->menu.itemCnt*/;
-}
-
-void canvasInit_()
-{
-    glcdInit();
-
-    canvas.glcd = glcdGet();
-    canvas.glcd->rect = canvas.layout->rect;
-
-    canvas.layout = layoutGet();
-    menuGet()->dispSize = canvas.layout->menu.itemCnt;
-
-    PalIdx palIdx = PAL_DEFAULT;//(PalIdx)settingsRead(PARAM_DISPLAY_PALETTE);
-    paletteSetIndex(palIdx);
-    canvas.pal = paletteGet(palIdx);
-
     // Default font parameters
     glcdSetFont(&fontterminus12);
     glcdSetFontColor(canvas.pal->fg);
     glcdSetFontBgColor(canvas.pal->bg);
+
+    glcdDrawRect(0, 0, dispdrv.width, dispdrv.height, canvas.pal->bg);
 }
 
 Canvas *canvasGet(void)
@@ -187,7 +162,7 @@ static void calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *
     }
 }
 
-static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdRect *rect)
+static void drawSpectrum(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect)
 {
     if (check && !checkSpectrumReady()) {
         return;
@@ -208,8 +183,6 @@ static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdR
         memset(spData, 0, sizeof (SpData) * SP_CHAN_END);
     }
 
-    Spectrum *sp = spGet();
-
     color_t *grad = NULL;
 
     for (uint8_t col = 0; col < SPECTRUM_SIZE; col++) {
@@ -217,7 +190,7 @@ static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdR
 
         SpectrumColumn spCol;
         calcSpCol(chan, rect->h, col, &spCol);
-        if (!sp->peaks) {
+        if (!peaks) {
             spCol.peakW = 0;
         }
         GlcdRect colRect = {x, rect->y, width, rect->h};
@@ -225,43 +198,31 @@ static void drawSpectrum(bool clear, bool check, bool mirror, SpChan chan, GlcdR
     }
 }
 
-static void drawSpectrumMode(bool clear, GlcdRect rect)
+static void drawSpectrumMode(Spectrum *sp, bool clear, GlcdRect rect)
 {
-    Spectrum *sp = spGet();
-
     switch (sp->mode) {
     case SP_MODE_STEREO:
     case SP_MODE_MIRROR:
     case SP_MODE_ANTIMIRROR:
         rect.h = rect.h / 2;
-        drawSpectrum(clear, true, sp->mode == SP_MODE_ANTIMIRROR, SP_CHAN_LEFT, &rect);
+        drawSpectrum(clear, true, sp->mode == SP_MODE_ANTIMIRROR, sp->peaks, SP_CHAN_LEFT, &rect);
         rect.y += rect.h;
-        drawSpectrum(clear, false, sp->mode == SP_MODE_MIRROR, SP_CHAN_RIGHT, &rect);
+        drawSpectrum(clear, false, sp->mode == SP_MODE_MIRROR, sp->peaks, SP_CHAN_RIGHT, &rect);
         break;
     default:
-        drawSpectrum(clear, true, false, SP_CHAN_BOTH, &rect);
+        drawSpectrum(clear, true, false, sp->peaks, SP_CHAN_BOTH, &rect);
         break;
     }
 }
 
-static void drawWaterfall(bool clear)
+void canvasShowSpectrum(Spectrum *sp, bool clear)
 {
-    (void)clear;
-}
-
-void canvasShowSpectrum(bool clear)
-{
-    Spectrum *sp = spGet();
-
     switch (sp->mode) {
     case SP_MODE_STEREO:
     case SP_MODE_MIRROR:
     case SP_MODE_ANTIMIRROR:
     case SP_MODE_MIXED:
-        drawSpectrumMode(clear, glcdGet()->rect);
-        break;
-    case SP_MODE_WATERFALL:
-        drawWaterfall(clear);
+        drawSpectrumMode(sp, clear, glcdGet()->rect);
         break;
     default:
         break;
@@ -270,14 +231,13 @@ void canvasShowSpectrum(bool clear)
 
 void canvasDebugFPS(void)
 {
-    const Layout *lt = layoutGet();
-    const Palette *pal = paletteGet(paletteGetIndex());
+    const Palette *pal = canvas.pal;
 
     glcdSetFont(&fontterminus12);
     glcdSetFontColor(pal->inactive);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
 
-    glcdSetXY(lt->rect.w, 0);
+    glcdSetXY(canvas.glcd->rect.w, 0);
 
     static int32_t oldCnt = 0;
     static int32_t oldFps = 0;

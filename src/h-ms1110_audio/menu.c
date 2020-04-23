@@ -4,12 +4,11 @@
 
 #include "amp.h"
 #include "audio/audio.h"
-//#include "i2cexp.h"
+#include "gui/layout.h"
 #include "input.h"
 #include "rc.h"
 #include "screen.h"
 #include "settings.h"
-//#include "spectrum.h"
 #include "tr/labels.h"
 #include "utils.h"
 
@@ -77,9 +76,11 @@ static void menuMove(int8_t diff)
 
     menu.active = menu.list[newIdx];
 
+    uint8_t itemCnt = layoutGet()->menu.itemCnt;
+
     // Recalculate offset if needed
-    if (menu.dispOft < newIdx - (menu.dispSize - 1)) {
-        menu.dispOft = newIdx - (menu.dispSize - 1);
+    if (menu.dispOft < newIdx - (itemCnt - 1)) {
+        menu.dispOft = newIdx - (itemCnt - 1);
     } else if (menu.dispOft > newIdx) {
         menu.dispOft = newIdx;
     }
