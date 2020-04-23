@@ -77,7 +77,7 @@ void screenShow(void)
 
     switch (screen.mode) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(sp, clear);
+        canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;
     case SCREEN_TIME:
         break;

@@ -24,8 +24,7 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
-void canvasShowSpectrum(Spectrum *sp, bool clear);
-
+void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 
 void canvasDebugFPS(void);
 

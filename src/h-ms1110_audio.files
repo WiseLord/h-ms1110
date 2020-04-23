@@ -103,6 +103,8 @@ common/fft.c
 common/fft.h
 common/gui/canvas.c
 common/gui/canvas.h
+common/gui/draw/sp.c
+common/gui/draw/sp.h
 common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
