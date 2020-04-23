@@ -68,6 +68,12 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     case SP_MODE_MIXED:
         drawSp(clear, true, false, peaks, SP_CHAN_BOTH, &rect);
         break;
+    case SP_MODE_LEFT:
+        drawSp(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
+        break;
+    case SP_MODE_RIGHT:
+        drawSp(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
+        break;
     default:
         break;
     }

@@ -17,7 +17,7 @@ static int16_t rtcCorr = 0;
 static const EE_Map eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
 
-    [PARAM_AUDIO_IC]        =   {0x01,  AUDIO_IC_TEST},
+    [PARAM_AUDIO_IC]        =   {0x01,  AUDIO_IC_TDA7719},
     [PARAM_AUDIO_INPUT]     =   {0x02,  0},
     [PARAM_AUDIO_LOUDNESS]  =   {0x03,  false},
     [PARAM_AUDIO_SURROUND]  =   {0x04,  false},
@@ -54,7 +54,7 @@ static const EE_Map eeMap[] = {
 
     [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
 
-    [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_MIRROR},
+    [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_RIGHT},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
 
