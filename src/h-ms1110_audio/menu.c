@@ -76,7 +76,7 @@ static void menuMove(int8_t diff)
 
     menu.active = menu.list[newIdx];
 
-    uint8_t itemCnt = layoutGet()->menu.itemCnt;
+    uint8_t itemCnt = 3;//layoutGet()->menu.itemCnt;
 
     // Recalculate offset if needed
     if (menu.dispOft < newIdx - (itemCnt - 1)) {
