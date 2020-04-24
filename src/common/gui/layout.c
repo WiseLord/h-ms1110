@@ -1,7 +1,11 @@
 #include "layout.h"
 
 static const Layout lt256x64 = {
-    .lblFont = &fontterminus28b,
+    .par = {
+        .valFont = &fontterminus32,
+        .valX = 0,
+        .valY = 0,
+    },
 };
 
 const Layout *layoutGet(void)

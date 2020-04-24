@@ -154,6 +154,6 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
             spCol.peakW = 0;
         }
         GlcdRect colRect = {x, rect->y, width, rect->h};
-        spectrumColumnDraw(&spCol, &colRect, clear, mirror, grad);
+        spectrumColumnDraw(clear, &spCol, &colRect, mirror, grad);
     }
 }

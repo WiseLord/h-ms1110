@@ -1,5 +1,6 @@
 #include "screen.h"
 
+#include "display/glcd.h"
 #include "gui/canvas.h"
 #include "tr/labels.h"
 #include "settings.h"
@@ -74,6 +75,7 @@ void screenShow(void)
     }
 
     Spectrum *sp = spGet();
+    ParamView pview;
 
     switch (screen.mode) {
     case SCREEN_SPECTRUM:
@@ -86,6 +88,8 @@ void screenShow(void)
     case SCREEN_STANDBY:
         break;
     case SCREEN_AUDIO_PARAM:
+        pview.val = 20;
+        canvasShowParam(clear, &pview);
         break;
     case SCREEN_MENU:
         break;

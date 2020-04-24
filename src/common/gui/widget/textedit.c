@@ -57,7 +57,7 @@ void textEditDelChar(TextEdit *te)
     glcdUStrToStr(te->uStr, te->str);
 }
 
-void textEditDraw(TextEdit *te, LayoutTextEdit *lt, bool clear)
+void textEditDraw(bool clear, TextEdit *te, LayoutTextEdit *lt)
 {
     Glcd *glcd = glcdGet();
     const Palette *pal = paletteGet(paletteGetIndex());

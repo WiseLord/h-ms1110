@@ -8,6 +8,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "display/glcd.h"
 #include "gui/layout.h"
 #include "gui/palette.h"
 
@@ -25,6 +26,7 @@ Canvas *canvasGet(void);
 void canvasClear(void);
 
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
+void canvasShowParam(bool clear, ParamView *pview);
 
 void canvasDebugFPS(void);
 

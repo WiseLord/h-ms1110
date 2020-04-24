@@ -107,6 +107,8 @@ common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
+common/gui/widget/paramview.c
+common/gui/widget/paramview.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
 common/gui/widget/spview.c

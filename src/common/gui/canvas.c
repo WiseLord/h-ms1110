@@ -80,6 +80,11 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
+void canvasShowParam(bool clear, ParamView *pview)
+{
+    paramViewDraw(clear, pview, &canvas.layout->par);
+}
+
 
 void canvasDebugFPS(void)
 {

@@ -7,10 +7,12 @@ extern "C" {
 
 #include <stdint.h>
 
-#include "display/glcd.h"
+#include "display/fonts/fonts.h"
+
+#include "gui/widget/paramview.h"
 
 typedef struct {
-    const tFont *lblFont;       // Main label font
+    LayoutParamView par;
 } Layout;
 
 const Layout *layoutGet(void);
