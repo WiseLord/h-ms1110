@@ -103,14 +103,14 @@ common/fft.c
 common/fft.h
 common/gui/canvas.c
 common/gui/canvas.h
-common/gui/draw/sp.c
-common/gui/draw/sp.h
 common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
+common/gui/widget/spview.c
+common/gui/widget/spview.h
 common/gui/widget/stripedbar.c
 common/gui/widget/stripedbar.h
 common/gui/widget/textedit.c

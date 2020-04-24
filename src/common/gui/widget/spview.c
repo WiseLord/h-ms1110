@@ -1,4 +1,4 @@
-#include "sp.h"
+#include "spview.h"
 
 #include <string.h>
 
@@ -122,7 +122,7 @@ static void calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *
     }
 }
 
-void drawSp(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect)
+void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect)
 {
     if (check && !checkSpectrumReady()) {
         return;

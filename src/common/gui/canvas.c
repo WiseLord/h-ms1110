@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "swtimers.h"
-#include "draw/sp.h"
+
+#include "widget/spview.h"
 
 static Canvas canvas;
 
@@ -49,30 +50,30 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     switch (mode) {
     case SP_MODE_STEREO:
         rect.h = rect.h / 2;
-        drawSp(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
+        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
         rect.y += rect.h;
-        drawSp(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
+        spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
         break;
     case SP_MODE_MIRROR:
         rect.h = rect.h / 2;
-        drawSp(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
+        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
         rect.y += rect.h;
-        drawSp(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
+        spViewDraw(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
         break;
     case SP_MODE_ANTIMIRROR:
         rect.h = rect.h / 2;
-        drawSp(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
+        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
         rect.y += rect.h;
-        drawSp(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
+        spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
         break;
     case SP_MODE_MIXED:
-        drawSp(clear, true, false, peaks, SP_CHAN_BOTH, &rect);
+        spViewDraw(clear, true, false, peaks, SP_CHAN_BOTH, &rect);
         break;
     case SP_MODE_LEFT:
-        drawSp(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
+        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
         break;
     case SP_MODE_RIGHT:
-        drawSp(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
+        spViewDraw(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
         break;
     default:
         break;
