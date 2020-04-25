@@ -84,8 +84,6 @@ void screenShow(void)
         break;
     case SCREEN_STANDBY:
         break;
-    case SCREEN_MENU:
-        break;
     default:
         break;
     }

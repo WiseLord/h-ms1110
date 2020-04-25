@@ -117,6 +117,7 @@ common/gui/widget/stripedbar.c
 common/gui/widget/stripedbar.h
 common/gui/widget/textedit.c
 common/gui/widget/textedit.h
+common/hwlibs.h
 common/i2c.c
 common/i2c.h
 common/input.c
@@ -137,6 +138,9 @@ common/swtimers.c
 common/swtimers.h
 common/timers.c
 common/timers.h
+common/tr/labels.c
+common/tr/labels.h
+common/tr/labels_en.c
 common/usart.c
 common/usart.h
 common/utils.c
@@ -144,16 +148,10 @@ common/utils.h
 h-ms1110_audio/Makefile
 h-ms1110_audio/amp.c
 h-ms1110_audio/amp.h
-h-ms1110_audio/hwlibs.h
 h-ms1110_audio/main.c
-h-ms1110_audio/menu.c
-h-ms1110_audio/menu.h
 h-ms1110_audio/pins.c
 h-ms1110_audio/pins.h
 h-ms1110_audio/screen.c
 h-ms1110_audio/screen.h
 h-ms1110_audio/settings.c
 h-ms1110_audio/settings.h
-h-ms1110_audio/tr/labels.c
-h-ms1110_audio/tr/labels.h
-h-ms1110_audio/tr/labels_en.c

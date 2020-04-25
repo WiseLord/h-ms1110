@@ -5,7 +5,7 @@ STM32_MCU = F103CB
 DISPLAY = SSD1322
 DISPVAR = SPI
 
-TUNER_LIST = RDA580X SI470X TEA5767
+TUNER_LIST =
 FEATURE_LIST =
 
 DEBUG = 1
@@ -36,7 +36,6 @@ C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
-C_SOURCES += menu.c
 C_SOURCES += pins.c
 C_SOURCES += $(COMMON)/rc.c
 C_SOURCES += $(COMMON)/rtc.c
@@ -49,8 +48,7 @@ C_SOURCES += $(COMMON)/timers.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 
-C_SOURCES += tr/labels.c
-C_SOURCES += $(wildcard tr/labels_*.c)
+C_SOURCES += $(wildcard $(COMMON)/tr/labels*.c)
 
 # Input source files
 C_SOURCES += $(COMMON)/input/matrix.c

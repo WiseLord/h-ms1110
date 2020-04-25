@@ -104,6 +104,7 @@ common/gui/widget/stripedbar.c
 common/gui/widget/stripedbar.h
 common/gui/widget/textedit.c
 common/gui/widget/textedit.h
+common/hwlibs.h
 common/i2c.c
 common/i2c.h
 common/input.c
@@ -138,6 +139,9 @@ common/tuner/tea5767_regs.h
 common/tuner/tuner.c
 common/tuner/tuner.h
 common/tuner/tunerdefs.h
+common/tr/labels.c
+common/tr/labels.h
+common/tr/labels_en.c
 common/usart.c
 common/usart.h
 common/utils.c
@@ -145,16 +149,10 @@ common/utils.h
 h-ms1110_tuner/Makefile
 h-ms1110_tuner/amp.c
 h-ms1110_tuner/amp.h
-h-ms1110_tuner/hwlibs.h
 h-ms1110_tuner/main.c
-h-ms1110_tuner/menu.c
-h-ms1110_tuner/menu.h
 h-ms1110_tuner/pins.c
 h-ms1110_tuner/pins.h
 h-ms1110_tuner/screen.c
 h-ms1110_tuner/screen.h
 h-ms1110_tuner/settings.c
 h-ms1110_tuner/settings.h
-h-ms1110_tuner/tr/labels.c
-h-ms1110_tuner/tr/labels.h
-h-ms1110_tuner/tr/labels_en.c

@@ -16,8 +16,6 @@ enum {
 
     SCREEN_STANDBY,
 
-    SCREEN_MENU,
-
     SCREEN_END
 };
 

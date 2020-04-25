@@ -7,6 +7,7 @@
 #include "screen.h"
 #include "spectrum.h"
 #include "tr/labels.h"
+#include "tuner/tuner.h"
 #include "tuner/tunerdefs.h"
 
 static int16_t rtcCorr = 0;

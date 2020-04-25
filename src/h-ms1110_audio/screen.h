@@ -19,8 +19,6 @@ enum {
 
     SCREEN_AUDIO_PARAM,
 
-    SCREEN_MENU,
-
     SCREEN_END
 };
 

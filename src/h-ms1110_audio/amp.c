@@ -8,7 +8,6 @@
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"
-#include "menu.h"
 #include "pins.h"
 #include "rc.h"
 #include "rtc.h"
@@ -453,22 +452,7 @@ static void actionRemapBtnShort(void)
 
 static void actionRemapBtnLong(void)
 {
-    ScrMode scrMode = screenGet()->mode;
-
     switch (action.value) {
-    case BTN_STBY:
-        switch (scrMode) {
-        case SCREEN_STANDBY:
-            actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
-            break;
-        case SCREEN_MENU:
-            actionSet(ACTION_MENU_SELECT, (int16_t)(menuGetFirstChild()));
-            break;
-        default:
-            actionSet(ACTION_OPEN_MENU, 0);
-            break;
-        }
-        break;
     default:
         break;
     }
@@ -480,20 +464,6 @@ static void actionRemapRemote(void)
     ScrMode scrMode = screen->mode;
 
     AudioProc *aProc = audioGet();
-
-    if (scrMode == SCREEN_MENU) {
-        Menu *menu = menuGet();
-        if ((menu->parent == MENU_SETUP_RC) && (menu->selected)) {
-            actionSet(ACTION_MENU_CHANGE, 0);
-            return;
-        }
-    }
-
-    if (SCREEN_STANDBY == scrMode &&
-        action.value == RC_CMD_MENU) {
-        actionSet(ACTION_MENU_SELECT, MENU_SETUP_SYSTEM);
-        return;
-    }
 
     if (SCREEN_STANDBY == scrMode &&
         action.value != RC_CMD_STBY_SWITCH)
@@ -661,12 +631,6 @@ static void actionRemapEncoder(void)
 //            actionSet(ACTION_RTC_CHANGE, encCnt);
         }
         break;
-    case SCREEN_MENU:
-        actionSet(ACTION_MENU_CHANGE, encCnt);
-        break;
-//    case SCREEN_TEXTEDIT:
-//        actionSet(ACTION_TEXTEDIT_CHANGE, encCnt);
-//        break;
     default:
         if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
             screenToClear();
@@ -733,17 +697,7 @@ static void actionRemapCommon(void)
     if (SCREEN_STANDBY == scrMode &&
         (ACTION_STANDBY != action.type &&
          ACTION_REMOTE != action.type &&
-         ACTION_INIT_RTC != action.type &&
-         ACTION_MENU_SELECT != action.type)) {
-        actionSet(ACTION_NONE, 0);
-    }
-
-    if (SCREEN_MENU == scrMode &&
-        (ACTION_STANDBY != action.type &&
-//         ACTION_NAVIGATE != action.type &&
-         ACTION_MENU_CHANGE != action.type &&
-         ACTION_MENU_SELECT != action.type &&
-         ACTION_ENCODER != action.type)) {
+         ACTION_INIT_RTC != action.type)) {
         actionSet(ACTION_NONE, 0);
     }
 }
@@ -969,20 +923,6 @@ void ampActionHandle(void)
         } else {
             swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         }
-        break;
-
-    case ACTION_MENU_SELECT: {
-        MenuIdx parent = menuGet()->parent;
-        menuSetActive((MenuIdx)action.value);
-        if (parent != menuGet()->parent) {
-            screenToClear();
-        }
-        actionSetScreen(SCREEN_MENU, 10000);
-        break;
-    }
-    case ACTION_MENU_CHANGE:
-        menuChange((int8_t)action.value);
-        actionSetScreen(SCREEN_MENU, 10000);
         break;
 
     default:

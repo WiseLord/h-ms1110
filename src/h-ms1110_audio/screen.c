@@ -91,8 +91,6 @@ void screenShow(void)
         pview.val = 20;
         canvasShowParam(clear, &pview);
         break;
-    case SCREEN_MENU:
-        break;
     default:
         break;
     }
