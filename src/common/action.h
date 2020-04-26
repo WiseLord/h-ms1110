@@ -1,6 +1,26 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdint.h>
+
+typedef uint8_t ScreenType;
+enum {
+    // Screens allowed to be default
+    SCREEN_SPECTRUM = 0,
+    SCREEN_TIME,
+    SCREEN_INPUT,
+
+    SCREEN_STANDBY,
+
+    SCREEN_TUNE,
+
+    SCREEN_END
+};
+
 typedef uint8_t ActionType;
 enum {
     ACTION_NONE = 0,
@@ -58,5 +78,9 @@ typedef union {
         };
     };
 } AmpSync;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // ACTION_H

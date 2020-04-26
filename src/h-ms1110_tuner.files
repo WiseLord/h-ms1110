@@ -152,7 +152,5 @@ h-ms1110_tuner/amp.h
 h-ms1110_tuner/main.c
 h-ms1110_tuner/pins.c
 h-ms1110_tuner/pins.h
-h-ms1110_tuner/screen.c
-h-ms1110_tuner/screen.h
 h-ms1110_tuner/settings.c
 h-ms1110_tuner/settings.h

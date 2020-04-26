@@ -151,7 +151,5 @@ h-ms1110_audio/amp.h
 h-ms1110_audio/main.c
 h-ms1110_audio/pins.c
 h-ms1110_audio/pins.h
-h-ms1110_audio/screen.c
-h-ms1110_audio/screen.h
 h-ms1110_audio/settings.c
 h-ms1110_audio/settings.h

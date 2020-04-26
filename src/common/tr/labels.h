@@ -9,7 +9,6 @@ extern "C" {
 #include "audio/audio.h"
 #include "gui/palette.h"
 #include "rtc.h"
-#include "screen.h"
 #include "spectrum.h"
 
 #define GENERATE_MENU_RC_TEXT(CMD)  [LABEL_MENU + MENU_RC_ ## CMD] = # CMD,

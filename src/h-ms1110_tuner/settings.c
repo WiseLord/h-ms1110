@@ -4,7 +4,6 @@
 #include "eemul.h"
 #include "input.h"
 #include "rc.h"
-#include "screen.h"
 #include "spectrum.h"
 #include "tr/labels.h"
 #include "tuner/tuner.h"
@@ -87,7 +86,7 @@ int16_t settingsGet(Param param)
         break;
 
     case PARAM_DISPLAY_DEF:
-        ret = screenGet()->defScreen;
+        ret = ampGet()->defScreen;
         break;
 
     case PARAM_SPECTRUM_MODE:
@@ -156,7 +155,7 @@ void settingsSet(Param param, int16_t value)
         break;
 
     case PARAM_DISPLAY_DEF:
-        screenGet()->defScreen = (ScreenType)value;
+        ampGet()->defScreen = (ScreenType)value;
         break;
 
     case PARAM_SPECTRUM_MODE:

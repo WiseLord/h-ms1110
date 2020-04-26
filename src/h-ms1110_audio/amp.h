@@ -9,7 +9,6 @@ extern "C" {
 #include <stdint.h>
 
 #include "action.h"
-#include "screen.h"
 
 #define AMP_TUNER_ADDR      0x28
 
@@ -38,6 +37,10 @@ enum {
 
 typedef struct {
     AmpStatus status;
+    ScreenType screen;
+    ScreenType defScreen;
+    ScreenType prevScreen;
+    bool clearScreen;
     uint8_t inputStatus;
     int8_t volume;
 } Amp;

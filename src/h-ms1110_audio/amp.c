@@ -5,6 +5,7 @@
 
 #include "audio/audio.h"
 #include "debug.h"
+#include "gui/canvas.h"
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"
@@ -15,6 +16,7 @@
 #include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
+#include "tr/labels.h"
 #include "utils.h"
 
 static void actionGetButtons(void);
@@ -36,9 +38,14 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static void ampScreenShow(void);
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
+    .screen = SCREEN_STANDBY,
+    .defScreen = SCREEN_SPECTRUM,
     .inputStatus = 0x00,
+    .volume = 0,
 };
 
 static Action action = {
@@ -61,11 +68,32 @@ static void actionSetScreen(ScreenType screen, int16_t timeout)
     action.timeout = timeout;
 }
 
+void screenSetMode(ScreenType value)
+{
+    amp.screen = value;
+}
+
+static bool screenCheckClear(void)
+{
+    bool clear = false;
+
+    if (amp.clearScreen) {
+        clear = true;
+        amp.clearScreen = false;
+    } else {
+        if (amp.screen != amp.prevScreen) {
+            clear = true;
+        }
+    }
+
+    amp.prevScreen = amp.screen;
+
+    return clear;
+}
+
 static void actionDispExpired(ScreenType scrMode)
 {
-    Screen *screen = screenGet();
-
-    ScreenType scrDef = screen->defScreen;
+    ScreenType scrDef = amp.defScreen;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -185,7 +213,7 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
-    screenSaveSettings();
+    settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
 
     ampPinMute(true);
     audioSetPower(false);
@@ -312,7 +340,7 @@ static void actionGetEncoder(void)
 
 static bool isRemoteCmdRepeatable(RcCmd cmd)
 {
-    ScreenType scrMode = screenGet()->screen;
+    ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
     InputType inType = aProc->par.inType[aProc->par.input];
 
@@ -394,14 +422,14 @@ static void actionGetPots(void)
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
                         aProc->tune = AUDIO_TUNE_BASS;
-                        screenToClear();
+                        amp.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot);
                     break;
                 case AIN_POT_B:
                     if (aProc->tune != AUDIO_TUNE_TREBLE) {
                         aProc->tune = AUDIO_TUNE_TREBLE;
-                        screenToClear();
+                        amp.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot);
                     break;
@@ -460,8 +488,7 @@ static void actionRemapBtnLong(void)
 
 static void actionRemapRemote(void)
 {
-    Screen *screen = screenGet();
-    ScreenType scrMode = screen->screen;
+    ScreenType scrMode = amp.screen;
 
     AudioProc *aProc = audioGet();
 
@@ -524,7 +551,7 @@ static void actionRemapRemote(void)
     case RC_CMD_BASS_UP:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_BASS) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_BASS;
         actionSet(ACTION_ENCODER, +1);
@@ -532,7 +559,7 @@ static void actionRemapRemote(void)
     case RC_CMD_BASS_DOWN:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_BASS) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_BASS;
         actionSet(ACTION_ENCODER, -1);
@@ -540,7 +567,7 @@ static void actionRemapRemote(void)
     case RC_CMD_MIDDLE_UP:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_MIDDLE) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_MIDDLE;
         actionSet(ACTION_ENCODER, +1);
@@ -548,7 +575,7 @@ static void actionRemapRemote(void)
     case RC_CMD_MIDDLE_DOWN:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_MIDDLE) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_MIDDLE;
         actionSet(ACTION_ENCODER, -1);
@@ -556,7 +583,7 @@ static void actionRemapRemote(void)
     case RC_CMD_TREBLE_UP:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_TREBLE) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_TREBLE;
         actionSet(ACTION_ENCODER, +1);
@@ -564,7 +591,7 @@ static void actionRemapRemote(void)
     case RC_CMD_TREBLE_DOWN:
         screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_TREBLE) {
-            screenToClear();
+            amp.clearScreen = true;
         }
         aProc->tune = AUDIO_TUNE_TREBLE;
         actionSet(ACTION_ENCODER, -1);
@@ -615,7 +642,7 @@ static void actionRemapRemote(void)
 
 static void actionRemapEncoder(void)
 {
-    ScreenType scrMode = screenGet()->screen;
+    ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
 
     if (SCREEN_STANDBY == scrMode)
@@ -633,7 +660,7 @@ static void actionRemapEncoder(void)
         break;
     default:
         if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
-            screenToClear();
+            amp.clearScreen = true;
             aProc->tune = AUDIO_TUNE_VOLUME;
         }
         actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
@@ -656,7 +683,7 @@ static void actionRemapEncoder(void)
 
 static void actionRemapCommon(void)
 {
-    ScreenType scrMode = screenGet()->screen;
+    ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
 
     switch (action.type) {
@@ -728,7 +755,9 @@ void ampInit(void)
     pinsInit();
     rtcInit();
 
-    screenInit();
+    labelsInit();
+    canvasInit();
+
     spInit();
 
     inputInit();
@@ -759,7 +788,7 @@ void ampRun(void)
         ampActionRemap();
         ampActionHandle();
 
-        screenShow();
+        ampScreenShow();
     }
 }
 
@@ -795,7 +824,7 @@ void ampActionGet(void)
 #endif // _INPUT_ANALOG
 
     if (ACTION_NONE == action.type) {
-        ScreenType scrMode = screenGet()->screen;
+        ScreenType scrMode = amp.screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
@@ -849,8 +878,7 @@ static void ampTunerSendAction(ActionType type, int16_t value)
 
 void ampActionHandle(void)
 {
-    Screen *screen = screenGet();
-    ScreenType scrMode = screen->screen;
+    ScreenType scrMode = amp.screen;
 
     AudioProc *aProc = audioGet();
 //    InputType inType = aProc->par.inType[aProc->par.input];
@@ -881,7 +909,7 @@ void ampActionHandle(void)
 
     case ACTION_OPEN_MENU:
         if (scrMode == SCREEN_TUNE) {
-            screenToClear();
+            amp.clearScreen = true;
             actionNextAudioParam(aProc);
         } else {
             aProc->tune = AUDIO_TUNE_VOLUME;
@@ -895,7 +923,7 @@ void ampActionHandle(void)
 //            controlReportAudioInput();
 //            controlReportAudioTune(AUDIO_TUNE_GAIN);
         }
-        screenToClear();
+        amp.clearScreen = true;
         actionSetScreen(SCREEN_INPUT, 5000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
@@ -946,6 +974,40 @@ void ampActionHandle(void)
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
+}
+
+void ampScreenShow(void)
+{
+    bool clear = screenCheckClear();
+
+    if (clear) {
+        canvasClear();
+    }
+
+    Spectrum *sp = spGet();
+    Tune tune;
+
+    switch (amp.screen) {
+    case SCREEN_SPECTRUM:
+        canvasShowSpectrum(clear, sp->mode, sp->peaks);
+        break;
+    case SCREEN_TIME:
+        break;
+    case SCREEN_INPUT:
+        break;
+    case SCREEN_STANDBY:
+        break;
+    case SCREEN_TUNE:
+        tune.val = 20;
+        canvasShowTune(clear, &tune);
+        break;
+    default:
+        break;
+    }
+
+    canvasDebugFPS();
+
+    glcdFbSync();
 }
 
 void TIM_SPECTRUM_HANDLER(void)

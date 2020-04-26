@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "debug.h"
+#include "gui/canvas.h"
 #include "i2c.h"
 #include "input.h"
 #include "pins.h"
@@ -13,6 +14,7 @@
 #include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
+#include "tr/labels.h"
 #include "tuner/tuner.h"
 #include "utils.h"
 
@@ -31,9 +33,14 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static void ampScreenShow(void);
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
+    .screen = SCREEN_STANDBY,
+    .defScreen = SCREEN_SPECTRUM,
     .inputStatus = 0x00,
+    .volume = 0,
 };
 
 static Action action = {
@@ -87,11 +94,32 @@ static void actionSetScreen(ScreenType screen, int16_t timeout)
     action.timeout = timeout;
 }
 
+void screenSetMode(ScreenType value)
+{
+    amp.screen = value;
+}
+
+static bool screenCheckClear(void)
+{
+    bool clear = false;
+
+    if (amp.clearScreen) {
+        clear = true;
+        amp.clearScreen = false;
+    } else {
+        if (amp.screen != amp.prevScreen) {
+            clear = true;
+        }
+    }
+
+    amp.prevScreen = amp.screen;
+
+    return clear;
+}
+
 static void actionDispExpired(ScreenType scrMode)
 {
-    Screen *screen = screenGet();
-
-    ScreenType scrDef = screen->defScreen;
+    ScreenType scrDef = amp.defScreen;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -155,7 +183,7 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
-    screenSaveSettings();
+    settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
 
     ampPinMute(true);
 
@@ -255,7 +283,7 @@ static void actionRemapBtnLong(void)
 
 static void actionRemapEncoder(void)
 {
-    ScreenType scrMode = screenGet()->screen;
+    ScreenType scrMode = amp.screen;
 
     if (SCREEN_STANDBY == scrMode)
         return;
@@ -279,7 +307,7 @@ static void actionRemapEncoder(void)
 
 static void actionRemapCommon(void)
 {
-    ScreenType scrMode = screenGet()->screen;
+    ScreenType scrMode = amp.screen;
 
     switch (action.type) {
     case ACTION_STANDBY:
@@ -332,7 +360,9 @@ void ampInit(void)
     pinsInit();
     rtcInit();
 
-    screenInit();
+    labelsInit();
+    canvasInit();
+
     spInit();
 
     inputInit();
@@ -361,7 +391,7 @@ void ampRun(void)
         ampActionRemap();
         ampActionHandle();
 
-        screenShow();
+        ampScreenShow();
     }
 }
 
@@ -385,7 +415,7 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
-        ScreenType scrMode = screenGet()->screen;
+        ScreenType scrMode = amp.screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
@@ -427,8 +457,7 @@ static void ampReportAction(ActionType type, int16_t value)
 
 void ampActionHandle(void)
 {
-    Screen *screen = screenGet();
-    ScreenType scrMode = screen->screen;
+    ScreenType scrMode = amp.screen;
 
     action.timeout = 0;
 
@@ -470,6 +499,40 @@ void ampActionHandle(void)
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
+}
+
+void ampScreenShow(void)
+{
+    bool clear = screenCheckClear();
+
+    if (clear) {
+        canvasClear();
+    }
+
+    Spectrum *sp = spGet();
+    Tune tune;
+
+    switch (amp.screen) {
+    case SCREEN_SPECTRUM:
+        canvasShowSpectrum(clear, sp->mode, sp->peaks);
+        break;
+    case SCREEN_TIME:
+        break;
+    case SCREEN_INPUT:
+        break;
+    case SCREEN_STANDBY:
+        break;
+    case SCREEN_TUNE:
+        tune.val = 20;
+        canvasShowTune(clear, &tune);
+        break;
+    default:
+        break;
+    }
+
+    canvasDebugFPS();
+
+    glcdFbSync();
 }
 
 void TIM_SPECTRUM_HANDLER(void)
