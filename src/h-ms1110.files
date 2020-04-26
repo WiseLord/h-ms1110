@@ -108,6 +108,8 @@ common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
+common/gui/widget/progressbar.c
+common/gui/widget/progressbar.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
 common/gui/widget/spview.c

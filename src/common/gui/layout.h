@@ -12,7 +12,7 @@ extern "C" {
 #include "gui/widget/tune.h"
 
 typedef struct {
-    LayoutTune par;
+    LayoutTune tune;
 } Layout;
 
 const Layout *layoutGet(void);

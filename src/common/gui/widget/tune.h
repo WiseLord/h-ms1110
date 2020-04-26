@@ -8,12 +8,16 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "display/fonts/fonts.h"
+#include "fonts.h"
+#include "progressbar.h"
 
 typedef const struct {
-    const tFont *valFont;
-    int16_t valX;
-    int16_t valY;
+    struct {
+        const tFont *font;
+    } value;
+    struct {
+        int16_t y;
+    } bar;
 } LayoutTune;
 
 typedef struct {

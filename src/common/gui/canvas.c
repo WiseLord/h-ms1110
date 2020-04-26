@@ -82,7 +82,7 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
 
 void canvasShowTune(bool clear, Tune *pview)
 {
-    tuneDraw(clear, pview, &canvas.layout->par);
+    tuneDraw(clear, pview, &canvas.layout->tune);
 }
 
 
