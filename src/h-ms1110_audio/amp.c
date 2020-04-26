@@ -55,17 +55,17 @@ static void actionSet(ActionType type, int16_t value)
     action.value = value;
 }
 
-static void actionSetScreen(ScrMode screen, int16_t timeout)
+static void actionSetScreen(ScreenType screen, int16_t timeout)
 {
     action.screen = screen;
     action.timeout = timeout;
 }
 
-static void actionDispExpired(ScrMode scrMode)
+static void actionDispExpired(ScreenType scrMode)
 {
     Screen *screen = screenGet();
 
-    ScrMode scrDef = screen->def;
+    ScreenType scrDef = screen->defScreen;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -312,7 +312,7 @@ static void actionGetEncoder(void)
 
 static bool isRemoteCmdRepeatable(RcCmd cmd)
 {
-    ScrMode scrMode = screenGet()->mode;
+    ScreenType scrMode = screenGet()->screen;
     AudioProc *aProc = audioGet();
     InputType inType = aProc->par.inType[aProc->par.input];
 
@@ -461,7 +461,7 @@ static void actionRemapBtnLong(void)
 static void actionRemapRemote(void)
 {
     Screen *screen = screenGet();
-    ScrMode scrMode = screen->mode;
+    ScreenType scrMode = screen->screen;
 
     AudioProc *aProc = audioGet();
 
@@ -615,7 +615,7 @@ static void actionRemapRemote(void)
 
 static void actionRemapEncoder(void)
 {
-    ScrMode scrMode = screenGet()->mode;
+    ScreenType scrMode = screenGet()->screen;
     AudioProc *aProc = audioGet();
 
     if (SCREEN_STANDBY == scrMode)
@@ -656,7 +656,7 @@ static void actionRemapEncoder(void)
 
 static void actionRemapCommon(void)
 {
-    ScrMode scrMode = screenGet()->mode;
+    ScreenType scrMode = screenGet()->screen;
     AudioProc *aProc = audioGet();
 
     switch (action.type) {
@@ -795,7 +795,7 @@ void ampActionGet(void)
 #endif // _INPUT_ANALOG
 
     if (ACTION_NONE == action.type) {
-        ScrMode scrMode = screenGet()->mode;
+        ScreenType scrMode = screenGet()->screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
@@ -850,7 +850,7 @@ static void ampTunerSendAction(ActionType type, int16_t value)
 void ampActionHandle(void)
 {
     Screen *screen = screenGet();
-    ScrMode scrMode = screen->mode;
+    ScreenType scrMode = screen->screen;
 
     AudioProc *aProc = audioGet();
 //    InputType inType = aProc->par.inType[aProc->par.input];

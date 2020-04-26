@@ -81,17 +81,17 @@ static void actionSet(ActionType type, int16_t value)
     action.value = value;
 }
 
-static void actionSetScreen(ScrMode screen, int16_t timeout)
+static void actionSetScreen(ScreenType screen, int16_t timeout)
 {
     action.screen = screen;
     action.timeout = timeout;
 }
 
-static void actionDispExpired(ScrMode scrMode)
+static void actionDispExpired(ScreenType scrMode)
 {
     Screen *screen = screenGet();
 
-    ScrMode scrDef = screen->def;
+    ScreenType scrDef = screen->defScreen;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -255,7 +255,7 @@ static void actionRemapBtnLong(void)
 
 static void actionRemapEncoder(void)
 {
-    ScrMode scrMode = screenGet()->mode;
+    ScreenType scrMode = screenGet()->screen;
 
     if (SCREEN_STANDBY == scrMode)
         return;
@@ -279,7 +279,7 @@ static void actionRemapEncoder(void)
 
 static void actionRemapCommon(void)
 {
-    ScrMode scrMode = screenGet()->mode;
+    ScreenType scrMode = screenGet()->screen;
 
     switch (action.type) {
     case ACTION_STANDBY:
@@ -385,7 +385,7 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
-        ScrMode scrMode = screenGet()->mode;
+        ScreenType scrMode = screenGet()->screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
@@ -428,7 +428,7 @@ static void ampReportAction(ActionType type, int16_t value)
 void ampActionHandle(void)
 {
     Screen *screen = screenGet();
-    ScrMode scrMode = screen->mode;
+    ScreenType scrMode = screen->screen;
 
     action.timeout = 0;
 

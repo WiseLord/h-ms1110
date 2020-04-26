@@ -87,7 +87,7 @@ int16_t settingsGet(Param param)
         break;
 
     case PARAM_DISPLAY_DEF:
-        ret = screenGet()->def;
+        ret = screenGet()->defScreen;
         break;
 
     case PARAM_SPECTRUM_MODE:
@@ -156,7 +156,7 @@ void settingsSet(Param param, int16_t value)
         break;
 
     case PARAM_DISPLAY_DEF:
-        screenGet()->def = (ScrMode)value;
+        screenGet()->defScreen = (ScreenType)value;
         break;
 
     case PARAM_SPECTRUM_MODE:

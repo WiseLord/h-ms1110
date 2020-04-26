@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct {
     ActionType type;
-    ScrMode screen;
+    ScreenType screen;
 
     int16_t value;
     int16_t timeout;

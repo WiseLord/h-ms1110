@@ -9,38 +9,38 @@
 static bool scrToClear = false;
 
 static Screen screen = {
-    .mode = SCREEN_STANDBY,
-    .def = SCREEN_SPECTRUM,
+    .screen = SCREEN_STANDBY,
+    .defScreen = SCREEN_SPECTRUM,
 };
 
 static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    static ScrMode scrPrev = SCREEN_END;
+    static ScreenType scrPrev = SCREEN_END;
 
     if (scrToClear) {
         clear = true;
         scrToClear = false;
     } else {
-        if (screen.mode != scrPrev) {
+        if (screen.screen != scrPrev) {
             clear = true;
         }
     }
 
-    scrPrev = screen.mode;
+    scrPrev = screen.screen;
 
     return clear;
 }
 
 void screenReadSettings(void)
 {
-    screen.def = (ScrMode)settingsRead(PARAM_DISPLAY_DEF);
+    screen.defScreen = (ScreenType)settingsRead(PARAM_DISPLAY_DEF);
 }
 
 void screenSaveSettings(void)
 {
-    settingsStore(PARAM_DISPLAY_DEF, screen.def);
+    settingsStore(PARAM_DISPLAY_DEF, screen.defScreen);
 }
 
 void screenInit(void)
@@ -56,9 +56,9 @@ Screen *screenGet(void)
     return &screen;
 }
 
-void screenSetMode(ScrMode value)
+void screenSetMode(ScreenType value)
 {
-    screen.mode = value;
+    screen.screen = value;
 }
 
 void screenToClear(void)
@@ -77,7 +77,7 @@ void screenShow(void)
     Spectrum *sp = spGet();
     Tune pview;
 
-    switch (screen.mode) {
+    switch (screen.screen) {
     case SCREEN_SPECTRUM:
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;

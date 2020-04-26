@@ -8,7 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef uint8_t ScrMode;
+typedef uint8_t ScreenType;
 enum {
     // Screens allowed to be default
     SCREEN_SPECTRUM = 0,
@@ -20,8 +20,8 @@ enum {
 };
 
 typedef struct {
-    ScrMode mode;
-    ScrMode def;
+    ScreenType screen;
+    ScreenType defScreen;
 } Screen;
 
 void screenReadSettings(void);
@@ -31,7 +31,7 @@ void screenInit(void);
 
 Screen *screenGet(void);
 
-void screenSetMode(ScrMode value);
+void screenSetMode(ScreenType value);
 
 void screenToClear(void);
 
