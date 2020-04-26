@@ -1,9 +1,9 @@
-#include "paramview.h"
+#include "tune.h"
 
 #include "display/glcd.h"
 #include "utils.h"
 
-void paramViewDraw(bool clear, ParamView *pview, LayoutParamView *lt)
+void tuneDraw(bool clear, Tune *pview, LayoutTune *lt)
 {
     glcdSetFont(lt->valFont);
     glcdSetXY(lt->valX, lt->valY);

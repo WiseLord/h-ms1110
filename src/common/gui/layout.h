@@ -9,10 +9,10 @@ extern "C" {
 
 #include "display/fonts/fonts.h"
 
-#include "gui/widget/paramview.h"
+#include "gui/widget/tune.h"
 
 typedef struct {
-    LayoutParamView par;
+    LayoutTune par;
 } Layout;
 
 const Layout *layoutGet(void);

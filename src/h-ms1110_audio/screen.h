@@ -13,11 +13,11 @@ enum {
     // Screens allowed to be default
     SCREEN_SPECTRUM = 0,
     SCREEN_TIME,
-    SCREEN_AUDIO_INPUT,
+    SCREEN_INPUT,
 
     SCREEN_STANDBY,
 
-    SCREEN_AUDIO_PARAM,
+    SCREEN_TUNE,
 
     SCREEN_END
 };

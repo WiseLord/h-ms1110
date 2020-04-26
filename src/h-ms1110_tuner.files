@@ -96,14 +96,14 @@ common/gui/layout.c
 common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
-common/gui/widget/paramview.c
-common/gui/widget/paramview.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
 common/gui/widget/stripedbar.c
 common/gui/widget/stripedbar.h
 common/gui/widget/textedit.c
 common/gui/widget/textedit.h
+common/gui/widget/tune.c
+common/gui/widget/tune.h
 common/hwlibs.h
 common/i2c.c
 common/i2c.h

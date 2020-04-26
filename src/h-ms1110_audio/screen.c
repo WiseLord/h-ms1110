@@ -75,7 +75,7 @@ void screenShow(void)
     }
 
     Spectrum *sp = spGet();
-    ParamView pview;
+    Tune pview;
 
     switch (screen.mode) {
     case SCREEN_SPECTRUM:
@@ -83,13 +83,13 @@ void screenShow(void)
         break;
     case SCREEN_TIME:
         break;
-    case SCREEN_AUDIO_INPUT:
+    case SCREEN_INPUT:
         break;
     case SCREEN_STANDBY:
         break;
-    case SCREEN_AUDIO_PARAM:
+    case SCREEN_TUNE:
         pview.val = 20;
-        canvasShowParam(clear, &pview);
+        canvasShowTune(clear, &pview);
         break;
     default:
         break;

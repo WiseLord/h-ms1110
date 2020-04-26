@@ -323,14 +323,14 @@ static bool isRemoteCmdRepeatable(RcCmd cmd)
     case RC_CMD_NAV_UP:
     case RC_CMD_NAV_DOWN:
         switch (scrMode) {
-        case SCREEN_AUDIO_PARAM:
+        case SCREEN_TUNE:
             return true;
         }
         break;
     case RC_CMD_NAV_LEFT:
     case RC_CMD_NAV_RIGHT:
         switch (scrMode) {
-        case SCREEN_AUDIO_INPUT:
+        case SCREEN_INPUT:
             if (inType == IN_TUNER) {
                 return true;
             }
@@ -389,7 +389,7 @@ static void actionGetPots(void)
         int8_t pot = inputAnalogGetPots(ain);
         if (pot != potPrev[ain]) {
             if (amp.status == AMP_STATUS_ACTIVE) {
-                screenSetMode(SCREEN_AUDIO_PARAM);
+                screenSetMode(SCREEN_TUNE);
                 switch (ain) {
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
@@ -522,7 +522,7 @@ static void actionRemapRemote(void)
 //        break;
 
     case RC_CMD_BASS_UP:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_BASS) {
             screenToClear();
         }
@@ -530,7 +530,7 @@ static void actionRemapRemote(void)
         actionSet(ACTION_ENCODER, +1);
         break;
     case RC_CMD_BASS_DOWN:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_BASS) {
             screenToClear();
         }
@@ -538,7 +538,7 @@ static void actionRemapRemote(void)
         actionSet(ACTION_ENCODER, -1);
         break;
     case RC_CMD_MIDDLE_UP:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_MIDDLE) {
             screenToClear();
         }
@@ -546,7 +546,7 @@ static void actionRemapRemote(void)
         actionSet(ACTION_ENCODER, +1);
         break;
     case RC_CMD_MIDDLE_DOWN:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_MIDDLE) {
             screenToClear();
         }
@@ -554,7 +554,7 @@ static void actionRemapRemote(void)
         actionSet(ACTION_ENCODER, -1);
         break;
     case RC_CMD_TREBLE_UP:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_TREBLE) {
             screenToClear();
         }
@@ -562,7 +562,7 @@ static void actionRemapRemote(void)
         actionSet(ACTION_ENCODER, +1);
         break;
     case RC_CMD_TREBLE_DOWN:
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         if (aProc->tune != AUDIO_TUNE_TREBLE) {
             screenToClear();
         }
@@ -641,11 +641,11 @@ static void actionRemapEncoder(void)
     }
 
     if (ACTION_AUDIO_PARAM_CHANGE == action.type) {
-        screenSetMode(SCREEN_AUDIO_PARAM);
+        screenSetMode(SCREEN_TUNE);
         switch (scrMode) {
         case SCREEN_SPECTRUM:
 //        case SCREEN_AUDIO_FLAG:
-        case SCREEN_AUDIO_INPUT:
+        case SCREEN_INPUT:
             aProc->tune = AUDIO_TUNE_VOLUME;
             break;
         default:
@@ -880,23 +880,23 @@ void ampActionHandle(void)
         break;
 
     case ACTION_OPEN_MENU:
-        if (scrMode == SCREEN_AUDIO_PARAM) {
+        if (scrMode == SCREEN_TUNE) {
             screenToClear();
             actionNextAudioParam(aProc);
         } else {
             aProc->tune = AUDIO_TUNE_VOLUME;
         }
-        actionSetScreen(SCREEN_AUDIO_PARAM, 5000);
+        actionSetScreen(SCREEN_TUNE, 5000);
         break;
 
     case ACTION_AUDIO_INPUT:
-        if (scrMode == SCREEN_AUDIO_INPUT) {
+        if (scrMode == SCREEN_INPUT) {
             ampSetInput(actionGetNextAudioInput((int8_t)action.value));
 //            controlReportAudioInput();
 //            controlReportAudioTune(AUDIO_TUNE_GAIN);
         }
         screenToClear();
-        actionSetScreen(SCREEN_AUDIO_INPUT, 5000);
+        actionSetScreen(SCREEN_INPUT, 5000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
@@ -906,13 +906,13 @@ void ampActionHandle(void)
         if (aProc->par.mute) {
             ampMute(false);
         }
-        actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
+        actionSetScreen(SCREEN_TUNE, 3000);
 //        controlReportAudioTune(aProc->tune);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
     case ACTION_AUDIO_PARAM_SET:
         audioSetTune(aProc->tune, (int8_t)action.value);
-        actionSetScreen(SCREEN_AUDIO_PARAM, 3000);
+        actionSetScreen(SCREEN_TUNE, 3000);
         break;
 
 

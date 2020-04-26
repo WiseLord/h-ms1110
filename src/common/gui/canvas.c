@@ -80,9 +80,9 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
-void canvasShowParam(bool clear, ParamView *pview)
+void canvasShowTune(bool clear, Tune *pview)
 {
-    paramViewDraw(clear, pview, &canvas.layout->par);
+    tuneDraw(clear, pview, &canvas.layout->par);
 }
 
 
