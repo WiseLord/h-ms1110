@@ -17,7 +17,7 @@ void canvasInit()
 
     PalIdx palIdx = PAL_DEFAULT;//(PalIdx)settingsRead(PARAM_DISPLAY_PALETTE);
     paletteSetIndex(palIdx);
-    canvas.pal = paletteGet(palIdx);
+    canvas.pal = paletteGet();
 
     // Default font parameters
     glcdSetFont(&fontterminus12);

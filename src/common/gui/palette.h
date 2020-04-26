@@ -28,7 +28,7 @@ enum {
     PAL_END
 };
 
-const Palette *paletteGet(PalIdx index);
+const Palette *paletteGet(void);
 PalIdx paletteGetIndex(void);
 void paletteSetIndex(PalIdx index);
 

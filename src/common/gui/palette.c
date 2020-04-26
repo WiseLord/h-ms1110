@@ -16,9 +16,9 @@ static const Palette palette[PAL_END] = {
     },
 };
 
-const Palette *paletteGet(PalIdx index)
+const Palette *paletteGet(void)
 {
-    return &palette[index];
+    return &palette[palIdx];
 }
 
 PalIdx paletteGetIndex(void)

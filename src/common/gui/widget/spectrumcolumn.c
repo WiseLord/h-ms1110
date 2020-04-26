@@ -15,7 +15,7 @@ void spectrumColumnDraw(bool clear, SpectrumColumn *col, GlcdRect *rect, bool mi
     int16_t os = col->prevW;
     int16_t p = col->peakW;
 
-    const Palette *pal = paletteGet(paletteGetIndex());
+    const Palette *pal = paletteGet();
 
     if (s == 0) {
         s = 1;

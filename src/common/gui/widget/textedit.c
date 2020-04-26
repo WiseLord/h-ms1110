@@ -60,7 +60,7 @@ void textEditDelChar(TextEdit *te)
 void textEditDraw(bool clear, TextEdit *te, LayoutTextEdit *lt)
 {
     Glcd *glcd = glcdGet();
-    const Palette *pal = paletteGet(paletteGetIndex());
+    const Palette *pal = paletteGet();
 
     const tFont *editFont = lt->editFont;
     const int16_t feh = editFont->chars[0].image->height;

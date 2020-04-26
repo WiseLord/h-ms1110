@@ -7,7 +7,7 @@ void stripedBarDraw(bool clear, StripedBar *bar, LayoutStripedBar *lt)
 {
     (void)clear;
 
-    const Palette *pal = paletteGet(paletteGetIndex());
+    const Palette *pal = paletteGet();
 
     const int16_t sc = lt->sc;         // Scale count
     const uint8_t sw = lt->sw;         // Scale width
