@@ -14,6 +14,20 @@ extern "C" {
 
 #include "spectrum.h"
 
+typedef uint8_t ScreenType;
+enum {
+    // Screens allowed to be default
+    SCREEN_SPECTRUM = 0,
+    SCREEN_TIME,
+    SCREEN_INPUT,
+
+    SCREEN_STANDBY,
+
+    SCREEN_TUNE,
+
+    SCREEN_END
+};
+
 typedef struct {
     Glcd *glcd;
     const Palette *pal;
