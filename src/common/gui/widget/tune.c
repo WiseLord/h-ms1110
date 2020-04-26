@@ -3,10 +3,10 @@
 #include "display/glcd.h"
 #include "utils.h"
 
-void tuneDraw(bool clear, Tune *pview, LayoutTune *lt)
+void tuneDraw(bool clear, Tune *tune, LayoutTune *lt)
 {
     glcdSetFont(lt->valFont);
     glcdSetXY(lt->valX, lt->valY);
 
-    glcdWriteString(utilMkStr("%d", pview->val));
+    glcdWriteString(utilMkStr("%d", tune->value));
 }

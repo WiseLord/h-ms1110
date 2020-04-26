@@ -17,7 +17,9 @@ typedef const struct {
 } LayoutTune;
 
 typedef struct {
-    int16_t val;
+    int16_t value;
+    int16_t min;
+    int16_t max;
 } Tune;
 
 void tuneDraw(bool clear, Tune *pview, LayoutTune *lt);

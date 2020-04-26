@@ -976,6 +976,16 @@ void ampActionHandle(void)
     }
 }
 
+static void prepareAudioTune(Tune *tune)
+{
+    AudioProc *aProc = audioGet();
+    AudioTuneItem *aItem = &aProc->par.tune[aProc->tune];
+
+    tune->value = aItem->value;
+    tune->min = aItem->grid->min;
+    tune->max = aItem->grid->max;
+}
+
 void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
@@ -998,7 +1008,7 @@ void ampScreenShow(void)
     case SCREEN_STANDBY:
         break;
     case SCREEN_TUNE:
-        tune.val = 20;
+        prepareAudioTune(&tune);
         canvasShowTune(clear, &tune);
         break;
     default:

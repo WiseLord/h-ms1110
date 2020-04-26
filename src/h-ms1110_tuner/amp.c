@@ -5,6 +5,7 @@
 
 #include "debug.h"
 #include "gui/canvas.h"
+#include "hwlibs.h"
 #include "i2c.h"
 #include "input.h"
 #include "pins.h"
@@ -510,7 +511,6 @@ void ampScreenShow(void)
     }
 
     Spectrum *sp = spGet();
-    Tune tune;
 
     switch (amp.screen) {
     case SCREEN_SPECTRUM:
@@ -518,13 +518,7 @@ void ampScreenShow(void)
         break;
     case SCREEN_TIME:
         break;
-    case SCREEN_INPUT:
-        break;
     case SCREEN_STANDBY:
-        break;
-    case SCREEN_TUNE:
-        tune.val = 20;
-        canvasShowTune(clear, &tune);
         break;
     default:
         break;
