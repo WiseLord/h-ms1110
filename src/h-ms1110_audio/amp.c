@@ -155,12 +155,12 @@ static void ampPinStby(bool value)
         SET(STBY);
     }
 
-    // Enable SWD interface in standby mode
-    if (value) {
-        LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    } else {
-        LL_GPIO_AF_DisableRemap_SWJ();
-    }
+//    // Enable SWD interface in standby mode
+//    if (value) {
+    LL_GPIO_AF_Remap_SWJ_NOJTAG();
+//    } else {
+//        LL_GPIO_AF_DisableRemap_SWJ();
+//    }
 }
 
 static void ampMute(bool value)
@@ -412,9 +412,11 @@ static void actionGetPots(void)
     static int8_t potPrev[AIN_POT_END];
 
     AudioProc *aProc = audioGet();
+    const AudioGrid *grid = aProc->par.tune[AUDIO_TUNE_BASS].grid;
+    uint16_t zoneCnt = grid->max - grid->min + 1;
 
-    for (AnalogInput ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
-        int8_t pot = inputAnalogGetPots(ain);
+    for (AinChannel ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
+        int8_t pot = inputAnalogGetPotZone(ain, zoneCnt);
         if (pot != potPrev[ain]) {
             if (amp.status == AMP_STATUS_ACTIVE) {
                 screenSetMode(SCREEN_TUNE);
@@ -424,14 +426,14 @@ static void actionGetPots(void)
                         aProc->tune = AUDIO_TUNE_BASS;
                         amp.clearScreen = true;
                     }
-                    actionSet(ACTION_AUDIO_PARAM_SET, pot);
+                    actionSet(ACTION_AUDIO_PARAM_SET, pot + grid->min);
                     break;
                 case AIN_POT_B:
                     if (aProc->tune != AUDIO_TUNE_TREBLE) {
                         aProc->tune = AUDIO_TUNE_TREBLE;
                         amp.clearScreen = true;
                     }
-                    actionSet(ACTION_AUDIO_PARAM_SET, pot);
+                    actionSet(ACTION_AUDIO_PARAM_SET, pot + grid->min);
                     break;
                 default:
                     break;
@@ -1022,6 +1024,7 @@ void ampScreenShow(void)
         canvasShowInput(clear, label);
         break;
     case SCREEN_STANDBY:
+//        canvasShowStandby(clear);
         break;
     case SCREEN_TUNE:
         prepareAudioTune(&tune);

@@ -52,6 +52,10 @@ extern "C" {
 #define BTN_FLAG_NO             0x0000
 #define BTN_FLAG_LONG_PRESS     0x0001
 
+#define ENCODER_Port            GPIOA
+#define ENCODER_A_Pin           LL_GPIO_PIN_11
+#define ENCODER_B_Pin           LL_GPIO_PIN_12
+
 typedef struct {
     uint16_t btn;
     uint16_t flags;

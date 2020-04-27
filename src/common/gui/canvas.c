@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "swtimers.h"
-
 #include "widget/spview.h"
 
 static Canvas canvas;
@@ -35,12 +34,13 @@ Canvas *canvasGet(void)
 void canvasClear(void)
 {
     GlcdRect rect = canvas.glcd->rect;
+    const Palette *pal = canvas.pal;
 
-    glcdDrawRect(0, 0, rect.w, rect.h, COLOR_BLACK);
+    glcdDrawRect(0, 0, rect.w, rect.h, pal->bg);
     glcdShift(0);
 
-    glcdSetFontColor(COLOR_WHITE);
-    glcdSetFontBgColor(COLOR_BLACK);
+    glcdSetFontColor(pal->fg);
+    glcdSetFontBgColor(pal->bg);
 }
 
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
@@ -92,11 +92,16 @@ void canvasShowInput(bool clear, Label label)
     glcdWriteString(labelsGet(label));
 }
 
-void canvasShowTune(bool clear, Tune *pview)
+void canvasShowTune(bool clear, Tune *tune)
 {
-    tuneDraw(clear, pview, &canvas.layout->tune);
+    tuneDraw(clear, tune, &canvas.layout->tune);
 }
 
+
+void canvasShowTest(bool clear)
+{
+
+}
 
 void canvasDebugFPS(void)
 {

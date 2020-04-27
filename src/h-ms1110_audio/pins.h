@@ -31,20 +31,6 @@ extern "C" {
 #define MUTE_Pin                LL_GPIO_PIN_1
 
 // Input
-#define AIN_BTN_Port            GPIOA
-#define AIN_BTN_Pin             LL_GPIO_PIN_4
-#define AIN_BTN_ADC_Channel     LL_ADC_CHANNEL_4
-#define AIN_POT_A_Port          GPIOA
-#define AIN_POT_A_Pin           LL_GPIO_PIN_2
-#define AIN_POT_A_Channel       LL_ADC_CHANNEL_2
-#define AIN_POT_B_Port          GPIOA
-#define AIN_POT_B_Pin           LL_GPIO_PIN_3
-#define AIN_POT_B_Channel       LL_ADC_CHANNEL_3
-
-#define ENCODER_Port            GPIOA
-#define ENCODER_A_Pin           LL_GPIO_PIN_11
-#define ENCODER_B_Pin           LL_GPIO_PIN_12
-
 #define MATRIX_S1_Port          GPIOA
 #define MATRIX_S1_Pin           LL_GPIO_PIN_13
 #define MATRIX_S2_Port          GPIOA

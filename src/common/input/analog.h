@@ -7,7 +7,19 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef uint8_t AnalogInput;
+#define AIN_BTN_Port            GPIOA
+#define AIN_BTN_Pin             LL_GPIO_PIN_4
+#define AIN_BTN_Channel         LL_ADC_CHANNEL_4
+#define AIN_POT_A_Port          GPIOA
+#define AIN_POT_A_Pin           LL_GPIO_PIN_2
+#define AIN_POT_A_Channel       LL_ADC_CHANNEL_2
+#define AIN_POT_B_Port          GPIOA
+#define AIN_POT_B_Pin           LL_GPIO_PIN_3
+#define AIN_POT_B_Channel       LL_ADC_CHANNEL_3
+
+#define AIN_POT_ARRAY_LEN          8
+
+typedef uint8_t AinChannel;
 enum {
     AIN_POT_A,
     AIN_POT_B,
@@ -30,10 +42,20 @@ enum {
     ABTN_END
 };
 
-void inputAnalogInit(void);
-uint16_t inputAnalogGet(void);
+typedef struct {
+    uint16_t potRaw[AIN_POT_END][AIN_POT_ARRAY_LEN];
+    uint16_t btnRaw;
+    int8_t potZone[AIN_POT_END];
+} InputAnalog;
 
-int8_t inputAnalogGetPots(uint8_t chan);
+void inputAnalogInit(void);
+InputAnalog *inputAnalogGet(void);
+
+void inputAnalogHandle(void);
+uint16_t inputAnalogGetBtn(void);
+
+uint16_t inputAnalogGetPot(AinChannel chan);
+int8_t inputAnalogGetPotZone(AinChannel chan, uint8_t zoneCnt);
 
 #ifdef __cplusplus
 }

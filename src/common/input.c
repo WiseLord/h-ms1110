@@ -4,7 +4,6 @@
 #include "hwlibs.h"
 #include "input/analog.h"
 #include "input/matrix.h"
-#include "pins.h"
 #include "settings.h"
 #include "timers.h"
 
@@ -50,7 +49,7 @@ static void inputHandleButtons(void)
 
     btnNow |= inputMatrixGet();
 #ifdef _INPUT_ANALOG
-    btnNow |= inputAnalogGet();
+    btnNow |= inputAnalogGetBtn();
 #endif // _INPUT_ANALOG
 
     // On button event place it to command buffer
@@ -94,7 +93,7 @@ static void inputHandleEncoder(void)
     }
 }
 
-void inputInit()
+void inputInit(void)
 {
     inputMatrixInit();
 #ifdef _INPUT_ANALOG
@@ -117,6 +116,10 @@ void TIM_INPUT_HANDLER(void)
     if (LL_TIM_IsActiveFlag_UPDATE(TIM_INPUT)) {
         // Clear the update interrupt flag
         LL_TIM_ClearFlag_UPDATE(TIM_INPUT);
+
+#ifdef _INPUT_ANALOG
+        inputAnalogHandle();
+#endif // _INPUT_ANALOG
 
         inputHandleButtons();
         inputHandleEncoder();

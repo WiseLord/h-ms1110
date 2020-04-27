@@ -1,20 +1,16 @@
 #include "analog.h"
 
 #include "audio/audio.h"
+#include "hwlibs.h"
 #include "input.h"
-#include "pins.h"
 
 #define ADC_MAX         4095
 #define ABS(x)          ((x) > 0 ? (x) : -(x))
 
 #define BTN_THRESHOLD   100
 
-static const uint32_t R_POT_H   = 4700;         // Pot pull-up resistor
-static const uint32_t R_POT     = 100000;       // Pot resistance
-
-// TODO: calibration settings for potentiomenters
-static const int32_t R_POT_TH   = 67;           // Experimental threshold
-static const int32_t R_POT_MAX  = (((ADC_MAX) * R_POT / (R_POT + R_POT_H)) - R_POT_TH);
+static const int32_t potMin = 3850;             // Potentiomenter at minimum
+static const int32_t potMax = 10;               // Potentiomenter at maximum
 
 static const uint32_t R_BTN_H   = 10000;        // Analog buttons pull-up resistor
 static const uint32_t R_BTNS[ABTN_END] = {      // Analog buttons resistance
@@ -23,14 +19,13 @@ static const uint32_t R_BTNS[ABTN_END] = {      // Analog buttons resistance
     3900,
 };
 
-static const uint32_t analogInputs[AIN_END] = {
+static const uint32_t channels[AIN_END] = {
     AIN_POT_A_Channel,
     AIN_POT_B_Channel,
-    AIN_BTN_ADC_Channel,
+    AIN_BTN_Channel,
 };
 
-static int16_t potZone;
-static int16_t potData[AIN_POT_END];
+static InputAnalog ctx;
 
 void inputAnalogInit(void)
 {
@@ -48,7 +43,7 @@ void inputAnalogInit(void)
         LL_ADC_REG_SetSequencerLength(ADC2, LL_ADC_REG_SEQ_SCAN_DISABLE);
 
         for (uint8_t i = 0; i < AIN_END; i++) {
-            LL_ADC_SetChannelSamplingTime(ADC2, analogInputs[i], LL_ADC_SAMPLINGTIME_239CYCLES_5);
+            LL_ADC_SetChannelSamplingTime(ADC2, channels[i], LL_ADC_SAMPLINGTIME_71CYCLES_5);
         }
 
         LL_ADC_Enable(ADC2);
@@ -57,57 +52,50 @@ void inputAnalogInit(void)
         LL_ADC_StartCalibration(ADC2);
         while (LL_ADC_IsCalibrationOnGoing(ADC2) != 0);
     }
-
-    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-    const int16_t zoneCnt = grid->max - grid->min + 1;
-    potZone = R_POT_MAX / zoneCnt;
-
-    potData[AIN_POT_A] = potZone / 2;
-    potData[AIN_POT_B] = potZone / 2;
 }
 
-uint16_t inputAnalogGet(void)
+InputAnalog *inputAnalogGet(void)
 {
-    static uint8_t chan = 0;
-    static AnalogBtn aBtn = ABTN_RELEASED;
+    return &ctx;
+}
 
-    // Read data from previous input
-    int16_t adcData = (int16_t)LL_ADC_REG_ReadConversionData12(ADC2);
+void inputAnalogHandle(void)
+{
+    static uint8_t chan;
+    static uint8_t idx = 0;
+
+    uint16_t raw = LL_ADC_REG_ReadConversionData12(ADC2);
 
     if (chan < AIN_POT_END) {
-        int16_t potZone = potZone;
-
-        // Consider "reverted" potentiomener
-        adcData = R_POT_MAX - adcData;
-
-        int16_t diff = adcData - potData[chan];
-
-        if (diff >= 0) {
-            potData[chan] += ABS(diff) / potZone * potZone;
-        } else {
-            potData[chan] -= ABS(diff) / potZone * potZone;
-        }
-
-    } else if (chan == AIN_BTN) {
-        aBtn = ABTN_RELEASED;
-        for (AnalogBtn i = 0; i < ABTN_END; i++) {
-            int16_t btnDiff = (int16_t)(ADC_MAX * R_BTNS[i] / (R_BTNS[i] + R_BTN_H)) - adcData;
-            if (ABS(btnDiff) < BTN_THRESHOLD) {
-                aBtn = i;
-                break;
-            }
-        }
+        ctx.potRaw[chan][idx] = raw;
+    } else {
+        ctx.btnRaw = raw;
     }
 
     // Change input
     if (++chan >= AIN_END) {
         chan = 0;
+        if (++idx >= AIN_POT_ARRAY_LEN) {
+            idx = 0;
+        }
     }
 
     // Run new conversion
-    LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, analogInputs[chan]);
+    LL_ADC_REG_SetSequencerRanks(ADC2, LL_ADC_REG_RANK_1, channels[chan]);
     LL_ADC_REG_StartConversionSWStart(ADC2);
+}
 
+uint16_t inputAnalogGetBtn(void)
+{
+    AnalogBtn aBtn = ABTN_RELEASED;
+
+    for (AnalogBtn i = 0; i < ABTN_END; i++) {
+        int16_t btnDiff = (int16_t)(ADC_MAX * R_BTNS[i] / (R_BTNS[i] + R_BTN_H)) - ctx.btnRaw;
+        if (ABS(btnDiff) < BTN_THRESHOLD) {
+            aBtn = i;
+            break;
+        }
+    }
 
     if (aBtn >= 0) {
         return (uint16_t)(BTN_STBY << aBtn);
@@ -116,19 +104,33 @@ uint16_t inputAnalogGet(void)
     return BTN_NO;
 }
 
-int8_t inputAnalogGetPots(uint8_t chan)
+uint16_t inputAnalogGetPot(AinChannel chan)
 {
-    const AudioGrid *grid = audioGet()->par.tune[AUDIO_TUNE_BASS].grid;
-    const int16_t zoneCnt = grid->max - grid->min + 1;
+    uint16_t potAvg = 0;
 
-    int8_t pot = (int8_t)(potData[chan] * zoneCnt / R_POT_MAX) + grid->min;
-
-    if (pot < grid->min) {
-        pot = grid->min;
-    }
-    if (pot > grid->max) {
-        pot = grid->max;
+    for (int16_t idx = 0; idx < AIN_POT_ARRAY_LEN; idx++) {
+        potAvg += ctx.potRaw[chan][idx];
     }
 
-    return pot;
+    potAvg /= AIN_POT_ARRAY_LEN;
+
+    return potAvg;
+}
+
+int8_t inputAnalogGetPotZone(AinChannel chan, uint8_t zoneCnt)
+{
+    int32_t potVal = inputAnalogGetPot(chan);
+
+    int32_t zoneHalf = (potMax - potMin) / zoneCnt / 2;
+
+    int32_t curVal = potMin + zoneHalf + ctx.potZone[chan] * (potMax - potMin) / zoneCnt;
+
+    bool newZone = ABS(potVal - curVal) > ABS(zoneHalf * 3 / 2);
+
+    if (newZone) {
+        int32_t zone = (potVal - potMin) * zoneCnt / (potMax - potMin); // 11
+        ctx.potZone[chan] = zone;
+    }
+
+    return ctx.potZone[chan];
 }
