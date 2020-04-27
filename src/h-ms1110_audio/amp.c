@@ -988,6 +988,16 @@ static void prepareAudioTune(Tune *tune)
     tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
+static void prepareAudioInput (Label *label)
+{
+    AudioProc *aProc = audioGet();
+
+    InputType inType = aProc->par.inType[aProc->par.input];
+
+    *label = LABEL_IN_TUNER + (inType - IN_TUNER);
+}
+
+
 void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
@@ -999,6 +1009,8 @@ void ampScreenShow(void)
     Spectrum *sp = spGet();
     Tune tune;
 
+    Label label;
+
     switch (amp.screen) {
     case SCREEN_SPECTRUM:
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
@@ -1006,6 +1018,8 @@ void ampScreenShow(void)
     case SCREEN_TIME:
         break;
     case SCREEN_INPUT:
+        prepareAudioInput(&label);
+        canvasShowInput(clear, label);
         break;
     case SCREEN_STANDBY:
         break;

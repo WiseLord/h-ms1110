@@ -40,6 +40,9 @@ Canvas *canvasGet(void);
 void canvasClear(void);
 
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
+
+void canvasShowInput(bool clear, Label label);
+
 void canvasShowTune(bool clear, Tune *pview);
 
 void canvasDebugFPS(void);

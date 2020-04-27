@@ -80,6 +80,18 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
+void canvasShowInput(bool clear, Label label)
+{
+    const Palette *pal = canvas.pal;
+    GlcdRect rect = canvas.glcd->rect;
+
+    glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->fg);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+    glcdSetXY(rect.w / 2, (rect.h - canvas.glcd->font->chars[0].image->height) / 2);
+    glcdWriteString(labelsGet(label));
+}
+
 void canvasShowTune(bool clear, Tune *pview)
 {
     tuneDraw(clear, pview, &canvas.layout->tune);
