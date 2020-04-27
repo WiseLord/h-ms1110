@@ -984,6 +984,8 @@ static void prepareAudioTune(Tune *tune)
     tune->value = aItem->value;
     tune->min = aItem->grid->min;
     tune->max = aItem->grid->max;
+
+    tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
 void ampScreenShow(void)

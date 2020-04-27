@@ -5,14 +5,7 @@
 extern "C" {
 #endif
 
-#include "amp.h"
-#include "audio/audio.h"
-#include "gui/palette.h"
-#include "rtc.h"
-#include "spectrum.h"
-
-#define GENERATE_MENU_RC_TEXT(CMD)  [LABEL_MENU + MENU_RC_ ## CMD] = # CMD,
-#define GENERATE_AUDIO_IC_TEXT(IC)  [LABEL_AUDIO_IC + AUDIO_IC_ ## IC] = # IC,
+#include <stdint.h>
 
 typedef uint8_t Lang;
 enum {
@@ -25,7 +18,8 @@ enum {
     LANG_DEFAULT = LANG_EN,
 };
 
-typedef enum {
+typedef uint8_t Label;
+enum {
     LABEL_SUNDAY,
     LABEL_MONDAY,
     LABEL_TUESDAY,
@@ -63,7 +57,7 @@ typedef enum {
     LABEL_BOOL_ON,
 
     LABEL_END,
-} Label;
+};
 
 extern const char *const labels_en[LABEL_END];
 //extern const char *const labels_by[LABEL_END];

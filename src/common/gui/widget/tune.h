@@ -10,11 +10,15 @@ extern "C" {
 
 #include "fonts.h"
 #include "progressbar.h"
+#include "tr/labels.h"
 
 typedef const struct {
     struct {
         const tFont *font;
     } value;
+    struct {
+        const tFont *font;
+    } label;
     struct {
         int16_t y;
     } bar;
@@ -24,6 +28,7 @@ typedef struct {
     int16_t value;
     int16_t min;
     int16_t max;
+    Label label;
 } Tune;
 
 void tuneDraw(bool clear, Tune *pview, LayoutTune *lt);

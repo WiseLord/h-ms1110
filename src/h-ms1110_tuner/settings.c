@@ -1,7 +1,9 @@
 #include "settings.h"
 
+#include "amp.h"
 #include "display/glcd.h"
 #include "eemul.h"
+#include "gui/canvas.h"
 #include "input.h"
 #include "rc.h"
 #include "spectrum.h"

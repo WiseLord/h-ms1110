@@ -2,6 +2,7 @@
 
 #include "display/glcd.h"
 #include "gui/palette.h"
+#include "tr/labels.h"
 #include "utils.h"
 
 void tuneDraw(bool clear, Tune *tune, LayoutTune *lt)
@@ -9,12 +10,16 @@ void tuneDraw(bool clear, Tune *tune, LayoutTune *lt)
     const Palette *pal = paletteGet();
     GlcdRect *rect = glcdGetRect();
 
+    glcdSetFont(lt->label.font);
+    glcdSetFontColor(pal->fg);
+    glcdSetXY(0, 0);
+    glcdWriteString(labelsGet(tune->label));
+
     glcdSetFont(lt->value.font);
     glcdSetFontColor(pal->fg);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     glcdSetXY(rect->w, 0);
-
-    glcdWriteString(utilMkStr("%d", tune->value));
+    glcdWriteString(utilMkStr("%3d", tune->value));
 
     ProgressBar bar;
     bar.lt.rect.x = 0;
