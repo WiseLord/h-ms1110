@@ -24,12 +24,6 @@ static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
-static void actionRemapBtnShort(void);
-static void actionRemapBtnLong(void);
-static void actionRemapCommon(void);
-//static void actionRemapNavigate(void);
-static void actionRemapEncoder(void);
-
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
@@ -50,45 +44,43 @@ static Action action = {
     .value = FLAG_ENTER,
 };
 
-static AmpSync ampSync;
-static AmpSync ampReport;
+static AmpSync ampSyncRx;
+static AmpSync ampSyncTx;
 
-static SyncAction syncRxAction;
+static Action syncRxAction;
 
 void ampSyncRxCb(int16_t bytes)
 {
     (void)bytes;
 
-    switch (ampSync.type) {
+    switch (ampSyncRx.type) {
     case SYNC_ACTION:
-        syncRxAction = ampSync.action;
+        syncRxAction = ampSyncRx.action;
         break;
     }
-    ampSync.type = SYNC_NONE;
+    ampSyncRx.type = SYNC_NONE;
 }
 
 void ampSyncTxCb(int16_t bytes)
 {
-    if (ampReport.type != SYNC_NONE) {
+    if (ampSyncTx.type != SYNC_NONE) {
         i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof(ampReport); i++) {
-            i2cSend(I2C_SYNC, ampReport.data[i]);
+        for (size_t i = 0; i < sizeof(ampSyncTx); i++) {
+            i2cSend(I2C_SYNC, ampSyncTx.data[i]);
         }
     } else {
         i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof (ampReport); i++) {
+        for (size_t i = 0; i < sizeof (ampSyncTx); i++) {
             i2cSend(I2C_SYNC, 0x00);
         }
     }
-    memset(&ampReport, 0x00, sizeof(ampReport));
+    memset(&ampSyncTx, 0x00, sizeof(ampSyncTx));
 }
 
-static void ampReportAction(ActionType type, int16_t value)
+static void ampReportAction(Action *action)
 {
-    ampReport.action.type = type;
-    ampReport.action.value = value;
-
-    ampReport.type = SYNC_ACTION;
+    ampSyncTx.type = SYNC_ACTION;
+    ampSyncTx.action = *action;
 }
 
 static void actionSet(ActionType type, int16_t value)
@@ -239,11 +231,11 @@ static void actionGetButtons(void)
     CmdBtn cmdBtn = inputGetBtnCmd();
 
     if (cmdBtn.btn) {
-        if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
-        } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
-        }
+        Action action = {
+            .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_BTN_LONG : ACTION_BTN_SHORT,
+            .value = cmdBtn.btn,
+        };
+        ampReportAction(&action);
     }
 }
 
@@ -252,7 +244,11 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
-        actionSet(ACTION_ENCODER, encVal);
+        Action action = {
+            .type = ACTION_ENCODER,
+            .value = encVal,
+        };
+        ampReportAction(&action);
     }
 }
 
@@ -268,73 +264,6 @@ static void actionGetTimers(void)
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
         actionSet(ACTION_INIT_RTC, 0);
-    }
-}
-
-static void actionRemapBtnShort(void)
-{
-    ampReportAction(ACTION_TUNER_BTN_SHORT, action.value);
-    actionSet(ACTION_NONE, 0);
-}
-
-static void actionRemapBtnLong(void)
-{
-    ampReportAction(ACTION_TUNER_BTN_LONG, action.value);
-    actionSet(ACTION_NONE, 0);
-}
-
-static void actionRemapEncoder(void)
-{
-    ScreenType scrMode = amp.screen;
-
-    if (SCREEN_STANDBY == scrMode)
-        return;
-
-//    int16_t encCnt = action.value;
-
-    switch (scrMode) {
-    case SCREEN_TIME:
-        if (rtcGetMode() == RTC_NOEDIT) {
-        } else {
-//            actionSet(ACTION_RTC_CHANGE, encCnt);
-        }
-        break;
-//    case SCREEN_TEXTEDIT:
-//        actionSet(ACTION_TEXTEDIT_CHANGE, encCnt);
-//        break;
-    default:
-        break;
-    }
-}
-
-static void actionRemapCommon(void)
-{
-    ScreenType scrMode = amp.screen;
-
-    switch (action.type) {
-    case ACTION_STANDBY:
-        if (FLAG_SWITCH == action.value) {
-            switch (amp.status) {
-            case AMP_STATUS_STBY:
-                action.value = FLAG_EXIT;
-                break;
-            case AMP_STATUS_ACTIVE:
-                action.value = FLAG_ENTER;
-                break;
-            default:
-                actionSet(ACTION_NONE, 0);
-                break;
-            }
-        }
-        break;
-    default:
-        break;
-    }
-
-    if (SCREEN_STANDBY == scrMode &&
-        (ACTION_STANDBY != action.type &&
-         ACTION_INIT_RTC != action.type)) {
-        actionSet(ACTION_NONE, 0);
     }
 }
 
@@ -374,7 +303,7 @@ void ampInit(void)
     i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
     i2cSetTxCb(I2C_SYNC, ampSyncTxCb);
     i2cBegin(I2C_SYNC, 0x28);
-    i2cSlaveTransmitReceive(I2C_SYNC, ampSync.data, sizeof(ampSync));
+    i2cSlaveTransmitReceive(I2C_SYNC, ampSyncRx.data, sizeof(ampSyncRx));
 
     ampReadSettings();
 
@@ -431,22 +360,6 @@ void ampActionGet(void)
 
 static void ampActionRemap(void)
 {
-    switch (action.type) {
-    case ACTION_BTN_SHORT:
-        actionRemapBtnShort();
-        break;
-    case ACTION_BTN_LONG:
-        actionRemapBtnLong();
-        break;
-    default:
-        break;
-    }
-
-    actionRemapCommon();
-
-    if (ACTION_ENCODER == action.type) {
-        actionRemapEncoder();
-    }
 }
 
 void ampActionHandle(void)
@@ -458,9 +371,6 @@ void ampActionHandle(void)
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
-        break;
-    case ACTION_INIT_RTC:
-        rtcInit();
         break;
     case ACTION_STANDBY:
         if (action.value == FLAG_EXIT) {

@@ -79,14 +79,32 @@ enum {
 
     ACTION_RESTORE_VOLUME,
 
-    ACTION_TUNER_BTN_SHORT,
-    ACTION_TUNER_BTN_LONG,
-    ACTION_TUNER_ENCODER,
-
     ACTION_SP_MODE,
 
     ACTION_END
 };
+
+typedef uint8_t ScreenType;
+enum {
+    // Screens allowed to be default
+    SCREEN_SPECTRUM = 0,
+    SCREEN_TIME,
+    SCREEN_INPUT,
+
+    SCREEN_STANDBY,
+
+    SCREEN_TUNE,
+
+    SCREEN_END
+};
+
+typedef struct {
+    ActionType type;
+    ScreenType screen;
+
+    int16_t value;
+    int16_t timeout;
+} Action;
 
 typedef uint8_t SyncType;
 enum {
@@ -99,17 +117,12 @@ enum {
     SYNC_END
 };
 
-typedef struct {
-    int16_t value;
-    ActionType type;
-} SyncAction;
-
 typedef union {
     uint8_t data[8];
     struct {
         SyncType type;
         union {
-            SyncAction action;
+            Action action;
         };
     };
 } AmpSync;

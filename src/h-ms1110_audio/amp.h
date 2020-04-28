@@ -17,14 +17,6 @@ extern "C" {
 #define FLAG_ENTER          1
 #define FLAG_SWITCH         2
 
-typedef struct {
-    ActionType type;
-    ScreenType screen;
-
-    int16_t value;
-    int16_t timeout;
-} Action;
-
 typedef uint8_t AmpStatus;
 enum {
     AMP_STATUS_STBY,

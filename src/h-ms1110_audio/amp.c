@@ -27,16 +27,18 @@ static void actionGetPots(void);
 #endif
 static void actionGetTimers(void);
 
-static void actionRemapBtnShort(void);
-static void actionRemapBtnLong(void);
+static void actionRemapBtnShort(int16_t button);
+static void actionRemapBtnLong(int16_t button);
 
-static void actionRemapTunerBtnShort(void);
-static void actionRemapTunerBtnLong(void);
+static void actionRemapTunerBtnShort(int16_t button);
+static void actionRemapTunerBtnLong(int16_t button);
 
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
 //static void actionRemapNavigate(void);
-static void actionRemapEncoder(void);
+
+static void actionRemapEncoder(int16_t encCnt);
+static void actionRemapTunerEncoder(int16_t encCnt);
 
 static void ampActionGet(void);
 static void ampActionRemap(void);
@@ -57,8 +59,6 @@ static Action action = {
     .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
 };
-
-static AmpSync ampSync;
 
 static void actionSet(ActionType type, int16_t value)
 {
@@ -310,14 +310,25 @@ static int8_t actionGetNextAudioInput(int8_t diff)
 
 static void actionSyncTuner(void)
 {
-    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    i2cReceive(I2C_SYNC, ampSync.data, sizeof (ampSync.data));
+    AmpSync ampSyncTuner;
 
-    if (ampSync.type == SYNC_ACTION) {
-        if (ampSync.action.type == ACTION_TUNER_BTN_SHORT) {
-            actionRemapTunerBtnShort();
-        } else if (ampSync.action.type == ACTION_TUNER_BTN_LONG) {
-            actionRemapTunerBtnLong();
+    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
+    i2cReceive(I2C_SYNC, ampSyncTuner.data, sizeof (ampSyncTuner.data));
+
+    if (ampSyncTuner.type == SYNC_ACTION) {
+
+        Action action = ampSyncTuner.action;
+
+        switch (action.type) {
+        case ACTION_BTN_SHORT:
+            actionRemapTunerBtnShort(action.value);
+            break;
+        case ACTION_BTN_LONG:
+            actionRemapTunerBtnLong(action.value);
+            break;
+        case ACTION_ENCODER:
+            actionRemapTunerEncoder(action.value);
+            break;
         }
     }
 }
@@ -488,9 +499,9 @@ static void spModeChange(int16_t value)
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
 }
 
-static void actionRemapBtnShort(void)
+static void actionRemapBtnShort(int16_t button)
 {
-    switch (action.value) {
+    switch (button) {
     case BTN_STBY:
         actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
@@ -516,9 +527,9 @@ static void actionRemapBtnShort(void)
     }
 }
 
-static void actionRemapBtnLong(void)
+static void actionRemapBtnLong(int16_t button)
 {
-    switch (action.value) {
+    switch (button) {
     case BTN_STBY:
         break;
     case BTN_IN_PREV:
@@ -539,9 +550,9 @@ static void actionRemapBtnLong(void)
     }
 }
 
-static void actionRemapTunerBtnShort(void)
+static void actionRemapTunerBtnShort(int16_t button)
 {
-    switch (ampSync.action.value) {
+    switch (button) {
     case BTN_MWFM:
         break;
     case BTN_RDS:
@@ -563,9 +574,9 @@ static void actionRemapTunerBtnShort(void)
     }
 }
 
-static void actionRemapTunerBtnLong(void)
+static void actionRemapTunerBtnLong(int16_t button)
 {
-    switch (ampSync.action.value) {
+    switch (button) {
     case BTN_MWFM:
         break;
     case BTN_RDS:
@@ -742,15 +753,13 @@ static void actionRemapRemote(void)
     }
 }
 
-static void actionRemapEncoder(void)
+static void actionRemapEncoder(int16_t encCnt)
 {
     ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
 
     if (SCREEN_STANDBY == scrMode)
         return;
-
-    int16_t encCnt = action.value;
 
     switch (scrMode) {
     case SCREEN_TIME:
@@ -781,6 +790,11 @@ static void actionRemapEncoder(void)
             break;
         }
     }
+}
+
+static void actionRemapTunerEncoder(int16_t encCnt)
+{
+    actionRemapEncoder(encCnt);
 }
 
 static void actionRemapCommon(void)
@@ -942,10 +956,10 @@ static void ampActionRemap(void)
 {
     switch (action.type) {
     case ACTION_BTN_SHORT:
-        actionRemapBtnShort();
+        actionRemapBtnShort(action.value);
         break;
     case ACTION_BTN_LONG:
-        actionRemapBtnLong();
+        actionRemapBtnLong(action.value);
         break;
     case ACTION_REMOTE:
         actionRemapRemote();
@@ -957,19 +971,17 @@ static void ampActionRemap(void)
     actionRemapCommon();
 
     if (ACTION_ENCODER == action.type) {
-        actionRemapEncoder();
+        actionRemapEncoder(action.value);
     }
 }
 
-static void ampTunerSendAction(ActionType type, int16_t value)
+static void ampTunerSendAction(Action *action)
 {
     AmpSync sync;
     memset(&sync, 0xFF, sizeof(sync));
 
-    sync.action.type = type;
-    sync.action.value = value;
-
     sync.type = SYNC_ACTION;
+    sync.action = *action;
 
     i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
     for (size_t i = 0; i < sizeof(sync); i++) {
@@ -996,7 +1008,6 @@ void ampActionHandle(void)
         rtcInit();
         break;
     case ACTION_STANDBY:
-        ampTunerSendAction(action.type, action.value);
         if (action.value == FLAG_EXIT) {
             ampExitStby();
             actionSetScreen(SCREEN_TIME, 1000);
@@ -1004,6 +1015,7 @@ void ampActionHandle(void)
             ampEnterStby();
             actionDispExpired(SCREEN_STANDBY);
         }
+        ampTunerSendAction(&action);
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);
