@@ -13,7 +13,7 @@
 
 static int16_t rtcCorr = 0;
 
-static const EE_Map eeMap[] = {
+static const EE_Cell eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
 
     [PARAM_TUNER_IC]        =   {0x30,  TUNER_IC_TEST},
@@ -40,7 +40,7 @@ static const EE_Map eeMap[] = {
 
 void settingsInit(void)
 {
-    eeInit();
+    eeInit(eeMap, PARAM_END);
 
     for (Param par = PARAM_NULL + 1; par < PARAM_END; par++) {
         settingsSet(par, settingsRead(par));
@@ -198,7 +198,7 @@ int16_t settingsRead(Param param)
     }
 
     // Return default value if not found
-    return eeMap[param].def;
+    return eeMap[param].value;
 }
 
 void settingsStore(Param param, int16_t value)
@@ -210,7 +210,7 @@ void settingsStore(Param param, int16_t value)
     eeUpdateRaw(eeMap[param].cell, (uint16_t)value);
 }
 
-const EE_Map *eeMapGet(void)
+const EE_Cell *eeMapGet(void)
 {
     return eeMap;
 }
