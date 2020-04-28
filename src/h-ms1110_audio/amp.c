@@ -29,6 +29,10 @@ static void actionGetTimers(void);
 
 static void actionRemapBtnShort(void);
 static void actionRemapBtnLong(void);
+
+static void actionRemapTunerBtnShort(void);
+static void actionRemapTunerBtnLong(void);
+
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
 //static void actionRemapNavigate(void);
@@ -304,14 +308,16 @@ static int8_t actionGetNextAudioInput(int8_t diff)
     return ret;
 }
 
-static void actionGetTuner(void)
+static void actionSyncTuner(void)
 {
     i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
     i2cReceive(I2C_SYNC, ampSync.data, sizeof (ampSync.data));
 
     if (ampSync.type == SYNC_ACTION) {
-        if (ampSync.action.type == ACTION_TUNER_BAND) {
-            actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        if (ampSync.action.type == ACTION_TUNER_BTN_SHORT) {
+            actionRemapTunerBtnShort();
+        } else if (ampSync.action.type == ACTION_TUNER_BTN_LONG) {
+            actionRemapTunerBtnLong();
         }
     }
 }
@@ -494,6 +500,11 @@ static void actionRemapBtnShort(void)
     case BTN_IN_NEXT:
         actionSet(ACTION_AUDIO_INPUT, +1);
         break;
+
+    case BTN_AUTO:
+        break;
+    case BTN_DEMO:
+        break;
     case BTN_DISP_PREV:
         actionSet(ACTION_SP_MODE, -1);
         break;
@@ -508,10 +519,74 @@ static void actionRemapBtnShort(void)
 static void actionRemapBtnLong(void)
 {
     switch (action.value) {
+    case BTN_STBY:
+        break;
+    case BTN_IN_PREV:
+        break;
+    case BTN_IN_NEXT:
+        break;
+
+    case BTN_AUTO:
+        break;
+    case BTN_DEMO:
+        break;
+    case BTN_DISP_PREV:
+        break;
+    case BTN_DISP_NEXT:
+        break;
     default:
         break;
     }
 }
+
+static void actionRemapTunerBtnShort(void)
+{
+    switch (ampSync.action.value) {
+    case BTN_MWFM:
+        break;
+    case BTN_RDS:
+        break;
+    case BTN_ENC:
+        break;
+    case BTN_1:
+    case BTN_2:
+    case BTN_3:
+    case BTN_4:
+    case BTN_5:
+    case BTN_6:
+    case BTN_7:
+    case BTN_8:
+    case BTN_9:
+        break;
+    default:
+        break;
+    }
+}
+
+static void actionRemapTunerBtnLong(void)
+{
+    switch (ampSync.action.value) {
+    case BTN_MWFM:
+        break;
+    case BTN_RDS:
+        break;
+    case BTN_ENC:
+        break;
+    case BTN_1:
+    case BTN_2:
+    case BTN_3:
+    case BTN_4:
+    case BTN_5:
+    case BTN_6:
+    case BTN_7:
+    case BTN_8:
+    case BTN_9:
+        break;
+    default:
+        break;
+    }
+}
+
 
 static void actionRemapRemote(void)
 {
@@ -829,7 +904,7 @@ void ampActionGet(void)
     actionSet(ACTION_NONE, 0);
 
     if (ACTION_NONE == action.type) {
-        actionGetTuner();
+        actionSyncTuner();
     }
 
     if (ACTION_NONE == action.type) {

@@ -19,7 +19,7 @@
 #include "tuner/tuner.h"
 #include "utils.h"
 
-static void actionGetMaster(void);
+static void actionSyncMaster(void);
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
@@ -81,6 +81,14 @@ void ampSyncTxCb(int16_t bytes)
         }
     }
     memset(&ampReport, 0x00, sizeof(ampReport));
+}
+
+static void ampReportAction(ActionType type, int16_t value)
+{
+    ampReport.action.type = type;
+    ampReport.action.value = value;
+
+    ampReport.type = SYNC_ACTION;
 }
 
 static void actionSet(ActionType type, int16_t value)
@@ -218,7 +226,7 @@ void ampInitHw(void)
     }
 }
 
-static void actionGetMaster(void)
+static void actionSyncMaster(void)
 {
     if (syncRxAction.type != ACTION_NONE) {
         actionSet(syncRxAction.type, syncRxAction.value);
@@ -265,21 +273,14 @@ static void actionGetTimers(void)
 
 static void actionRemapBtnShort(void)
 {
-    switch (action.value) {
-    case BTN_MWFM:
-//        action Set(ACTION_TUNER_BAND, action.value);
-        break;
-    default:
-        break;
-    }
+    ampReportAction(ACTION_TUNER_BTN_SHORT, action.value);
+    actionSet(ACTION_NONE, 0);
 }
 
 static void actionRemapBtnLong(void)
 {
-    switch (action.value) {
-    default:
-        break;
-    }
+    ampReportAction(ACTION_TUNER_BTN_LONG, action.value);
+    actionSet(ACTION_NONE, 0);
 }
 
 static void actionRemapEncoder(void)
@@ -405,7 +406,7 @@ void ampActionGet(void)
 {
     actionSet(ACTION_NONE, 0);
 
-    actionGetMaster();
+    actionSyncMaster();
 
     if (ACTION_NONE == action.type) {
         actionGetButtons();
@@ -448,14 +449,6 @@ static void ampActionRemap(void)
     }
 }
 
-static void ampReportAction(ActionType type, int16_t value)
-{
-    ampReport.action.type = type;
-    ampReport.action.value = value;
-
-    ampReport.type = SYNC_ACTION;
-}
-
 void ampActionHandle(void)
 {
     ScreenType scrMode = amp.screen;
@@ -481,14 +474,6 @@ void ampActionHandle(void)
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);
-        break;
-
-    case ACTION_OPEN_MENU:
-        break;
-
-    case ACTION_TUNER_BAND:
-        // Do tuner band change
-        ampReportAction(ACTION_TUNER_BAND, action.value);
         break;
 
     default:
