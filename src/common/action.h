@@ -81,6 +81,8 @@ enum {
 
     ACTION_TUNER_BAND,
 
+    ACTION_SP_MODE,
+
     ACTION_END
 };
 

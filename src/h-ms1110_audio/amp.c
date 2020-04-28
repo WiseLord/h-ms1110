@@ -156,11 +156,11 @@ static void ampPinStby(bool value)
     }
 
 //    // Enable SWD interface in standby mode
-//    if (value) {
-    LL_GPIO_AF_Remap_SWJ_NOJTAG();
-//    } else {
-//        LL_GPIO_AF_DisableRemap_SWJ();
-//    }
+    if (value) {
+        LL_GPIO_AF_Remap_SWJ_NOJTAG();
+    } else {
+        LL_GPIO_AF_DisableRemap_SWJ();
+    }
 }
 
 static void ampMute(bool value)
@@ -463,6 +463,25 @@ static void actionGetTimers(void)
     }
 }
 
+static void spModeChange(int16_t value)
+{
+    Spectrum *sp = spGet();
+
+    if (value > 1) {
+
+    } else if (value < 1) {
+
+    }
+
+    if (++sp->mode >= (sp->peaks ? SP_MODE_END : SP_MODE_WATERFALL)) {
+        sp->mode = SP_MODE_STEREO;
+        sp->peaks = !sp->peaks;
+        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
+    }
+    amp.clearScreen = true;
+    settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+}
+
 static void actionRemapBtnShort(void)
 {
     switch (action.value) {
@@ -474,6 +493,12 @@ static void actionRemapBtnShort(void)
         break;
     case BTN_IN_NEXT:
         actionSet(ACTION_AUDIO_INPUT, +1);
+        break;
+    case BTN_DISP_PREV:
+        actionSet(ACTION_SP_MODE, -1);
+        break;
+    case BTN_DISP_NEXT:
+        actionSet(ACTION_SP_MODE, +1);
         break;
     default:
         break;
@@ -953,6 +978,13 @@ void ampActionHandle(void)
         } else {
             swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         }
+        break;
+
+    case ACTION_SP_MODE:
+        if (scrMode == SCREEN_SPECTRUM) {
+            spModeChange(action.value);
+        }
+        actionSetScreen(SCREEN_SPECTRUM, 3000);
         break;
 
     default:
