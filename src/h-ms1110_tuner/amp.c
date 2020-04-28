@@ -57,6 +57,9 @@ void ampSyncRxCb(int16_t bytes)
     case SYNC_ACTION:
         syncRxAction = ampSyncRx.action;
         break;
+    case SYNC_TIME:
+        rtcSetRaw(ampSyncRx.time);
+        break;
     }
     ampSyncRx.type = SYNC_NONE;
 }
@@ -412,8 +415,10 @@ void ampScreenShow(void)
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;
     case SCREEN_TIME:
+        canvasShowTime(clear);
         break;
     case SCREEN_STANDBY:
+        canvasShowStandby(clear);
         break;
     default:
         break;

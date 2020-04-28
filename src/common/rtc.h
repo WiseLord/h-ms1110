@@ -48,13 +48,18 @@ typedef struct {
     AlarmDay days;
 } Alarm;
 
+typedef void (*RtcCb)(uint32_t time);
+
 void rtcInit(void);
+void rtcSetCb(RtcCb cb);
 void rtcSetCorrection(int16_t value);
 
 void rtcGetTime(RTC_type *rtc);
 void rtcSetTime(RtcMode mode, int8_t value);
 void rtcChangeTime(RtcMode mode, int8_t diff);
 void rtcEditTime(RtcMode mode, int8_t value);
+
+void rtcSetRaw(uint32_t value);
 
 RtcMode rtcGetMode(void);
 void rtcSetMode(RtcMode mode);

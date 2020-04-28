@@ -23,6 +23,8 @@ static const RTC_type rtcMax = {23, 59, 60, 31, 12, 99, 0, RTC_NOEDIT};
 
 static Alarm alarm[ALARM_COUNT];
 
+static RtcCb rtcCb;
+
 static int8_t rtcDaysInMonth(RTC_type *rtc)
 {
     int8_t ret = rtc->month;
@@ -247,6 +249,11 @@ void rtcInit(void)
     }
 }
 
+void rtcSetCb(RtcCb cb)
+{
+    rtcCb = cb;
+}
+
 void rtcSetCorrection(int16_t value)
 {
 #ifdef STM32F1
@@ -272,6 +279,9 @@ void RTC_IRQHandler(void)
 
         // Callback
         rtcTime = LL_RTC_TIME_Get(RTC) + 1;
+        if (rtcCb) {
+            rtcCb(rtcTime);
+        }
     }
 }
 #endif
@@ -319,6 +329,12 @@ void rtcEditTime(RtcMode mode, int8_t digit)
     value += digit;
 
     rtcUpdate(&rtc, mode, value);
+}
+
+void rtcSetRaw(uint32_t value)
+{
+    rtcTime = value;
+//    LL_RTC_TIME_SetCounter(RTC, rtcTime);
 }
 
 RtcMode rtcGetMode(void)

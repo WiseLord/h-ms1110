@@ -46,6 +46,9 @@ static void ampActionHandle(void);
 
 static void ampScreenShow(void);
 
+static uint32_t rtcSyncTime;
+static bool rtcSyncRequired;
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
     .screen = SCREEN_STANDBY,
@@ -75,6 +78,41 @@ static void actionSetScreen(ScreenType screen, int16_t timeout)
 void screenSetMode(ScreenType value)
 {
     amp.screen = value;
+}
+
+
+static void shareAction(Action *action)
+{
+    AmpSync sync;
+
+    sync.type = SYNC_ACTION;
+    sync.action = *action;
+
+    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
+    for (size_t i = 0; i < sizeof(sync); i++) {
+        i2cSend(I2C_SYNC, sync.data[i]);
+    }
+    i2cTransmit(I2C_SYNC);
+}
+
+static void shareRtc(uint32_t time)
+{
+    AmpSync sync;
+
+    sync.type = SYNC_TIME;
+    sync.time = time;
+
+    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
+    for (size_t i = 0; i < sizeof(sync); i++) {
+        i2cSend(I2C_SYNC, sync.data[i]);
+    }
+    i2cTransmit(I2C_SYNC);
+}
+
+static void rtcCb(uint32_t time)
+{
+    rtcSyncTime = time;
+    rtcSyncRequired = true;
 }
 
 static bool screenCheckClear(void)
@@ -871,6 +909,8 @@ void ampInit(void)
     pinsInit();
     rtcInit();
 
+    rtcSetCb(rtcCb);
+
     labelsInit();
     canvasInit();
 
@@ -975,21 +1015,6 @@ static void ampActionRemap(void)
     }
 }
 
-static void ampTunerSendAction(Action *action)
-{
-    AmpSync sync;
-    memset(&sync, 0xFF, sizeof(sync));
-
-    sync.type = SYNC_ACTION;
-    sync.action = *action;
-
-    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
-}
-
 void ampActionHandle(void)
 {
     ScreenType scrMode = amp.screen;
@@ -1015,7 +1040,7 @@ void ampActionHandle(void)
             ampEnterStby();
             actionDispExpired(SCREEN_STANDBY);
         }
-        ampTunerSendAction(&action);
+        shareAction(&action);
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);
@@ -1132,18 +1157,24 @@ void ampScreenShow(void)
 
     Label label;
 
+    if (rtcSyncRequired) {
+        shareRtc(rtcSyncTime);
+        rtcSyncRequired = false;
+    }
+
     switch (amp.screen) {
     case SCREEN_SPECTRUM:
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;
     case SCREEN_TIME:
+        canvasShowTime(clear);
         break;
     case SCREEN_INPUT:
         prepareAudioInput(&label);
         canvasShowInput(clear, label);
         break;
     case SCREEN_STANDBY:
-//        canvasShowStandby(clear);
+        canvasShowStandby(clear);
         break;
     case SCREEN_TUNE:
         prepareAudioTune(&tune);

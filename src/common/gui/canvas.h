@@ -26,8 +26,9 @@ Canvas *canvasGet(void);
 void canvasClear(void);
 
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
-
+void canvasShowTime(bool clear);
 void canvasShowInput(bool clear, Label label);
+void canvasShowStandby(bool clear);
 void canvasShowTune(bool clear, Tune *tune);
 
 void canvasShowTest(bool clear);

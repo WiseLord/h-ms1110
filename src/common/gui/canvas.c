@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "rtc.h"
 #include "swtimers.h"
 #include "widget/spview.h"
 
@@ -80,6 +81,11 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
+void canvasShowTime(bool clear)
+{
+
+}
+
 void canvasShowInput(bool clear, Label label)
 {
     const Palette *pal = canvas.pal;
@@ -92,6 +98,22 @@ void canvasShowInput(bool clear, Label label)
     glcdWriteString(labelsGet(label));
 }
 
+void canvasShowStandby(bool clear)
+{
+    RTC_type rtc;
+
+    rtcGetTime(&rtc);
+
+    const Palette *pal = canvas.pal;
+
+    glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->inactive);
+    glcdSetXY(0, 0);
+    glcdWriteString(utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec));
+    glcdSetXY(0, 32);
+    glcdWriteString(utilMkStr("%02d.%02d.%02d", rtc.date, rtc.month, rtc.year));
+}
+
 void canvasShowTune(bool clear, Tune *tune)
 {
     tuneDraw(clear, tune, &canvas.layout->tune);
@@ -100,7 +122,6 @@ void canvasShowTune(bool clear, Tune *tune)
 
 void canvasShowTest(bool clear)
 {
-
 }
 
 void canvasDebugFPS(void)

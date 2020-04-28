@@ -111,8 +111,7 @@ enum {
     SYNC_NONE = 0,
 
     SYNC_ACTION,
-    SYNC_DISPLAY,
-    SYNC_REPORT,
+    SYNC_TIME,
 
     SYNC_END
 };
@@ -123,6 +122,7 @@ typedef union {
         SyncType type;
         union {
             Action action;
+            uint32_t time;
         };
     };
 } AmpSync;
