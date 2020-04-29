@@ -22,7 +22,7 @@ ifeq "$(STM32_MCU)" "F103CB"
   STM32_GROUP  = $(STM32_FAMILY)03xB
 endif
 
-TARGET = $(call lc, $(PROJECT)_$(BLOCK))
+TARGET = $(call lc, $(PROJECT)_$(MODULE))
 
 C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 
@@ -48,6 +48,7 @@ C_SOURCES += $(COMMON)/rtc.c
 C_SOURCES += $(COMMON)/spectrum.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
+C_SOURCES += $(COMMON)/sync.c
 C_SOURCES += $(COMMON)/timers.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c

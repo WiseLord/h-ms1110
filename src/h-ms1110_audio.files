@@ -139,6 +139,8 @@ common/spi.c
 common/spi.h
 common/swtimers.c
 common/swtimers.h
+common/sync.c
+common/sync.h
 common/system/startup_stm32f103xb.s
 common/system/stm32f103cb_flash.ld
 common/system/stm32f103xb_openocd_jlink.cfg

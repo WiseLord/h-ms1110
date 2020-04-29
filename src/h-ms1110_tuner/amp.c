@@ -14,16 +14,17 @@
 #include "settings.h"
 #include "spectrum.h"
 #include "swtimers.h"
+#include "sync.h"
 #include "timers.h"
 #include "tr/labels.h"
 #include "tuner/tuner.h"
 #include "utils.h"
 
-static void actionSyncMaster(void);
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
+static void ampActionSyncMaster(void);
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
@@ -43,48 +44,6 @@ static Action action = {
     .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
 };
-
-static AmpSync ampSyncRx;
-static AmpSync ampSyncTx;
-
-static Action syncRxAction;
-
-void ampSyncRxCb(int16_t bytes)
-{
-    (void)bytes;
-
-    switch (ampSyncRx.type) {
-    case SYNC_ACTION:
-        syncRxAction = ampSyncRx.action;
-        break;
-    case SYNC_TIME:
-        rtcSetRaw(ampSyncRx.time);
-        break;
-    }
-    ampSyncRx.type = SYNC_NONE;
-}
-
-void ampSyncTxCb(int16_t bytes)
-{
-    if (ampSyncTx.type != SYNC_NONE) {
-        i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof(ampSyncTx); i++) {
-            i2cSend(I2C_SYNC, ampSyncTx.data[i]);
-        }
-    } else {
-        i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof (ampSyncTx); i++) {
-            i2cSend(I2C_SYNC, 0x00);
-        }
-    }
-    memset(&ampSyncTx, 0x00, sizeof(ampSyncTx));
-}
-
-static void ampReportAction(Action *action)
-{
-    ampSyncTx.type = SYNC_ACTION;
-    ampSyncTx.action = *action;
-}
 
 static void actionSet(ActionType type, int16_t value)
 {
@@ -123,7 +82,7 @@ static bool screenCheckClear(void)
 
 static void actionDispExpired(ScreenType scrMode)
 {
-    ScreenType scrDef = amp.defScreen;
+    ScreenType scrDef = SCREEN_SPECTRUM;
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -182,9 +141,6 @@ void ampExitStby(void)
 void ampEnterStby(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
-    swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
-    swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
-    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
     settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
@@ -202,32 +158,20 @@ void ampInitHw(void)
 
     switch (amp.status) {
     case AMP_STATUS_POWERED:
-//        pinsHwResetI2c();
         i2cInit(I2C_AMP, 100000);
-
-//        tunerInit();
 
         amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 500);
-//        controlReportAll();
         break;
     case AMP_STATUS_HW_READY:
         ampPinMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
 
-        swTimSet(SW_TIM_INPUT_POLL, 100);
         break;
     }
 }
 
-static void actionSyncMaster(void)
-{
-    if (syncRxAction.type != ACTION_NONE) {
-        actionSet(syncRxAction.type, syncRxAction.value);
-        syncRxAction.type = ACTION_NONE;
-    }
-}
 
 static void actionGetButtons(void)
 {
@@ -235,10 +179,10 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         Action action = {
-            .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_BTN_LONG : ACTION_BTN_SHORT,
+            .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_TUNER_BTN_LONG : ACTION_TUNER_BTN_SHORT,
             .value = cmdBtn.btn,
         };
-        ampReportAction(&action);
+        syncSlaveSendAction(&action);
     }
 }
 
@@ -248,10 +192,10 @@ static void actionGetEncoder(void)
 
     if (encVal) {
         Action action = {
-            .type = ACTION_ENCODER,
+            .type = ACTION_TUNER_ENCODER,
             .value = encVal,
         };
-        ampReportAction(&action);
+        syncSlaveSendAction(&action);
     }
 }
 
@@ -261,12 +205,6 @@ static void actionGetTimers(void)
         actionSet(ACTION_DISP_EXPIRED, 0);
     } else if (swTimGet(SW_TIM_AMP_INIT) == 0) {
         actionSet(ACTION_INIT_HW, 0);
-    } else if (swTimGet(SW_TIM_STBY_TIMER) == 0) {
-        actionSet(ACTION_STANDBY, FLAG_ENTER);
-    } else if (swTimGet(SW_TIM_SILENCE_TIMER) == 0) {
-        actionSet(ACTION_STANDBY, FLAG_ENTER);
-    } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
-        actionSet(ACTION_INIT_RTC, 0);
     }
 }
 
@@ -302,18 +240,12 @@ void ampInit(void)
     inputInit();
     rcInit();
 
-    i2cInit(I2C_SYNC, 400000);
-    i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
-    i2cSetTxCb(I2C_SYNC, ampSyncTxCb);
-    i2cBegin(I2C_SYNC, 0x28);
-    i2cSlaveTransmitReceive(I2C_SYNC, ampSyncRx.data, sizeof(ampSyncRx));
+    syncSlaveInit(AMP_TUNER_ADDR);
 
     ampReadSettings();
 
     timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
     swTimInit();
-
-    swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp.status = AMP_STATUS_STBY;
 }
@@ -321,6 +253,8 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
+        ampActionSyncMaster();
+
         ampActionGet();
         ampActionRemap();
         ampActionHandle();
@@ -334,12 +268,24 @@ Amp *ampGet(void)
     return &amp;
 }
 
+static void ampActionSyncMaster(void)
+{
+    AmpSync sync;
+
+    syncSlaveReceive(&sync);
+
+    switch (sync.type) {
+    case SYNC_ACTION:
+        action = sync.action;
+        break;
+    case SYNC_TIME:
+        rtcSetRaw(sync.time);
+        break;
+    }
+}
+
 void ampActionGet(void)
 {
-    actionSet(ACTION_NONE, 0);
-
-    actionSyncMaster();
-
     if (ACTION_NONE == action.type) {
         actionGetButtons();
     }
@@ -398,6 +344,8 @@ void ampActionHandle(void)
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
+
+    actionSet(ACTION_NONE, 0);
 }
 
 void ampScreenShow(void)

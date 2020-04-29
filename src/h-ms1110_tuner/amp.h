@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "action.h"
-#include "gui/canvas.h"
+#include "sync.h"
 
 #define AMP_TUNER_ADDR      0x28
 

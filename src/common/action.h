@@ -59,6 +59,11 @@ enum {
     ACTION_BTN_SHORT,
     ACTION_BTN_LONG,
     ACTION_ENCODER,
+
+    ACTION_TUNER_BTN_SHORT,
+    ACTION_TUNER_BTN_LONG,
+    ACTION_TUNER_ENCODER,
+
     ACTION_REMOTE,
 
     ACTION_INIT_HW,
@@ -105,27 +110,6 @@ typedef struct {
     int16_t value;
     int16_t timeout;
 } Action;
-
-typedef uint8_t SyncType;
-enum {
-    SYNC_NONE = 0,
-
-    SYNC_ACTION,
-    SYNC_TIME,
-
-    SYNC_END
-};
-
-typedef union {
-    uint8_t data[8];
-    struct {
-        SyncType type;
-        union {
-            Action action;
-            uint32_t time;
-        };
-    };
-} AmpSync;
 
 #ifdef __cplusplus
 }

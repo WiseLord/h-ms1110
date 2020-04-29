@@ -9,9 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "action.h"
-#include "gui/canvas.h"
-
-#define AMP_TUNER_ADDR      0x28
+#include "sync.h"
 
 #define FLAG_EXIT           0
 #define FLAG_ENTER          1

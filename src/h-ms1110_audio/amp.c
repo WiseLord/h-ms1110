@@ -40,6 +40,7 @@ static void actionRemapCommon(void);
 static void actionRemapEncoder(int16_t encCnt);
 static void actionRemapTunerEncoder(int16_t encCnt);
 
+static void ampActionSyncSlaves(void);
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
@@ -80,34 +81,6 @@ void screenSetMode(ScreenType value)
     amp.screen = value;
 }
 
-
-static void shareAction(Action *action)
-{
-    AmpSync sync;
-
-    sync.type = SYNC_ACTION;
-    sync.action = *action;
-
-    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
-}
-
-static void shareRtc(uint32_t time)
-{
-    AmpSync sync;
-
-    sync.type = SYNC_TIME;
-    sync.time = time;
-
-    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
-}
 
 static void rtcCb(uint32_t time)
 {
@@ -252,7 +225,6 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
     swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
-    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
     settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
@@ -267,7 +239,6 @@ void ampEnterStby(void)
     inputSetPower(false);   // Power off input device
 
     amp.status = AMP_STATUS_STBY;
-//    controlReportAmpStatus();
 }
 
 void ampInitHw(void)
@@ -276,7 +247,6 @@ void ampInitHw(void)
 
     switch (amp.status) {
     case AMP_STATUS_POWERED:
-//        pinsHwResetI2c();
         i2cInit(I2C_AMP, 100000);
 
         audioInitParam();
@@ -287,7 +257,7 @@ void ampInitHw(void)
 
         amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 500);
-//        controlReportAll();
+
         break;
     case AMP_STATUS_HW_READY:
         inputEnable();
@@ -296,16 +266,12 @@ void ampInitHw(void)
         audioSetMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
-
-        swTimSet(SW_TIM_INPUT_POLL, 100);
         break;
     }
 }
 
 static void ampSetInput(int8_t value)
 {
-    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
-
     audioSetMute(true);
     ampPinMute(true);
 
@@ -344,31 +310,6 @@ static int8_t actionGetNextAudioInput(int8_t diff)
     }
 
     return ret;
-}
-
-static void actionSyncTuner(void)
-{
-    AmpSync ampSyncTuner;
-
-    i2cBegin(I2C_SYNC, AMP_TUNER_ADDR);
-    i2cReceive(I2C_SYNC, ampSyncTuner.data, sizeof (ampSyncTuner.data));
-
-    if (ampSyncTuner.type == SYNC_ACTION) {
-
-        Action action = ampSyncTuner.action;
-
-        switch (action.type) {
-        case ACTION_BTN_SHORT:
-            actionRemapTunerBtnShort(action.value);
-            break;
-        case ACTION_BTN_LONG:
-            actionRemapTunerBtnLong(action.value);
-            break;
-        case ACTION_ENCODER:
-            actionRemapTunerEncoder(action.value);
-            break;
-        }
-    }
 }
 
 static void actionGetButtons(void)
@@ -606,6 +547,7 @@ static void actionRemapTunerBtnShort(int16_t button)
     case BTN_7:
     case BTN_8:
     case BTN_9:
+        actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
     default:
         break;
@@ -929,6 +871,7 @@ void ampInit(void)
     inputSetPower(false);    // Power off input device
 
     swTimSet(SW_TIM_RTC_INIT, 500);
+    swTimSet(SW_TIM_SYNC, 500);
 
     amp.status = AMP_STATUS_STBY;
 }
@@ -936,9 +879,10 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-//        controlGetData();
-//        karadioGetData();
-//        btReleaseKey();
+//        if (swTimGet(SW_TIM_SYNC) <= 0) {
+//            swTimSet(SW_TIM_SYNC, 2000);
+            ampActionSyncSlaves();
+//        }
 
         ampActionGet();
         ampActionRemap();
@@ -953,14 +897,21 @@ Amp *ampGet(void)
     return &amp;
 }
 
-void ampActionGet(void)
+static void ampActionSyncSlaves(void)
 {
-    actionSet(ACTION_NONE, 0);
+    AmpSync sync;
 
-    if (ACTION_NONE == action.type) {
-        actionSyncTuner();
+    syncMasterReceive(AMP_TUNER_ADDR, &sync);
+
+    switch (sync.type) {
+    case SYNC_ACTION:
+        action = sync.action;
+        break;
     }
+}
 
+static void ampActionGet(void)
+{
     if (ACTION_NONE == action.type) {
         actionGetButtons();
     }
@@ -1004,6 +955,15 @@ static void ampActionRemap(void)
     case ACTION_REMOTE:
         actionRemapRemote();
         break;
+    case ACTION_TUNER_BTN_SHORT:
+        actionRemapTunerBtnShort(action.value);
+        break;
+    case ACTION_TUNER_BTN_LONG:
+        actionRemapTunerBtnLong(action.value);
+        break;
+    case ACTION_TUNER_ENCODER:
+        actionRemapTunerEncoder(action.value);
+        break;
     default:
         break;
     }
@@ -1040,7 +1000,7 @@ void ampActionHandle(void)
             ampEnterStby();
             actionDispExpired(SCREEN_STANDBY);
         }
-        shareAction(&action);
+        syncMasterSendAction(AMP_TUNER_ADDR, &action);
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired(scrMode);
@@ -1120,6 +1080,8 @@ void ampActionHandle(void)
     if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
+
+    actionSet(ACTION_NONE, 0);
 }
 
 static void prepareAudioTune(Tune *tune)
@@ -1144,7 +1106,7 @@ static void prepareAudioInput (Label *label)
 }
 
 
-void ampScreenShow(void)
+static void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
 
@@ -1158,7 +1120,7 @@ void ampScreenShow(void)
     Label label;
 
     if (rtcSyncRequired) {
-        shareRtc(rtcSyncTime);
+        syncMasterSendTime(AMP_TUNER_ADDR, rtcSyncTime);
         rtcSyncRequired = false;
     }
 
