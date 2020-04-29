@@ -64,7 +64,7 @@ static const EE_Cell eeMap[] = {
     [PARAM_ALARM_MINUTE]    =   {0x61,  30},
     [PARAM_ALARM_DAYS]      =   {0x62,  0},
 
-    [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_DEFAULT},
+    [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_RU},
     [PARAM_SYSTEM_SIL_TIM]  =   {0x72,  5},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
     [PARAM_SYSTEM_ENC_RES]  =   {0x74,  -2},

@@ -81,9 +81,49 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
-void canvasShowTime(bool clear)
+void canvasShowTime(bool clear, bool active)
 {
+    const Palette *pal = canvas.pal;
 
+    const tFont *font = &fontterminusdig40;
+
+    glcdSetFont(font);
+    glcdSetFontColor(active ? pal->active : pal->inactive);
+
+    GlcdRect rect = glcdGet()->rect;
+    RTC_type rtc;
+    rtcGetTime(&rtc);
+
+    glcdSetXY(rect.w / 2, 12);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+    glcdWriteString(utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec));
+
+}
+
+void canvasShowDate(bool clear, bool active)
+{
+    const Palette *pal = canvas.pal;
+
+    const tFont *font = &fontterminus32;
+
+    glcdSetFont(font);
+    glcdSetFontColor(active ? pal->active : pal->inactive);
+
+    GlcdRect rect = glcdGet()->rect;
+    RTC_type rtc;
+    rtcGetTime(&rtc);
+
+    const char *monthLabel = labelsGet((Label)(LABEL_JANUARY + rtc.month - 1));
+
+    glcdSetXY(rect.w / 2, 0);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+    glcdWriteString(utilMkStr("%02d %s 20%02d", rtc.date, monthLabel, rtc.year));
+
+    const char *wdayLabel = labelsGet((Label)(LABEL_SUNDAY + rtc.wday));
+
+    glcdSetXY(rect.w / 2, 32);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+    glcdWriteString(wdayLabel);
 }
 
 void canvasShowInput(bool clear, Label label)
@@ -93,25 +133,10 @@ void canvasShowInput(bool clear, Label label)
 
     glcdSetFont(&fontterminus32);
     glcdSetFontColor(pal->fg);
-    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+
     glcdSetXY(rect.w / 2, (rect.h - canvas.glcd->font->chars[0].image->height) / 2);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
     glcdWriteString(labelsGet(label));
-}
-
-void canvasShowStandby(bool clear)
-{
-    RTC_type rtc;
-
-    rtcGetTime(&rtc);
-
-    const Palette *pal = canvas.pal;
-
-    glcdSetFont(&fontterminus32);
-    glcdSetFontColor(pal->inactive);
-    glcdSetXY(0, 0);
-    glcdWriteString(utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec));
-    glcdSetXY(0, 32);
-    glcdWriteString(utilMkStr("%02d.%02d.%02d", rtc.date, rtc.month, rtc.year));
 }
 
 void canvasShowTune(bool clear, Tune *tune)

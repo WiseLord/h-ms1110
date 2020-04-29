@@ -33,7 +33,7 @@ static const EE_Cell eeMap[] = {
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
 
-    [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_DEFAULT},
+    [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_RU},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
     [PARAM_SYSTEM_ENC_RES]  =   {0x74,  4},
 };

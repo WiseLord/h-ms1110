@@ -1,13 +1,26 @@
 #include "labels.h"
 
 const char *const labels_en[LABEL_END] = {
-    [LABEL_SUNDAY]          = "SUNDAY",
-    [LABEL_MONDAY]          = "MONDAY",
-    [LABEL_TUESDAY]         = "TUESDAY",
-    [LABEL_WEDNESDAY]       = "WEDNESDAY",
-    [LABEL_THURSDAY]        = "THURSDAY",
-    [LABEL_FRIDAY]          = "FRIDAY",
-    [LABEL_SATURDAY]        = "SATURDAY",
+    [LABEL_SUNDAY]          = "Sunday",
+    [LABEL_MONDAY]          = "Monday",
+    [LABEL_TUESDAY]         = "Tuesday",
+    [LABEL_WEDNESDAY]       = "Wednesday",
+    [LABEL_THURSDAY]        = "Thursday",
+    [LABEL_FRIDAY]          = "Friday",
+    [LABEL_SATURDAY]        = "Saturday",
+
+    [LABEL_JANUARY]         = "January",
+    [LABEL_FEBRUARY]        = "February",
+    [LABEL_MARCH]           = "March",
+    [LABEL_APRIL]           = "April",
+    [LABEL_MAY]             = "May",
+    [LABEL_JUNE]            = "June",
+    [LABEL_JULY]            = "July",
+    [LABEL_AUGUST]          = "August",
+    [LABEL_SEPTEMBER]       = "September",
+    [LABEL_OCTOBER]         = "October",
+    [LABEL_NOVEMBER]        = "November",
+    [LABEL_DECEMBER]        = "December",
 
     [LABEL_VOLUME]          = "Volume",
     [LABEL_BASS]            = "Bass",

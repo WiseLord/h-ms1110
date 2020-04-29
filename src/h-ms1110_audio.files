@@ -151,6 +151,7 @@ common/timers.h
 common/tr/labels.c
 common/tr/labels.h
 common/tr/labels_en.c
+common/tr/labels_ru.c
 common/tuner/rda580x.c
 common/tuner/rda580x.h
 common/tuner/rda580x_regs.h

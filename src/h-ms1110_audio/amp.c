@@ -1129,14 +1129,14 @@ static void ampScreenShow(void)
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;
     case SCREEN_TIME:
-        canvasShowTime(clear);
+        canvasShowTime(clear, true);
         break;
     case SCREEN_INPUT:
         prepareAudioInput(&label);
         canvasShowInput(clear, label);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear);
+        canvasShowTime(clear, false);
         break;
     case SCREEN_TUNE:
         prepareAudioTune(&tune);

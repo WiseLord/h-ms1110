@@ -18,7 +18,6 @@ typedef struct {
 const Layout *layoutGet(void);
 
 extern const tFont fontterminusdig40;
-extern const tFont fontterminusdig64;
 
 #ifdef __cplusplus
 }

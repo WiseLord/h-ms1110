@@ -363,10 +363,10 @@ void ampScreenShow(void)
         canvasShowSpectrum(clear, sp->mode, sp->peaks);
         break;
     case SCREEN_TIME:
-        canvasShowTime(clear);
+        canvasShowDate(clear, true);
         break;
     case SCREEN_STANDBY:
-        canvasShowStandby(clear);
+        canvasShowDate(clear, false);
         break;
     default:
         break;

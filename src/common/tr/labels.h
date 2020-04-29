@@ -11,7 +11,7 @@ typedef uint8_t Lang;
 enum {
     LANG_EN,
 //    LANG_BY,
-//    LANG_RU,
+    LANG_RU,
 
     LANG_END,
 
@@ -27,6 +27,19 @@ enum {
     LABEL_THURSDAY,
     LABEL_FRIDAY,
     LABEL_SATURDAY,
+
+    LABEL_JANUARY,
+    LABEL_FEBRUARY,
+    LABEL_MARCH,
+    LABEL_APRIL,
+    LABEL_MAY,
+    LABEL_JUNE,
+    LABEL_JULY,
+    LABEL_AUGUST,
+    LABEL_SEPTEMBER,
+    LABEL_OCTOBER,
+    LABEL_NOVEMBER,
+    LABEL_DECEMBER,
 
     LABEL_VOLUME,
     LABEL_BASS,
@@ -61,7 +74,7 @@ enum {
 
 extern const char *const labels_en[LABEL_END];
 //extern const char *const labels_by[LABEL_END];
-//extern const char *const labels_ru[LABEL_END];
+extern const char *const labels_ru[LABEL_END];
 
 void labelsSetLang(Lang value);
 Lang labelsGetLang(void);
