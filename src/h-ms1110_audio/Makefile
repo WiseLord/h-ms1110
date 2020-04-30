@@ -37,6 +37,7 @@ C_SOURCES += main.c
 C_SOURCES += amp.c
 C_SOURCES += pins.c
 C_SOURCES += settings.c
+C_SOURCES += setup.c
 
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
@@ -132,7 +133,8 @@ endif
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 OPT_FLAGS = $(OPT) -fshort-enums -ffunction-sections -fdata-sections -ffreestanding
 #OPT_FLAGS += -flto
-WARN = -Wall -Werror
+WARN = -Wall
+#-Werror
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT_FLAGS) $(WARN)
 ASFLAGS = $(MCU) $(AS_DEFS) $(WARN)

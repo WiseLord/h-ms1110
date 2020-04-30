@@ -35,7 +35,7 @@ static const EE_Cell eeMap[] = {
 
     [PARAM_SYSTEM_LANG]     =   {0x70,  LANG_RU},
     [PARAM_SYSTEM_RTC_CORR] =   {0x73,  0},
-    [PARAM_SYSTEM_ENC_RES]  =   {0x74,  4},
+    [PARAM_SYSTEM_ENC_RES]  =   {0x74,  -4},
 };
 
 void settingsInit(void)

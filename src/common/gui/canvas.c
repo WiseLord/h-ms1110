@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include "amp.h"
 #include "rtc.h"
 #include "swtimers.h"
 #include "widget/spview.h"
@@ -144,6 +145,16 @@ void canvasShowTune(bool clear, Tune *tune)
     tuneDraw(clear, tune, &canvas.layout->tune);
 }
 
+void canvasShowSetup(bool clear)
+{
+    const Palette *pal = canvas.pal;
+
+    glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->fg);
+
+    glcdSetXY(0, 0);
+    glcdWriteString("setup");
+}
 
 void canvasShowTest(bool clear)
 {
@@ -173,5 +184,5 @@ void canvasDebugFPS(void)
         oldCnt = cnt;
     } else {
     }
-    glcdWriteString(utilMkStr("%4d", oldFps));
+    glcdWriteString(utilMkStr("%4d %d", oldFps, ampGet()->screen));
 }

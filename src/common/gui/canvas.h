@@ -30,6 +30,7 @@ void canvasShowTime(bool clear, bool active);
 void canvasShowDate(bool clear, bool active);
 void canvasShowInput(bool clear, Label label);
 void canvasShowTune(bool clear, Tune *tune);
+void canvasShowSetup(bool clear);
 
 void canvasShowTest(bool clear);
 void canvasDebugFPS(void);
