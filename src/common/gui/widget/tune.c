@@ -4,18 +4,22 @@
 #include "gui/palette.h"
 #include "tr/labels.h"
 #include "utils.h"
+#include "gui/widget/progressbar.h"
 
-void tuneDraw(bool clear, Tune *tune, LayoutTune *lt)
+void tuneDraw(bool clear, Tune *tune)
 {
     const Palette *pal = paletteGet();
     GlcdRect *rect = glcdGetRect();
 
-    glcdSetFont(lt->label.font);
+    const tFont *labelFont = &fontterminus32;
+    const tFont *valueFont = &fontterminus32;
+
+    glcdSetFont(labelFont);
     glcdSetFontColor(pal->fg);
     glcdSetXY(0, 0);
     glcdWriteString(labelsGet(tune->label));
 
-    glcdSetFont(lt->value.font);
+    glcdSetFont(valueFont);
     glcdSetFontColor(pal->fg);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     glcdSetXY(rect->w, 0);
@@ -23,7 +27,7 @@ void tuneDraw(bool clear, Tune *tune, LayoutTune *lt)
 
     ProgressBar bar;
     bar.lt.rect.x = 0;
-    bar.lt.rect.y = lt->bar.y;
+    bar.lt.rect.y = 44;
     bar.lt.rect.w = rect->w;
     bar.lt.rect.h = rect->h - bar.lt.rect.y;
     bar.lt.fw = 3;

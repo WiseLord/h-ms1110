@@ -9,16 +9,18 @@ extern "C" {
 #include <stdint.h>
 
 #include "display/glcd.h"
-#include "gui/layout.h"
 #include "gui/palette.h"
+#include "tr/labels.h"
+#include "widget/tune.h"
 
 #include "spectrum.h"
 
 typedef struct {
     Glcd *glcd;
     const Palette *pal;
-    const Layout *layout;
 } Canvas;
+
+extern const tFont fontterminusdig40;
 
 void canvasInit(void);
 Canvas *canvasGet(void);

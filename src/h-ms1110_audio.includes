@@ -7,3 +7,4 @@ common/gui
 h-ms1110_audio
 common/tuner
 common/tr
+common/gui/widget

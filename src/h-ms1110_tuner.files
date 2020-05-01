@@ -103,8 +103,6 @@ common/fft.h
 common/gui/canvas.c
 common/gui/canvas.h
 common/gui/fonts/font-terminus-dig-40.c
-common/gui/layout.c
-common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/progressbar.c

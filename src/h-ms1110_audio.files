@@ -104,12 +104,12 @@ common/gui/canvas.c
 common/gui/canvas.h
 common/gui/fonts/font-terminus-dig-40.c
 common/gui/fonts/font-terminus-dig-64.c
-common/gui/layout.c
-common/gui/layout.h
 common/gui/palette.c
 common/gui/palette.h
 common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
+common/gui/widget/setupview.c
+common/gui/widget/setupview.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
 common/gui/widget/spview.c

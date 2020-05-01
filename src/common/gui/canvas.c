@@ -5,7 +5,9 @@
 #include "amp.h"
 #include "rtc.h"
 #include "swtimers.h"
+
 #include "widget/spview.h"
+#include "widget/setupview.h"
 
 static Canvas canvas;
 
@@ -14,7 +16,6 @@ void canvasInit()
     glcdInit();
 
     canvas.glcd = glcdGet();
-    canvas.layout = layoutGet();
 
     PalIdx palIdx = PAL_DEFAULT;//(PalIdx)settingsRead(PARAM_DISPLAY_PALETTE);
     paletteSetIndex(palIdx);
@@ -142,18 +143,12 @@ void canvasShowInput(bool clear, Label label)
 
 void canvasShowTune(bool clear, Tune *tune)
 {
-    tuneDraw(clear, tune, &canvas.layout->tune);
+    tuneDraw(clear, tune);
 }
 
 void canvasShowSetup(bool clear)
 {
-    const Palette *pal = canvas.pal;
-
-    glcdSetFont(&fontterminus32);
-    glcdSetFontColor(pal->fg);
-
-    glcdSetXY(0, 0);
-    glcdWriteString("setup");
+    setupViewDraw(clear);
 }
 
 void canvasShowTest(bool clear)
