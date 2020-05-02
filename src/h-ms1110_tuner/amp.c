@@ -89,10 +89,10 @@ static void actionDispExpired(ScreenType scrMode)
 
     switch (scrMode) {
     case SCREEN_STANDBY:
-        actionSetScreen(SCREEN_STANDBY, 1000);
+        actionSetScreen(SCREEN_STANDBY, 0);
         break;
     default:
-        actionSetScreen(scrDef, 1000);
+        actionSetScreen(scrDef, 0);
         break;
     }
 }
@@ -108,7 +108,7 @@ void ampExitStby(void)
 
     amp.status = AMP_STATUS_POWERED;
 
-    swTimSet(SW_TIM_AMP_INIT, 600);
+    swTimSet(SW_TIM_AMP_INIT, 200);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
@@ -131,7 +131,7 @@ void ampInitHw(void)
         i2cInit(I2C_AMP, 100000);
 
         amp.status = AMP_STATUS_HW_READY;
-        swTimSet(SW_TIM_AMP_INIT, 500);
+        swTimSet(SW_TIM_AMP_INIT, 300);
         break;
     case AMP_STATUS_HW_READY:
 
@@ -170,10 +170,10 @@ static void actionGetEncoder(void)
 
 static void actionGetTimers(void)
 {
-    if (swTimGet(SW_TIM_DISPLAY) == 0) {
-        actionSet(ACTION_DISP_EXPIRED, 0);
-    } else if (swTimGet(SW_TIM_AMP_INIT) == 0) {
+    if (swTimGet(SW_TIM_AMP_INIT) == 0) {
         actionSet(ACTION_INIT_HW, 0);
+    } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
+        actionSet(ACTION_DISP_EXPIRED, 0);
     }
 }
 
@@ -269,8 +269,6 @@ void ampActionHandle(void)
 {
     ScreenType scrMode = amp.screen;
 
-    action.timeout = 0;
-
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
@@ -295,11 +293,12 @@ void ampActionHandle(void)
 
     screenSetMode(action.screen);
 
-    if (action.timeout > 0) {
+    if (action.timeout >= 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
 
-    actionSet(ACTION_NONE, 0);
+    action.type = ACTION_NONE;
+    action.timeout = SW_TIM_OFF;
 }
 
 static void ampHandleSwd(void)

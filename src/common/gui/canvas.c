@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "amp.h"
-
 #include "rtc.h"
 #include "screen/spectrumview.h"
 #include "screen/setupview.h"
@@ -151,7 +149,6 @@ void canvasDebugFPS(void)
 
     glcdSetXY(canvas.glcd->rect.w, 0);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    snprintf(buf, sizeof(buf), "%d %d %d", (int)oldFps, ampGet()->screen,
-             (int)swTimGet(SW_TIM_DISPLAY));
+    snprintf(buf, sizeof(buf), "%d", (int)oldFps);
     glcdWriteString(buf);
 }

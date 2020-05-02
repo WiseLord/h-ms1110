@@ -210,7 +210,7 @@ void ampExitStby(void)
 
     amp.status = AMP_STATUS_POWERED;
 
-    swTimSet(SW_TIM_AMP_INIT, 600);
+    swTimSet(SW_TIM_AMP_INIT, 200);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
@@ -278,7 +278,7 @@ void ampInitHw(void)
         ampMute(true);
 
         amp.status = AMP_STATUS_HW_READY;
-        swTimSet(SW_TIM_AMP_INIT, 500);
+        swTimSet(SW_TIM_AMP_INIT, 300);
 
         break;
     case AMP_STATUS_HW_READY:
@@ -301,7 +301,7 @@ static void ampSetInput(int8_t value)
     inputSetPower(true);
 
     amp.status = AMP_STATUS_HW_READY;
-    swTimSet(SW_TIM_AMP_INIT, 400);
+    swTimSet(SW_TIM_AMP_INIT, 300);
 }
 
 static void actionNextAudioParam(AudioProc *aProc)
@@ -473,9 +473,7 @@ static void actionGetPots(void)
 
 static void actionGetTimers(void)
 {
-    if (swTimGet(SW_TIM_DISPLAY) == 0) {
-        actionSet(ACTION_DISP_EXPIRED, 0);
-    } else if (swTimGet(SW_TIM_AMP_INIT) == 0) {
+    if (swTimGet(SW_TIM_AMP_INIT) == 0) {
         actionSet(ACTION_INIT_HW, 0);
     } else if (swTimGet(SW_TIM_STBY_TIMER) == 0) {
         actionSet(ACTION_STANDBY, FLAG_ENTER);
@@ -485,6 +483,8 @@ static void actionGetTimers(void)
         actionSet(ACTION_INIT_RTC, 0);
     } else if (swTimGet(SW_TIM_SOFT_VOLUME) == 0) {
         actionSet(ACTION_RESTORE_VOLUME, amp.volume);
+    } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
+        actionSet(ACTION_DISP_EXPIRED, 0);
     }
 }
 
@@ -1025,8 +1025,6 @@ void ampActionHandle(void)
 
     AudioProc *aProc = audioGet();
 
-    action.timeout = SW_TIM_OFF;
-
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
@@ -1143,7 +1141,8 @@ void ampActionHandle(void)
         swTimSet(SW_TIM_DISPLAY, action.timeout);
     }
 
-    actionSet(ACTION_NONE, 0);
+    action.type = ACTION_NONE;
+    action.timeout = SW_TIM_OFF;
 }
 
 static void prepareAudioTune(TuneView *tune)

@@ -76,10 +76,8 @@ static void drawTm(const char *tm, bool select)
 {
     const Palette *pal = paletteGet();
 
-    if (select) {
-        glcdSetFontColor(pal->bg);
-        glcdSetFontBgColor(pal->fg);
-    }
+    glcdSetFontColor(select ? pal->bg : pal->fg);
+    glcdSetFontBgColor(select ? pal->fg : pal->bg);
 
     glcdWriteString(tm);
 
@@ -91,7 +89,7 @@ static void drawTime(bool clear)
 {
     (void)clear;
 
-    const Palette *pal = paletteGet();
+    GlcdRect rect = glcdGet()->rect;
 
     Setup *setup = setupGet();
 
@@ -99,25 +97,29 @@ static void drawTime(bool clear)
     rtcGetTime(&rtc);
 
     glcdSetFont(&fontterminus32);
-    glcdSetFontColor(pal->fg);
 
-    char buf[3];
+    char hour[3], min[3], sec[3];
+    int16_t len = 0;
 
-    glcdSetXY(32, 32);
+    snprintf(hour, sizeof(hour), "%02d", rtc.hour);
+    snprintf(min, sizeof(min), "%02d", rtc.min);
+    snprintf(sec, sizeof(sec), "%02d", rtc.sec);
+
     glcdSetStringFramed(true);
 
-    snprintf(buf, sizeof(buf), "%02d", rtc.hour);
-    drawTm(buf, setup->child == SETUP_TIME_HOUR);
+    len += glcdCalcStringLen(hour);
+    len += glcdCalcStringLen(":");
+    len += glcdCalcStringLen(min);
+    len += glcdCalcStringLen(":");
+    len += glcdCalcStringLen(sec);
 
+    glcdSetXY((rect.w - len) / 2, 32);
+
+    drawTm(hour, setup->child == SETUP_TIME_HOUR);
     glcdWriteString(":");
-
-    snprintf(buf, sizeof(buf), "%02d", rtc.min);
-    drawTm(buf, setup->child == SETUP_TIME_MINUTE);
-
+    drawTm(min, setup->child == SETUP_TIME_MINUTE);
     glcdWriteString(":");
-
-    snprintf(buf, sizeof(buf), "%02d", rtc.sec);
-    drawTm(buf, setup->child == SETUP_TIME_SECOND);
+    drawTm(sec, setup->child == SETUP_TIME_SECOND);
 
     glcdSetStringFramed(false);
 }
@@ -127,7 +129,7 @@ static void drawDate(bool clear)
 {
     (void)clear;
 
-    const Palette *pal = paletteGet();
+    GlcdRect rect = glcdGet()->rect;
 
     Setup *setup = setupGet();
 
@@ -135,25 +137,29 @@ static void drawDate(bool clear)
     rtcGetTime(&rtc);
 
     glcdSetFont(&fontterminus32);
-    glcdSetFontColor(pal->fg);
 
-    glcdSetXY(32, 32);
+    char date[3], month[3], year[5];
+    int16_t len = 0;
+
+    snprintf(date, sizeof(date), "%02d", rtc.date);
+    snprintf(month, sizeof(month), "%02d", rtc.month);
+    snprintf(year, sizeof(year), "20%02d", rtc.year);
+
     glcdSetStringFramed(true);
 
-    char buf[5];
+    len += glcdCalcStringLen(date);
+    len += glcdCalcStringLen(".");
+    len += glcdCalcStringLen(month);
+    len += glcdCalcStringLen(".");
+    len += glcdCalcStringLen(year);
 
-    snprintf(buf, sizeof(buf), "%02d", rtc.date);
-    drawTm(buf, setup->child == SETUP_DATE_DAY);
+    glcdSetXY((rect.w - len) / 2, 32);
 
-    glcdWriteString(":");
-
-    snprintf(buf, sizeof(buf), "%02d", rtc.month);
-    drawTm(buf, setup->child == SETUP_DATE_MONTH);
-
-    glcdWriteString(":");
-
-    snprintf(buf, sizeof(buf), "20%02d", rtc.year);
-    drawTm(buf, setup->child == SETUP_DATE_YEAR);
+    drawTm(date, setup->child == SETUP_DATE_DAY);
+    glcdWriteString(".");
+    drawTm(month, setup->child == SETUP_DATE_MONTH);
+    glcdWriteString(".");
+    drawTm(year, setup->child == SETUP_DATE_YEAR);
 
     glcdSetStringFramed(false);
 }

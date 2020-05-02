@@ -19,7 +19,6 @@ typedef uint8_t AmpStatus;
 enum {
     AMP_STATUS_STBY,
     AMP_STATUS_POWERED,
-    AMP_STATUS_INIT,
     AMP_STATUS_HW_READY,
     AMP_STATUS_ACTIVE,
 
