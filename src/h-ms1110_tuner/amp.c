@@ -29,6 +29,7 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static void ampHandleSwd(void);
 static void ampScreenShow(void);
 
 static Amp amp = {
@@ -111,13 +112,6 @@ static void ampPinStby(bool value)
         CLR(STBY);
     } else {
         SET(STBY);
-    }
-
-    // Enable SWD interface in standby mode
-    if (value) {
-        LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    } else {
-        LL_GPIO_AF_DisableRemap_SWJ();
     }
 }
 
@@ -253,6 +247,8 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
+        ampHandleSwd();
+
         ampActionSyncMaster();
 
         ampActionGet();
@@ -346,6 +342,23 @@ void ampActionHandle(void)
     }
 
     actionSet(ACTION_NONE, 0);
+}
+
+static void ampHandleSwd(void)
+{
+    static bool swd = false;
+
+    if (SCREEN_STANDBY == amp.screen) {
+        if (!swd) {
+            LL_GPIO_AF_Remap_SWJ_NOJTAG();
+            swd = true;
+        }
+    } else {
+        if (swd) {
+            LL_GPIO_AF_DisableRemap_SWJ();
+            swd = false;
+        }
+    }
 }
 
 void ampScreenShow(void)

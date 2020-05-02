@@ -74,7 +74,6 @@ enum {
     ACTION_SETUP,
     ACTION_SETUP_MOVE,
 
-
     ACTION_REMOTE,
 
 

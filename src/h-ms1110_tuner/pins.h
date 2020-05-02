@@ -61,13 +61,6 @@ extern "C" {
 #define MATRIX_K4_Port          GPIOB
 #define MATRIX_K4_Pin           LL_GPIO_PIN_7
 
-// Remote control pins
-#define RC_Port                 GPIOA
-#define RC_Pin                  LL_GPIO_PIN_8
-#define RC_ExtiLine             LL_EXTI_LINE_8
-#define RC_AR_ExtiPort          LL_GPIO_AF_EXTI_PORTA
-#define RC_AR_ExtiLine          LL_GPIO_AF_EXTI_LINE8
-
 void pinsInit(void);
 
 #ifdef __cplusplus

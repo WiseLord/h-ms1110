@@ -97,7 +97,7 @@ void canvasShowTime(bool clear, bool active)
 
     glcdSetXY(rect.w / 2, 12);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
-    glcdWriteString(utilMkStr("%02d:%02d:%02d", rtc.hour, rtc.min, rtc.sec));
+    glcdWriteString(utilMkStr("%02d\u2008:\u2008%02d\u2008:\u2008%02d", rtc.hour, rtc.min, rtc.sec));
 
 }
 

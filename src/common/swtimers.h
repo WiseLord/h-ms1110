@@ -22,7 +22,6 @@ enum {
     SW_TIM_SILENCE_TIMER,
     SW_TIM_RTC_INIT,
     SW_TIM_SOFT_VOLUME,
-    SW_TIM_SYNC,
 
     SW_TIM_DEC_END,
 

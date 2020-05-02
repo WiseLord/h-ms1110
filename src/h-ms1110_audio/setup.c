@@ -14,7 +14,9 @@ void setupSelect(SetupType type)
         type = SETUP_MAIN;
     }
 
-    setup.head = type;
+    if (type <= SETUP_HEAD_LAST) {
+        setup.head = type;
+    }
 
     switch (setup.head) {
     case SETUP_MAIN:

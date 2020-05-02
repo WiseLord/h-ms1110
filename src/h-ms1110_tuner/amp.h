@@ -38,8 +38,6 @@ typedef struct {
     int8_t volume;
 } Amp;
 
-void ampInitMuteStby(void);
-
 void ampInit(void);
 void ampRun(void);
 

@@ -46,6 +46,7 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static void ampHandleSwd(void);
 static void ampScreenShow(void);
 
 static uint32_t rtcSyncTime;
@@ -170,13 +171,6 @@ static void ampPinStby(bool value)
         CLR(STBY);
     } else {
         SET(STBY);
-    }
-
-//    // Enable SWD interface in standby mode
-    if (value) {
-        LL_GPIO_AF_Remap_SWJ_NOJTAG();
-    } else {
-        LL_GPIO_AF_DisableRemap_SWJ();
     }
 }
 
@@ -500,6 +494,9 @@ static void actionRemapBtnShort(int16_t button)
     case BTN_AUTO:
         break;
     case BTN_DEMO:
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP, setupGet()->active);
+        }
         break;
     case BTN_DISP_PREV:
         if (SCREEN_SETUP == amp.screen) {
@@ -892,7 +889,6 @@ void ampInit(void)
     inputSetPower(false);    // Power off input device
 
     swTimSet(SW_TIM_RTC_INIT, 500);
-    swTimSet(SW_TIM_SYNC, 500);
 
     amp.status = AMP_STATUS_STBY;
 }
@@ -900,10 +896,8 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-//        if (swTimGet(SW_TIM_SYNC) <= 0) {
-//            swTimSet(SW_TIM_SYNC, 2000);
+        ampHandleSwd();
         ampActionSyncSlaves();
-//        }
 
         ampActionGet();
         ampActionRemap();
@@ -1141,6 +1135,22 @@ static void prepareAudioInput (Label *label)
     *label = LABEL_IN_TUNER + (inType - IN_TUNER);
 }
 
+static void ampHandleSwd(void)
+{
+    static bool swd = false;
+
+    if (SCREEN_STANDBY == amp.screen) {
+        if (!swd) {
+            LL_GPIO_AF_Remap_SWJ_NOJTAG();
+            swd = true;
+        }
+    } else {
+        if (swd) {
+            LL_GPIO_AF_DisableRemap_SWJ();
+            swd = false;
+        }
+    }
+}
 
 static void ampScreenShow(void)
 {
