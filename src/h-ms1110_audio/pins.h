@@ -25,6 +25,7 @@ extern "C" {
 #define DISP_RST_Port           GPIOA
 #define DISP_RST_Pin            LL_GPIO_PIN_15
 
+// Mute and standby pins
 #define STBY_Port               GPIOB
 #define STBY_Pin                LL_GPIO_PIN_0
 #define MUTE_Port               GPIOB

@@ -97,24 +97,6 @@ static void actionDispExpired(ScreenType scrMode)
     }
 }
 
-static void ampPinMute(bool value)
-{
-    if (value) {
-        SET(MUTE);
-    } else {
-        CLR(MUTE);
-    }
-}
-
-static void ampPinStby(bool value)
-{
-    if (value) {
-        CLR(STBY);
-    } else {
-        SET(STBY);
-    }
-}
-
 static void ampReadSettings(void)
 {
     tunerReadSettings();
@@ -123,8 +105,6 @@ static void ampReadSettings(void)
 void ampExitStby(void)
 {
     ampReadSettings();
-
-    ampPinStby(false);      // Power on amplifier
 
     amp.status = AMP_STATUS_POWERED;
 
@@ -138,10 +118,6 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
     settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
-
-    ampPinMute(true);
-
-    ampPinStby(true);
 
     amp.status = AMP_STATUS_STBY;
 }
@@ -158,7 +134,6 @@ void ampInitHw(void)
         swTimSet(SW_TIM_AMP_INIT, 500);
         break;
     case AMP_STATUS_HW_READY:
-        ampPinMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
 
@@ -202,27 +177,11 @@ static void actionGetTimers(void)
     }
 }
 
-void ampInitMuteStby(void)
-{
-    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-    GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
-
-    GPIO_InitStruct.Pin = MUTE_Pin;
-    LL_GPIO_Init(MUTE_Port, &GPIO_InitStruct);
-    GPIO_InitStruct.Pin = STBY_Pin;
-    LL_GPIO_Init(STBY_Port, &GPIO_InitStruct);
-
-    ampPinMute(true);
-    ampPinStby(true);
-}
-
 void ampInit(void)
 {
     dbgInit();
 
     settingsInit();
-    ampInitMuteStby();
     pinsInit();
     rtcInit();
 

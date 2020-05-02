@@ -921,6 +921,7 @@ void ampRun(void)
 {
     while (1) {
         ampHandleSwd();
+
         ampActionSyncSlaves();
 
         ampActionGet();
