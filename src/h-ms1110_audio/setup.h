@@ -9,9 +9,12 @@ extern "C" {
 
 typedef int8_t SetupType;
 enum {
-    SETUP_MAIN = 0,
+    SETUP_NULL = 0,
+
+    SETUP_MAIN,
 
     SETUP_TIME,
+    SETUP_DATE,
     SETUP_ALARM,
     SETUP_REMOTE,
 
@@ -20,24 +23,24 @@ enum {
     SETUP_TIME_HOUR,
     SETUP_TIME_MINUTE,
     SETUP_TIME_SECOND,
-    SETUP_TIME_DATE,
-    SETUP_TIME_MONTH,
-    SETUP_TIME_YEAR,
+
+    SETUP_DATE_DAY,
+    SETUP_DATE_MONTH,
+    SETUP_DATE_YEAR,
 
     SETUP_END
 };
 
 typedef struct {
-    SetupType head;
     SetupType active;
+    SetupType child;
 } Setup;
 
 Setup *setupGet(void);
 
 void setupSelect(SetupType type);
-void setupExit(void);
-
-void setupMove (int8_t direction);
+void setupSwitchChild (int8_t direction);
+void setupBack(void);
 
 #ifdef __cplusplus
 }
