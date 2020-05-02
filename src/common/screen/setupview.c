@@ -1,5 +1,7 @@
 #include "setupview.h"
 
+#include <stdio.h>
+
 #include "display/glcd.h"
 #include "gui/palette.h"
 #include "rtc.h"
@@ -99,13 +101,24 @@ static void drawTime(bool clear)
     glcdSetFont(&fontterminus32);
     glcdSetFontColor(pal->fg);
 
+    char buf[3];
+
     glcdSetXY(32, 32);
     glcdSetStringFramed(true);
-    drawTm(utilMkStr("%02d", rtc.hour), setup->child == SETUP_TIME_HOUR);
+
+    snprintf(buf, sizeof(buf), "%02d", rtc.hour);
+    drawTm(buf, setup->child == SETUP_TIME_HOUR);
+
     glcdWriteString(":");
-    drawTm(utilMkStr("%02d", rtc.min), setup->child == SETUP_TIME_MINUTE);
+
+    snprintf(buf, sizeof(buf), "%02d", rtc.min);
+    drawTm(buf, setup->child == SETUP_TIME_MINUTE);
+
     glcdWriteString(":");
-    drawTm(utilMkStr("%02d", rtc.sec), setup->child == SETUP_TIME_SECOND);
+
+    snprintf(buf, sizeof(buf), "%02d", rtc.sec);
+    drawTm(buf, setup->child == SETUP_TIME_SECOND);
+
     glcdSetStringFramed(false);
 }
 
@@ -126,11 +139,22 @@ static void drawDate(bool clear)
 
     glcdSetXY(32, 32);
     glcdSetStringFramed(true);
-    drawTm(utilMkStr("%02d", rtc.date), setup->child == SETUP_DATE_DAY);
+
+    char buf[5];
+
+    snprintf(buf, sizeof(buf), "%02d", rtc.date);
+    drawTm(buf, setup->child == SETUP_DATE_DAY);
+
     glcdWriteString(":");
-    drawTm(utilMkStr("%02d", rtc.month), setup->child == SETUP_DATE_MONTH);
+
+    snprintf(buf, sizeof(buf), "%02d", rtc.month);
+    drawTm(buf, setup->child == SETUP_DATE_MONTH);
+
     glcdWriteString(":");
-    drawTm(utilMkStr("20%02d", rtc.year), setup->child == SETUP_DATE_YEAR);
+
+    snprintf(buf, sizeof(buf), "20%02d", rtc.year);
+    drawTm(buf, setup->child == SETUP_DATE_YEAR);
+
     glcdSetStringFramed(false);
 }
 

@@ -1,5 +1,6 @@
 #include "canvas.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "amp.h"
@@ -97,10 +98,13 @@ void canvasShowTime(bool clear, bool active)
     RTC_type rtc;
     rtcGetTime(&rtc);
 
+    char buf[64];
+
     glcdSetXY(rect.w / 2, 12);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
-    glcdWriteString(utilMkStr("%02d\u2008:\u2008%02d\u2008:\u2008%02d", rtc.hour, rtc.min, rtc.sec));
 
+    snprintf(buf, sizeof(buf), "%02d\u2008:\u2008%02d\u2008:\u2008%02d", rtc.hour, rtc.min, rtc.sec);
+    glcdWriteString(buf);
 }
 
 void canvasShowDate(bool clear, bool active)
@@ -118,9 +122,13 @@ void canvasShowDate(bool clear, bool active)
 
     const char *monthLabel = labelsGet((Label)(LABEL_JANUARY + rtc.month - 1));
 
+    char buf[64];
+
     glcdSetXY(rect.w / 2, 0);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
-    glcdWriteString(utilMkStr("%02d %s 20%02d", rtc.date, monthLabel, rtc.year));
+
+    snprintf(buf, sizeof(buf), "%02d %s 20%02d", rtc.date, monthLabel, rtc.year);
+    glcdWriteString(buf);
 
     const char *wdayLabel = labelsGet((Label)(LABEL_SUNDAY + rtc.wday));
 
@@ -174,10 +182,16 @@ void canvasDebugFPS(void)
         oldCnt = cnt;
     } else {
     }
+
+    char buf[16];
+
     glcdSetXY(canvas.glcd->rect.w, 0);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    glcdWriteString(utilMkStr("%4d %d %d", oldFps, ampGet()->screen, swTimGet(SW_TIM_DISPLAY)));
+    snprintf(buf, sizeof(buf), "%d %d %d", (int)oldFps, ampGet()->screen, (int)swTimGet(SW_TIM_DISPLAY));
+    glcdWriteString(buf);
+
     glcdSetXY(canvas.glcd->rect.w, 16);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    glcdWriteString(utilMkStr("%d %d", setupGet()->active, setupGet()->child));
+    snprintf(buf, sizeof(buf), "%d %d", setupGet()->active, setupGet()->child);
+    glcdWriteString(buf);
 }

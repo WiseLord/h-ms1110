@@ -6,23 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 
-static char strbuf[256];    // String buffer
-
 void utilmDelay(uint32_t delay)
 {
     LL_mDelay(delay);
-}
-
-char *utilMkStr(const char *fmt, ...)
-{
-    char *buffer = strbuf;
-
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(buffer, fmt, args);
-    va_end (args);
-
-    return buffer;
 }
 
 // TRUE if end of line

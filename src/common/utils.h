@@ -18,8 +18,6 @@ typedef struct {
 
 void utilmDelay(uint32_t delay);
 
-char *utilMkStr(const char *fmt, ...);
-
 bool utilReadChar(LineParse *lp, char ch);
 
 bool utilIsPrefix(const char *line, const char *prefix);

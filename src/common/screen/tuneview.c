@@ -1,5 +1,7 @@
 #include "tuneview.h"
 
+#include <stdio.h>
+
 #include "display/glcd.h"
 #include "gui/palette.h"
 #include "tr/labels.h"
@@ -23,7 +25,10 @@ void tuneViewDraw(bool clear, TuneView *tune)
     glcdSetFontColor(pal->fg);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     glcdSetXY(rect->w, 0);
-    glcdWriteString(utilMkStr("%3d", tune->value));
+
+    char buf[4];
+    snprintf(buf, sizeof(buf), "%3d", tune->value);
+    glcdWriteString(buf);
 
     ProgressBar bar;
     bar.lt.rect.x = 0;
