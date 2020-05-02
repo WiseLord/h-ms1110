@@ -60,6 +60,7 @@ void rtcChangeTime(RtcMode mode, int8_t diff);
 void rtcEditTime(RtcMode mode, int8_t value);
 
 void rtcSetRaw(uint32_t value);
+uint32_t rtcGetRaw(void);
 
 RtcMode rtcGetMode(void);
 void rtcSetMode(RtcMode mode);

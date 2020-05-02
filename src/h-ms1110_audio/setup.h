@@ -39,7 +39,8 @@ typedef struct {
 Setup *setupGet(void);
 
 void setupSelect(SetupType type);
-void setupSwitchChild (int8_t direction);
+void setupSwitchChild(int8_t direction);
+void setupChangeChild(int8_t direction);
 void setupBack(void);
 
 #ifdef __cplusplus

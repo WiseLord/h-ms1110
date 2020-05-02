@@ -789,12 +789,8 @@ static void actionRemapEncoder(int16_t encCnt)
     }
 
     switch (scrMode) {
-    case SCREEN_TIME:
-        if (rtcGetMode() == RTC_NOEDIT) {
-            actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
-        } else {
-//            actionSet(ACTION_RTC_CHANGE, encCnt);
-        }
+    case SCREEN_SETUP:
+        actionSet(ACTION_SETUP_CHANGE_CHILD, encCnt);
         break;
     default:
         if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
@@ -858,6 +854,7 @@ static void actionRemapCommon(void)
             break;
         case ACTION_SETUP_SELECT:
         case ACTION_SETUP_SWITCH_CHILD:
+        case ACTION_SETUP_CHANGE_CHILD:
         case ACTION_SETUP_BACK:
             break;
         default:
@@ -1058,6 +1055,14 @@ void ampActionHandle(void)
 
     case ACTION_SETUP_SELECT:
         setupSelect(action.value);
+        ampHandleSetup();
+        break;
+    case ACTION_SETUP_CHANGE_CHILD:
+        setupChangeChild(action.value);
+        SetupType child = setupGet()->child;
+        if (child >= SETUP_TIME_HOUR && child <= SETUP_DATE_YEAR) {
+            syncMasterSendTime(AMP_TUNER_ADDR, rtcGetRaw());
+        }
         ampHandleSetup();
         break;
     case ACTION_SETUP_SWITCH_CHILD:

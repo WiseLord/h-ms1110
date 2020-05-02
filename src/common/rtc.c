@@ -334,7 +334,11 @@ void rtcEditTime(RtcMode mode, int8_t digit)
 void rtcSetRaw(uint32_t value)
 {
     rtcTime = value;
-//    LL_RTC_TIME_SetCounter(RTC, rtcTime);
+}
+
+uint32_t rtcGetRaw(void)
+{
+    return rtcTime;
 }
 
 RtcMode rtcGetMode(void)

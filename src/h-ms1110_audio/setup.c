@@ -1,7 +1,8 @@
 #include "setup.h"
 
-static Setup setup;
+#include "rtc.h"
 
+static Setup setup;
 
 Setup *setupGet()
 {
@@ -37,7 +38,7 @@ void setupSelect(SetupType type)
     }
 }
 
-void setupSwitchChild (int8_t direction)
+void setupSwitchChild(int8_t direction)
 {
     SetupType first = SETUP_NULL;
     SetupType last = SETUP_NULL;
@@ -64,6 +65,30 @@ void setupSwitchChild (int8_t direction)
     }
     if (setup.child > last) {
         setup.child = last;
+    }
+}
+
+void setupChangeChild(int8_t direction)
+{
+    switch (setup.child) {
+    case SETUP_TIME_HOUR:
+        rtcChangeTime(RTC_HOUR, direction);
+        break;
+    case SETUP_TIME_MINUTE:
+        rtcChangeTime(RTC_MIN, direction);
+        break;
+    case SETUP_TIME_SECOND:
+        rtcChangeTime(RTC_SEC, direction);
+        break;
+    case SETUP_DATE_DAY:
+        rtcChangeTime(RTC_DATE, direction);
+        break;
+    case SETUP_DATE_MONTH:
+        rtcChangeTime(RTC_MONTH, direction);
+        break;
+    case SETUP_DATE_YEAR:
+        rtcChangeTime(RTC_YEAR, direction);
+        break;
     }
 }
 
