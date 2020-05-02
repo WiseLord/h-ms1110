@@ -1,4 +1,4 @@
-#include "tune.h"
+#include "tuneview.h"
 
 #include "display/glcd.h"
 #include "gui/palette.h"
@@ -6,7 +6,7 @@
 #include "utils.h"
 #include "gui/widget/progressbar.h"
 
-void tuneDraw(bool clear, Tune *tune)
+void tuneViewDraw(bool clear, TuneView *tune)
 {
     const Palette *pal = paletteGet();
     GlcdRect *rect = glcdGetRect();

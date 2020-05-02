@@ -1,4 +1,4 @@
-#include "spview.h"
+#include "spectrumview.h"
 
 #include <string.h>
 

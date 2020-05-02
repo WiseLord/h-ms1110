@@ -1,5 +1,5 @@
-#ifndef TUNE_H
-#define TUNE_H
+#ifndef TUNEVIEW_H
+#define TUNEVIEW_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,12 +15,12 @@ typedef struct {
     int16_t min;
     int16_t max;
     Label label;
-} Tune;
+} TuneView;
 
-void tuneDraw(bool clear, Tune *pview);
+void tuneViewDraw(bool clear, TuneView *pview);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // TUNE_H
+#endif // TUNEVIEW_H

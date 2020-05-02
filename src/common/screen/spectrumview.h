@@ -1,5 +1,5 @@
-#ifndef SPVIEW_H
-#define SPVIEW_H
+#ifndef SPECTRUMVIEW_H
+#define SPECTRUMVIEW_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,4 +16,4 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
 }
 #endif
 
-#endif // SPVIEW_H
+#endif // SPECTRUMVIEW_H

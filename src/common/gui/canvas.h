@@ -10,10 +10,9 @@ extern "C" {
 
 #include "display/glcd.h"
 #include "gui/palette.h"
-#include "tr/labels.h"
-#include "widget/tune.h"
-
+#include "screen/tuneview.h"
 #include "spectrum.h"
+#include "tr/labels.h"
 
 typedef struct {
     Glcd *glcd;
@@ -31,10 +30,9 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 void canvasShowTime(bool clear, bool active);
 void canvasShowDate(bool clear, bool active);
 void canvasShowInput(bool clear, Label label);
-void canvasShowTune(bool clear, Tune *tune);
+void canvasShowTune(bool clear, TuneView *tune);
 void canvasShowSetup(bool clear);
 
-void canvasShowTest(bool clear);
 void canvasDebugFPS(void);
 
 #ifdef __cplusplus

@@ -502,10 +502,18 @@ static void actionRemapBtnShort(int16_t button)
     case BTN_DEMO:
         break;
     case BTN_DISP_PREV:
-        actionSet(ACTION_SP_MODE, -1);
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_MOVE, -1);
+        } else {
+            actionSet(ACTION_SP_MODE, -1);
+        }
         break;
     case BTN_DISP_NEXT:
-        actionSet(ACTION_SP_MODE, +1);
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_MOVE, +1);
+        } else {
+            actionSet(ACTION_SP_MODE, +1);
+        }
         break;
     default:
         break;
@@ -1033,11 +1041,13 @@ void ampActionHandle(void)
         break;
 
     case ACTION_SETUP:
+        setupSelect(action.value);
         actionSetScreen(SCREEN_SETUP, 10000);
         break;
-
-
-
+    case ACTION_SETUP_MOVE:
+        setupMove(action.value);
+        actionSetScreen(SCREEN_SETUP, 10000);
+        break;
 
     case ACTION_OPEN_MENU:
         if (scrMode == SCREEN_TUNE) {
@@ -1110,7 +1120,7 @@ void ampActionHandle(void)
     actionSet(ACTION_NONE, 0);
 }
 
-static void prepareAudioTune(Tune *tune)
+static void prepareAudioTune(TuneView *tune)
 {
     AudioProc *aProc = audioGet();
     AudioTuneItem *aItem = &aProc->par.tune[aProc->tune];
@@ -1141,7 +1151,7 @@ static void ampScreenShow(void)
     }
 
     Spectrum *sp = spGet();
-    Tune tune;
+    TuneView tune;
 
     Label label;
 

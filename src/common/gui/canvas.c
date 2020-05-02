@@ -4,10 +4,9 @@
 
 #include "amp.h"
 #include "rtc.h"
+#include "screen/spectrumview.h"
+#include "screen/setupview.h"
 #include "swtimers.h"
-
-#include "widget/spview.h"
-#include "widget/setupview.h"
 
 static Canvas canvas;
 
@@ -141,18 +140,14 @@ void canvasShowInput(bool clear, Label label)
     glcdWriteString(labelsGet(label));
 }
 
-void canvasShowTune(bool clear, Tune *tune)
+void canvasShowTune(bool clear, TuneView *tune)
 {
-    tuneDraw(clear, tune);
+    tuneViewDraw(clear, tune);
 }
 
 void canvasShowSetup(bool clear)
 {
     setupViewDraw(clear);
-}
-
-void canvasShowTest(bool clear)
-{
 }
 
 void canvasDebugFPS(void)

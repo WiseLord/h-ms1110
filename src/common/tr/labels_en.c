@@ -49,4 +49,9 @@ const char *const labels_en[LABEL_END] = {
 
     [LABEL_BOOL_OFF]        = "OFF",
     [LABEL_BOOL_ON]         = "ON",
+
+    [LABEL_SETUP_MAIN]      = "Setup",
+    [LABEL_SETUP_TIME]      = "Time",
+    [LABEL_SETUP_ALARM]     = "Alarm",
+    [LABEL_SETUP_REMOTE]    = "Remote",
 };
