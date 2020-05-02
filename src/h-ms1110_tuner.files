@@ -84,6 +84,8 @@ common/rtc.c
 common/rtc.h
 common/screen/spectrumview.c
 common/screen/spectrumview.h
+common/screen/timeview.c
+common/screen/timeview.h
 common/spectrum.c
 common/spectrum.h
 common/spi.c

@@ -19,8 +19,6 @@ typedef struct {
     const Palette *pal;
 } Canvas;
 
-extern const tFont fontterminusdig40;
-
 void canvasInit(void);
 Canvas *canvasGet(void);
 

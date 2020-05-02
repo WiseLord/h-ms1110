@@ -90,6 +90,8 @@ common/screen/setupview.c
 common/screen/setupview.h
 common/screen/spectrumview.c
 common/screen/spectrumview.h
+common/screen/timeview.c
+common/screen/timeview.h
 common/screen/tuneview.c
 common/screen/tuneview.h
 common/spectrum.c

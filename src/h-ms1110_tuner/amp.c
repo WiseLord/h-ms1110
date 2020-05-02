@@ -232,7 +232,6 @@ void ampInit(void)
     spInit();
 
     inputInit();
-    rcInit();
 
     syncSlaveInit(AMP_TUNER_ADDR);
 

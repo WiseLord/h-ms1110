@@ -73,6 +73,7 @@ endif
 
 C_SOURCES += $(COMMON)/screen/setupview.c
 C_SOURCES += $(COMMON)/screen/spectrumview.c
+C_SOURCES += $(COMMON)/screen/timeview.c
 C_SOURCES += $(COMMON)/screen/tuneview.c
 
 C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
