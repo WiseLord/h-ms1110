@@ -3,12 +3,14 @@
 #include <stdio.h>
 
 #include "display/glcd.h"
+#include "eemul.h"
 #include "gui/palette.h"
 #include "rtc.h"
 #include "setup.h"
 #include "tr/labels.h"
 
 static Setup old;
+static const int16_t marginX = 16;
 
 const char *getHeadLabel(SetupType type)
 {
@@ -89,6 +91,7 @@ static void drawTime(bool clear)
 {
     (void)clear;
 
+    const Palette *pal = paletteGet();
     GlcdRect rect = glcdGet()->rect;
 
     Setup *setup = setupGet();
@@ -97,6 +100,7 @@ static void drawTime(bool clear)
     rtcGetTime(&rtc);
 
     glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->fg);
 
     char hour[3], min[3], sec[3];
     int16_t len = 0;
@@ -129,6 +133,7 @@ static void drawDate(bool clear)
 {
     (void)clear;
 
+    const Palette *pal = paletteGet();
     GlcdRect rect = glcdGet()->rect;
 
     Setup *setup = setupGet();
@@ -137,6 +142,7 @@ static void drawDate(bool clear)
     rtcGetTime(&rtc);
 
     glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->fg);
 
     char date[3], month[3], year[5];
     int16_t len = 0;
@@ -180,15 +186,15 @@ static void drawAlarm(bool clear)
     Setup *setup = setupGet();
 
     glcdSetFont(&fontterminus32);
+    glcdSetFontColor(pal->fg);
 
-    char hour[3], min[3], days[32];
+    char hour[3], min[3];
     int16_t len = 0;
 
-    const char *daysLabel = labelsGet((Label)(LABEL_ALARM_DAY_OFF + (alarm->days)));
+    const char *days = labelsGet((Label)(LABEL_ALARM_DAY_OFF + (alarm->days)));
 
     snprintf(hour, sizeof(hour), "%02d", alarm->hour);
     snprintf(min, sizeof(min), "%02d", alarm->min);
-    snprintf(days, sizeof(days), "%s", daysLabel);
 
     glcdSetStringFramed(true);
 
@@ -199,9 +205,9 @@ static void drawAlarm(bool clear)
     len += glcdCalcStringLen(days);
 
     if (clear) {
-        const int16_t marginX = 16;
         glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
     }
+    char code[7];
 
     glcdSetXY((rect.w - len) / 2, 32);
 
@@ -212,7 +218,36 @@ static void drawAlarm(bool clear)
     drawTm(days, setup->child == ALARM_DAYS);
 
     glcdSetStringFramed(false);
+}
 
+static void drawRemote(bool clear)
+{
+    const Palette *pal = paletteGet();
+    Setup *setup = setupGet();
+
+    glcdSetFont(&fontterminus24b);
+    glcdSetFontColor(pal->fg);
+
+    char code[7];
+
+    const char *funcLabel = labelsGet((Label)(LABEL_RC_STBY_SWITCH + (setup->child - RC_CMD_STBY_SWITCH)));
+
+    uint16_t rcCode = rcGetCode(setup->child);
+
+    GlcdRect rect = glcdGet()->rect;
+
+    glcdSetXY(rect.w, 4);
+    glcdSetFontAlign(GLCD_ALIGN_RIGHT);
+    if (rcCode == EE_NOT_FOUND) {
+        snprintf(code, sizeof(code), "------");
+    } else {
+        snprintf(code, sizeof(code), "0x%04X", rcCode);
+    }
+    glcdWriteString(code);
+
+    glcdSetXY(rect.w / 2, 38);
+    glcdSetFontAlign(GLCD_ALIGN_CENTER);
+    glcdWriteString(funcLabel);
 }
 
 static void drawChild(bool clear)
@@ -227,7 +262,6 @@ static void drawChild(bool clear)
     }
 
     if (clear) {
-        const int16_t marginX = 16;
         glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
     }
 
@@ -244,6 +278,9 @@ static void drawChild(bool clear)
     case SETUP_ALARM:
         drawAlarm(clear);
         break;
+    case SETUP_REMOTE:
+        drawRemote(clear);
+        break;
     }
 }
 
@@ -253,14 +290,14 @@ static void drawArrows(bool clear)
     GlcdRect rect = glcdGet()->rect;
 
     if (clear) {
-        glcdSetFont(&fontterminus32);
+        glcdSetFont(&fontterminus24b);
         glcdSetFontColor(pal->fg);
 
-        glcdSetXY(0, 32);
+        glcdSetXY(0, 38);
         glcdSetFontAlign(GLCD_ALIGN_LEFT);
         glcdWriteString("<");
 
-        glcdSetXY(rect.w, 32);
+        glcdSetXY(rect.w, 38);
         glcdSetFontAlign(GLCD_ALIGN_RIGHT);
         glcdWriteString(">");
     }

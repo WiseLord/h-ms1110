@@ -1,5 +1,6 @@
 #include "setup.h"
 
+#include "rc.h"
 #include "rtc.h"
 #include "settings.h"
 
@@ -37,6 +38,9 @@ void setupSelect(SetupType type)
     case SETUP_ALARM:
         setup.child = ALARM_DAYS;
         break;
+    case SETUP_REMOTE:
+        setup.child = RC_CMD_STBY_SWITCH;
+        break;
     default:
         setup.child = SETUP_NULL;
         break;
@@ -64,6 +68,10 @@ void setupSwitchChild(int8_t direction)
     case SETUP_ALARM:
         first = ALARM_HOUR;
         last = ALARM_DAYS;
+        break;
+    case SETUP_REMOTE:
+        first = RC_CMD_STBY_SWITCH;
+        last = RC_CMD_SCR_DEF;
         break;
     }
 
@@ -98,6 +106,15 @@ void setupChangeChild(int8_t direction)
             break;
         }
         break;
+    case SETUP_REMOTE:
+        if (setup.child >= RC_CMD_STBY_SWITCH && setup.child <= RC_CMD_SCR_DEF) {
+            RcData rcData = rcRead(false);
+            uint16_t raw = (int16_t)(((rcData.addr & 0xFF) << 8) | rcData.cmd);
+            Param param = PARAM_RC_STBY_SWITCH + setup.child;
+            settingsSet(param, raw);
+            settingsStore(param, raw);
+        }
+        break;
     }
 }
 
@@ -107,6 +124,7 @@ void setupBack()
 
     switch (active) {
     case SETUP_TIME:
+    case SETUP_DATE:
     case SETUP_ALARM:
     case SETUP_REMOTE:
         setupSelect(SETUP_MAIN);

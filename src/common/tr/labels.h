@@ -7,6 +7,10 @@ extern "C" {
 
 #include <stdint.h>
 
+#include "rc.h"
+
+#define GENERATE_LABEL_RC_CMD(RC)    LABEL_RC_ ## RC,
+
 typedef uint8_t Lang;
 enum {
     LANG_EN,
@@ -78,6 +82,8 @@ enum {
     LABEL_ALARM_DAY_OFF,
     LABEL_ALARM_DAY_WEEKDAYS,
     LABEL_ALARM_DAY_ALL_DAYS,
+
+    FOREACH_CMD(GENERATE_LABEL_RC_CMD)
 
     LABEL_END,
 };

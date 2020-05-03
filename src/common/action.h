@@ -13,8 +13,8 @@ extern "C" {
     CMD(VOL_UP)             \
     CMD(VOL_DOWN)           \
     CMD(MENU)               \
-    CMD(CHAN_NEXT)          \
     CMD(CHAN_PREV)          \
+    CMD(CHAN_NEXT)          \
     CMD(DIG_0)              \
     CMD(DIG_1)              \
     CMD(DIG_2)              \
@@ -25,6 +25,7 @@ extern "C" {
     CMD(DIG_7)              \
     CMD(DIG_8)              \
     CMD(DIG_9)              \
+    CMD(IN_PREV)            \
     CMD(IN_NEXT)            \
     CMD(NAV_OK)             \
     CMD(NAV_BACK)           \
@@ -39,9 +40,6 @@ extern "C" {
     CMD(TREBLE_UP)          \
     CMD(TREBLE_DOWN)        \
     CMD(LOUDNESS)           \
-    CMD(SURROUND)           \
-    CMD(EFFECT_3D)          \
-    CMD(TONE_BYPASS)        \
     CMD(TIME)               \
     CMD(STOP)               \
     CMD(PLAY_PAUSE)         \
@@ -50,7 +48,6 @@ extern "C" {
     CMD(TIMER)              \
     CMD(SP_MODE)            \
     CMD(SCR_DEF)            \
-    CMD(BT_IN_NEXT)         \
 
 typedef uint8_t ActionType;
 enum {
@@ -76,9 +73,9 @@ enum {
     ACTION_SETUP_CHANGE_CHILD,
     ACTION_SETUP_BACK,
 
-
-
     ACTION_REMOTE,
+
+
 
     ACTION_OPEN_MENU,
 
