@@ -334,7 +334,8 @@ static int8_t actionGetNextAudioInput(int8_t diff)
 
 static void ampHandleSetup(void)
 {
-    if (SETUP_NULL == setupGet()->active) {
+    Setup *setup = setupGet();
+    if (SETUP_NULL == setup->active && SETUP_NULL == setup->child) {
         actionDispExpired();
     } else {
         actionSetScreen(SCREEN_SETUP, 10000);
@@ -535,7 +536,10 @@ static void actionRemapBtnShort(int16_t button)
         break;
     case BTN_DEMO:
         if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SELECT, setupGet()->child);
+            Setup *setup = setupGet();
+            if (setup->active <= SETUP_MAIN) { // has childs
+                actionSet(ACTION_SETUP_SELECT, setup->child);
+            }
         }
         break;
     case BTN_DISP_PREV:
@@ -720,6 +724,7 @@ static void actionRemapCommon(void)
             }
             break;
         case ACTION_SETUP_SELECT:
+        case ACTION_INIT_RTC:
             break;
         default:
             actionSet(ACTION_NONE, 0);
@@ -729,7 +734,7 @@ static void actionRemapCommon(void)
         switch (action.type) {
         case ACTION_STANDBY:
         case ACTION_DISP_EXPIRED:
-            actionSet(ACTION_SETUP_SELECT, SETUP_NULL);
+            actionSet(ACTION_DISP_EXPIRED, 0);
             break;
         case ACTION_SETUP_SELECT:
         case ACTION_SETUP_SWITCH_CHILD:

@@ -37,9 +37,6 @@ const char *getHeadLabel(SetupType type)
 
 static void drawHead(bool clear)
 {
-    const Palette *pal = paletteGet();
-    GlcdRect rect = glcdGet()->rect;
-
     Setup *setup = setupGet();
 
     if (setup->active != old.active) {
@@ -47,6 +44,9 @@ static void drawHead(bool clear)
     }
 
     if (clear) {
+        const Palette *pal = paletteGet();
+        GlcdRect rect = glcdGet()->rect;
+
         glcdDrawRect(0, 0, rect.w, 32, pal->bg);
 
         glcdSetFont(&fontterminus32);
@@ -59,11 +59,17 @@ static void drawHead(bool clear)
 
 static void drawActive(bool clear)
 {
+    Setup *setup = setupGet();
+
+    if (setup->active != old.active) {
+        clear = true;
+    }
+
     if (clear) {
         const Palette *pal = paletteGet();
         GlcdRect rect = glcdGet()->rect;
 
-        Setup *setup = setupGet();
+        glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
 
         glcdSetFont(&fontterminus32);
         glcdSetFontColor(pal->fg);

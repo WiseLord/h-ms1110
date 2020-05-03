@@ -14,18 +14,13 @@ Setup *setupGet()
 
 void setupSelect(SetupType type)
 {
-    if (type >= SETUP_END) {
-        type = SETUP_NULL;
+    if (type == SETUP_NULL || type > SETUP_HEAD_LAST) {
+        return;
     }
 
-    if (type <= SETUP_HEAD_LAST) {
-        setup.active = type;
-    }
+    setup.active = type;
 
     switch (setup.active) {
-    case SETUP_NULL:
-        setup.child = SETUP_MAIN;
-        break;
     case SETUP_MAIN:
         setup.child = SETUP_TIME;
         break;
@@ -73,6 +68,8 @@ void setupSwitchChild(int8_t direction)
         first = RC_CMD_STBY_SWITCH;
         last = RC_CMD_SCR_DEF;
         break;
+    default:
+        return;
     }
 
     setup.child += direction;
@@ -91,6 +88,7 @@ void setupChangeChild(int8_t direction)
     case SETUP_TIME:
     case SETUP_DATE:
         rtcChangeTime(setup.child, direction);
+        break;
     case SETUP_ALARM:
         rtcChangeAlarm(setup.child, direction);
         Alarm *alarm = rtcGetAlarm(0);
@@ -127,11 +125,12 @@ void setupBack()
     case SETUP_DATE:
     case SETUP_ALARM:
     case SETUP_REMOTE:
-        setupSelect(SETUP_MAIN);
+        setup.active = SETUP_MAIN;
         setup.child = active;
         break;
     default:
-        setupSelect(SETUP_NULL);
+        setup.active = SETUP_NULL;
+        setup.child = SETUP_NULL;
         break;
     }
 }
