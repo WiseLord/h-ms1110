@@ -912,7 +912,6 @@ void ampActionHandle(void)
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
-        actionResetSilenceTimer();
         break;
 
     case ACTION_INIT_RTC:
@@ -1005,14 +1004,15 @@ void ampActionHandle(void)
         break;
     }
 
-    // Reset silence timer on any user action
-    if (action.type != ACTION_NONE && action.type != ACTION_DISP_EXPIRED) {
-        actionResetSilenceTimer();
-    }
-
-    // Reset silence timer on signal
-    if (scrMode != SCREEN_STANDBY) {
+    if (scrMode != SCREEN_STANDBY && scrMode != SCREEN_SETUP) {
+        // Reset silence timer on signal
         if (spCheckSignal()) {
+            actionResetSilenceTimer();
+        }
+        // Reset silence timer on any user action
+        if (action.type != ACTION_NONE &&
+            action.type != ACTION_DISP_EXPIRED &&
+            action.type != ACTION_STANDBY) {
             actionResetSilenceTimer();
         }
     }
@@ -1021,8 +1021,10 @@ void ampActionHandle(void)
         screenSetMode(action.screen);
     }
 
-    if (action.timeout >= 0) {
+    if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
+    } else if (action.timeout == 0) {
+        swTimSet(SW_TIM_DISPLAY, SW_TIM_OFF);
     }
 
     action.type = ACTION_NONE;

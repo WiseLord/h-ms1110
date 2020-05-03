@@ -293,8 +293,10 @@ void ampActionHandle(void)
 
     screenSetMode(action.screen);
 
-    if (action.timeout >= 0) {
+    if (action.timeout > 0) {
         swTimSet(SW_TIM_DISPLAY, action.timeout);
+    } else if (action.timeout == 0) {
+        swTimSet(SW_TIM_DISPLAY, SW_TIM_OFF);
     }
 
     action.type = ACTION_NONE;
