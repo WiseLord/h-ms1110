@@ -1058,8 +1058,8 @@ void ampActionHandle(void)
         break;
     case ACTION_SETUP_CHANGE_CHILD:
         setupChangeChild(action.value);
-        SetupType child = setupGet()->child;
-        if (child >= SETUP_TIME_HOUR && child <= SETUP_DATE_YEAR) {
+        SetupType active = setupGet()->active;
+        if (active == SETUP_TIME || active == SETUP_DATE) {
             syncMasterSendTime(AMP_TUNER_ADDR, rtcGetRaw());
         }
         ampHandleSetup();

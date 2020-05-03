@@ -388,3 +388,34 @@ bool rtcCheckAlarm()
 
     return false;
 }
+
+void rtcChangeAlarm(AlarmMode alarmMode,  int8_t diff)
+{
+    Alarm *alarm = rtcGetAlarm(0);
+    switch (alarmMode) {
+    case ALARM_HOUR:
+        alarm->hour += diff;
+        if (alarm->hour > 23) {
+            alarm->hour = 23;
+        } else if (alarm->hour < 0) {
+            alarm->hour = 0;
+        }
+        break;
+    case ALARM_MIN:
+        alarm->min += diff;
+        if (alarm->min > 59) {
+            alarm->min = 59;
+        } else if (alarm->min < 0) {
+            alarm->min = 0;
+        }
+        break;
+    case ALARM_DAYS:
+        alarm->days += diff;
+        if (alarm->days >= ALARM_DAY_END) {
+            alarm->days = ALARM_DAY_END - 1;
+        } else if (alarm->days < ALARM_DAY_OFF) {
+            alarm->days = ALARM_DAY_OFF;
+        }
+        break;
+    }
+}

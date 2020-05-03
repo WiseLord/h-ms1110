@@ -1,6 +1,7 @@
 #include "setup.h"
 
 #include "rtc.h"
+#include "settings.h"
 
 static Setup setup;
 
@@ -8,6 +9,7 @@ Setup *setupGet()
 {
     return &setup;
 }
+
 
 void setupSelect(SetupType type)
 {
@@ -27,10 +29,13 @@ void setupSelect(SetupType type)
         setup.child = SETUP_TIME;
         break;
     case SETUP_TIME:
-        setup.child = SETUP_TIME_HOUR;
+        setup.child = RTC_HOUR;
         break;
     case SETUP_DATE:
-        setup.child = SETUP_DATE_DAY;
+        setup.child = RTC_DATE;
+        break;
+    case SETUP_ALARM:
+        setup.child = ALARM_DAYS;
         break;
     default:
         setup.child = SETUP_NULL;
@@ -43,18 +48,22 @@ void setupSwitchChild(int8_t direction)
     SetupType first = SETUP_NULL;
     SetupType last = SETUP_NULL;
 
-    switch (setup.child) {
-    case SETUP_TIME ... SETUP_REMOTE:
+    switch (setup.active) {
+    case SETUP_MAIN:
         first = SETUP_TIME;
         last = SETUP_REMOTE;
         break;
-    case SETUP_TIME_HOUR ... SETUP_TIME_SECOND:
-        first = SETUP_TIME_HOUR;
-        last = SETUP_TIME_SECOND;
+    case SETUP_TIME:
+        first = RTC_HOUR;
+        last = RTC_SEC;
         break;
-    case SETUP_DATE_DAY ... SETUP_DATE_YEAR:
-        first = SETUP_DATE_DAY;
-        last = SETUP_DATE_YEAR;
+    case SETUP_DATE:
+        first = RTC_DATE;
+        last = RTC_YEAR;
+        break;
+    case SETUP_ALARM:
+        first = ALARM_HOUR;
+        last = ALARM_DAYS;
         break;
     }
 
@@ -70,24 +79,24 @@ void setupSwitchChild(int8_t direction)
 
 void setupChangeChild(int8_t direction)
 {
-    switch (setup.child) {
-    case SETUP_TIME_HOUR:
-        rtcChangeTime(RTC_HOUR, direction);
-        break;
-    case SETUP_TIME_MINUTE:
-        rtcChangeTime(RTC_MIN, direction);
-        break;
-    case SETUP_TIME_SECOND:
-        rtcChangeTime(RTC_SEC, direction);
-        break;
-    case SETUP_DATE_DAY:
-        rtcChangeTime(RTC_DATE, direction);
-        break;
-    case SETUP_DATE_MONTH:
-        rtcChangeTime(RTC_MONTH, direction);
-        break;
-    case SETUP_DATE_YEAR:
-        rtcChangeTime(RTC_YEAR, direction);
+    switch (setup.active) {
+    case SETUP_TIME:
+    case SETUP_DATE:
+        rtcChangeTime(setup.child, direction);
+    case SETUP_ALARM:
+        rtcChangeAlarm(setup.child, direction);
+        Alarm *alarm = rtcGetAlarm(0);
+        switch (setup.child) {
+        case ALARM_HOUR:
+            settingsStore(PARAM_ALARM_HOUR, alarm->hour);
+            break;
+        case ALARM_MIN:
+            settingsStore(PARAM_ALARM_MINUTE, alarm->min);
+            break;
+        case ALARM_DAYS:
+            settingsStore(PARAM_ALARM_DAYS, alarm->days);
+            break;
+        }
         break;
     }
 }

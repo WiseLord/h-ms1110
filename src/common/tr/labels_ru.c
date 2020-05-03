@@ -55,4 +55,8 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_SETUP_DATE]      = "Дата",
     [LABEL_SETUP_ALARM]     = "Будильник",
     [LABEL_SETUP_REMOTE]    = "Пульт ДУ",
+
+    [LABEL_ALARM_DAY_OFF]       = "отключен",
+    [LABEL_ALARM_DAY_WEEKDAYS]  = "будни",
+    [LABEL_ALARM_DAY_ALL_DAYS]  = "все дни",
 };

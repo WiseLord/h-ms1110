@@ -115,11 +115,11 @@ static void drawTime(bool clear)
 
     glcdSetXY((rect.w - len) / 2, 32);
 
-    drawTm(hour, setup->child == SETUP_TIME_HOUR);
+    drawTm(hour, setup->child == RTC_HOUR);
     glcdWriteString(":");
-    drawTm(min, setup->child == SETUP_TIME_MINUTE);
+    drawTm(min, setup->child == RTC_MIN);
     glcdWriteString(":");
-    drawTm(sec, setup->child == SETUP_TIME_SECOND);
+    drawTm(sec, setup->child == RTC_SEC);
 
     glcdSetStringFramed(false);
 }
@@ -155,13 +155,64 @@ static void drawDate(bool clear)
 
     glcdSetXY((rect.w - len) / 2, 32);
 
-    drawTm(date, setup->child == SETUP_DATE_DAY);
+    drawTm(date, setup->child == RTC_DATE);
     glcdWriteString(".");
-    drawTm(month, setup->child == SETUP_DATE_MONTH);
+    drawTm(month, setup->child == RTC_MONTH);
     glcdWriteString(".");
-    drawTm(year, setup->child == SETUP_DATE_YEAR);
+    drawTm(year, setup->child == RTC_YEAR);
 
     glcdSetStringFramed(false);
+}
+
+static void drawAlarm(bool clear)
+{
+    Alarm *alarm = rtcGetAlarm(0);
+
+    static AlarmDay _days;
+    if (alarm->days != _days) {
+        clear = true;
+        _days = alarm->days;
+    }
+
+    GlcdRect rect = glcdGet()->rect;
+
+    const Palette *pal = paletteGet();
+    Setup *setup = setupGet();
+
+    glcdSetFont(&fontterminus32);
+
+    char hour[3], min[3], days[32];
+    int16_t len = 0;
+
+    const char *daysLabel = labelsGet((Label)(LABEL_ALARM_DAY_OFF + (alarm->days)));
+
+    snprintf(hour, sizeof(hour), "%02d", alarm->hour);
+    snprintf(min, sizeof(min), "%02d", alarm->min);
+    snprintf(days, sizeof(days), "%s", daysLabel);
+
+    glcdSetStringFramed(true);
+
+    len += glcdCalcStringLen(hour);
+    len += glcdCalcStringLen(":");
+    len += glcdCalcStringLen(min);
+    len += glcdCalcStringLen(" ");
+    len += glcdCalcStringLen(days);
+
+    if (clear) {
+        const int16_t marginX = 16;
+        glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
+    }
+
+    glcdSetXY((rect.w - len) / 2, 32);
+
+    drawTm(hour, setup->child == ALARM_HOUR);
+    glcdWriteString(":");
+    drawTm(min, setup->child == ALARM_MIN);
+    glcdWriteString(" ");
+    drawTm(days, setup->child == ALARM_DAYS);
+
+    glcdSetStringFramed(false);
+
 }
 
 static void drawChild(bool clear)
@@ -189,6 +240,9 @@ static void drawChild(bool clear)
         break;
     case SETUP_DATE:
         drawDate(clear);
+        break;
+    case SETUP_ALARM:
+        drawAlarm(clear);
         break;
     }
 }

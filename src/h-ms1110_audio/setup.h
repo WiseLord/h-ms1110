@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef int8_t SetupType;
+typedef int16_t SetupType;
 enum {
     SETUP_NULL = 0,
 
@@ -19,14 +19,6 @@ enum {
     SETUP_REMOTE,
 
     SETUP_HEAD_LAST = SETUP_REMOTE,
-
-    SETUP_TIME_HOUR,
-    SETUP_TIME_MINUTE,
-    SETUP_TIME_SECOND,
-
-    SETUP_DATE_DAY,
-    SETUP_DATE_MONTH,
-    SETUP_DATE_YEAR,
 
     SETUP_END
 };

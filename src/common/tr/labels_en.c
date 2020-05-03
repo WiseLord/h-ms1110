@@ -55,4 +55,8 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_SETUP_DATE]      = "Date",
     [LABEL_SETUP_ALARM]     = "Alarm",
     [LABEL_SETUP_REMOTE]    = "Remote",
+
+    [LABEL_ALARM_DAY_OFF]       = "disabled",
+    [LABEL_ALARM_DAY_WEEKDAYS]  = "weekdays",
+    [LABEL_ALARM_DAY_ALL_DAYS]  = "all days",
 };
