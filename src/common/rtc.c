@@ -280,7 +280,7 @@ void RTC_IRQHandler(void)
         // Callback
         rtcTime = LL_RTC_TIME_Get(RTC) + 1;
         if (rtcCb) {
-            rtcCb(rtcTime);
+            rtcCb();
         }
     }
 }

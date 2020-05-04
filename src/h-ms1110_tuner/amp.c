@@ -228,12 +228,20 @@ static void ampActionSyncMaster(void)
 
     syncSlaveReceive(&sync);
 
+    Spectrum *sp = spGet();
+
     switch (sync.type) {
     case SYNC_ACTION:
         action = sync.action;
         break;
     case SYNC_TIME:
         rtcSetRaw(sync.time);
+        break;
+    case SYNC_SPECTRUM:
+        *sp = sync.spectrum;
+        settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
+        amp.clearScreen = true;
         break;
     }
 }
@@ -330,9 +338,11 @@ void ampScreenShow(void)
 
     Spectrum *sp = spGet();
 
+    SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
+
     switch (amp.screen) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, sp->mode, sp->peaks);
+        canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     case SCREEN_TIME:
         canvasShowDate(clear, true);

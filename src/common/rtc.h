@@ -55,7 +55,7 @@ typedef struct {
     AlarmDay days;
 } Alarm;
 
-typedef void (*RtcCb)(uint32_t time);
+typedef void (*RtcCb)(void);
 
 void rtcInit(void);
 void rtcSetCb(RtcCb cb);

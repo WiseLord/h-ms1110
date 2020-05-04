@@ -67,6 +67,20 @@ void syncMasterSendAction(uint8_t slaveAddr, Action *action)
     i2cTransmit(I2C_SYNC);
 }
 
+void syncMasterSendSpectrum(uint8_t slaveAddr, Spectrum *spectrum)
+{
+    AmpSync sync;
+
+    sync.type = SYNC_SPECTRUM;
+    sync.spectrum = *spectrum;
+
+    i2cBegin(I2C_SYNC, slaveAddr);
+    for (size_t i = 0; i < sizeof(sync); i++) {
+        i2cSend(I2C_SYNC, sync.data[i]);
+    }
+    i2cTransmit(I2C_SYNC);
+}
+
 void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync)
 {
     i2cBegin(I2C_SYNC, slaveAddr);

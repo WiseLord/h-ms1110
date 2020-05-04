@@ -49,7 +49,6 @@ static void ampActionHandle(void);
 static void ampHandleSwd(void);
 static void ampScreenShow(void);
 
-static uint32_t rtcSyncTime;
 static bool rtcSyncRequired;
 
 static Amp amp = {
@@ -84,9 +83,8 @@ void screenSetMode(ScreenType value)
 }
 
 
-static void rtcCb(uint32_t time)
+static void rtcCb(void)
 {
-    rtcSyncTime = time;
     rtcSyncRequired = true;
 }
 
@@ -493,19 +491,21 @@ static void spModeChange(int16_t value)
 {
     Spectrum *sp = spGet();
 
-    if (value > 1) {
-
-    } else if (value < 1) {
-
+    if (value > 0) {
+        if (++sp->mode > SP_MODE_STEREO_END) {
+            sp->mode = SP_MODE_STEREO;
+            sp->peaks = !sp->peaks;
+        }
+    } else if (value < 0) {
+        if (--sp->mode < SP_MODE_STEREO) {
+            sp->mode = SP_MODE_STEREO_END;
+            sp->peaks = !sp->peaks;
+        }
     }
 
-    if (++sp->mode >= (sp->peaks ? SP_MODE_END : SP_MODE_WATERFALL)) {
-        sp->mode = SP_MODE_STEREO;
-        sp->peaks = !sp->peaks;
-        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
-    }
     amp.clearScreen = true;
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+    settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 }
 
 static void actionRemapBtnShort(int16_t button)
@@ -1077,19 +1077,30 @@ static void ampScreenShow(void)
         canvasClear();
     }
 
-    Spectrum *sp = spGet();
     TuneView tune;
 
     Label label;
 
     if (rtcSyncRequired) {
-        syncMasterSendTime(AMP_TUNER_ADDR, rtcSyncTime);
+        syncMasterSendTime(AMP_TUNER_ADDR, rtcGetRaw());
         rtcSyncRequired = false;
     }
 
+    Spectrum *sp = spGet();
+    static Spectrum _sp;
+
+    if ((sp->mode != _sp.mode) ||
+        (sp->peaks != _sp.peaks)) {
+        _sp.mode = sp->mode;
+        _sp.peaks = sp->peaks;
+        syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
+    }
+
+    SpMode spMode = sp->mode == SP_MODE_ANTIMIRROR ? SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
+
     switch (amp.screen) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, sp->mode, sp->peaks);
+        canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     case SCREEN_TIME:
         canvasShowTime(clear, true);

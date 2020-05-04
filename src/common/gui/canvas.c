@@ -51,6 +51,19 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     GlcdRect rect = glcdGet()->rect;
 
     switch (mode) {
+    case SP_MODE_LEFT:
+        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
+        break;
+    case SP_MODE_RIGHT:
+        spViewDraw(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
+        break;
+    case SP_MODE_LEFT_MIRROR:
+        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
+        break;
+    case SP_MODE_RIGHT_MIRROR:
+        spViewDraw(clear, true, true, peaks, SP_CHAN_RIGHT, &rect);
+        break;
+
     case SP_MODE_STEREO:
         rect.h = rect.h / 2;
         spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
@@ -71,12 +84,6 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
         break;
     case SP_MODE_MIXED:
         spViewDraw(clear, true, false, peaks, SP_CHAN_BOTH, &rect);
-        break;
-    case SP_MODE_LEFT:
-        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
-        break;
-    case SP_MODE_RIGHT:
-        spViewDraw(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
         break;
     default:
         break;
