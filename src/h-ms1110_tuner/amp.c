@@ -181,6 +181,8 @@ void ampInit(void)
 {
     dbgInit();
 
+    utilInitSysCounter();
+
     settingsInit();
     pinsInit();
     rtcInit();
