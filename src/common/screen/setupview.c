@@ -213,7 +213,6 @@ static void drawAlarm(bool clear)
     if (clear) {
         glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
     }
-    char code[7];
 
     glcdSetXY((rect.w - len) / 2, 32);
 

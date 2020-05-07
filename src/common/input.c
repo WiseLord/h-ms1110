@@ -37,20 +37,13 @@ static uint16_t readEncoder(void)
     return enc;
 }
 
-static void inputHandleButtons(void)
+static void inputHandleButtons(uint16_t btnNow)
 {
     // Antibounce counter
     static int16_t btnCnt = 0;
 
     // Previous state
     static uint16_t btnPrev = BTN_NO;
-
-    uint16_t btnNow = BTN_NO;
-
-    btnNow |= inputMatrixGet();
-#ifdef _INPUT_ANALOG
-    btnNow |= inputAnalogGetBtn();
-#endif // _INPUT_ANALOG
 
     // On button event place it to command buffer
     if (btnNow) {
@@ -70,12 +63,10 @@ static void inputHandleButtons(void)
     btnPrev = btnNow;
 }
 
-static void inputHandleEncoder(void)
+static void inputHandleEncoder(uint16_t encNow)
 {
     // Previous state
     static uint16_t encPrev = ENC_NO;
-
-    uint16_t encNow = readEncoder();
 
     // If encoder event has happened, inc/dec encoder counter
     if (input.encRes) {
@@ -121,8 +112,14 @@ void TIM_INPUT_HANDLER(void)
         inputAnalogHandle();
 #endif // _INPUT_ANALOG
 
-        inputHandleButtons();
-        inputHandleEncoder();
+        uint16_t encNow = readEncoder();
+        uint16_t btnNow = inputMatrixGet();
+#ifdef _INPUT_ANALOG
+        btnNow |= inputAnalogGetBtn();
+#endif // _INPUT_ANALOG
+
+        inputHandleButtons(btnNow);
+        inputHandleEncoder(encNow);
     }
 }
 

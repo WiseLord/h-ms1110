@@ -42,7 +42,7 @@ extern "C" {
 #define BTN_IN_NEXT             0x4000
 
 // Handling long press actions
-#define SHORT_PRESS             20
+#define SHORT_PRESS             60
 #define LONG_PRESS              600
 #define AUTOREPEAT              150
 
