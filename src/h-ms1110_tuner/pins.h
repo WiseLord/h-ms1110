@@ -10,13 +10,6 @@ extern "C" {
 
 #include "hwlibs.h"
 
-#define CONCAT(x,y)             x ## y
-
-#define SET(p)                  (LL_GPIO_SetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
-#define CLR(p)                  (LL_GPIO_ResetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
-
-#define READ(p)                 (LL_GPIO_ReadInputPort(CONCAT(p, _Port)) & (CONCAT(p, _Pin) >> GPIO_PIN_MASK_POS) & 0x0000FFFFU)
-
 // TFT parallel (8-bit) wiring
 #define DISP_CS_Port            GPIOB
 #define DISP_CS_Pin             LL_GPIO_PIN_12

@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #if defined(STM32F103xB)
-
 #include <stm32f1xx_ll_adc.h>
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_cortex.h>
@@ -22,8 +21,14 @@ extern "C" {
 #include <stm32f1xx_ll_tim.h>
 #include <stm32f1xx_ll_usart.h>
 #include <stm32f1xx_ll_utils.h>
-
 #endif
+
+#define CONCAT(x,y)             x ## y
+
+#define SET(p)                  (LL_GPIO_SetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
+#define CLR(p)                  (LL_GPIO_ResetOutputPin(CONCAT(p, _Port), CONCAT(p, _Pin)))
+#define READ(p)                 (LL_GPIO_ReadInputPort(CONCAT(p, _Port)) & (CONCAT(p, _Pin) >> GPIO_PIN_MASK_POS) & 0x0000FFFFU)
+
 
 #define EXTI_RC_HANDLER         EXTI9_5_IRQHandler
 

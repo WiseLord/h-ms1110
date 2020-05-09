@@ -97,6 +97,24 @@ static void actionDispExpired(ScreenType scrMode)
     }
 }
 
+static void inputDisable(void)
+{
+    // TODO: only if it was tuner
+    tunerSetMute(true);
+    tunerSetPower(false);
+}
+
+static void inputEnable(void)
+{
+    Tuner *tuner = tunerGet();
+
+    // TODO: only if it was tuner
+    tunerSetPower(true);
+    tunerSetFreq(tuner->status.freq);
+    tunerSetVolume(tuner->par.volume);
+    tunerSetMute(false);
+}
+
 static void ampReadSettings(void)
 {
     tunerReadSettings();
@@ -119,6 +137,8 @@ void ampEnterStby(void)
 
     settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
 
+    inputDisable();
+
     amp.status = AMP_STATUS_STBY;
 }
 
@@ -130,11 +150,13 @@ void ampInitHw(void)
     case AMP_STATUS_POWERED:
         i2cInit(I2C_AMP, 100000);
 
+        tunerInit();
+
         amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 300);
         break;
     case AMP_STATUS_HW_READY:
-
+        inputEnable();
         amp.status = AMP_STATUS_ACTIVE;
 
         break;

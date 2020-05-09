@@ -16,7 +16,7 @@ static int16_t rtcCorr = 0;
 static const EE_Cell eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
 
-    [PARAM_TUNER_IC]        =   {0x30,  TUNER_IC_TEST},
+    [PARAM_TUNER_IC]        =   {0x30,  TUNER_IC_LC7213X},
     [PARAM_TUNER_BAND]      =   {0x31,  TUNER_BAND_FM_US_EUROPE},
     [PARAM_TUNER_STEP]      =   {0x32,  TUNER_STEP_100K},
     [PARAM_TUNER_DEEMPH]    =   {0x33,  TUNER_DEEMPH_50u},

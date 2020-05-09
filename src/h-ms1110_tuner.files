@@ -105,6 +105,9 @@ common/tr/labels.c
 common/tr/labels.h
 common/tr/labels_en.c
 common/tr/labels_ru.c
+common/tuner/lc7213x.c
+common/tuner/lc7213x.h
+common/tuner/lc7213x_regs.h
 common/tuner/rda580x.c
 common/tuner/rda580x.h
 common/tuner/rda580x_regs.h
