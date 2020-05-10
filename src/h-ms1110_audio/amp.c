@@ -701,7 +701,7 @@ static void actionRemapEncoder(int16_t encCnt)
 
 static void actionRemapTunerEncoder(int16_t encCnt)
 {
-    actionRemapEncoder(encCnt);
+    (void)encCnt;
 }
 
 static void actionRemapCommon(void)

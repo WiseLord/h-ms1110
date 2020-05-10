@@ -24,6 +24,10 @@ static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
+static void actionRemapBtnShort(int16_t button);
+static void actionRemapBtnLong(int16_t button);
+static void actionRemapEncoder(int16_t encCnt);
+
 static void ampActionSyncMaster(void);
 static void ampActionGet(void);
 static void ampActionRemap(void);
@@ -173,6 +177,12 @@ static void actionGetButtons(void)
     CmdBtn cmdBtn = inputGetBtnCmd();
 
     if (cmdBtn.btn) {
+        if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+        } else {
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+        }
+
         Action action = {
             .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_TUNER_BTN_LONG : ACTION_TUNER_BTN_SHORT,
             .value = cmdBtn.btn,
@@ -186,6 +196,8 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
+        actionSet(ACTION_ENCODER, encVal);
+
         Action action = {
             .type = ACTION_TUNER_ENCODER,
             .value = encVal,
@@ -301,8 +313,42 @@ void ampActionGet(void)
     }
 }
 
+static void actionRemapBtnShort(int16_t button)
+{
+    switch (button) {
+
+    }
+}
+
+static void actionRemapBtnLong(int16_t button)
+{
+    switch (button) {
+
+    }
+}
+
+static void actionRemapEncoder(int16_t encCnt)
+{
+    if (amp.inType == IN_TUNER) {
+        tunerStep(encCnt);
+    } else {
+        actionSet(ACTION_NONE, 0);
+    }
+}
+
 static void ampActionRemap(void)
 {
+    switch (action.type) {
+    case ACTION_BTN_SHORT:
+        actionRemapBtnShort(action.value);
+        break;
+    case ACTION_BTN_LONG:
+        actionRemapBtnLong(action.value);
+        break;
+    case ACTION_ENCODER:
+        actionRemapEncoder(action.value);
+        break;
+    }
 }
 
 void ampActionHandle(void)

@@ -75,6 +75,7 @@ enum {
 
     ACTION_REMOTE,
 
+    ACTION_TUNER_SET_FREQ,
 
 
     ACTION_OPEN_MENU,

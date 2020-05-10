@@ -19,7 +19,7 @@ void radioViewDraw(bool clear, RadioView *radio)
 
     char buf[16];
 
-    snprintf(buf, sizeof(buf), "FM %2u.%02u", freq / 100, freq % 100);
+    snprintf(buf, sizeof(buf), "FM %3u.%02u", freq / 100, freq % 100);
     glcdSetXY(0, 0);
     glcdWriteString(buf);
 }
