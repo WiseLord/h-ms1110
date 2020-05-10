@@ -80,6 +80,19 @@ void syncMasterSendSpectrum(uint8_t slaveAddr, Spectrum *spectrum)
     }
     i2cTransmit(I2C_SYNC);
 }
+void syncMasterSendInType(uint8_t slaveAddr, uint8_t inType)
+{
+    AmpSync sync;
+
+    sync.type = SYNC_IN_TYPE;
+    sync.inType = inType;
+
+    i2cBegin(I2C_SYNC, slaveAddr);
+    for (size_t i = 0; i < sizeof(sync); i++) {
+        i2cSend(I2C_SYNC, sync.data[i]);
+    }
+    i2cTransmit(I2C_SYNC);
+}
 
 void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync)
 {

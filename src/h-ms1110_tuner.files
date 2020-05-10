@@ -82,6 +82,8 @@ common/input/matrix.c
 common/input/matrix.h
 common/rtc.c
 common/rtc.h
+common/screen/radioview.c
+common/screen/radioview.h
 common/screen/spectrumview.c
 common/screen/spectrumview.h
 common/screen/timeview.c

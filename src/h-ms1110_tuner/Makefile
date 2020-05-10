@@ -67,6 +67,7 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
+C_SOURCES += $(COMMON)/screen/radioview.c
 C_SOURCES += $(COMMON)/screen/spectrumview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
 

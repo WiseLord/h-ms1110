@@ -36,8 +36,6 @@ static Amp amp = {
     .status = AMP_STATUS_STBY,
     .screen = SCREEN_STANDBY,
     .defScreen = SCREEN_SPECTRUM,
-    .inputStatus = 0x00,
-    .volume = 0,
 };
 
 static Action action = {
@@ -81,18 +79,24 @@ static bool screenCheckClear(void)
     return clear;
 }
 
-static void actionDispExpired(ScreenType scrMode)
+static void actionDispExpired(void)
 {
-    ScreenType scrDef = SCREEN_SPECTRUM;
+    amp.defScreen = SCREEN_SPECTRUM;
+
+    switch (amp.inType) {
+    case IN_TUNER:
+        amp.defScreen = SCREEN_TUNER;
+        break;
+    }
 
     rtcSetMode(RTC_NOEDIT);
 
-    switch (scrMode) {
+    switch (amp.screen) {
     case SCREEN_STANDBY:
         actionSetScreen(SCREEN_STANDBY, 0);
         break;
     default:
-        actionSetScreen(scrDef, 0);
+        actionSetScreen(amp.defScreen, 0);
         break;
     }
 }
@@ -267,6 +271,10 @@ static void ampActionSyncMaster(void)
         settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
         amp.clearScreen = true;
         break;
+    case SYNC_IN_TYPE:
+        amp.inType = sync.inType;
+        actionDispExpired();
+        break;
     }
 }
 
@@ -299,8 +307,6 @@ static void ampActionRemap(void)
 
 void ampActionHandle(void)
 {
-    ScreenType scrMode = amp.screen;
-
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
@@ -311,12 +317,12 @@ void ampActionHandle(void)
             actionSetScreen(SCREEN_TIME, 1000);
         } else {
             ampEnterStby();
-            actionDispExpired(SCREEN_STANDBY);
+            actionSetScreen(SCREEN_STANDBY, 0);
         }
         break;
         break;
     case ACTION_DISP_EXPIRED:
-        actionDispExpired(scrMode);
+        actionDispExpired();
         break;
 
     default:
@@ -333,6 +339,11 @@ void ampActionHandle(void)
 
     action.type = ACTION_NONE;
     action.timeout = SW_TIM_OFF;
+}
+
+static void prepareRadioView(RadioView *radio)
+{
+    radio->freq = tunerGet()->status.freq;
 }
 
 static void ampHandleSwd(void)
@@ -360,8 +371,9 @@ void ampScreenShow(void)
         canvasClear();
     }
 
-    Spectrum *sp = spGet();
+    RadioView radio;
 
+    Spectrum *sp = spGet();
     SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
 
     switch (amp.screen) {
@@ -373,6 +385,10 @@ void ampScreenShow(void)
         break;
     case SCREEN_STANDBY:
         canvasShowDate(clear, false);
+        break;
+    case SCREEN_TUNER:
+        prepareRadioView(&radio);
+        canvasShowRadio(clear, &radio);
         break;
     default:
         break;

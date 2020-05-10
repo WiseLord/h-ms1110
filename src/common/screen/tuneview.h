@@ -17,7 +17,7 @@ typedef struct {
     Label label;
 } TuneView;
 
-void tuneViewDraw(bool clear, TuneView *pview);
+void tuneViewDraw(bool clear, TuneView *tune);
 
 #ifdef __cplusplus
 }

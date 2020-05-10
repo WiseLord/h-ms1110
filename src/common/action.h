@@ -99,7 +99,29 @@ enum {
     SCREEN_TUNE,
     SCREEN_SETUP,
 
+    SCREEN_TUNER,
+
     SCREEN_END
+};
+
+typedef uint8_t InputType;
+enum {
+    IN_TUNER = 0,
+    IN_PC,
+    IN_TV,
+    IN_BLUETOOTH,
+    IN_DVD,
+    IN_USB,
+    IN_MICROPHONE,
+    IN_GUITAR,
+    IN_TURNTABLES,
+    IN_SDCARD,
+    IN_PROJECTOR,
+    IN_SATELLITE,
+    IN_MIXER,
+    IN_KARADIO,
+
+    IN_END
 };
 
 typedef struct {

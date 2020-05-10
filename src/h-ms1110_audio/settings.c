@@ -26,14 +26,14 @@ static const EE_Cell eeMap[] = {
     [PARAM_AUDIO_EFFECT3D]  =   {0x05,  false},
     [PARAM_AUDIO_BYPASS]    =   {0x06,  false},
 
-    [PARAM_AUDIO_IN0]       =   {0x10,  0},
-    [PARAM_AUDIO_IN1]       =   {0x11,  1},
-    [PARAM_AUDIO_IN2]       =   {0x12,  2},
-    [PARAM_AUDIO_IN3]       =   {0x13,  3},
-    [PARAM_AUDIO_IN4]       =   {0x14,  4},
-    [PARAM_AUDIO_IN5]       =   {0x15,  5},
-    [PARAM_AUDIO_IN6]       =   {0x16,  6},
-    [PARAM_AUDIO_IN7]       =   {0x17,  7},
+    [PARAM_AUDIO_IN0]       =   {0x10,  IN_TUNER},
+    [PARAM_AUDIO_IN1]       =   {0x11,  IN_END},
+    [PARAM_AUDIO_IN2]       =   {0x12,  IN_END},
+    [PARAM_AUDIO_IN3]       =   {0x13,  IN_END},
+    [PARAM_AUDIO_IN4]       =   {0x14,  IN_PC},
+    [PARAM_AUDIO_IN5]       =   {0x15,  IN_END},
+    [PARAM_AUDIO_IN6]       =   {0x16,  IN_END},
+    [PARAM_AUDIO_IN7]       =   {0x17,  IN_END},
 
     [PARAM_AUDIO_GAIN0]     =   {0x18,  0},
     [PARAM_AUDIO_GAIN1]     =   {0x19,  0},
@@ -88,6 +88,7 @@ int16_t settingsGet(Param param)
     AudioProc *aProc = audioGet();
     Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
+    Amp *amp = ampGet();
 
     switch (param) {
 
@@ -118,7 +119,7 @@ int16_t settingsGet(Param param)
     case PARAM_AUDIO_IN5:
     case PARAM_AUDIO_IN6:
     case PARAM_AUDIO_IN7:
-        ret = aProc->par.inType[param - PARAM_AUDIO_IN0];
+        ret = amp->inType[param - PARAM_AUDIO_IN0];
         break;
 
     case PARAM_AUDIO_GAIN0:
@@ -197,6 +198,7 @@ void settingsSet(Param param, int16_t value)
     AudioProc *aProc = audioGet();
     Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
+    Amp *amp = ampGet();
 
     switch (param) {
 
@@ -227,7 +229,7 @@ void settingsSet(Param param, int16_t value)
     case PARAM_AUDIO_IN5:
     case PARAM_AUDIO_IN6:
     case PARAM_AUDIO_IN7:
-        aProc->par.inType[param - PARAM_AUDIO_IN0] = (InputType)value;
+        amp->inType[param - PARAM_AUDIO_IN0] = (InputType)value;
         break;
 
     case PARAM_AUDIO_GAIN0:

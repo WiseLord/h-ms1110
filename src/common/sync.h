@@ -20,6 +20,7 @@ enum {
     SYNC_ACTION,
     SYNC_TIME,
     SYNC_SPECTRUM,
+    SYNC_IN_TYPE,
 
     SYNC_END
 };
@@ -29,9 +30,10 @@ typedef union {
     struct {
         SyncType type;
         union {
-            Action action;
             uint32_t time;
+            Action action;
             Spectrum spectrum;
+            uint8_t inType;
         };
     };
 } AmpSync;
@@ -39,6 +41,7 @@ typedef union {
 void syncMasterSendTime(uint8_t slaveAddr, uint32_t time);
 void syncMasterSendAction(uint8_t slaveAddr, Action *action);
 void syncMasterSendSpectrum(uint8_t slaveAddr, Spectrum *spectrum);
+void syncMasterSendInType(uint8_t slaveAddr, uint8_t inType);
 void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync);
 
 void syncSlaveInit(uint8_t addr);

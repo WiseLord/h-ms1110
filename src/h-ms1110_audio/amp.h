@@ -9,6 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "action.h"
+#include "audio/audiodefs.h"
 #include "sync.h"
 
 #define FLAG_EXIT           0
@@ -31,6 +32,8 @@ typedef struct {
     ScreenType defScreen;
     ScreenType prevScreen;
     bool clearScreen;
+
+    InputType inType[8];
     uint8_t inputStatus;
     int8_t volume;
 } Amp;

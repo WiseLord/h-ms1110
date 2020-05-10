@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "amp.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
 #include "screen/setupview.h"
@@ -108,6 +109,8 @@ void canvasShowDate(bool clear, bool active)
 
 void canvasShowInput(bool clear, Label label)
 {
+    (void)clear;
+
     const Palette *pal = canvas.pal;
     GlcdRect rect = canvas.glcd->rect;
 
@@ -127,6 +130,11 @@ void canvasShowTune(bool clear, TuneView *tune)
 void canvasShowSetup(bool clear)
 {
     setupViewDraw(clear);
+}
+
+void canvasShowRadio(bool clear, RadioView *radio)
+{
+    radioViewDraw(clear, radio);
 }
 
 void canvasDebugFPS(void)

@@ -33,8 +33,8 @@ typedef struct {
     ScreenType defScreen;
     ScreenType prevScreen;
     bool clearScreen;
-    uint8_t inputStatus;
-    int8_t volume;
+
+    InputType inType;
 } Amp;
 
 void ampInit(void);

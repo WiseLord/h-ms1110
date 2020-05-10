@@ -147,6 +147,7 @@ static void inputSetPower(bool value)
 
     if (value) {
         amp.inputStatus = (uint8_t)(1 << input);
+        syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
     } else {
         amp.inputStatus = 0x00;
     }
@@ -366,7 +367,7 @@ static bool isRemoteCmdRepeatable(RcCmd cmd)
 {
     ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
-    InputType inType = aProc->par.inType[aProc->par.input];
+    InputType inType = amp.inType[aProc->par.input];
 
     switch (cmd) {
     case RC_CMD_VOL_UP:
@@ -1047,7 +1048,7 @@ static void prepareAudioInput (Label *label)
 {
     AudioProc *aProc = audioGet();
 
-    InputType inType = aProc->par.inType[aProc->par.input];
+    InputType inType = amp.inType[aProc->par.input];
 
     *label = LABEL_IN_TUNER + (inType - IN_TUNER);
 }
