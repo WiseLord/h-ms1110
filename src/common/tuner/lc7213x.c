@@ -80,6 +80,8 @@ void lc7213xInit(TunerParam *param, TunerStatus *status)
     tPar->fStep = 10;
 
     SPIswInitPins();
+
+    lc7213xSetFreq(tStatus->freq);
 }
 
 void lc7213xSetFreq(uint16_t freq)

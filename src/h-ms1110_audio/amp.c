@@ -60,7 +60,7 @@ static Amp amp = {
 };
 
 static Action action = {
-    .type = ACTION_STANDBY,
+    .type = ACTION_NONE,
     .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
 };
