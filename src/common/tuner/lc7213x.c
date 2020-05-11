@@ -57,13 +57,39 @@ void SPIswSendByte(uint8_t data)
     }
 }
 
+static uint8_t in1Buf[3] = {0x00, 0x00, 0x00};
+static uint8_t in2Buf[3] = {0x00, 0x00, 0x00};
+static uint8_t outBuf[3] = {0x00, 0x00, 0x00};
+
 static TunerParam *tPar;
 static TunerStatus *tStatus;
 
 static const TunerApi lc7213xApi = {
     .init = lc7213xInit,
     .setFreq = lc7213xSetFreq,
+
+    .setMute = lc7213xSetMute,
 };
+
+static void updateIn1(void)
+{
+    SPIswSendByte(LC72131_IO_IN1);
+    SET(SPISW_CE);
+    for (uint8_t i = 0; i < sizeof(in1Buf); i++) {
+        SPIswSendByte(in1Buf[i]);
+    }
+    CLR(SPISW_CE);
+}
+
+static void updateIn2(void)
+{
+    SPIswSendByte(LC72131_IO_IN2);
+    SET(SPISW_CE);
+    for (uint8_t i = 0; i < sizeof(in2Buf); i++) {
+        SPIswSendByte(in2Buf[i]);
+    }
+    CLR(SPISW_CE);
+}
 
 const TunerApi *lc7213xGetApi(void)
 {
@@ -81,7 +107,16 @@ void lc7213xInit(TunerParam *param, TunerStatus *status)
 
     SPIswInitPins();
 
-    lc7213xSetFreq(tStatus->freq);
+    in1Buf[2] &= ~LC72131_IN1_XS;   // Use 4.5MHz crystal
+    in1Buf[2] |= (LC72131_IN1_R1 | LC72131_IN1_R0); // Use 25kHz base
+
+    in2Buf[0] &= ~LC72131_IN2_IOC1; // Use IO1 as input
+    in2Buf[0] &= ~LC72131_IN2_IOC2; // Use IO2 as input
+    in2Buf[0] &= ~LC72131_IN2_BO1;  // Set FM mode
+    in2Buf[0] &= ~LC72131_IN2_BO2;  // Set mute
+    in2Buf[1] &= ~LC72131_IN2_BO5;  // Set stereo mode
+
+    updateIn2();
 }
 
 void lc7213xSetFreq(uint16_t freq)
@@ -90,19 +125,23 @@ void lc7213xSetFreq(uint16_t freq)
 
     div = (freq + LC72131_IF) / LC72131_RF;
 
-    SPIswSendByte(LC72131_IO_IN1);
-    SET(SPISW_CE);
-    SPIswSendByte(div & 0x00FF);
-    SPIswSendByte((div & 0xFF00) >> 8);
-    SPIswSendByte(0 | LC72131_IN1_DVS | LC72131_IN1_CTE | LC72131_IN1_R1 | LC72131_IN1_R0);
-    CLR(SPISW_CE);
+    in1Buf[0] = div & 0x00FF;
+    in1Buf[1] = (div & 0xFF00) >> 8;
 
-    SPIswSendByte(LC72131_IO_IN2);
-    SET(SPISW_CE);
-    SPIswSendByte(0 | LC72131_IN2_BO2 | LC72131_IN2_BO4);
-    SPIswSendByte(0 | LC72131_IN2_BO5);
-    SPIswSendByte(0);
-    CLR(SPISW_CE);
+    in1Buf[2] |= LC72131_IN1_DVS;   // Use FM input
+    in1Buf[2] |= LC72131_IN1_CTE;   // Counter start
+
+    updateIn1();
 
     tunerGet()->status.freq = freq;
+}
+
+void lc7213xSetMute(bool value)
+{
+    if (value) {
+        in2Buf[0] &= ~LC72131_IN2_BO2;
+    } else {
+        in2Buf[0] |= LC72131_IN2_BO2;
+    }
+    updateIn2();
 }
