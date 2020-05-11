@@ -28,12 +28,16 @@ static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
 static void actionRemapEncoder(int16_t encCnt);
 
+static void ampHandleSwd(void);
+
 static void ampActionSyncMaster(void);
+
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
-static void ampHandleSwd(void);
+static void ampPollInput(void);
+
 static void ampScreenShow(void);
 
 static Amp amp = {
@@ -142,6 +146,7 @@ void ampEnterStby(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
+    swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
     settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
 
@@ -166,6 +171,8 @@ void ampInitHw(void)
     case AMP_STATUS_HW_READY:
         inputEnable();
         amp.status = AMP_STATUS_ACTIVE;
+
+        swTimSet(SW_TIM_INPUT_POLL, 200);
 
         break;
     }
@@ -252,6 +259,8 @@ void ampRun(void)
         ampActionGet();
         ampActionRemap();
         ampActionHandle();
+
+        ampPollInput();
 
         ampScreenShow();
     }
@@ -351,7 +360,7 @@ static void ampActionRemap(void)
     }
 }
 
-void ampActionHandle(void)
+static void ampActionHandle(void)
 {
     switch (action.type) {
     case ACTION_INIT_HW:
@@ -387,9 +396,24 @@ void ampActionHandle(void)
     action.timeout = SW_TIM_OFF;
 }
 
+static void ampPollInput(void)
+{
+    if (amp.screen != SCREEN_STANDBY) {
+        if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
+            if (amp.inType == IN_TUNER) {
+                tunerUpdateStatus();
+            }
+            swTimSet(SW_TIM_INPUT_POLL, 200);
+        }
+    }
+}
+
 static void prepareRadioView(RadioView *radio)
 {
-    radio->freq = tunerGet()->status.freq;
+    Tuner *tuner = tunerGet();
+
+    radio->freq = tuner->status.freq;
+    radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
 }
 
 static void ampHandleSwd(void)

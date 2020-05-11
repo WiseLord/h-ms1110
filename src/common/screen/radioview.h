@@ -12,6 +12,7 @@ extern "C" {
 
 typedef struct {
     uint16_t freq;
+    bool stereo;
 } RadioView;
 
 void radioViewDraw(bool clear, RadioView *radio);

@@ -17,9 +17,16 @@ void radioViewDraw(bool clear, RadioView *radio)
 
     uint16_t freq = radio->freq;
 
-    char buf[16];
+    char buf[20];
 
     snprintf(buf, sizeof(buf), "FM %3u.%02u", freq / 100, freq % 100);
     glcdSetXY(0, 0);
+    glcdWriteString(buf);
+
+    font = &fontterminus20;
+    glcdSetFont(font);
+
+    snprintf(buf, sizeof(buf), "Stereo: %d", radio->stereo);
+    glcdSetXY(0, 44);
     glcdWriteString(buf);
 }

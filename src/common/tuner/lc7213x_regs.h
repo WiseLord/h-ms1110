@@ -5,54 +5,76 @@
 extern "C" {
 #endif
 
-// IF = 10.7MHz and step = 50kHz
-#define LC72131_IF          1070
-#define LC72131_RF          5 // 25kHz * 2 (for FMIN)
-
-// I/O mode address
-#define LC72131_IO_IN1      0x28
-#define LC72131_IO_IN2      0x29
-#define LC72131_IO_OUT      0x2A
-
 // IN1 mode control word bytes
-#define LC72131_IN1_SNS     (1<<0)  // 1 - 2..40MHz, 0 - 0.5..10MHz (when AM input DVS)
-#define LC72131_IN1_DVS     (1<<1)  // 1 - FM input, 0 - AM input
-#define LC72131_IN1_CTE     (1<<2)  // 1 - Counter start, 0 - Counter reset
-#define LC72131_IN1_XS      (1<<3)  // 1 - 7.2MHz crystal, 0 - 4.5MHz crystal
-#define LC72131_IN1_R0      (1<<4)  // Reference freq selection
-#define LC72131_IN1_R1      (1<<5)  // Reference freq selection
-#define LC72131_IN1_R2      (1<<6)  // Reference freq selection
-#define LC72131_IN1_R3      (1<<7)  // Reference freq selection
+#define LC7213X_IN1_SNS             0x01    // 0: AM 0.5..10 MHz, 1: AM 2..40 MHz
+#define LC7213X_IN1_DVS             0x02    // 0: Select AM input, 1: Select FM input
+#define LC7213X_IN1_CTE             0x04    // 0: IF Counter reset, 1: IF Counter start
+#define LC7213X_IN1_XS              0x08    // 0: 4.5 MHz crystal, 1: 7.2 MHz crystal
+#define LC7213X_IN1_FREF_MASK       0xF0    // Reference frequency selection mask
+#define LC7213X_IN1_FREF_100K       0x00    // Reference freq 100kHz
+#define LC7213X_IN1_FREF_50K        0x10    // Reference freq 50kHz
+#define LC7213X_IN1_FREF_25K        0x20    // Reference freq 25kHz
+#define LC7213X_IN1_FREF_25K_2      0x30    // Reference freq 25kHz
+#define LC7213X_IN1_FREF_12K5       0x40    // Reference freq 12.5kHz
+#define LC7213X_IN1_FREF_6K25       0x50    // Reference freq 6.25kHz
+#define LC7213X_IN1_FREF_3K125      0x60    // Reference freq 3.125kHz
+#define LC7213X_IN1_FREF_3K125_2    0x70    // Reference freq 3.125kHz
+#define LC7213X_IN1_FREF_10K        0x80    // Reference freq 10kHz
+#define LC7213X_IN1_FREF_9K         0x90    // Reference freq 9kHz
+#define LC7213X_IN1_FREF_5K         0xA0    // Reference freq 5kHz
+#define LC7213X_IN1_FREF_1K         0xB0    // Reference freq 1kHz
+#define LC7213X_IN1_FREF_3K         0xC0    // Reference freq 3kHz
+#define LC7213X_IN1_FREF_15K        0xD0    // Reference freq 15kHz
+#define LC7213X_IN1_NO_PLL_NO_OSC   0xE0    // PLL inhibit + Xtal OSC stopped
+#define LC7213X_IN1_NO_PLL          0xF0    // PLL inhibit
 
-// IN2 mode control word1 bytes
-#define LC72131_IN2_IOC1    (1<<0)  // 0 - Input mode, 1 - output mode on IO1 (H-MS1110: 0 - input from AGC)
-#define LC72131_IN2_IOC2    (1<<1)  // 0 - Input mode, 1 - output mode on IO2 (H-MS1110: 0 - stereo indicator)
-#define LC72131_IN2_IO1     (1<<2)  // IO1 output value (H-MS1110: not used due to IOC1=0)
-#define LC72131_IN2_IO2     (1<<3)  // IO2 output value (H-MS1110: not used due to IOC2=0)
-#define LC72131_IN2_BO1     (1<<4)  // BO1 output value (H-MS1110: LA1823 FM/AM: 1 - FM mode, 0 - AM mode)
-#define LC72131_IN2_BO2     (1<<5)  // BO2 output value (H-MS1110: LA1823 IF BUFF: 1 - mute, 0 - unmute)
-#define LC72131_IN2_BO3     (1<<6)  // BO3 output value (H-MS1110: not connected)
-#define LC72131_IN2_BO4     (1<<7)  // BO4 output value (H-MS1110: not connected)
+// IN2 mode control byte 0
+#define LC7213X_IN2_IOC1            0x01    // 0 - Input mode, 1 - output mode on IO1
+#define LC7213X_IN2_IOC2            0x02    // 0 - Input mode, 1 - output mode on IO2
+#define LC7213X_IN2_IO1             0x04    // IO1 output value
+#define LC7213X_IN2_IO2             0x08    // IO2 output value
+#define LC7213X_IN2_BO1             0x10    // BO1 output value
+#define LC7213X_IN2_BO2             0x20    // BO2 output value
+#define LC7213X_IN2_BO3             0x40    // BO3 output value
+#define LC7213X_IN2_BO4             0x80    // BO4 output value
 
-// IN2 mode control word2 bytes
-#define LC72131_IN2_BO5     (1<<0)  // BO5 output value (H-MS1110: LA1823 forced mono: 1- stereo, 2 - forced mono)
-#define LC72131_IN2_DOC0    (1<<1)  // DO putput    001 - low when ulock state, 010 - endUC
-#define LC72131_IN2_DOC1    (1<<2)  // DO output    101 - IO1 pin state, 110 - IO2 pin state
-#define LC72131_IN2_DOC2    (1<<3)  // DO output    other - Open
-#define LC72131_IN2_UL0     (1<<4)  // Unlock detection data
-#define LC72131_IN2_UL1     (1<<5)  // Unlock detection data
-#define LC72131_IN2_DZ0     (1<<6)  // Phase comparator dead zone
-#define LC72131_IN2_DZ1     (1<<7)  // Phase comparator dead one
+// IN2 mode control byte 1
+#define LC7213X_IN2_BO5             0x01    // BO5 output value
+#define LC7213X_IN2_DOC_MASK        0x0E    // DO pin output control mask
+#define LC7213X_IN2_DO_OPEN_1       0x00    // Open state
+#define LC7213X_IN2_DO_UNLOCK       0x02    // Low when unlock state detected
+#define LC7213X_IN2_DO_END_UC       0x04    // IF counter measure completion: 0: completed, 1: in progress
+#define LC7213X_IN2_DO_OPEN_2       0x06    // Open state
+#define LC7213X_IN2_DO_OPEN_3       0x08    // Open state
+#define LC7213X_IN2_DO_IO1_STATE    0x0A    // Reflect IO1 pin state
+#define LC7213X_IN2_DO_IO2_STATE    0x0C    // Reflect IO2 pin state
+#define LC7213X_IN2_DO_OPEN_4       0x0E    // Open state
+#define LC7213X_IN2_UL_MASK         0x30    // Unlock detection mask
+#define LC7213X_IN2_UL_STOPPED      0x00    // Unlock detection stopped
+#define LC7213X_IN2_UL_0            0x10    // Unlock detection 0: output directly
+#define LC7213X_IN2_UL_0U55         0x20    // Unlock detection +-0.55us: extended by 1..2 ms
+#define LC7213X_IN2_UL_1U11         0x30    // Unlock detection +-1.11us: extended by 1..2 ms
+#define LC7213X_IN2_DZ_MASK         0x40    // Phase comparator dead zone mask
+#define LC7213X_IN2_DZ_A            0x00    // Dead zone A
+#define LC7213X_IN2_DZ_B            0x40    // Dead zone B
+#define LC7213X_IN2_DZ_C            0x80    // Dead zone C
+#define LC7213X_IN2_DZ_D            0xC0    // Dead zone D
 
-// IN2 mode control word3 bytes
-#define LC72131_IN2_GT0     (1<<0)  // Counter measurement period   00 - 4/3..4ms, 01 - 8/3..4ms
-#define LC72131_IN2_GT1     (1<<1)  // Counter measurement period   10 - 32/7..8ms, 11 - 64/7..8ms
-#define LC72131_IN2_TBC     (1<<2)  // Clock time base - 0 - off, 1 - 8Hz on BO1
-#define LC72131_IN2_DLC     (1<<3)  // Charge pump output - 0 - normal, 1 - forced low
-#define LC72131_IN2_IFS     (1<<4)  // If counter control: 1 - normal mode, 0 - degradation mode
-#define LC72131_IN2_TEST0   (1<<5)  // Should be 0
-#define LC72131_IN2_TEST1   (1<<6)  // Should be 0
-#define LC72131_IN2_TEST2   (1<<7)  // Should be 0
+// IN2 mode control byte 2
+#define LC7213X_IN2_GT_MASK         0x03    // Control IF counter measurement period mask
+#define LC7213X_IN2_GT_4M           0x00    // 4ms
+#define LC7213X_IN2_GT_8M           0x01    // 8ms
+#define LC7213X_IN2_GT_32M          0x02    // 32ms
+#define LC7213X_IN2_GT_64M          0x03    // 64ms
+#define LC7213X_IN2_TBC             0x04    // Clock time base - 0 - off, 1 - 8Hz on BO1
+#define LC7213X_IN2_DLC             0x08    // Charge pump output - 0 - normal, 1 - forced low
+#define LC7213X_IN2_IFS             0x10    // If counter control: 1 - normal mode, 0 - degradation mode
+#define LC7213X_IN2_TEST_MASK       0xE0    // Should be 0
+
+// OUT mode
+#define LC7213X_OUT_I2              0x01    // I2 input status
+#define LC7213X_OUT_I1              0x02    // I1 input status
+#define LC7213X_OUT_UL              0x02    // 0: PLL unlocked, 1: PLL locked
 
 #ifdef __cplusplus
 }
