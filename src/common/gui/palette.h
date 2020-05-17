@@ -15,7 +15,7 @@ typedef struct {
 
     color_t active;
     color_t inactive;
-    color_t selected;
+
     color_t spColB;
     color_t spColG;
     color_t spPeak;

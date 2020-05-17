@@ -9,7 +9,6 @@
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"
-#include "pins.h"
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
@@ -147,10 +146,10 @@ static void inputSetPower(bool value)
 
     if (value) {
         amp.inputStatus = (uint8_t)(1 << input);
-        syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
     } else {
         amp.inputStatus = 0x00;
     }
+    syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
 }
 
 static void ampPinMute(bool value)
@@ -775,7 +774,6 @@ void ampInit(void)
 
     settingsInit();
     ampInitMuteStby();
-    pinsInit();
     rtcInit();
 
     rtcSetCb(rtcCb);

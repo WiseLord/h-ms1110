@@ -8,7 +8,6 @@
 #include "hwlibs.h"
 #include "i2c.h"
 #include "input.h"
-#include "pins.h"
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
@@ -229,7 +228,6 @@ void ampInit(void)
     utilInitSysCounter();
 
     settingsInit();
-    pinsInit();
     rtcInit();
 
     labelsInit();

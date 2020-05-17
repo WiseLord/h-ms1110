@@ -10,6 +10,23 @@ extern "C" {
 #define KEY_MATRIX_ROWS         3
 #define KEY_MATRIX_COLS         4
 
+// Input
+#define MATRIX_S1_Port          GPIOA
+#define MATRIX_S1_Pin           LL_GPIO_PIN_13
+#define MATRIX_S2_Port          GPIOA
+#define MATRIX_S2_Pin           LL_GPIO_PIN_14
+#define MATRIX_S3_Port          GPIOB
+#define MATRIX_S3_Pin           LL_GPIO_PIN_3
+
+#define MATRIX_K1_Port          GPIOB
+#define MATRIX_K1_Pin           LL_GPIO_PIN_4
+#define MATRIX_K2_Port          GPIOB
+#define MATRIX_K2_Pin           LL_GPIO_PIN_5
+#define MATRIX_K3_Port          GPIOB
+#define MATRIX_K3_Pin           LL_GPIO_PIN_6
+#define MATRIX_K4_Port          GPIOB
+#define MATRIX_K4_Pin           LL_GPIO_PIN_7
+
 void inputMatrixInit(void);
 uint16_t inputMatrixGet(void);
 

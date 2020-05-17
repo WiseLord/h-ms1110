@@ -16,6 +16,12 @@ extern "C" {
 #define FLAG_ENTER          1
 #define FLAG_SWITCH         2
 
+// Mute and standby pins
+#define STBY_Port               GPIOB
+#define STBY_Pin                LL_GPIO_PIN_0
+#define MUTE_Port               GPIOB
+#define MUTE_Pin                LL_GPIO_PIN_1
+
 typedef uint8_t AmpStatus;
 enum {
     AMP_STATUS_STBY,

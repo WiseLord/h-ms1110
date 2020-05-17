@@ -9,7 +9,7 @@ extern "C" {
 
 #include "colors.h"
 #include "fonts.h"
-#include "pins.h"
+#include "hwlibs.h"
 #include "utils.h"
 
 #ifdef _DISP_SPI
@@ -25,6 +25,14 @@ extern "C" {
 
 #define LCD_BR_MIN          1
 #define LCD_BR_MAX          32
+
+// TFT parallel (8-bit) wiring
+#define DISP_CS_Port            GPIOB
+#define DISP_CS_Pin             LL_GPIO_PIN_12
+#define DISP_RS_Port            GPIOB
+#define DISP_RS_Pin             LL_GPIO_PIN_14  // SPI DC
+#define DISP_RST_Port           GPIOA
+#define DISP_RST_Pin            LL_GPIO_PIN_15
 
 typedef struct {
     void (*init)(void);

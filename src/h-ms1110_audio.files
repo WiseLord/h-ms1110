@@ -137,8 +137,6 @@ h-ms1110_audio/Makefile
 h-ms1110_audio/amp.c
 h-ms1110_audio/amp.h
 h-ms1110_audio/main.c
-h-ms1110_audio/pins.c
-h-ms1110_audio/pins.h
 h-ms1110_audio/settings.c
 h-ms1110_audio/settings.h
 h-ms1110_audio/setup.c

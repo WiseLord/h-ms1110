@@ -1,7 +1,6 @@
 #include "matrix.h"
 
 #include "hwlibs.h"
-#include "pins.h"
 
 void inputMatrixInit(void)
 {
