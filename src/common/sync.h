@@ -13,6 +13,8 @@ extern "C" {
 #define AMP_TUNER_ADDR      0x28
 #define AMP_PLAYER_ADDR     0x29
 
+#define AMP_SYNC_DATASIZE   16
+
 typedef uint8_t SyncType;
 enum {
     SYNC_NONE = 0,
@@ -26,7 +28,7 @@ enum {
 };
 
 typedef union {
-    uint8_t data[8];
+    uint8_t data[AMP_SYNC_DATASIZE];
     struct {
         SyncType type;
         union {
@@ -46,7 +48,7 @@ void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync);
 
 void syncSlaveInit(uint8_t addr);
 void syncSlaveSendAction(Action *action);
-void syncSlaveReceive(AmpSync *sync);
+void syncSlaveReceive(uint8_t **data, uint8_t *size);
 
 #ifdef __cplusplus
 }

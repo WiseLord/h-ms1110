@@ -271,27 +271,34 @@ Amp *ampGet(void)
 
 static void ampActionSyncMaster(void)
 {
-    AmpSync sync;
+    uint8_t *syncData;
+    uint8_t syncSize;
 
-    syncSlaveReceive(&sync);
+    syncSlaveReceive(&syncData, &syncSize);
+
+    if (syncSize == 0) {
+        return;
+    }
+
+    SyncType syncType = syncData[0];
 
     Spectrum *sp = spGet();
 
-    switch (sync.type) {
+    switch (syncType) {
     case SYNC_ACTION:
-        action = sync.action;
+        action = *(Action *)&syncData[1];
         break;
     case SYNC_TIME:
-        rtcSetRaw(sync.time);
+        rtcSetRaw(*(uint32_t *)&syncData[1]);
         break;
     case SYNC_SPECTRUM:
-        *sp = sync.spectrum;
+        *sp = *((Spectrum *)&syncData[1]);
         settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
         settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
         amp.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
-        amp.inType = sync.inType;
+        amp.inType = *(uint8_t *)&syncData[1];
         actionDispExpired();
         break;
     }

@@ -7,19 +7,18 @@
 #include "hwlibs.h"
 #include "i2c.h"
 
-static AmpSync ampSync;
-
-static AmpSync ampSyncRx;
 static AmpSync ampSyncTx;
 
+uint8_t ampSyncRxData[AMP_SYNC_DATASIZE];
+uint8_t ampSyncRxSize;
 
 static void ampSyncRxCb(int16_t bytes)
 {
-    (void)bytes;
-
-    if (ampSyncRx.type != SYNC_NONE) {
-        ampSync = ampSyncRx;
-        ampSyncRx.type = SYNC_NONE;
+    if (ampSyncRxData[0] != SYNC_NONE) {
+        if (bytes > AMP_SYNC_DATASIZE) {
+            bytes = 0;
+        }
+        ampSyncRxSize = bytes;
     }
 }
 
@@ -39,59 +38,50 @@ static void ampSyncTxCb(int16_t bytes)
     memset(&ampSyncTx, 0x00, sizeof(ampSyncTx));
 }
 
-void syncMasterSendTime(uint8_t slaveAddr, uint32_t time)
+static void syncMasterSend(uint8_t slaveAddr, SyncType type, uint8_t *data, size_t size)
 {
-    AmpSync sync;
-
-    sync.type = SYNC_TIME;
-    sync.time = time;
-
     i2cBegin(I2C_SYNC, slaveAddr);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
+    i2cSend(I2C_SYNC, type);
+    for (size_t i = 0; i < size; i++) {
+        i2cSend(I2C_SYNC, data[i]);
     }
     i2cTransmit(I2C_SYNC);
+}
+
+void syncMasterSendTime(uint8_t slaveAddr, uint32_t time)
+{
+    SyncType type = SYNC_TIME;
+    uint8_t *data = (uint8_t *)&time;
+    size_t size = sizeof(uint32_t);
+
+    syncMasterSend(slaveAddr, type, data, size);
 }
 
 void syncMasterSendAction(uint8_t slaveAddr, Action *action)
 {
-    AmpSync sync;
+    SyncType type = SYNC_ACTION;
+    uint8_t *data = (uint8_t *)action;
+    size_t size = sizeof(Action);
 
-    sync.type = SYNC_ACTION;
-    sync.action = *action;
-
-    i2cBegin(I2C_SYNC, slaveAddr);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
+    syncMasterSend(slaveAddr, type, data, size);
 }
 
 void syncMasterSendSpectrum(uint8_t slaveAddr, Spectrum *spectrum)
 {
-    AmpSync sync;
+    SyncType type = SYNC_SPECTRUM;
+    uint8_t *data = (uint8_t *)spectrum;
+    size_t size = sizeof(Spectrum);
 
-    sync.type = SYNC_SPECTRUM;
-    sync.spectrum = *spectrum;
-
-    i2cBegin(I2C_SYNC, slaveAddr);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
+    syncMasterSend(slaveAddr, type, data, size);
 }
+
 void syncMasterSendInType(uint8_t slaveAddr, uint8_t inType)
 {
-    AmpSync sync;
+    SyncType type = SYNC_IN_TYPE;
+    uint8_t *data = (uint8_t *)&inType;
+    size_t size = sizeof(uint8_t);
 
-    sync.type = SYNC_IN_TYPE;
-    sync.inType = inType;
-
-    i2cBegin(I2C_SYNC, slaveAddr);
-    for (size_t i = 0; i < sizeof(sync); i++) {
-        i2cSend(I2C_SYNC, sync.data[i]);
-    }
-    i2cTransmit(I2C_SYNC);
+    syncMasterSend(slaveAddr, type, data, size);
 }
 
 void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync)
@@ -107,7 +97,7 @@ void syncSlaveInit(uint8_t addr)
     i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
     i2cSetTxCb(I2C_SYNC, ampSyncTxCb);
     i2cBegin(I2C_SYNC, addr);
-    i2cSlaveTransmitReceive(I2C_SYNC, ampSyncRx.data, sizeof(ampSyncRx));
+    i2cSlaveTransmitReceive(I2C_SYNC, ampSyncRxData, sizeof(ampSyncRxData));
 }
 
 void syncSlaveSendAction(Action *action)
@@ -116,8 +106,10 @@ void syncSlaveSendAction(Action *action)
     ampSyncTx.action = *action;
 }
 
-void syncSlaveReceive(AmpSync *sync)
+void syncSlaveReceive(uint8_t **data, uint8_t *size)
 {
-    *sync = ampSync;
-    ampSync.type = SYNC_NONE;
+    *data = ampSyncRxData;
+    *size = ampSyncRxSize;
+
+    ampSyncRxSize = 0;
 }
