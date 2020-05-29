@@ -7,10 +7,11 @@
 #include "hwlibs.h"
 #include "i2c.h"
 
-static AmpSync ampSyncTx;
-
 uint8_t ampSyncRxData[AMP_SYNC_DATASIZE];
 uint8_t ampSyncRxSize;
+
+uint8_t ampSyncTxData[AMP_SYNC_DATASIZE];
+uint8_t ampSyncTxSize;
 
 static void ampSyncRxCb(int16_t bytes)
 {
@@ -24,18 +25,18 @@ static void ampSyncRxCb(int16_t bytes)
 
 static void ampSyncTxCb(int16_t bytes)
 {
-    if (ampSyncTx.type != SYNC_NONE) {
-        i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof(ampSyncTx); i++) {
-            i2cSend(I2C_SYNC, ampSyncTx.data[i]);
+    SyncType type = ampSyncTxData[0];
+    ampSyncTxData[0] = SYNC_NONE;
+
+    i2cBegin(I2C_SYNC, 0x00);
+    i2cSend(I2C_SYNC, type);
+    switch (type) {
+    case SYNC_ACTION:
+        for (size_t i = 0; i < sizeof(Action); i++) {
+            i2cSend(I2C_SYNC, ampSyncTxData[1 + i]);
         }
-    } else {
-        i2cBegin(I2C_SYNC, 0x28);
-        for (size_t i = 0; i < sizeof (ampSyncTx); i++) {
-            i2cSend(I2C_SYNC, 0x00);
-        }
+        break;
     }
-    memset(&ampSyncTx, 0x00, sizeof(ampSyncTx));
 }
 
 static void syncMasterSend(uint8_t slaveAddr, SyncType type, uint8_t *data, size_t size)
@@ -84,12 +85,22 @@ void syncMasterSendInType(uint8_t slaveAddr, uint8_t inType)
     syncMasterSend(slaveAddr, type, data, size);
 }
 
-void syncMasterReceive(uint8_t slaveAddr, AmpSync *sync)
+SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
 {
-    i2cBegin(I2C_SYNC, slaveAddr);
-    i2cReceive(I2C_SYNC, sync->data, sizeof (AmpSync));
-}
+    SyncType type = SYNC_NONE;
 
+    i2cBegin(I2C_SYNC, slaveAddr);
+    i2cReceive(I2C_SYNC, &type, 1);
+
+    switch (type) {
+    case SYNC_ACTION:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(Action));
+        break;
+    }
+
+    return type;
+}
 
 void syncSlaveInit(uint8_t addr)
 {
@@ -102,8 +113,8 @@ void syncSlaveInit(uint8_t addr)
 
 void syncSlaveSendAction(Action *action)
 {
-    ampSyncTx.type = SYNC_ACTION;
-    ampSyncTx.action = *action;
+    ampSyncTxData[0] = SYNC_ACTION;
+    memcpy(&ampSyncTxData[1], action, sizeof(Action));
 }
 
 void syncSlaveReceive(uint8_t **data, uint8_t *size)
