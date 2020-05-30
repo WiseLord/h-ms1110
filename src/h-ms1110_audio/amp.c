@@ -778,6 +778,8 @@ void ampInit(void)
 
     rtcSetCb(rtcCb);
 
+    ampHandleSwd();
+
     labelsInit();
     canvasInit();
 
