@@ -10,9 +10,6 @@ extern "C" {
 #include "action.h"
 #include "spectrum.h"
 
-#define AMP_TUNER_ADDR      0x28
-#define AMP_PLAYER_ADDR     0x29
-
 #define AMP_SYNC_DATASIZE   16
 
 typedef uint8_t SyncType;

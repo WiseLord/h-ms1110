@@ -50,6 +50,8 @@ extern "C" {
 #define READ_BYTE(p)            (IS_GPIO_LO(p) ? (READ(p) & 0x00FF) : (READ(p) & 0xFF00) >> 8)
 #define WRITE_BYTE(p, data)     (CONCAT(p, _Port)->BSRR = (IS_GPIO_LO(p) ? (0x00FF0000U | (uint32_t)data) : (0xFF000000U | (uint32_t)(data << 8))))
 
+#define AMP_TUNER_ADDR          0x28
+#define AMP_PLAYER_ADDR         0x26
 
 // Project-specific definitions
 #define EXTI_RC_HANDLER         EXTI9_5_IRQHandler

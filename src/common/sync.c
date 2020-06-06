@@ -25,6 +25,8 @@ static void ampSyncRxCb(int16_t bytes)
 
 static void ampSyncTxCb(int16_t bytes)
 {
+    (void)bytes;
+
     SyncType type = ampSyncTxData[0];
     ampSyncTxData[0] = SYNC_NONE;
 
@@ -104,7 +106,7 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
 
 void syncSlaveInit(uint8_t addr)
 {
-    i2cInit(I2C_SYNC, 400000);
+    i2cInit(I2C_SYNC, 400000, addr);
     i2cSetRxCb(I2C_SYNC, ampSyncRxCb);
     i2cSetTxCb(I2C_SYNC, ampSyncTxCb);
     i2cBegin(I2C_SYNC, addr);

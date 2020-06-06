@@ -16,7 +16,6 @@
 #include "sync.h"
 #include "timers.h"
 #include "tr/labels.h"
-#include "tuner/tuner.h"
 #include "utils.h"
 
 static void actionGetButtons(void);
@@ -110,25 +109,14 @@ static void actionDispExpired(void)
 
 static void inputDisable(void)
 {
-    // TODO: only if it was tuner
-    tunerSetMute(true);
-    tunerSetPower(false);
 }
 
 static void inputEnable(void)
 {
-    Tuner *tuner = tunerGet();
-
-    // TODO: only if it was tuner
-    tunerSetPower(true);
-    tunerSetFreq(tuner->status.freq);
-    tunerSetVolume(tuner->par.volume);
-    tunerSetMute(false);
 }
 
 static void ampReadSettings(void)
 {
-    tunerReadSettings();
 }
 
 void ampExitStby(void)
@@ -161,8 +149,6 @@ void ampInitHw(void)
     switch (amp.status) {
     case AMP_STATUS_POWERED:
         i2cInit(I2C_AMP, 100000, 0x00);
-
-        tunerInit();
 
         amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 300);
@@ -237,7 +223,7 @@ void ampInit(void)
 
     inputInit();
 
-    syncSlaveInit(AMP_TUNER_ADDR);
+    syncSlaveInit(AMP_PLAYER_ADDR);
 
     ampReadSettings();
 
@@ -343,11 +329,7 @@ static void actionRemapBtnLong(int16_t button)
 
 static void actionRemapEncoder(int16_t encCnt)
 {
-    if (amp.inType == IN_TUNER) {
-        tunerStep(encCnt);
-    } else {
-        actionSet(ACTION_NONE, 0);
-    }
+    (void)encCnt;
 }
 
 static void ampActionRemap(void)
@@ -405,20 +387,10 @@ static void ampPollInput(void)
 {
     if (amp.screen != SCREEN_STANDBY) {
         if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
-            if (amp.inType == IN_TUNER) {
-                tunerUpdateStatus();
-            }
+
             swTimSet(SW_TIM_INPUT_POLL, 200);
         }
     }
-}
-
-static void prepareRadioView(RadioView *radio)
-{
-    Tuner *tuner = tunerGet();
-
-    radio->freq = tuner->status.freq;
-    radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
 }
 
 static void ampHandleSwd(void)
@@ -446,8 +418,6 @@ void ampScreenShow(void)
         canvasClear();
     }
 
-    RadioView radio;
-
     Spectrum *sp = spGet();
     SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
 
@@ -462,8 +432,7 @@ void ampScreenShow(void)
         canvasShowDate(clear, false);
         break;
     case SCREEN_TUNER:
-        prepareRadioView(&radio);
-        canvasShowRadio(clear, &radio);
+        canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     default:
         break;

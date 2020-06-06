@@ -150,6 +150,7 @@ static void inputSetPower(bool value)
         amp.inputStatus = 0x00;
     }
     syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
+    syncMasterSendInType(AMP_PLAYER_ADDR, amp.inType[input]);
 }
 
 static void ampPinMute(bool value)
@@ -268,7 +269,7 @@ void ampInitHw(void)
 
     switch (amp.status) {
     case AMP_STATUS_POWERED:
-        i2cInit(I2C_AMP, 100000);
+        i2cInit(I2C_AMP, 100000, 0x00);
 
         audioReset();
 
@@ -788,7 +789,7 @@ void ampInit(void)
     inputInit();
     rcInit();
 
-    i2cInit(I2C_SYNC, 400000);
+    i2cInit(I2C_SYNC, 400000, 0x00);
 
     ampReadSettings();
 
@@ -920,6 +921,7 @@ void ampActionHandle(void)
     case ACTION_STANDBY:
         ampHandleStby();
         syncMasterSendAction(AMP_TUNER_ADDR, &action);
+        syncMasterSendAction(AMP_PLAYER_ADDR, &action);
         break;
 
     case ACTION_RESTORE_VOLUME:
