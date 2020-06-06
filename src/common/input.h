@@ -30,6 +30,16 @@ extern "C" {
 #define BTN_RDS                 0x0080
 #define BTN_ENC                 0x0800
 
+// Player matrix buttons
+#define BTN_OPEN                0x0001
+#define BTN_PLAYPAUSE           0x0002
+#define BTN_STOP                0x0004
+#define BTN_REWIND              0x0010
+#define BTN_REPEATE             0x0020
+#define BTN_FORWARD             0x0040
+#define BTN_AUDIO               0x0008
+#define BTN_SUBTITLE            0x0080
+
 // Encoder
 #define ENC_NO                  0x0000
 #define ENC_A                   0x2000
@@ -52,9 +62,15 @@ extern "C" {
 #define BTN_FLAG_NO             0x0000
 #define BTN_FLAG_LONG_PRESS     0x0001
 
+#ifdef _MODULE_PLAYER
+#define ENCODER_Port            GPIOA
+#define ENCODER_A_Pin           LL_GPIO_PIN_0
+#define ENCODER_B_Pin           LL_GPIO_PIN_1
+#else
 #define ENCODER_Port            GPIOA
 #define ENCODER_A_Pin           LL_GPIO_PIN_11
 #define ENCODER_B_Pin           LL_GPIO_PIN_12
+#endif
 
 typedef struct {
     uint16_t btn;

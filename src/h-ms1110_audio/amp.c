@@ -29,9 +29,10 @@ static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
-
 static void actionRemapTunerBtnShort(int16_t button);
 static void actionRemapTunerBtnLong(int16_t button);
+static void actionRemapPlayerBtnShort(int16_t button);
+static void actionRemapPlayerBtnLong(int16_t button);
 
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
@@ -60,8 +61,12 @@ static Amp amp = {
 
 static Action action = {
     .type = ACTION_NONE,
-    .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
+};
+
+static Screen screen = {
+    .type = SCREEN_STANDBY,
+    .timeout = SW_TIM_OFF,
 };
 
 static void actionSet(ActionType type, int16_t value)
@@ -70,17 +75,11 @@ static void actionSet(ActionType type, int16_t value)
     action.value = value;
 }
 
-static void actionSetScreen(ScreenType screen, int16_t timeout)
+static void screenSet(ScreenType type, int16_t timeout)
 {
-    action.screen = screen;
-    action.timeout = timeout;
+    screen.type = type;
+    screen.timeout = timeout;
 }
-
-void screenSetMode(ScreenType value)
-{
-    amp.screen = value;
-}
-
 
 static void rtcCb(void)
 {
@@ -112,10 +111,10 @@ static void actionDispExpired(void)
     switch (amp.screen) {
     case SCREEN_STANDBY:
     case SCREEN_SETUP:
-        actionSetScreen(SCREEN_STANDBY, 0);
+        screenSet(SCREEN_STANDBY, 0);
         break;
     default:
-        actionSetScreen(amp.defScreen, 0);
+        screenSet(amp.defScreen, 0);
         break;
     }
 }
@@ -256,10 +255,10 @@ void ampHandleStby(void)
 
     if (action.value == FLAG_EXIT) {
         ampExitStby();
-        actionSetScreen(SCREEN_TIME, 1000);
+        screenSet(SCREEN_TIME, 1000);
     } else {
         ampEnterStby();
-        actionSetScreen(SCREEN_STANDBY, 0);
+        screenSet(SCREEN_STANDBY, 0);
     }
 }
 
@@ -337,7 +336,7 @@ static void ampHandleSetup(void)
     if (SETUP_NULL == setup->active && SETUP_NULL == setup->child) {
         actionDispExpired();
     } else {
-        actionSetScreen(SCREEN_SETUP, 10000);
+        screenSet(SCREEN_SETUP, 10000);
     }
 }
 
@@ -444,7 +443,7 @@ static void actionGetPots(void)
         int8_t pot = inputAnalogGetPotZone(ain, zoneCnt);
         if (pot != potPrev[ain]) {
             if (amp.status == AMP_STATUS_ACTIVE) {
-                screenSetMode(SCREEN_TUNE);
+                amp.screen = SCREEN_TUNE;
                 switch (ain) {
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
@@ -592,8 +591,18 @@ static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_MWFM:
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
+        } else {
+            actionSet(ACTION_SP_MODE, -1);
+        }
         break;
     case BTN_RDS:
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
+        } else {
+            actionSet(ACTION_SP_MODE, +1);
+        }
         break;
     case BTN_ENC:
         break;
@@ -633,6 +642,60 @@ static void actionRemapTunerBtnLong(int16_t button)
     case BTN_9:
         break;
     default:
+        break;
+    }
+}
+
+static void actionRemapPlayerBtnShort(int16_t button)
+{
+    switch (button) {
+    case BTN_OPEN:
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
+        } else {
+            actionSet(ACTION_SP_MODE, -1);
+        }
+        break;
+    case BTN_PLAYPAUSE:
+        if (SCREEN_SETUP == amp.screen) {
+            actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
+        } else {
+            actionSet(ACTION_SP_MODE, +1);
+        }
+        break;
+    case BTN_STOP:
+        break;
+    case BTN_REWIND:
+        break;
+    case BTN_REPEATE:
+        break;
+    case BTN_FORWARD:
+        break;
+    case BTN_AUDIO:
+        break;
+    case BTN_SUBTITLE:
+        break;
+    }
+}
+
+static void actionRemapPlayerBtnLong(int16_t button)
+{
+    switch (button) {
+    case BTN_OPEN:
+        break;
+    case BTN_PLAYPAUSE:
+        break;
+    case BTN_STOP:
+        break;
+    case BTN_REWIND:
+        break;
+    case BTN_REPEATE:
+        break;
+    case BTN_FORWARD:
+        break;
+    case BTN_AUDIO:
+        break;
+    case BTN_SUBTITLE:
         break;
     }
 }
@@ -686,7 +749,7 @@ static void actionRemapEncoder(int16_t encCnt)
     }
 
     if (ACTION_AUDIO_PARAM_CHANGE == action.type) {
-        screenSetMode(SCREEN_TUNE);
+        amp.screen = SCREEN_TUNE;
         switch (scrMode) {
         case SCREEN_SPECTRUM:
 //        case SCREEN_AUDIO_FLAG:
@@ -892,6 +955,13 @@ static void ampActionRemap(void)
         actionRemapTunerEncoder(action.value);
         break;
 
+    case ACTION_PLAYER_BTN_SHORT:
+        actionRemapPlayerBtnShort(action.value);
+        break;
+    case ACTION_PLAYER_BTN_LONG:
+        actionRemapPlayerBtnLong(action.value);
+        break;
+
     case ACTION_REMOTE:
         actionRemapRemote();
         break;
@@ -964,7 +1034,7 @@ void ampActionHandle(void)
         } else {
             aProc->tune = AUDIO_TUNE_VOLUME;
         }
-        actionSetScreen(SCREEN_TUNE, 5000);
+        screenSet(SCREEN_TUNE, 5000);
         break;
 
     case ACTION_AUDIO_INPUT:
@@ -974,7 +1044,7 @@ void ampActionHandle(void)
 //            controlReportAudioTune(AUDIO_TUNE_GAIN);
         }
         amp.clearScreen = true;
-        actionSetScreen(SCREEN_INPUT, 3000);
+        screenSet(SCREEN_INPUT, 3000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
@@ -984,12 +1054,12 @@ void ampActionHandle(void)
         if (aProc->par.mute) {
             ampMute(false);
         }
-        actionSetScreen(SCREEN_TUNE, 3000);
+        screenSet(SCREEN_TUNE, 3000);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
     case ACTION_AUDIO_PARAM_SET:
         audioSetTune(aProc->tune, (int8_t)action.value);
-        actionSetScreen(SCREEN_TUNE, 3000);
+        screenSet(SCREEN_TUNE, 3000);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
 
@@ -998,7 +1068,7 @@ void ampActionHandle(void)
         if (scrMode == SCREEN_SPECTRUM) {
             spModeChange(action.value);
         }
-        actionSetScreen(SCREEN_SPECTRUM, 3000);
+        screenSet(SCREEN_SPECTRUM, 3000);
         break;
 
     default:
@@ -1019,17 +1089,17 @@ void ampActionHandle(void)
     }
 
     if (action.type != ACTION_NONE) {
-        screenSetMode(action.screen);
+        amp.screen = screen.type;
     }
 
-    if (action.timeout > 0) {
-        swTimSet(SW_TIM_DISPLAY, action.timeout);
-    } else if (action.timeout == 0) {
+    if (screen.timeout > 0) {
+        swTimSet(SW_TIM_DISPLAY, screen.timeout);
+    } else if (screen.timeout == 0) {
         swTimSet(SW_TIM_DISPLAY, SW_TIM_OFF);
     }
 
     action.type = ACTION_NONE;
-    action.timeout = SW_TIM_OFF;
+    screen.timeout = SW_TIM_OFF;
 }
 
 static void prepareAudioTune(TuneView *tune)

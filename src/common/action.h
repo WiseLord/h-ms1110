@@ -61,6 +61,9 @@ enum {
     ACTION_TUNER_BTN_LONG,
     ACTION_TUNER_ENCODER,
 
+    ACTION_PLAYER_BTN_SHORT,
+    ACTION_PLAYER_BTN_LONG,
+
     ACTION_INIT_HW,
     ACTION_INIT_RTC,
     ACTION_STANDBY,
@@ -127,11 +130,13 @@ enum {
 
 typedef struct {
     ActionType type;
-    ScreenType screen;
-
     int16_t value;
-    int16_t timeout;
 } Action;
+
+typedef struct {
+    ScreenType type;
+    int16_t timeout;
+} Screen;
 
 #ifdef __cplusplus
 }

@@ -23,9 +23,9 @@ static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
-static void actionRemapBtnShort(int16_t button);
-static void actionRemapBtnLong(int16_t button);
-static void actionRemapEncoder(int16_t encCnt);
+static void actionRemapTunerBtnShort(int16_t button);
+static void actionRemapTunerBtnLong(int16_t button);
+static void actionRemapTunerEncoder(int16_t encCnt);
 
 static void ampHandleSwd(void);
 
@@ -47,8 +47,12 @@ static Amp amp = {
 
 static Action action = {
     .type = ACTION_NONE,
-    .screen = SCREEN_STANDBY,
     .value = FLAG_ENTER,
+};
+
+static Screen screen = {
+    .type = SCREEN_STANDBY,
+    .timeout = SW_TIM_OFF,
 };
 
 static void actionSet(ActionType type, int16_t value)
@@ -57,15 +61,10 @@ static void actionSet(ActionType type, int16_t value)
     action.value = value;
 }
 
-static void actionSetScreen(ScreenType screen, int16_t timeout)
+static void screenSet(ScreenType type, int16_t timeout)
 {
-    action.screen = screen;
-    action.timeout = timeout;
-}
-
-void screenSetMode(ScreenType value)
-{
-    amp.screen = value;
+    screen.type = type;
+    screen.timeout = timeout;
 }
 
 static bool screenCheckClear(void)
@@ -100,10 +99,10 @@ static void actionDispExpired(void)
 
     switch (amp.screen) {
     case SCREEN_STANDBY:
-        actionSetScreen(SCREEN_STANDBY, 0);
+        screenSet(SCREEN_STANDBY, 0);
         break;
     default:
-        actionSetScreen(amp.defScreen, 0);
+        screenSet(amp.defScreen, 0);
         break;
     }
 }
@@ -178,21 +177,17 @@ void ampInitHw(void)
 }
 
 
+
 static void actionGetButtons(void)
 {
     CmdBtn cmdBtn = inputGetBtnCmd();
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_TUNER_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_TUNER_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
-
-        Action action = {
-            .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_TUNER_BTN_LONG : ACTION_TUNER_BTN_SHORT,
-            .value = cmdBtn.btn,
-        };
         syncSlaveSendAction(&action);
     }
 }
@@ -202,12 +197,7 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
-        actionSet(ACTION_ENCODER, encVal);
-
-        Action action = {
-            .type = ACTION_TUNER_ENCODER,
-            .value = encVal,
-        };
+        actionSet(ACTION_TUNER_ENCODER, encVal);
         syncSlaveSendAction(&action);
     }
 }
@@ -327,21 +317,21 @@ void ampActionGet(void)
     }
 }
 
-static void actionRemapBtnShort(int16_t button)
+static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
 
     }
 }
 
-static void actionRemapBtnLong(int16_t button)
+static void actionRemapTunerBtnLong(int16_t button)
 {
     switch (button) {
 
     }
 }
 
-static void actionRemapEncoder(int16_t encCnt)
+static void actionRemapTunerEncoder(int16_t encCnt)
 {
     if (amp.inType == IN_TUNER) {
         tunerStep(encCnt);
@@ -353,14 +343,14 @@ static void actionRemapEncoder(int16_t encCnt)
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_BTN_SHORT:
-        actionRemapBtnShort(action.value);
+    case ACTION_TUNER_BTN_SHORT:
+        actionRemapTunerBtnShort(action.value);
         break;
-    case ACTION_BTN_LONG:
-        actionRemapBtnLong(action.value);
+    case ACTION_TUNER_BTN_LONG:
+        actionRemapTunerBtnLong(action.value);
         break;
-    case ACTION_ENCODER:
-        actionRemapEncoder(action.value);
+    case ACTION_TUNER_ENCODER:
+        actionRemapTunerEncoder(action.value);
         break;
     }
 }
@@ -374,10 +364,10 @@ static void ampActionHandle(void)
     case ACTION_STANDBY:
         if (action.value == FLAG_EXIT) {
             ampExitStby();
-            actionSetScreen(SCREEN_TIME, 1000);
+            screenSet(SCREEN_TIME, 1000);
         } else {
             ampEnterStby();
-            actionSetScreen(SCREEN_STANDBY, 0);
+            screenSet(SCREEN_STANDBY, 0);
         }
         break;
         break;
@@ -389,16 +379,18 @@ static void ampActionHandle(void)
         break;
     }
 
-    screenSetMode(action.screen);
+    if (action.type != ACTION_NONE) {
+        amp.screen = screen.type;
+    }
 
-    if (action.timeout > 0) {
-        swTimSet(SW_TIM_DISPLAY, action.timeout);
-    } else if (action.timeout == 0) {
+    if (screen.timeout > 0) {
+        swTimSet(SW_TIM_DISPLAY, screen.timeout);
+    } else if (screen.timeout == 0) {
         swTimSet(SW_TIM_DISPLAY, SW_TIM_OFF);
     }
 
     action.type = ACTION_NONE;
-    action.timeout = SW_TIM_OFF;
+    screen.timeout = SW_TIM_OFF;
 }
 
 static void ampPollInput(void)
