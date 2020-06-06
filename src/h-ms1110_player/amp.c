@@ -11,7 +11,6 @@
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
-#include "spectrum.h"
 #include "swtimers.h"
 #include "sync.h"
 #include "timers.h"
@@ -86,12 +85,6 @@ static bool screenCheckClear(void)
 static void actionDispExpired(void)
 {
     amp.defScreen = SCREEN_SPECTRUM;
-
-    switch (amp.inType) {
-    case IN_TUNER:
-        amp.defScreen = SCREEN_TUNER;
-        break;
-    }
 
     rtcSetMode(RTC_NOEDIT);
 
@@ -168,32 +161,22 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_PLAYER_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_PLAYER_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
-
-        Action action = {
-            .type = cmdBtn.flags & BTN_FLAG_LONG_PRESS ? ACTION_PLAYER_BTN_LONG : ACTION_PLAYER_BTN_SHORT,
-            .value = cmdBtn.btn,
-        };
         syncSlaveSendAction(&action);
     }
 }
 
 static void actionGetEncoder(void)
 {
-    int8_t encVal = inputGetEncoder();
+//    int8_t encVal = inputGetEncoder();
 
-    if (encVal) {
-        actionSet(ACTION_ENCODER, encVal);
-
-        Action action = {
-            .type = ACTION_TUNER_ENCODER,
-            .value = encVal,
-        };
-        syncSlaveSendAction(&action);
-    }
+//    if (encVal) {
+//        actionSet(ACTION_PLAYER_ENCODER, encVal);
+//        syncSlaveSendAction(&action);
+//    }
 }
 
 static void actionGetTimers(void)
@@ -216,8 +199,6 @@ void ampInit(void)
 
     labelsInit();
     canvasInit();
-
-    spInit();
 
     inputInit();
 
@@ -266,20 +247,12 @@ static void ampActionSyncMaster(void)
 
     SyncType syncType = syncData[0];
 
-    Spectrum *sp = spGet();
-
     switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
         break;
     case SYNC_TIME:
         rtcSetRaw(*(uint32_t *)&syncData[1]);
-        break;
-    case SYNC_SPECTRUM:
-        *sp = *((Spectrum *)&syncData[1]);
-        settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
-        amp.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(uint8_t *)&syncData[1];
@@ -410,21 +383,12 @@ void ampScreenShow(void)
         canvasClear();
     }
 
-    Spectrum *sp = spGet();
-    SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
-
     switch (amp.screen) {
-    case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, spMode, sp->peaks);
-        break;
     case SCREEN_TIME:
         canvasShowDate(clear, true);
         break;
     case SCREEN_STANDBY:
         canvasShowDate(clear, false);
-        break;
-    case SCREEN_TUNER:
-        canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     default:
         break;
@@ -442,6 +406,5 @@ void TIM_SPECTRUM_HANDLER(void)
         LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
 
         // Callbacks
-        spConvertADC();
     }
 }

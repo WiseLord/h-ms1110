@@ -889,14 +889,22 @@ Amp *ampGet(void)
 static void ampActionSyncSlaves(void)
 {
     uint8_t syncData[AMP_SYNC_DATASIZE];
+    SyncType syncType;
 
-    SyncType type = syncMasterReceive(AMP_TUNER_ADDR, syncData);
-
-    switch (type) {
+    syncType = syncMasterReceive(AMP_TUNER_ADDR, syncData);
+    switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
-        break;
+        return;
     }
+
+    syncType = syncMasterReceive(AMP_PLAYER_ADDR, syncData);
+    switch (syncType) {
+    case SYNC_ACTION:
+        action = *(Action *)&syncData[1];
+        return;
+    }
+
 }
 
 static void ampActionGet(void)
