@@ -379,15 +379,6 @@ static bool isRemoteCmdRepeatable(RcCmd cmd)
             return true;
         }
         break;
-    case RC_CMD_NAV_LEFT:
-    case RC_CMD_NAV_RIGHT:
-        switch (scrMode) {
-        case SCREEN_INPUT:
-            if (inType == IN_TUNER) {
-                return true;
-            }
-        }
-        break;
     }
 
     return false;
@@ -752,8 +743,6 @@ static void actionRemapEncoder(int16_t encCnt)
         amp.screen = SCREEN_TUNE;
         switch (scrMode) {
         case SCREEN_SPECTRUM:
-//        case SCREEN_AUDIO_FLAG:
-        case SCREEN_INPUT:
             aProc->tune = AUDIO_TUNE_VOLUME;
             break;
         default:
@@ -1022,7 +1011,9 @@ void ampActionHandle(void)
         setupChangeChild(action.value);
         SetupType active = setupGet()->active;
         if (active == SETUP_TIME || active == SETUP_DATE) {
-            syncMasterSendTime(AMP_TUNER_ADDR, rtcGetRaw());
+            uint32_t rtcRaw = rtcGetRaw();
+            syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
+            syncMasterSendTime(AMP_PLAYER_ADDR, rtcRaw);
         }
         ampHandleSetup();
         break;
@@ -1046,13 +1037,7 @@ void ampActionHandle(void)
         break;
 
     case ACTION_AUDIO_INPUT:
-        if (scrMode == SCREEN_INPUT) {
-            ampSetInput(actionGetNextAudioInput((int8_t)action.value));
-//            controlReportAudioInput();
-//            controlReportAudioTune(AUDIO_TUNE_GAIN);
-        }
-        amp.clearScreen = true;
-        screenSet(SCREEN_INPUT, 3000);
+        ampSetInput(actionGetNextAudioInput((int8_t)action.value));
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
@@ -1122,15 +1107,6 @@ static void prepareAudioTune(TuneView *tune)
     tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
-static void prepareAudioInput (Label *label)
-{
-    AudioProc *aProc = audioGet();
-
-    InputType inType = amp.inType[aProc->par.input];
-
-    *label = LABEL_IN_TUNER + (inType - IN_TUNER);
-}
-
 static void ampHandleSwd(void)
 {
     static bool swd = false;
@@ -1158,10 +1134,10 @@ static void ampScreenShow(void)
 
     TuneView tune;
 
-    Label label;
-
     if (rtcSyncRequired) {
-        syncMasterSendTime(AMP_TUNER_ADDR, rtcGetRaw());
+        uint32_t rtcRaw = rtcGetRaw();
+        syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
+        syncMasterSendTime(AMP_PLAYER_ADDR, rtcRaw);
         rtcSyncRequired = false;
     }
 
@@ -1183,10 +1159,6 @@ static void ampScreenShow(void)
         break;
     case SCREEN_TIME:
         canvasShowTime(clear, true);
-        break;
-    case SCREEN_INPUT:
-        prepareAudioInput(&label);
-        canvasShowInput(clear, label);
         break;
     case SCREEN_STANDBY:
         canvasShowTime(clear, false);

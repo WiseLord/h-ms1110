@@ -76,3 +76,32 @@ void dateViewDraw(bool clear, bool active, int8_t date, int8_t month, int8_t yea
         glcdWriteString(wdayLabel);
     }
 }
+
+void wdayViewDraw(bool clear, bool active, int8_t wday)
+{
+
+    static int32_t _wday;
+    if (wday != _wday) {
+        clear = true;
+        _wday = wday;
+    }
+
+    if (clear) {
+        GlcdRect rect = glcdGet()->rect;
+        const Palette *pal = paletteGet();
+        const tFont *font = &fontterminus32;
+
+        glcdDrawRect(rect.x, rect.y, rect.w, rect.h, pal->bg);
+
+        glcdSetFont(font);
+        glcdSetFontColor(active ? pal->active : pal->inactive);
+
+        int16_t sLen;
+
+        const char *wdayLabel = labelsGet((Label)(LABEL_SUNDAY + wday));
+        sLen = glcdCalcStringLen(wdayLabel);
+
+        glcdSetXY((rect.w - sLen) / 2, 28);
+        glcdWriteString(wdayLabel);
+    }
+}

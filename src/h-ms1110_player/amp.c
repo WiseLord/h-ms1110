@@ -358,6 +358,19 @@ static void ampPollInput(void)
     }
 }
 
+static void prepareAudioInput (Label *label)
+{
+    static InputType _inType;
+
+    if (amp.inType != _inType) {
+        _inType = amp.inType;
+        amp.clearScreen = true;
+    }
+
+    *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
+
+}
+
 static void ampHandleSwd(void)
 {
     static bool swd = false;
@@ -383,14 +396,18 @@ void ampScreenShow(void)
         canvasClear();
     }
 
+    Label label;
+
     switch (amp.screen) {
     case SCREEN_TIME:
-        canvasShowDate(clear, true);
+        canvasShowWday(clear, true);
         break;
     case SCREEN_STANDBY:
-        canvasShowDate(clear, false);
+        canvasShowWday(clear, false);
         break;
     default:
+        prepareAudioInput(&label);
+        canvasShowInput(clear, label);
         break;
     }
 

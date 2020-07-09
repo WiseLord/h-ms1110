@@ -28,6 +28,7 @@ void canvasClear(void);
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 void canvasShowTime(bool clear, bool active);
 void canvasShowDate(bool clear, bool active);
+void canvasShowWday(bool clear, bool active);
 void canvasShowInput(bool clear, Label label);
 void canvasShowTune(bool clear, TuneView *tune);
 void canvasShowSetup(bool clear);

@@ -107,6 +107,14 @@ void canvasShowDate(bool clear, bool active)
     dateViewDraw(clear, active, rtc.date, rtc.month, rtc.year, rtc.wday);
 }
 
+void canvasShowWday(bool clear, bool active)
+{
+    RTC_type rtc;
+    rtcGetTime(&rtc);
+
+    wdayViewDraw(clear, active, rtc.wday);
+}
+
 void canvasShowInput(bool clear, Label label)
 {
     (void)clear;
@@ -117,7 +125,7 @@ void canvasShowInput(bool clear, Label label)
     glcdSetFont(&fontterminus32);
     glcdSetFontColor(pal->fg);
 
-    glcdSetXY(rect.w / 2, (rect.h - canvas.glcd->font->chars[0].image->height) / 2);
+    glcdSetXY(rect.w / 2, 28);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
     glcdWriteString(labelsGet(label));
 }
