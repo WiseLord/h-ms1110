@@ -86,7 +86,6 @@ int16_t settingsGet(Param param)
     int16_t ret = 0;
 
     AudioProc *aProc = audioGet();
-    Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
     Amp *amp = ampGet();
 
@@ -150,13 +149,13 @@ int16_t settingsGet(Param param)
         break;
 
     case PARAM_SPECTRUM_MODE:
-        ret = sp->mode;
+        ret = amp->sp.mode;
         break;
     case PARAM_SPECTRUM_PEAKS:
-        ret = sp->peaks;
+        ret = amp->sp.peaks;
         break;
     case PARAM_SPECTRUM_GRAD:
-        ret = sp->grad;
+        ret = amp->sp.grad;
         break;
 
     case PARAM_ALARM_HOUR:
@@ -196,7 +195,6 @@ int16_t settingsGet(Param param)
 void settingsSet(Param param, int16_t value)
 {
     AudioProc *aProc = audioGet();
-    Spectrum *sp = spGet();
     Alarm *alarm = rtcGetAlarm(0);
     Amp *amp = ampGet();
 
@@ -260,13 +258,13 @@ void settingsSet(Param param, int16_t value)
         break;
 
     case PARAM_SPECTRUM_MODE:
-        sp->mode = (SpMode)value;
+        amp->sp.mode = (SpMode)value;
         break;
     case PARAM_SPECTRUM_PEAKS:
-        sp->peaks = (bool)value;
+        amp->sp.peaks = (bool)value;
         break;
     case PARAM_SPECTRUM_GRAD:
-        sp->grad = (bool)value;
+        amp->sp.grad = (bool)value;
         break;
 
     case PARAM_ALARM_HOUR:

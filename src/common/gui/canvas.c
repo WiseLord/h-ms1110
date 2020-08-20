@@ -115,7 +115,7 @@ void canvasShowWday(bool clear, bool active)
     wdayViewDraw(clear, active, rtc.wday);
 }
 
-void canvasShowInput(bool clear, Label label)
+void canvasShowInput(bool clear, int8_t input, Label label)
 {
     (void)clear;
 
@@ -125,9 +125,12 @@ void canvasShowInput(bool clear, Label label)
     glcdSetFont(&fontterminus32);
     glcdSetFontColor(pal->fg);
 
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d : %s", input, labelsGet(label));
+
     glcdSetXY(rect.w / 2, 28);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
-    glcdWriteString(labelsGet(label));
+    glcdWriteString(buf);
 }
 
 void canvasShowTune(bool clear, TuneView *tune)

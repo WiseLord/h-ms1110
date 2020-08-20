@@ -29,7 +29,7 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 void canvasShowTime(bool clear, bool active);
 void canvasShowDate(bool clear, bool active);
 void canvasShowWday(bool clear, bool active);
-void canvasShowInput(bool clear, Label label);
+void canvasShowInput(bool clear, int8_t input, Label label);
 void canvasShowTune(bool clear, TuneView *tune);
 void canvasShowSetup(bool clear);
 void canvasShowRadio(bool clear, RadioView *radio);

@@ -42,6 +42,8 @@ typedef struct {
     InputType inType[8];
     uint8_t inputStatus;
     int8_t volume;
+
+    Spectrum sp;
 } Amp;
 
 void ampInitMuteStby(void);

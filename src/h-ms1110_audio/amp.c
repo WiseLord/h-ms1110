@@ -13,7 +13,6 @@
 #include "rtc.h"
 #include "settings.h"
 #include "setup.h"
-#include "spectrum.h"
 #include "swtimers.h"
 #include "timers.h"
 #include "tr/labels.h"
@@ -365,8 +364,6 @@ static void actionGetEncoder(void)
 static bool isRemoteCmdRepeatable(RcCmd cmd)
 {
     ScreenType scrMode = amp.screen;
-    AudioProc *aProc = audioGet();
-    InputType inType = amp.inType[aProc->par.input];
 
     switch (cmd) {
     case RC_CMD_VOL_UP:
@@ -480,7 +477,7 @@ static void actionGetTimers(void)
 
 static void spModeChange(int16_t value)
 {
-    Spectrum *sp = spGet();
+    Spectrum *sp = &amp.sp;
 
     if (value > 0) {
         if (++sp->mode > SP_MODE_STEREO_END) {
@@ -836,8 +833,6 @@ void ampInit(void)
     labelsInit();
     canvasInit();
 
-    spInit();
-
     inputInit();
     rcInit();
 
@@ -845,7 +840,6 @@ void ampInit(void)
 
     ampReadSettings();
 
-    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
     swTimInit();
 
     inputSetPower(false);    // Power off input device
@@ -1070,9 +1064,9 @@ void ampActionHandle(void)
 
     if (scrMode != SCREEN_STANDBY && scrMode != SCREEN_SETUP) {
         // Reset silence timer on signal
-        if (spCheckSignal()) {
+//        if (spCheckSignal()) {
             actionResetSilenceTimer();
-        }
+//        }
         // Reset silence timer on any user action
         if (action.type != ACTION_NONE &&
             action.type != ACTION_DISP_EXPIRED &&
@@ -1107,6 +1101,23 @@ static void prepareAudioTune(TuneView *tune)
     tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
+static void prepareAudioInput (Label *label)
+{
+    static InputType _inType;
+
+    AudioProc *aProc = audioGet();
+    int8_t input = aProc->par.input;
+
+    InputType inType = amp.inType[input];
+
+    if (inType != _inType) {
+        _inType = inType;
+        amp.clearScreen = true;
+    }
+
+    *label = LABEL_IN_TUNER + (inType - IN_TUNER);
+
+}
 static void ampHandleSwd(void)
 {
     static bool swd = false;
@@ -1141,7 +1152,7 @@ static void ampScreenShow(void)
         rtcSyncRequired = false;
     }
 
-    Spectrum *sp = spGet();
+    Spectrum *sp = &amp.sp;
     static Spectrum _sp;
 
     if ((sp->mode != _sp.mode) ||
@@ -1151,12 +1162,9 @@ static void ampScreenShow(void)
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
     }
 
-    SpMode spMode = sp->mode == SP_MODE_ANTIMIRROR ? SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
+    Label label;
 
     switch (amp.screen) {
-    case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, spMode, sp->peaks);
-        break;
     case SCREEN_TIME:
         canvasShowTime(clear, true);
         break;
@@ -1171,21 +1179,12 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
+        prepareAudioInput(&label);
+        canvasShowInput(clear, audioGet()->par.input, label);
         break;
     }
 
     canvasDebugFPS();
 
     glcdFbSync();
-}
-
-void TIM_SPECTRUM_HANDLER(void)
-{
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
-        // Clear the update interrupt flag
-        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
-
-        // Callbacks
-        spConvertADC();
-    }
 }
