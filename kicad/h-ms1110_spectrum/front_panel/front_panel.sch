@@ -1183,17 +1183,6 @@ F 3 "~" H 10900 900 50  0001 C CNN
 	1    10900 900 
 	1    0    0    -1  
 $EndComp
-$Comp
-L Interface_Optical:TSOP45xx U5
-U 1 1 5DF7E458
-P 8050 2900
-F 0 "U5" H 8038 3325 50  0000 C CNN
-F 1 "TSOP4538" H 8038 3234 50  0000 C CNN
-F 2 "OptoDevice:Vishay_MOLD-3Pin" H 8000 2525 50  0001 C CNN
-F 3 "http://www.vishay.com/docs/82460/tsop45.pdf" H 8700 3200 50  0001 C CNN
-	1    8050 2900
-	1    0    0    -1  
-$EndComp
 Wire Bus Line
 	4700 3450 7600 3450
 Connection ~ 4700 3450
@@ -1346,48 +1335,6 @@ Wire Wire Line
 Wire Wire Line
 	8550 1700 8550 1600
 Connection ~ 8550 1600
-$Comp
-L power:GNDD #PWR?
-U 1 1 5EC79CF5
-P 8550 3150
-AR Path="/5E0648E0/5EC79CF5" Ref="#PWR?"  Part="1" 
-AR Path="/5EC79CF5" Ref="#PWR0132"  Part="1" 
-F 0 "#PWR0132" H 8550 2900 50  0001 C CNN
-F 1 "GNDD" H 8554 2995 50  0000 C CNN
-F 2 "" H 8550 3150 50  0001 C CNN
-F 3 "" H 8550 3150 50  0001 C CNN
-	1    8550 3150
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8550 3150 8550 3100
-Wire Wire Line
-	8550 3100 8450 3100
-$Comp
-L power:+3V3 #PWR?
-U 1 1 5EC96463
-P 8550 2650
-AR Path="/5E0648E0/5EC96463" Ref="#PWR?"  Part="1" 
-AR Path="/5EC96463" Ref="#PWR0133"  Part="1" 
-F 0 "#PWR0133" H 8550 2500 50  0001 C CNN
-F 1 "+3V3" H 8565 2823 50  0000 C CNN
-F 2 "" H 8550 2650 50  0001 C CNN
-F 3 "" H 8550 2650 50  0001 C CNN
-	1    8550 2650
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8450 2700 8550 2700
-Wire Wire Line
-	8550 2700 8550 2650
-Wire Wire Line
-	8450 2900 9000 2900
-Wire Wire Line
-	9000 2900 9000 3350
-Entry Wire Line
-	8900 3450 9000 3350
-Text Label 9000 3350 1    50   ~ 0
-REMOTE
 $Comp
 L power:PWR_FLAG #FLG0101
 U 1 1 5DEE5868
@@ -2627,6 +2574,8 @@ Wire Wire Line
 	3550 1250 4000 1250
 Text Notes 7050 6950 0    100  ~ 0
 Based on common front_panel\nschematic and PCB
+Wire Wire Line
+	1300 1850 2950 1850
 Wire Bus Line
 	7600 3450 9300 3450
 Wire Bus Line
@@ -2645,6 +2594,4 @@ Wire Bus Line
 	4700 3450 4700 7400
 Wire Bus Line
 	2350 3450 2350 7400
-Wire Wire Line
-	1300 1850 2950 1850
 $EndSCHEMATC

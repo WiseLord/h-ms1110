@@ -1,13 +1,12 @@
 PROJECT = H-MS1110
 
-MODULE = AUDIO
+MODULE = PLAYER
 
 STM32_MCU = F103CB
 
 DISPLAY = SSD1322
 DISPVAR = SPI
 
-APROC_LIST = TDA7719
 FEATURE_LIST =
 
 DEBUG = 1
@@ -29,7 +28,11 @@ C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 C_DEFS += -D_PRINTF_USART1
 C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
-C_DEFS += -D_INPUT_ANALOG
+
+# Player prototype board has a bit different schematics
+# S1 connected to PB0 instead of PA13
+# S2 connected to PB1 instead of PA13
+C_DEFS += -D_PLAYER_PROTOTYPE
 
 COMMON = ../common
 
@@ -37,13 +40,12 @@ C_SOURCES += main.c
 
 C_SOURCES += amp.c
 C_SOURCES += settings.c
-C_SOURCES += setup.c
 
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
+C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
-C_SOURCES += $(COMMON)/rc.c
 C_SOURCES += $(COMMON)/rtc.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
@@ -55,7 +57,6 @@ C_SOURCES += $(COMMON)/utils.c
 C_SOURCES += $(wildcard $(COMMON)/tr/labels*.c)
 
 # Input source files
-C_SOURCES += $(COMMON)/input/analog.c
 C_SOURCES += $(COMMON)/input/matrix.c
 
 # Display source files
@@ -69,10 +70,8 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
-C_SOURCES += $(COMMON)/screen/setupview.c
-C_SOURCES += $(COMMON)/screen/spectrumview.c
+C_SOURCES += $(COMMON)/screen/radioview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
-C_SOURCES += $(COMMON)/screen/tuneview.c
 
 C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
 C_SOURCES += $(COMMON)/display/dispdrv.c
@@ -84,11 +83,6 @@ C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
-
-# Audio source files
-C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
-C_SOURCES += $(COMMON)/audio/audio.c
-C_DEFS += $(addprefix -D_, $(APROC_LIST))
 
 C_INCLUDES += \
   -I$(COMMON)/display/fonts \
@@ -136,7 +130,6 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 OPT_FLAGS = $(OPT) -fshort-enums -ffunction-sections -fdata-sections -ffreestanding
 #OPT_FLAGS += -flto
 WARN = -Wall
-#-Werror
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT_FLAGS) $(WARN)
 ASFLAGS = $(MCU) $(AS_DEFS) $(WARN)
@@ -164,7 +157,7 @@ AR = $(PREFIX)ar
 SZ = $(PREFIX)size
 
 OPENOCD := openocd
-OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
+OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_jlink.cfg
 
 # .s files should be first in linking process to handle -flto properly
 OBJECTS += $(addprefix $(OBJ_DIR)/,$(ASM_SOURCES:.s=.o))
