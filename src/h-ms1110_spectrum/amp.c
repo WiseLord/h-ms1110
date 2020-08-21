@@ -398,7 +398,14 @@ void ampScreenShow(void)
 
     Label label;
 
+    Spectrum *sp = spGet();
+
+    SpMode spMode = sp->mode == SP_MODE_ANTIMIRROR ? SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
+
     switch (amp.screen) {
+    case SCREEN_SPECTRUM:
+        canvasShowSpectrum(clear, spMode, sp->peaks);
+        break;
     case SCREEN_TIME:
         canvasShowWday(clear, true);
         break;
@@ -421,6 +428,9 @@ void TIM_SPECTRUM_HANDLER(void)
     if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
         // Clear the update interrupt flag
         LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
+
+        // Callbacks
+        spConvertADC();
 
         // Callbacks
     }

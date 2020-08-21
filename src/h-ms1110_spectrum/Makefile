@@ -47,6 +47,7 @@ C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
 C_SOURCES += $(COMMON)/rtc.c
+C_SOURCES += $(COMMON)/spectrum.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
 C_SOURCES += $(COMMON)/sync.c
@@ -71,6 +72,7 @@ ifneq (,$(filter $(DISPLAY), \
 endif
 
 C_SOURCES += $(COMMON)/screen/radioview.c
+C_SOURCES += $(COMMON)/screen/spectrumview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
 
 C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c

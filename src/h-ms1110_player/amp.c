@@ -1160,6 +1160,7 @@ static void ampScreenShow(void)
         _sp.mode = sp->mode;
         _sp.peaks = sp->peaks;
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
+        syncMasterSendSpectrum(AMP_PLAYER_ADDR, sp);
     }
 
     Label label;
