@@ -18,11 +18,10 @@
 #include "utils.h"
 
 static void actionGetButtons(void);
-static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
-static void actionRemapBtnShort(int16_t button);
-static void actionRemapBtnLong(int16_t button);
+static void actionRemapSpectrumBtnShort(int16_t button);
+static void actionRemapSpectrumBtnLong(int16_t button);
 
 static void ampHandleSwd(void);
 
@@ -161,22 +160,12 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_PLAYER_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_SPECTRUM_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_PLAYER_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_SPECTRUM_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
         syncSlaveSendAction(&action);
     }
-}
-
-static void actionGetEncoder(void)
-{
-//    int8_t encVal = inputGetEncoder();
-
-//    if (encVal) {
-//        actionSet(ACTION_PLAYER_ENCODER, encVal);
-//        syncSlaveSendAction(&action);
-//    }
 }
 
 static void actionGetTimers(void)
@@ -200,9 +189,11 @@ void ampInit(void)
     labelsInit();
     canvasInit();
 
+    spInit();
+
     inputInit();
 
-    syncSlaveInit(AMP_PLAYER_ADDR);
+    syncSlaveInit(AMP_SPECTRUM_ADDR);
 
     ampReadSettings();
 
@@ -247,12 +238,20 @@ static void ampActionSyncMaster(void)
 
     SyncType syncType = syncData[0];
 
+    Spectrum *sp = spGet();
+
     switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
         break;
     case SYNC_TIME:
         rtcSetRaw(*(uint32_t *)&syncData[1]);
+        break;
+    case SYNC_SPECTRUM:
+        *sp = *((Spectrum *)&syncData[1]);
+        settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
+        amp.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(uint8_t *)&syncData[1];
@@ -268,10 +267,6 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
-        actionGetEncoder();
-    }
-
-    if (ACTION_NONE == action.type) {
         ScreenType scrMode = amp.screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
@@ -284,14 +279,14 @@ void ampActionGet(void)
     }
 }
 
-static void actionRemapBtnShort(int16_t button)
+static void actionRemapSpectrumBtnShort(int16_t button)
 {
     switch (button) {
 
     }
 }
 
-static void actionRemapBtnLong(int16_t button)
+static void actionRemapSpectrumBtnLong(int16_t button)
 {
     switch (button) {
 
@@ -301,11 +296,11 @@ static void actionRemapBtnLong(int16_t button)
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_BTN_SHORT:
-        actionRemapBtnShort(action.value);
+    case ACTION_SPECTRUM_BTN_SHORT:
+        actionRemapSpectrumBtnShort(action.value);
         break;
-    case ACTION_BTN_LONG:
-        actionRemapBtnLong(action.value);
+    case ACTION_SPECTRUM_BTN_LONG:
+        actionRemapSpectrumBtnLong(action.value);
         break;
     }
 }

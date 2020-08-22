@@ -98,7 +98,7 @@ uint16_t inputAnalogGetBtn(void)
     }
 
     if (aBtn >= 0) {
-        return (uint16_t)(BTN_STBY << aBtn);
+        return (uint16_t)(BTN_AMP_STBY << aBtn);
     }
 
     return BTN_NO;

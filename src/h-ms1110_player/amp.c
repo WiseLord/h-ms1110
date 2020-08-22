@@ -26,8 +26,8 @@ static void actionGetPots(void);
 #endif
 static void actionGetTimers(void);
 
-static void actionRemapBtnShort(int16_t button);
-static void actionRemapBtnLong(int16_t button);
+static void actionRemapPlayerBtnShort(int16_t button);
+static void actionRemapPlayerBtnLong(int16_t button);
 static void actionRemapTunerBtnShort(int16_t button);
 static void actionRemapTunerBtnLong(int16_t button);
 static void actionRemapPlayerBtnShort(int16_t button);
@@ -37,7 +37,7 @@ static void actionRemapRemote(void);
 static void actionRemapCommon(void);
 //static void actionRemapNavigate(void);
 
-static void actionRemapEncoder(int16_t encCnt);
+static void actionRemapPlayerEncoder(int16_t encCnt);
 static void actionRemapTunerEncoder(int16_t encCnt);
 
 static void ampActionSyncSlaves(void);
@@ -148,7 +148,7 @@ static void inputSetPower(bool value)
         amp.inputStatus = 0x00;
     }
     syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
-    syncMasterSendInType(AMP_PLAYER_ADDR, amp.inType[input]);
+    syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType[input]);
 }
 
 static void ampPinMute(bool value)
@@ -345,9 +345,9 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_PLAYER_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_PLAYER_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
     }
 }
@@ -357,7 +357,7 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
-        actionSet(ACTION_ENCODER, encVal);
+        actionSet(ACTION_PLAYER_ENCODER, encVal);
     }
 }
 
@@ -496,20 +496,20 @@ static void spModeChange(int16_t value)
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 }
 
-static void actionRemapBtnShort(int16_t button)
+static void actionRemapPlayerBtnShort(int16_t button)
 {
     switch (button) {
-    case BTN_STBY:
+    case BTN_AMP_STBY:
         actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
-    case BTN_IN_PREV:
+    case BTN_AMP_IN_PREV:
         if (SCREEN_SETUP == amp.screen) {
             actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
         } else {
             actionSet(ACTION_AUDIO_INPUT, -1);
         }
         break;
-    case BTN_IN_NEXT:
+    case BTN_AMP_IN_NEXT:
         if (SCREEN_SETUP == amp.screen) {
             actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
         } else {
@@ -517,12 +517,14 @@ static void actionRemapBtnShort(int16_t button)
         }
         break;
 
-    case BTN_AUTO:
+    case BTN_PLAYER_AUDIO:
         if (SCREEN_SETUP == amp.screen) {
             actionSet(ACTION_SETUP_BACK, 0);
+        } else {
+            action.type = ACTION_OPEN_MENU;
         }
         break;
-    case BTN_DEMO:
+    case BTN_PLAYER_SUBTITLE:
         if (SCREEN_SETUP == amp.screen) {
             Setup *setup = setupGet();
             if (setup->active <= SETUP_MAIN) { // has childs
@@ -530,47 +532,18 @@ static void actionRemapBtnShort(int16_t button)
             }
         }
         break;
-    case BTN_DISP_PREV:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
-        } else {
-            actionSet(ACTION_SP_MODE, -1);
-        }
-        break;
-    case BTN_DISP_NEXT:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
-        } else {
-            actionSet(ACTION_SP_MODE, +1);
-        }
-        break;
     default:
         break;
     }
 }
 
-static void actionRemapBtnLong(int16_t button)
+static void actionRemapPlayerBtnLong(int16_t button)
 {
     switch (button) {
-    case BTN_STBY:
+    case BTN_AMP_STBY:
         if (SCREEN_STANDBY == amp.screen) {
             actionSet(ACTION_SETUP_SELECT, SETUP_MAIN);
         }
-        break;
-    case BTN_IN_PREV:
-        break;
-    case BTN_IN_NEXT:
-        break;
-
-    case BTN_AUTO:
-        break;
-    case BTN_DEMO:
-        break;
-    case BTN_DISP_PREV:
-        break;
-    case BTN_DISP_NEXT:
-        break;
-    default:
         break;
     }
 }
@@ -578,31 +551,21 @@ static void actionRemapBtnLong(int16_t button)
 static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
-    case BTN_MWFM:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
-        } else {
-            actionSet(ACTION_SP_MODE, -1);
-        }
+    case BTN_TUNER_1:
+    case BTN_TUNER_2:
+    case BTN_TUNER_3:
+    case BTN_TUNER_4:
+    case BTN_TUNER_5:
+    case BTN_TUNER_6:
+    case BTN_TUNER_7:
+    case BTN_TUNER_8:
+    case BTN_TUNER_9:
         break;
-    case BTN_RDS:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
-        } else {
-            actionSet(ACTION_SP_MODE, +1);
-        }
+    case BTN_TUNER_MWFM:
         break;
-    case BTN_ENC:
+    case BTN_TUNER_RDS:
         break;
-    case BTN_1:
-    case BTN_2:
-    case BTN_3:
-    case BTN_4:
-    case BTN_5:
-    case BTN_6:
-    case BTN_7:
-    case BTN_8:
-    case BTN_9:
+    case BTN_TUNER_ENC:
         break;
     default:
         break;
@@ -612,78 +575,53 @@ static void actionRemapTunerBtnShort(int16_t button)
 static void actionRemapTunerBtnLong(int16_t button)
 {
     switch (button) {
-    case BTN_MWFM:
+    case BTN_TUNER_1:
+    case BTN_TUNER_2:
+    case BTN_TUNER_3:
+    case BTN_TUNER_4:
+    case BTN_TUNER_5:
+    case BTN_TUNER_6:
+    case BTN_TUNER_7:
+    case BTN_TUNER_8:
+    case BTN_TUNER_9:
         break;
-    case BTN_RDS:
+    case BTN_TUNER_MWFM:
         break;
-    case BTN_ENC:
-        action.type = ACTION_OPEN_MENU;
+    case BTN_TUNER_RDS:
         break;
-    case BTN_1:
-    case BTN_2:
-    case BTN_3:
-    case BTN_4:
-    case BTN_5:
-    case BTN_6:
-    case BTN_7:
-    case BTN_8:
-    case BTN_9:
+    case BTN_TUNER_ENC:
         break;
     default:
         break;
     }
 }
 
-static void actionRemapPlayerBtnShort(int16_t button)
+static void actionRemapSpectrumBtnShort(int16_t button)
 {
     switch (button) {
-    case BTN_OPEN:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
-        } else {
-            actionSet(ACTION_SP_MODE, -1);
-        }
+    case BTN_SPECTRUM_AUTO:
         break;
-    case BTN_PLAYPAUSE:
-        if (SCREEN_SETUP == amp.screen) {
-            actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
-        } else {
-            actionSet(ACTION_SP_MODE, +1);
-        }
+    case BTN_SPECTRUM_DEMO:
         break;
-    case BTN_STOP:
+    case BTN_SPECTRUM_DISP_PREV:
+        actionSet(ACTION_SP_MODE, -1);
         break;
-    case BTN_REWIND:
-        break;
-    case BTN_REPEATE:
-        break;
-    case BTN_FORWARD:
-        break;
-    case BTN_AUDIO:
-        break;
-    case BTN_SUBTITLE:
+    case BTN_SPECTRUM_DISP_NEXT:
+        actionSet(ACTION_SP_MODE, +1);
         break;
     }
 }
 
-static void actionRemapPlayerBtnLong(int16_t button)
+static void actionRemapSpectrumBtnLong(int16_t button)
 {
     switch (button) {
-    case BTN_OPEN:
+    case BTN_SPECTRUM_AUTO:
         break;
-    case BTN_PLAYPAUSE:
+    case BTN_SPECTRUM_DEMO:
         break;
-    case BTN_STOP:
+    case BTN_SPECTRUM_DISP_PREV:
         break;
-    case BTN_REWIND:
-        break;
-    case BTN_REPEATE:
-        break;
-    case BTN_FORWARD:
-        break;
-    case BTN_AUDIO:
-        break;
-    case BTN_SUBTITLE:
+    case BTN_SPECTRUM_DISP_NEXT:
         break;
     }
 }
@@ -714,7 +652,7 @@ static void actionRemapRemote(void)
     }
 }
 
-static void actionRemapEncoder(int16_t encCnt)
+static void actionRemapPlayerEncoder(int16_t encCnt)
 {
     ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
@@ -881,7 +819,7 @@ static void ampActionSyncSlaves(void)
         return;
     }
 
-    syncType = syncMasterReceive(AMP_PLAYER_ADDR, syncData);
+    syncType = syncMasterReceive(AMP_SPECTRUM_ADDR, syncData);
     switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
@@ -926,14 +864,14 @@ static void ampActionGet(void)
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_BTN_SHORT:
-        actionRemapBtnShort(action.value);
+    case ACTION_PLAYER_BTN_SHORT:
+        actionRemapPlayerBtnShort(action.value);
         break;
-    case ACTION_BTN_LONG:
-        actionRemapBtnLong(action.value);
+    case ACTION_PLAYER_BTN_LONG:
+        actionRemapPlayerBtnLong(action.value);
         break;
-    case ACTION_ENCODER:
-        actionRemapEncoder(action.value);
+    case ACTION_PLAYER_ENCODER:
+        actionRemapPlayerEncoder(action.value);
         break;
 
     case ACTION_TUNER_BTN_SHORT:
@@ -946,11 +884,11 @@ static void ampActionRemap(void)
         actionRemapTunerEncoder(action.value);
         break;
 
-    case ACTION_PLAYER_BTN_SHORT:
-        actionRemapPlayerBtnShort(action.value);
+    case ACTION_SPECTRUM_BTN_SHORT:
+        actionRemapSpectrumBtnShort(action.value);
         break;
-    case ACTION_PLAYER_BTN_LONG:
-        actionRemapPlayerBtnLong(action.value);
+    case ACTION_SPECTRUM_BTN_LONG:
+        actionRemapSpectrumBtnLong(action.value);
         break;
 
     case ACTION_REMOTE:
@@ -982,7 +920,7 @@ void ampActionHandle(void)
     case ACTION_STANDBY:
         ampHandleStby();
         syncMasterSendAction(AMP_TUNER_ADDR, &action);
-        syncMasterSendAction(AMP_PLAYER_ADDR, &action);
+        syncMasterSendAction(AMP_SPECTRUM_ADDR, &action);
         break;
 
     case ACTION_RESTORE_VOLUME:
@@ -1007,7 +945,7 @@ void ampActionHandle(void)
         if (active == SETUP_TIME || active == SETUP_DATE) {
             uint32_t rtcRaw = rtcGetRaw();
             syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
-            syncMasterSendTime(AMP_PLAYER_ADDR, rtcRaw);
+            syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
         }
         ampHandleSetup();
         break;
@@ -1148,7 +1086,7 @@ static void ampScreenShow(void)
     if (rtcSyncRequired) {
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
-        syncMasterSendTime(AMP_PLAYER_ADDR, rtcRaw);
+        syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
         rtcSyncRequired = false;
     }
 
@@ -1160,7 +1098,7 @@ static void ampScreenShow(void)
         _sp.mode = sp->mode;
         _sp.peaks = sp->peaks;
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
-        syncMasterSendSpectrum(AMP_PLAYER_ADDR, sp);
+        syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
     }
 
     Label label;
