@@ -13,29 +13,29 @@ void tuneViewDraw(bool clear, TuneView *tune)
     const Palette *pal = paletteGet();
     GlcdRect *rect = glcdGetRect();
 
-    const tFont *labelFont = &fontterminus32;
-    const tFont *valueFont = &fontterminus32;
+    const tFont *labelFont = &fontterminus24b;
+    const tFont *valueFont = &fontterminus24b;
 
     glcdSetFont(labelFont);
     glcdSetFontColor(pal->fg);
-    glcdSetXY(0, 0);
+    glcdSetXY(0, 22);
     glcdWriteString(labelsGet(tune->label));
 
     glcdSetFont(valueFont);
     glcdSetFontColor(pal->fg);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    glcdSetXY(rect->w, 0);
+    glcdSetXY(rect->w, 22);
 
     char buf[4];
     snprintf(buf, sizeof(buf), "%3d", tune->value);
     glcdWriteString(buf);
 
     ProgressBar bar;
-    bar.lt.rect.x = 0;
-    bar.lt.rect.y = 44;
-    bar.lt.rect.w = rect->w;
+    bar.lt.rect.x = 1;
+    bar.lt.rect.y = 48;
+    bar.lt.rect.w = rect->w - 2;
     bar.lt.rect.h = rect->h - bar.lt.rect.y;
-    bar.lt.fw = 3;
+    bar.lt.fw = 2;
     bar.lt.sc = 83;
     bar.lt.sw = 2;
     bar.value = tune->value;
