@@ -5,7 +5,7 @@ void ili9341Init(void)
     CLR(DISP_CS);
 
     dispdrvSelectReg8(0x01); // Software Reset
-    utilmDelay(10);
+    DISP_MDELAY(10);
     dispdrvSelectReg8(0x28); // Display OFF
 
     dispdrvSelectReg8(0xCF); // Power Control B
@@ -120,11 +120,11 @@ void ili9341Init(void)
     SET(DISP_CS);
 }
 
-void ili9341Rotate(uint8_t rotate)
+void ili9341Rotate(bool rotate)
 {
     CLR(DISP_CS);
 
-    if (rotate & LCD_ROTATE_180) {
+    if (rotate) {
         dispdrvSelectReg8(0xB6);
         dispdrvSendData8(0x0A);
         dispdrvSendData8(0x82);
@@ -158,20 +158,15 @@ void ili9341Shift(int16_t value)
     SET(DISP_CS);
 }
 
-void ili9341Sleep(void)
+void ili9341Sleep(bool value)
 {
     CLR(DISP_CS);
 
-    dispdrvSelectReg8(0x10); // Enter Sleep Mode
-
-    SET(DISP_CS);
-}
-
-void ili9341Wakeup(void)
-{
-    CLR(DISP_CS);
-
-    dispdrvSelectReg8(0x11); // Sleep Out
+    if (value) {
+        dispdrvSelectReg8(0x10); // Enter Sleep Mode
+    } else {
+        dispdrvSelectReg8(0x11); // Sleep Out
+    }
 
     SET(DISP_CS);
 }
@@ -201,7 +196,6 @@ const DispDriver dispdrv = {
     .height = 240,
     .init = ili9341Init,
     .sleep = ili9341Sleep,
-    .wakeup = ili9341Wakeup,
     .setWindow = ili9341SetWindow,
     .rotate = ili9341Rotate,
     .shift = ili9341Shift,

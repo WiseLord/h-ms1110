@@ -2,6 +2,7 @@ common/action.h
 common/debug.c
 common/debug.h
 common/display/colors.h
+common/display/dispconf.h
 common/display/dispdrv.c
 common/display/dispdrv.h
 common/display/fonts/font-terminus-12.c
@@ -26,6 +27,7 @@ common/display/gg256x64/ssd1322.c
 common/display/gg256x64/ssd1322.h
 common/display/glcd.c
 common/display/glcd.h
+common/display/hw_stm32f1_ll.h
 common/drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h
 common/drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h
 common/drivers/CMSIS/Device/ST/STM32F1xx/Include/system_stm32f1xx.h

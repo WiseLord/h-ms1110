@@ -402,10 +402,10 @@ void ampScreenShow(void)
         canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     case SCREEN_TIME:
-        canvasShowWday(clear, true);
+        canvasShowDate(clear, true);
         break;
     case SCREEN_STANDBY:
-        canvasShowWday(clear, false);
+        canvasShowDate(clear, false);
         break;
     default:
         prepareAudioInput(&label);

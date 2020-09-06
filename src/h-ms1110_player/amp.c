@@ -6,6 +6,7 @@
 #include "audio/audio.h"
 #include "debug.h"
 #include "gui/canvas.h"
+#include "hwlibs.h"
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"

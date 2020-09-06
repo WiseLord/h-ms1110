@@ -14,7 +14,7 @@ static Canvas canvas;
 
 void canvasInit()
 {
-    glcdInit();
+    glcdInit(GLCD_LANDSCAPE);
 
     canvas.glcd = glcdGet();
 

@@ -10,7 +10,7 @@ void r61581Init(void)
     dispdrvSendData8(0x00); // Enable all
 
     dispdrvSelectReg8(0x28);  // Set display off
-    utilmDelay(30);
+    DISP_MDELAY(30);
 
     dispdrvSelectReg8(0xB3);  // Frame memory access and interface setting
     dispdrvSendData8(0x02); // WEMODE=1
@@ -59,7 +59,8 @@ void r61581Init(void)
     dispdrvSendData8(0x60);
 
     dispdrvSelectReg8(0x36);  // Set address mode
-    dispdrvSendData8(0x40); // B7=0 => Top to bottom, B6=1 => Right to left, B5=0 => Normal mode, B4=0 => Refresh top to bottom, B0=0 => Normal
+    dispdrvSendData8(
+        0x40); // B7=0 => Top to bottom, B6=1 => Right to left, B5=0 => Normal mode, B4=0 => Refresh top to bottom, B0=0 => Normal
 
     dispdrvSelectReg8(0x3A);  // Set pixel format
     dispdrvSendData8(0x55); // DPI=5 => 16bits/pixel, DBI=5 => 16bits/pixel
@@ -83,20 +84,20 @@ void r61581Init(void)
     dispdrvSendData8(0x04);
 
     dispdrvSelectReg8(0x11);  // Exit sleep mode
-    utilmDelay(150);
+    DISP_MDELAY(150);
 
     dispdrvSelectReg8(0x29);  // Set display on
-    utilmDelay(30);
+    DISP_MDELAY(30);
 
     DISP_WAIT_BUSY();
     SET(DISP_CS);
 }
 
-void r61581Rotate(uint8_t rotate)
+void r61581Rotate(bool rotate)
 {
     CLR(DISP_CS);
 
-    if (rotate & LCD_ROTATE_180) {
+    if (rotate) {
         dispdrvSelectReg8(0xC0);  // Panel driving setting
         dispdrvSendData8(0x13); // REV, BGR, SS
     } else {
@@ -128,24 +129,19 @@ void r615811Shift(int16_t value)
     SET(DISP_CS);
 }
 
-void r61581Sleep(void)
+void r61581Sleep(bool value)
 {
     CLR(DISP_CS);
 
-    dispdrvSelectReg8(0x28);    // Display OFF
-    utilmDelay(100);
-    dispdrvSelectReg8(0x10);
-
-    SET(DISP_CS);
-}
-
-void r61581Wakeup(void)
-{
-    CLR(DISP_CS);
-
-    dispdrvSelectReg8(0x11);    // Display ON
-    utilmDelay(100);
-    dispdrvSelectReg8(0x29);
+    if (value) {
+        dispdrvSelectReg8(0x28);    // Display OFF
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x10);
+    } else {
+        dispdrvSelectReg8(0x11);    // Display ON
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x29);
+    }
 
     SET(DISP_CS);
 }
@@ -175,7 +171,6 @@ const DispDriver dispdrv = {
     .height = 320,
     .init = r61581Init,
     .sleep = r61581Sleep,
-    .wakeup = r61581Wakeup,
     .setWindow = r61581SetWindow,
     .rotate = r61581Rotate,
     .shift = r615811Shift,

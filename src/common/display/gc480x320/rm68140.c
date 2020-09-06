@@ -5,7 +5,7 @@ void rm68140Init(void)
     CLR(DISP_CS);
 
     dispdrvSelectReg8(0x01);    // Soft Reset
-    utilmDelay(150);
+    DISP_MDELAY(150);
     dispdrvSelectReg8(0x28);    // Display OFF
 
     dispdrvSelectReg8(0x3A);    // Interface Pixel Format
@@ -22,18 +22,18 @@ void rm68140Init(void)
     dispdrvSelectReg8(0x20);    // Display inversion off
 
     dispdrvSelectReg8(0x11);    // Sleep OUT
-    utilmDelay(120);
+    DISP_MDELAY(120);
     dispdrvSelectReg8(0x29);    // Display ON
 
     DISP_WAIT_BUSY();
     SET(DISP_CS);
 }
 
-void rm68140Rotate(uint8_t rotate)
+void rm68140Rotate(bool rotate)
 {
     CLR(DISP_CS);
 
-    if (rotate & LCD_ROTATE_180) {
+    if (rotate) {
         dispdrvSelectReg8(0xB6);
         dispdrvSendData8(0x00);
         dispdrvSendData8(0x02);
@@ -68,26 +68,22 @@ void rm68140Shift(int16_t value)
     DISP_WAIT_BUSY();
     SET(DISP_CS);
 }
-void rm68140Sleep(void)
+
+void rm68140Sleep(bool value)
 {
     CLR(DISP_CS);
 
-    dispdrvSelectReg8(0x28);    // Display OFF
-    utilmDelay(100);
-    dispdrvSelectReg8(0x10);
+    if (value) {
+        dispdrvSelectReg8(0x28);    // Display OFF
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x10);
+    } else {
+        dispdrvSelectReg8(0x11);    // Display ON
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x29);
+    }
 
     DISP_WAIT_BUSY();
-    SET(DISP_CS);
-}
-
-void rm68140Wakeup(void)
-{
-    CLR(DISP_CS);
-
-    dispdrvSelectReg8(0x11);    // Display ON
-    utilmDelay(100);
-    dispdrvSelectReg8(0x29);
-
     SET(DISP_CS);
 }
 
@@ -117,7 +113,6 @@ const DispDriver dispdrv = {
     .height = 320,
     .init = rm68140Init,
     .sleep = rm68140Sleep,
-    .wakeup = rm68140Wakeup,
     .setWindow = rm68140SetWindow,
     .rotate = rm68140Rotate,
     .shift = rm68140Shift,

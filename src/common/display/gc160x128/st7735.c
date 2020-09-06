@@ -7,7 +7,7 @@ void st7735Init(void)
     // Initial Sequence
     //************* Start Initial Sequence **********//
     dispdrvSelectReg8(0x11); //Exit Sleep
-    utilmDelay(20);
+    DISP_MDELAY(20);
 
     dispdrvSelectReg8(0x21); //Display Inversion On
 
@@ -93,25 +93,19 @@ void st7735Init(void)
     SET(DISP_CS);
 }
 
-void st7735Sleep(void)
+void st7735Sleep(bool value)
 {
     CLR(DISP_CS);
 
-    dispdrvSelectReg8(0x28);    // Display OFF
-    utilmDelay(100);
-    dispdrvSelectReg8(0x10);
-
-    DISP_WAIT_BUSY();
-    SET(DISP_CS);
-}
-
-void st7735Wakeup(void)
-{
-    CLR(DISP_CS);
-
-    dispdrvSelectReg8(0x11);    // Display OFF
-    utilmDelay(100);
-    dispdrvSelectReg8(0x29);
+    if (value) {
+        dispdrvSelectReg8(0x28);    // Display OFF
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x10);
+    } else {
+        dispdrvSelectReg8(0x11);    // Display OFF
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x29);
+    }
 
     DISP_WAIT_BUSY();
     SET(DISP_CS);
@@ -142,6 +136,5 @@ const DispDriver dispdrv = {
     .height = 132,
     .init = st7735Init,
     .sleep = st7735Sleep,
-    .wakeup = st7735Wakeup,
     .setWindow = st7735SetWindow,
 };

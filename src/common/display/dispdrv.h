@@ -5,53 +5,19 @@
 extern "C" {
 #endif
 
+#include "dispconf.h"
+
 #include <stdint.h>
 
 #include "colors.h"
 #include "fonts.h"
-#include "hwlibs.h"
-#include "utils.h"
-
-#ifdef _DISP_SPI
-#include "spi.h"
-#define SPI_DISPLAY             SPI2
-#define DISP_WAIT_BUSY()        spiWaitBusy(SPI_DISPLAY)
-#else
-#define DISP_WAIT_BUSY()        (void)0
-#endif
-
-#define LCD_ROTATE_0        0x00
-#define LCD_ROTATE_180      0x02
-
-#define LCD_BR_MIN          1
-#define LCD_BR_MAX          32
-
-// TFT LCD pins
-#define DISP_DATA_Port          GPIOB
-#define DISP_DATA_Pin           (LL_GPIO_PIN_0 | LL_GPIO_PIN_1 | LL_GPIO_PIN_2 | LL_GPIO_PIN_3 | \
-                                 LL_GPIO_PIN_4 | LL_GPIO_PIN_5 | LL_GPIO_PIN_6 | LL_GPIO_PIN_7)
-
-#define DISP_CS_Port            GPIOB
-#define DISP_CS_Pin             LL_GPIO_PIN_12
-#define DISP_RS_Port            GPIOB
-#define DISP_RS_Pin             LL_GPIO_PIN_14
-#define DISP_WR_Port            GPIOB
-#define DISP_WR_Pin             LL_GPIO_PIN_15
-#ifdef _DISP_READ_ENABLED
-#define DISP_RD_Port            GPIOB
-#define DISP_RD_Pin             LL_GPIO_PIN_10
-#endif
-#ifdef _DISP_RST_ENABLED
-#define DISP_RST_Port           GPIOA
-#define DISP_RST_Pin            LL_GPIO_PIN_15
-#endif
 
 typedef struct {
     void (*init)(void);
-    void (*sleep)(void);
-    void (*wakeup)(void);
+    void (*sleep)(bool value);
+    void (*setIdle)(bool value);
     void (*setWindow)(int16_t x, int16_t y, int16_t w, int16_t h);
-    void (*rotate)(uint8_t rotate);
+    void (*rotate)(bool value);
     void (*shift)(int16_t value);
 
     void *fb;
@@ -86,7 +52,8 @@ void dispdrvDrawRect(int16_t x, int16_t y, int16_t w, int16_t h, color_t color);
 
 void dispdrvDrawVertGrad(int16_t x, int16_t y, int16_t w, int16_t h, color_t *gr);
 
-void dispdrvDrawImage(tImage *img, int16_t x, int16_t y, color_t color, color_t bgColor,
+void dispdrvDrawImage(tImage *img, bool portrate, int16_t x, int16_t y,
+                      color_t color, color_t bgColor,
                       int16_t xOft, int16_t yOft, int16_t w, int16_t h);
 
 #ifdef __cplusplus

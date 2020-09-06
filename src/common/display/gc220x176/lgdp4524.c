@@ -9,7 +9,7 @@ void lgdp4524Init(void)
     dispdrvWriteReg16(0x0013, 0x0000);
     dispdrvWriteReg16(0x0014, 0x0331);
 
-    utilmDelay(15); // Delay 15ms
+    DISP_MDELAY(15); // Delay 15ms
 
     dispdrvWriteReg16(0x0012, 0x0009);
     dispdrvWriteReg16(0x0011, 0x0000);
@@ -19,12 +19,12 @@ void lgdp4524Init(void)
     dispdrvWriteReg16(0x0011, 0x0200);
     dispdrvWriteReg16(0x0012, 0x0019);
 
-    utilmDelay(20); // Delay 20ms
+    DISP_MDELAY(20); // Delay 20ms
 
     dispdrvWriteReg16(0x0013, 0x2C31);
     dispdrvWriteReg16(0x0010, 0x0140);
 
-    utilmDelay(20); // Delay 20ms
+    DISP_MDELAY(20); // Delay 20ms
 
     dispdrvWriteReg16(0x0060, 0x2000);
     dispdrvWriteReg16(0x0060, 0x0000);
@@ -59,90 +59,84 @@ void lgdp4524Init(void)
     dispdrvWriteReg16(0x0071, 0x0040);
     dispdrvWriteReg16(0x0072, 0x0002);
 
-    utilmDelay(10); // Delay 10ms
+    DISP_MDELAY(10); // Delay 10ms
 
     dispdrvWriteReg16(0x0010, 0x3250);
     dispdrvWriteReg16(0x0007, 0x0001);
 
-    utilmDelay(30); // Delay 30ms
+    DISP_MDELAY(30); // Delay 30ms
 
     dispdrvWriteReg16(0x0007, 0x0021);
     dispdrvWriteReg16(0x0007, 0x0023);
 
-    utilmDelay(30); // Delay 30ms
+    DISP_MDELAY(30); // Delay 30ms
 
     dispdrvWriteReg16(0x0007, 0x0037);  // 65K color and display ON*/
 
     SET(DISP_CS);
 }
 
-void lgdp4524Sleep(void)
+void lgdp4524Sleep(bool value)
 {
     CLR(DISP_CS);
 
+    if (value) {
+        dispdrvWriteReg16(0x0007, 0x0036);
 
-    dispdrvWriteReg16(0x0007, 0x0036);
+        DISP_MDELAY(20);
 
-    utilmDelay(20);
+        dispdrvWriteReg16(0x0007, 0x0026);
 
-    dispdrvWriteReg16(0x0007, 0x0026);
+        DISP_MDELAY(20);
 
-    utilmDelay(20);
+        dispdrvWriteReg16(0x0007, 0x0000);
 
-    dispdrvWriteReg16(0x0007, 0x0000);
+        DISP_MDELAY(10);
 
-    utilmDelay(10);
+        dispdrvWriteReg16(0x0010, 0x0004);
+        dispdrvWriteReg16(0x0012, 0x0000);
+        dispdrvWriteReg16(0x0013, 0x0000);
 
-    dispdrvWriteReg16(0x0010, 0x0004);
-    dispdrvWriteReg16(0x0012, 0x0000);
-    dispdrvWriteReg16(0x0013, 0x0000);
+        DISP_MDELAY(10);
 
-    utilmDelay(10);
+        dispdrvWriteReg16(0x0010, 0x0008);
+    } else {
+        dispdrvWriteReg16(0x0000, 0x0001);
 
-    dispdrvWriteReg16(0x0010, 0x0008);
+        DISP_MDELAY(10); // Delay 10ms
 
-    SET(DISP_CS);
-}
+        dispdrvWriteReg16(0x0010, 0x0000);
+        dispdrvWriteReg16(0x0014, 0x0331);
 
-void lgdp4524Wakeup(void)
-{
-    CLR(DISP_CS);
+        DISP_MDELAY(15); // Delay 15ms
 
-    dispdrvWriteReg16(0x0000, 0x0001);
+        dispdrvWriteReg16(0x0012, 0x0009);
+        dispdrvWriteReg16(0x0011, 0x0000);
+        dispdrvWriteReg16(0x0010, 0x0104);
+        dispdrvWriteReg16(0x0013, 0x0C31);
+        dispdrvWriteReg16(0x0010, 0x0144);
+        dispdrvWriteReg16(0x0011, 0x0200);
+        dispdrvWriteReg16(0x0012, 0x0019);
 
-    utilmDelay(10); // Delay 10ms
+        DISP_MDELAY(20); // Delay 20ms
 
-    dispdrvWriteReg16(0x0010, 0x0000);
-    dispdrvWriteReg16(0x0014, 0x0331);
+        dispdrvWriteReg16(0x0013, 0x2C31);
+        dispdrvWriteReg16(0x0010, 0x0140);
 
-    utilmDelay(15); // Delay 15ms
+        DISP_MDELAY(20); // Delay 20ms
 
-    dispdrvWriteReg16(0x0012, 0x0009);
-    dispdrvWriteReg16(0x0011, 0x0000);
-    dispdrvWriteReg16(0x0010, 0x0104);
-    dispdrvWriteReg16(0x0013, 0x0C31);
-    dispdrvWriteReg16(0x0010, 0x0144);
-    dispdrvWriteReg16(0x0011, 0x0200);
-    dispdrvWriteReg16(0x0012, 0x0019);
+        dispdrvWriteReg16(0x0010, 0x3250);
+        dispdrvWriteReg16(0x0007, 0x0001);
 
-    utilmDelay(20); // Delay 20ms
+        DISP_MDELAY(30); // Delay 30ms
 
-    dispdrvWriteReg16(0x0013, 0x2C31);
-    dispdrvWriteReg16(0x0010, 0x0140);
+        dispdrvWriteReg16(0x0007, 0x0021);
+        dispdrvWriteReg16(0x0007, 0x0023);
 
-    utilmDelay(20); // Delay 20ms
+        DISP_MDELAY(30); // Delay 30ms
 
-    dispdrvWriteReg16(0x0010, 0x3250);
-    dispdrvWriteReg16(0x0007, 0x0001);
-
-    utilmDelay(30); // Delay 30ms
-
-    dispdrvWriteReg16(0x0007, 0x0021);
-    dispdrvWriteReg16(0x0007, 0x0023);
-
-    utilmDelay(30); // Delay 30ms
-
-    dispdrvWriteReg16(0x0007, 0x0037);  // 65K color and display ON*/
+        dispdrvWriteReg16(0x0007, 0x0037);  // 65K color and display ON*/
+    }
 
     SET(DISP_CS);
 }
@@ -167,6 +161,5 @@ const DispDriver dispdrv = {
     .height = 176,
     .init = lgdp4524Init,
     .sleep = lgdp4524Sleep,
-    .wakeup = lgdp4524Wakeup,
     .setWindow = lgdp4524SetWindow,
 };

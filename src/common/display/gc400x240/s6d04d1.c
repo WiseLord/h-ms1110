@@ -17,7 +17,7 @@ void s6d04d1Init(void)
     dispdrvSendData8(0x0b);
     dispdrvSendData8(0xf0);
     dispdrvSendData8(0x00);
-    utilmDelay(10);
+    DISP_MDELAY(10);
 
     dispdrvSelectReg8(0xf3);
     dispdrvSendData8(0xff);
@@ -187,23 +187,23 @@ void s6d04d1Init(void)
     dispdrvSendData8(0x40);
 
     dispdrvSelectReg8(0x11);
-    utilmDelay(120);
+    DISP_MDELAY(120);
 
     dispdrvSelectReg8(0xF1);
     dispdrvSendData8(0x00);
 
     dispdrvSelectReg8(0x29);
-    utilmDelay(40);
+    DISP_MDELAY(40);
 
     DISP_WAIT_BUSY();
     SET(DISP_CS);
 }
 
-void s6d04d1Rotate(uint8_t rotate)
+void s6d04d1Rotate(bool rotate)
 {
     CLR(DISP_CS);
 
-    if (rotate & LCD_ROTATE_180) {
+    if (rotate) {
         dispdrvSelectReg8(0x36);
         dispdrvSendData8(0x08);
     } else {
@@ -215,24 +215,19 @@ void s6d04d1Rotate(uint8_t rotate)
     SET(DISP_CS);
 }
 
-void s6d04d1Sleep(void)
+void s6d04d1Sleep(bool value)
 {
     CLR(DISP_CS);
 
-    dispdrvSelectReg8(0x28);    // Display OFF
-    utilmDelay(100);
-    dispdrvSelectReg8(0x10);
-
-    SET(DISP_CS);
-}
-
-void s6d04d1Wakeup(void)
-{
-    CLR(DISP_CS);
-
-    dispdrvSelectReg8(0x11);    // Display ON
-    utilmDelay(100);
-    dispdrvSelectReg8(0x29);
+    if (value) {
+        dispdrvSelectReg8(0x28);    // Display OFF
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x10);
+    } else {
+        dispdrvSelectReg8(0x11);    // Display ON
+        DISP_MDELAY(100);
+        dispdrvSelectReg8(0x29);
+    }
 
     SET(DISP_CS);
 }
@@ -262,7 +257,6 @@ const DispDriver dispdrv = {
     .height = 240,
     .init = s6d04d1Init,
     .sleep = s6d04d1Sleep,
-    .wakeup = s6d04d1Wakeup,
     .setWindow = s6d04d1SetWindow,
     .rotate = s6d04d1Rotate,
 };
