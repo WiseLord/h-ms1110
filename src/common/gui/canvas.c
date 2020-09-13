@@ -27,7 +27,9 @@ void canvasInit()
     glcdSetFontColor(canvas.pal->fg);
     glcdSetFontBgColor(canvas.pal->bg);
 
-    glcdDrawRect(0, 0, dispdrv.width, dispdrv.height, canvas.pal->bg);
+    GlcdRect *rect = &canvas.glcd->rect;
+
+    glcdDrawRect(rect->x, rect->y, rect->w, rect->h, canvas.pal->bg);
 }
 
 Canvas *canvasGet(void)
