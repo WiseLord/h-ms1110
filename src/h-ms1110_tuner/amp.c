@@ -288,7 +288,7 @@ static void ampActionSyncMaster(void)
         amp.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
-        amp.inType = *(uint8_t *)&syncData[1];
+        amp.inType = *(InputType *)&syncData[1];
         actionDispExpired();
         break;
     }
