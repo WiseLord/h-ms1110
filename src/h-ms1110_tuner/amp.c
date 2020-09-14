@@ -218,7 +218,6 @@ void ampInit(void)
     utilInitSysCounter();
 
     settingsInit();
-    rtcInit();
 
     labelsInit();
     canvasInit();

@@ -26,15 +26,6 @@ static const EE_Cell eeMap[] = {
     [PARAM_AUDIO_EFFECT3D]  =   {0x05,  false},
     [PARAM_AUDIO_BYPASS]    =   {0x06,  false},
 
-    [PARAM_AUDIO_IN0]       =   {0x10,  IN_TUNER},
-    [PARAM_AUDIO_IN1]       =   {0x11,  IN_END},
-    [PARAM_AUDIO_IN2]       =   {0x12,  IN_END},
-    [PARAM_AUDIO_IN3]       =   {0x13,  IN_END},
-    [PARAM_AUDIO_IN4]       =   {0x14,  IN_PC},
-    [PARAM_AUDIO_IN5]       =   {0x15,  IN_END},
-    [PARAM_AUDIO_IN6]       =   {0x16,  IN_END},
-    [PARAM_AUDIO_IN7]       =   {0x17,  IN_END},
-
     [PARAM_AUDIO_GAIN0]     =   {0x18,  0},
     [PARAM_AUDIO_GAIN1]     =   {0x19,  0},
     [PARAM_AUDIO_GAIN2]     =   {0x1A,  0},
@@ -108,17 +99,6 @@ int16_t settingsGet(Param param)
         break;
     case PARAM_AUDIO_BYPASS:
         ret = aProc->par.bypass;
-        break;
-
-    case PARAM_AUDIO_IN0:
-    case PARAM_AUDIO_IN1:
-    case PARAM_AUDIO_IN2:
-    case PARAM_AUDIO_IN3:
-    case PARAM_AUDIO_IN4:
-    case PARAM_AUDIO_IN5:
-    case PARAM_AUDIO_IN6:
-    case PARAM_AUDIO_IN7:
-        ret = amp->inType[param - PARAM_AUDIO_IN0];
         break;
 
     case PARAM_AUDIO_GAIN0:
@@ -217,17 +197,6 @@ void settingsSet(Param param, int16_t value)
         break;
     case PARAM_AUDIO_BYPASS:
         aProc->par.bypass = (int8_t)value;
-        break;
-
-    case PARAM_AUDIO_IN0:
-    case PARAM_AUDIO_IN1:
-    case PARAM_AUDIO_IN2:
-    case PARAM_AUDIO_IN3:
-    case PARAM_AUDIO_IN4:
-    case PARAM_AUDIO_IN5:
-    case PARAM_AUDIO_IN6:
-    case PARAM_AUDIO_IN7:
-        amp->inType[param - PARAM_AUDIO_IN0] = (InputType)value;
         break;
 
     case PARAM_AUDIO_GAIN0:

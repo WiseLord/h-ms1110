@@ -39,7 +39,9 @@ typedef struct {
     ScreenType prevScreen;
     bool clearScreen;
 
-    InputType inType[8];
+    InputType inType;
+
+
     uint8_t inputStatus;
     int8_t volume;
 

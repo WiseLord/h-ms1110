@@ -51,6 +51,17 @@ static void ampScreenShow(void);
 
 static bool rtcSyncRequired;
 
+static const InputType inTypes[MAX_INPUTS] = {
+    IN_TUNER,
+    IN_END,
+    IN_END,
+    IN_END,
+    IN_PC,
+    IN_END,
+    IN_END,
+    IN_END,
+};
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
     .screen = SCREEN_STANDBY,
@@ -148,8 +159,11 @@ static void inputSetPower(bool value)
     } else {
         amp.inputStatus = 0x00;
     }
-    syncMasterSendInType(AMP_TUNER_ADDR, amp.inType[input]);
-    syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType[input]);
+
+    amp.inType = inTypes[input];
+
+    syncMasterSendInType(AMP_TUNER_ADDR, amp.inType);
+    syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType);
 }
 
 static void ampPinMute(bool value)
@@ -793,7 +807,9 @@ void ampRun(void)
     while (1) {
         ampHandleSwd();
 
-        ampActionSyncSlaves();
+        if (amp.status == AMP_STATUS_ACTIVE) {
+            ampActionSyncSlaves();
+        }
 
         ampActionGet();
         ampActionRemap();
@@ -1044,17 +1060,12 @@ static void prepareAudioInput (Label *label)
 {
     static InputType _inType;
 
-    AudioProc *aProc = audioGet();
-    int8_t input = aProc->par.input;
-
-    InputType inType = amp.inType[input];
-
-    if (inType != _inType) {
-        _inType = inType;
+    if (amp.inType != _inType) {
+        _inType = amp.inType;
         amp.clearScreen = true;
     }
 
-    *label = LABEL_IN_TUNER + (inType - IN_TUNER);
+    *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
 
 }
 static void ampHandleSwd(void)
