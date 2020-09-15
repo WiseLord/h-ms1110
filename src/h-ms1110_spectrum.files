@@ -1,4 +1,6 @@
 common/action.h
+common/amputil.c
+common/amputil.h
 common/debug.c
 common/debug.h
 common/display/colors.h

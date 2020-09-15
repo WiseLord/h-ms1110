@@ -1,4 +1,6 @@
 common/action.h
+common/amputil.c
+common/amputil.h
 common/audio/audio.c
 common/audio/audio.h
 common/audio/audiodefs.h

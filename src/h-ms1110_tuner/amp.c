@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "amputil.h"
 #include "debug.h"
 #include "gui/canvas.h"
 #include "hwlibs.h"
@@ -26,8 +27,6 @@ static void actionGetTimers(void);
 static void actionRemapTunerBtnShort(int16_t button);
 static void actionRemapTunerBtnLong(int16_t button);
 static void actionRemapTunerEncoder(int16_t encCnt);
-
-static void ampHandleSwd(void);
 
 static void ampActionSyncMaster(void);
 
@@ -239,7 +238,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampHandleSwd();
+        ampUtilHandleSwd(amp.screen);
 
         ampActionSyncMaster();
 
@@ -410,23 +409,6 @@ static void prepareRadioView(RadioView *radio)
 
     radio->freq = tuner->status.freq;
     radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
-}
-
-static void ampHandleSwd(void)
-{
-    static bool swd = false;
-
-    if (SCREEN_STANDBY == amp.screen) {
-        if (!swd) {
-            LL_GPIO_AF_Remap_SWJ_NOJTAG();
-            swd = true;
-        }
-    } else {
-        if (swd) {
-            LL_GPIO_AF_DisableRemap_SWJ();
-            swd = false;
-        }
-    }
 }
 
 void ampScreenShow(void)

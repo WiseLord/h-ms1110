@@ -39,6 +39,7 @@ C_SOURCES += amp.c
 C_SOURCES += settings.c
 C_SOURCES += setup.c
 
+C_SOURCES += $(COMMON)/amputil.c
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/i2c.c

@@ -37,6 +37,7 @@ C_SOURCES += main.c
 C_SOURCES += amp.c
 C_SOURCES += settings.c
 
+C_SOURCES += $(COMMON)/amputil.c
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c

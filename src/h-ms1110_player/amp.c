@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "amputil.h"
 #include "audio/audio.h"
 #include "debug.h"
 #include "gui/canvas.h"
@@ -46,7 +47,6 @@ static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
-static void ampHandleSwd(void);
 static void ampScreenShow(void);
 
 static bool rtcSyncRequired;
@@ -781,7 +781,7 @@ void ampInit(void)
 
     rtcSetCb(rtcCb);
 
-    ampHandleSwd();
+    ampUtilHandleSwd(SCREEN_STANDBY);
 
     labelsInit();
     canvasInit();
@@ -805,7 +805,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampHandleSwd();
+        ampUtilHandleSwd(amp.screen);
 
         if (amp.status == AMP_STATUS_ACTIVE) {
             ampActionSyncSlaves();
@@ -960,9 +960,7 @@ void ampActionHandle(void)
         setupChangeChild(action.value);
         SetupType active = setupGet()->active;
         if (active == SETUP_TIME || active == SETUP_DATE) {
-            uint32_t rtcRaw = rtcGetRaw();
-            syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
-            syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
+            rtcSyncRequired = true;
         }
         ampHandleSetup();
         break;
@@ -1067,22 +1065,6 @@ static void prepareAudioInput (Label *label)
 
     *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
 
-}
-static void ampHandleSwd(void)
-{
-    static bool swd = false;
-
-    if (SCREEN_STANDBY == amp.screen) {
-        if (!swd) {
-            LL_GPIO_AF_Remap_SWJ_NOJTAG();
-            swd = true;
-        }
-    } else {
-        if (swd) {
-            LL_GPIO_AF_DisableRemap_SWJ();
-            swd = false;
-        }
-    }
 }
 
 static void ampScreenShow(void)

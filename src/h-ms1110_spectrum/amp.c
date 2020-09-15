@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "amputil.h"
 #include "debug.h"
 #include "gui/canvas.h"
 #include "hwlibs.h"
@@ -22,8 +23,6 @@ static void actionGetTimers(void);
 
 static void actionRemapSpectrumBtnShort(int16_t button);
 static void actionRemapSpectrumBtnLong(int16_t button);
-
-static void ampHandleSwd(void);
 
 static void ampActionSyncMaster(void);
 
@@ -205,7 +204,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampHandleSwd();
+        ampUtilHandleSwd(amp.screen);
 
         ampActionSyncMaster();
 
@@ -363,23 +362,6 @@ static void prepareAudioInput (Label *label)
 
     *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
 
-}
-
-static void ampHandleSwd(void)
-{
-    static bool swd = false;
-
-    if (SCREEN_STANDBY == amp.screen) {
-        if (!swd) {
-            LL_GPIO_AF_Remap_SWJ_NOJTAG();
-            swd = true;
-        }
-    } else {
-        if (swd) {
-            LL_GPIO_AF_DisableRemap_SWJ();
-            swd = false;
-        }
-    }
 }
 
 void ampScreenShow(void)
