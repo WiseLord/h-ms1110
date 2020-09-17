@@ -14,8 +14,6 @@ static int16_t rtcCorr = 0;
 static const EE_Cell eeMap[] = {
     [PARAM_NULL]            =   {0x00,  0},
 
-    [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
-
     [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_LEFT},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
@@ -40,10 +38,6 @@ int16_t settingsGet(Param param)
     Spectrum *sp = spGet();
 
     switch (param) {
-
-    case PARAM_DISPLAY_DEF:
-        ret = ampGet()->defScreen;
-        break;
 
     case PARAM_SPECTRUM_MODE:
         ret = sp->mode;
@@ -77,10 +71,6 @@ void settingsSet(Param param, int16_t value)
     Spectrum *sp = spGet();
 
     switch (param) {
-
-    case PARAM_DISPLAY_DEF:
-        ampGet()->defScreen = (ScreenType)value;
-        break;
 
     case PARAM_SPECTRUM_MODE:
         sp->mode = (SpMode)value;

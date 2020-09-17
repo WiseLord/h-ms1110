@@ -51,9 +51,7 @@ enum {
 
     //----------------------------------------------------------------
 
-    PARAM_DISPLAY_DEF = PARAM_AUDIO_END,
-
-    PARAM_SPECTRUM_MODE,
+    PARAM_SPECTRUM_MODE = PARAM_AUDIO_END,
     PARAM_SPECTRUM_PEAKS,
     PARAM_SPECTRUM_GRAD,
 

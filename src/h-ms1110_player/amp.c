@@ -20,6 +20,16 @@
 #include "tr/labels.h"
 #include "utils.h"
 
+typedef struct {
+    bool rtcSyncRequired;
+    bool clearScreen;
+
+    ScreenType prevScreen;
+
+    uint8_t inputStatus;
+    int8_t volume;
+} AmpPriv;
+
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetRemote(void);
@@ -42,14 +52,15 @@ static void actionRemapCommon(void);
 static void actionRemapPlayerEncoder(int16_t encCnt);
 static void actionRemapTunerEncoder(int16_t encCnt);
 
-static void ampActionSyncSlaves(void);
+static void ampGetFromSlaves(void);
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
 
+static void ampSendToSlaves(void);
 static void ampScreenShow(void);
 
-static bool rtcSyncRequired;
+static AmpPriv ampPriv;
 
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
@@ -65,9 +76,6 @@ static const InputType inTypes[MAX_INPUTS] = {
 static Amp amp = {
     .status = AMP_STATUS_STBY,
     .screen = SCREEN_STANDBY,
-    .defScreen = SCREEN_SPECTRUM,
-    .inputStatus = 0x00,
-    .volume = 0,
 };
 
 static Action action = {
@@ -94,23 +102,23 @@ static void screenSet(ScreenType type, int16_t timeout)
 
 static void rtcCb(void)
 {
-    rtcSyncRequired = true;
+    ampPriv.rtcSyncRequired = true;
 }
 
 static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    if (amp.clearScreen) {
+    if (ampPriv.clearScreen) {
         clear = true;
-        amp.clearScreen = false;
+        ampPriv.clearScreen = false;
     } else {
-        if (amp.screen != amp.prevScreen) {
+        if (amp.screen != ampPriv.prevScreen) {
             clear = true;
         }
     }
 
-    amp.prevScreen = amp.screen;
+    ampPriv.prevScreen = amp.screen;
 
     return clear;
 }
@@ -125,7 +133,7 @@ static void actionDispExpired(void)
         screenSet(SCREEN_STANDBY, 0);
         break;
     default:
-        screenSet(amp.defScreen, 0);
+        screenSet(SCREEN_INPUT, 0);
         break;
     }
 }
@@ -155,9 +163,9 @@ static void inputSetPower(bool value)
     int8_t input = aProc->par.input;
 
     if (value) {
-        amp.inputStatus = (uint8_t)(1 << input);
+        ampPriv.inputStatus = (uint8_t)(1 << input);
     } else {
-        amp.inputStatus = 0x00;
+        ampPriv.inputStatus = 0x00;
     }
 
     amp.inType = inTypes[input];
@@ -208,7 +216,7 @@ static void ampReadSettings(void)
     audioReadSettings();
     audioInitParam();
 
-    amp.volume = volItem->value;
+    ampPriv.volume = volItem->value;
     volItem->value = volItem->grid->min;
 }
 
@@ -233,15 +241,12 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
-    settingsSet(PARAM_DISPLAY_DEF, amp.defScreen);
-    settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
-
     ampMute(true);
 
     // Restore volume value before saving
     AudioProc *aProc = audioGet();
     AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
-    volItem->value = amp.volume;
+    volItem->value = ampPriv.volume;
 
     audioSetPower(false);
 
@@ -451,14 +456,14 @@ static void actionGetPots(void)
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
                         aProc->tune = AUDIO_TUNE_BASS;
-                        amp.clearScreen = true;
+                        ampPriv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot + grid->min);
                     break;
                 case AIN_POT_B:
                     if (aProc->tune != AUDIO_TUNE_TREBLE) {
                         aProc->tune = AUDIO_TUNE_TREBLE;
-                        amp.clearScreen = true;
+                        ampPriv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_PARAM_SET, pot + grid->min);
                     break;
@@ -484,7 +489,7 @@ static void actionGetTimers(void)
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
         actionSet(ACTION_INIT_RTC, 0);
     } else if (swTimGet(SW_TIM_SOFT_VOLUME) == 0) {
-        actionSet(ACTION_RESTORE_VOLUME, amp.volume);
+        actionSet(ACTION_RESTORE_VOLUME, ampPriv.volume);
     } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
         actionSet(ACTION_DISP_EXPIRED, 0);
     }
@@ -506,7 +511,7 @@ static void spModeChange(int16_t value)
         }
     }
 
-    amp.clearScreen = true;
+    ampPriv.clearScreen = true;
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 }
@@ -682,7 +687,7 @@ static void actionRemapPlayerEncoder(int16_t encCnt)
         break;
     default:
         if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
-            amp.clearScreen = true;
+            ampPriv.clearScreen = true;
             aProc->tune = AUDIO_TUNE_VOLUME;
         }
         actionSet(ACTION_AUDIO_PARAM_CHANGE, encCnt);
@@ -807,13 +812,13 @@ void ampRun(void)
     while (1) {
         ampUtilHandleSwd(amp.screen);
 
-        if (amp.status == AMP_STATUS_ACTIVE) {
-            ampActionSyncSlaves();
-        }
+        ampGetFromSlaves();
 
         ampActionGet();
         ampActionRemap();
         ampActionHandle();
+
+        ampSendToSlaves();
 
         ampScreenShow();
     }
@@ -824,8 +829,12 @@ Amp *ampGet(void)
     return &amp;
 }
 
-static void ampActionSyncSlaves(void)
+static void ampGetFromSlaves(void)
 {
+    if (amp.status != AMP_STATUS_ACTIVE) {
+        return;
+    }
+
     uint8_t syncData[AMP_SYNC_DATASIZE];
     SyncType syncType;
 
@@ -842,7 +851,6 @@ static void ampActionSyncSlaves(void)
         action = *(Action *)&syncData[1];
         return;
     }
-
 }
 
 static void ampActionGet(void)
@@ -960,7 +968,7 @@ void ampActionHandle(void)
         setupChangeChild(action.value);
         SetupType active = setupGet()->active;
         if (active == SETUP_TIME || active == SETUP_DATE) {
-            rtcSyncRequired = true;
+            ampPriv.rtcSyncRequired = true;
         }
         ampHandleSetup();
         break;
@@ -975,7 +983,7 @@ void ampActionHandle(void)
 
     case ACTION_OPEN_MENU:
         if (scrMode == SCREEN_TUNE) {
-            amp.clearScreen = true;
+            ampPriv.clearScreen = true;
             actionNextAudioParam(aProc);
         } else {
             aProc->tune = AUDIO_TUNE_VOLUME;
@@ -989,7 +997,7 @@ void ampActionHandle(void)
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
         if (aProc->tune == AUDIO_TUNE_VOLUME) {
-            amp.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
+            ampPriv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
         }
         if (aProc->par.mute) {
             ampMute(false);
@@ -1060,28 +1068,19 @@ static void prepareAudioInput (Label *label)
 
     if (amp.inType != _inType) {
         _inType = amp.inType;
-        amp.clearScreen = true;
+        ampPriv.clearScreen = true;
     }
 
     *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
-
 }
 
-static void ampScreenShow(void)
+static void ampSendToSlaves(void)
 {
-    bool clear = screenCheckClear();
-
-    if (clear) {
-        canvasClear();
-    }
-
-    TuneView tune;
-
-    if (rtcSyncRequired) {
+    if (ampPriv.rtcSyncRequired) {
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
         syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
-        rtcSyncRequired = false;
+        ampPriv.rtcSyncRequired = false;
     }
 
     Spectrum *sp = &amp.sp;
@@ -1094,7 +1093,17 @@ static void ampScreenShow(void)
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
         syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
     }
+}
 
+static void ampScreenShow(void)
+{
+    bool clear = screenCheckClear();
+
+    if (clear) {
+        canvasClear();
+    }
+
+    TuneView tune;
     Label label;
 
     switch (amp.screen) {

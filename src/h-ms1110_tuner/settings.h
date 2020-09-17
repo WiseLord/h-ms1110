@@ -33,9 +33,7 @@ enum {
 
     //----------------------------------------------------------------
 
-    PARAM_DISPLAY_DEF = PARAM_TUNER_END,
-
-    PARAM_SPECTRUM_MODE,
+    PARAM_SPECTRUM_MODE = PARAM_TUNER_END,
     PARAM_SPECTRUM_PEAKS,
     PARAM_SPECTRUM_GRAD,
 

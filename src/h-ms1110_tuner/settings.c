@@ -27,8 +27,6 @@ static const EE_Cell eeMap[] = {
     [PARAM_TUNER_VOLUME]    =   {0x38,  TUNER_VOLUME_MAX},
     [PARAM_TUNER_FREQ]      =   {0x39,  9950},
 
-    [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
-
     [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_LEFT},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
@@ -85,10 +83,6 @@ int16_t settingsGet(Param param)
         break;
     case PARAM_TUNER_FREQ:
         ret = (int16_t)tuner->status.freq;
-        break;
-
-    case PARAM_DISPLAY_DEF:
-        ret = ampGet()->defScreen;
         break;
 
     case PARAM_SPECTRUM_MODE:
@@ -154,10 +148,6 @@ void settingsSet(Param param, int16_t value)
         break;
     case PARAM_TUNER_FREQ:
         tuner->status.freq = (uint16_t)value;
-        break;
-
-    case PARAM_DISPLAY_DEF:
-        ampGet()->defScreen = (ScreenType)value;
         break;
 
     case PARAM_SPECTRUM_MODE:

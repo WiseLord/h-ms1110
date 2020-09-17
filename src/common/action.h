@@ -7,6 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 
+#include "spectrum.h"
+
 #define FOREACH_CMD(CMD)    \
     CMD(STBY_SWITCH)        \
     CMD(MUTE)               \
@@ -137,6 +139,23 @@ typedef struct {
     ScreenType type;
     int16_t timeout;
 } Screen;
+
+typedef uint8_t AmpStatus;
+enum {
+    AMP_STATUS_STBY,
+    AMP_STATUS_POWERED,
+    AMP_STATUS_HW_READY,
+    AMP_STATUS_ACTIVE,
+
+    AMP_STATUS_END
+};
+
+typedef struct {
+    AmpStatus status;
+    ScreenType screen;
+    InputType inType;
+    Spectrum sp;
+} Amp;
 
 #ifdef __cplusplus
 }

@@ -22,32 +22,6 @@ extern "C" {
 #define MUTE_Port               GPIOB
 #define MUTE_Pin                LL_GPIO_PIN_1
 
-typedef uint8_t AmpStatus;
-enum {
-    AMP_STATUS_STBY,
-    AMP_STATUS_POWERED,
-    AMP_STATUS_HW_READY,
-    AMP_STATUS_ACTIVE,
-
-    AMP_STATUS_END
-};
-
-typedef struct {
-    AmpStatus status;
-    ScreenType screen;
-    ScreenType defScreen;
-    ScreenType prevScreen;
-    bool clearScreen;
-
-    InputType inType;
-
-
-    uint8_t inputStatus;
-    int8_t volume;
-
-    Spectrum sp;
-} Amp;
-
 void ampInitMuteStby(void);
 
 void ampInit(void);

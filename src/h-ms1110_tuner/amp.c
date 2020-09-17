@@ -20,6 +20,11 @@
 #include "tuner/tuner.h"
 #include "utils.h"
 
+typedef struct {
+    ScreenType prevScreen;
+    bool clearScreen;
+} AmpPriv;
+
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
@@ -38,10 +43,11 @@ static void ampPollInput(void);
 
 static void ampScreenShow(void);
 
+static AmpPriv ampPriv;
+
 static Amp amp = {
     .status = AMP_STATUS_STBY,
     .screen = SCREEN_STANDBY,
-    .defScreen = SCREEN_SPECTRUM,
 };
 
 static Action action = {
@@ -70,27 +76,27 @@ static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    if (amp.clearScreen) {
+    if (ampPriv.clearScreen) {
         clear = true;
-        amp.clearScreen = false;
+        ampPriv.clearScreen = false;
     } else {
-        if (amp.screen != amp.prevScreen) {
+        if (amp.screen != ampPriv.prevScreen) {
             clear = true;
         }
     }
 
-    amp.prevScreen = amp.screen;
+    ampPriv.prevScreen = amp.screen;
 
     return clear;
 }
 
 static void actionDispExpired(void)
 {
-    amp.defScreen = SCREEN_SPECTRUM;
+    ScreenType defScreen = SCREEN_SPECTRUM;
 
     switch (amp.inType) {
     case IN_TUNER:
-        amp.defScreen = SCREEN_TUNER;
+        defScreen = SCREEN_TUNER;
         break;
     }
 
@@ -101,7 +107,7 @@ static void actionDispExpired(void)
         screenSet(SCREEN_STANDBY, 0);
         break;
     default:
-        screenSet(amp.defScreen, 0);
+        screenSet(defScreen, 0);
         break;
     }
 }
@@ -145,8 +151,6 @@ void ampEnterStby(void)
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
-    settingsStore(PARAM_DISPLAY_DEF, amp.defScreen);
-
     inputDisable();
 
     amp.status = AMP_STATUS_STBY;
@@ -174,8 +178,6 @@ void ampInitHw(void)
         break;
     }
 }
-
-
 
 static void actionGetButtons(void)
 {
@@ -283,7 +285,7 @@ static void ampActionSyncMaster(void)
         *sp = *((Spectrum *)&syncData[1]);
         settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
         settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
-        amp.clearScreen = true;
+        ampPriv.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(InputType *)&syncData[1];

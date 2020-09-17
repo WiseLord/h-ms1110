@@ -45,8 +45,6 @@ static const EE_Cell eeMap[] = {
     [PARAM_AUDIO_SUBWOOFER] =   {0x27,  0},
     [PARAM_AUDIO_PREAMP]    =   {0x28,  0},
 
-    [PARAM_DISPLAY_DEF]     =   {0x43,  SCREEN_SPECTRUM},
-
     [PARAM_SPECTRUM_MODE]   =   {0x50,  SP_MODE_RIGHT},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
@@ -122,10 +120,6 @@ int16_t settingsGet(Param param)
     case PARAM_AUDIO_SUBWOOFER:
     case PARAM_AUDIO_PREAMP:
         ret = aProc->par.tune[param - PARAM_AUDIO_VOLUME].value;
-        break;
-
-    case PARAM_DISPLAY_DEF:
-        ret = ampGet()->defScreen;
         break;
 
     case PARAM_SPECTRUM_MODE:
@@ -220,10 +214,6 @@ void settingsSet(Param param, int16_t value)
     case PARAM_AUDIO_SUBWOOFER:
     case PARAM_AUDIO_PREAMP:
         aProc->par.tune[param - PARAM_AUDIO_VOLUME].value = (int8_t)value;
-        break;
-
-    case PARAM_DISPLAY_DEF:
-        ampGet()->defScreen = (ScreenType)value;
         break;
 
     case PARAM_SPECTRUM_MODE:
