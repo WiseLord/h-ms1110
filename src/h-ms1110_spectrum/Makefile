@@ -32,7 +32,6 @@ C_DEFS += -D_DISP_RST_ENABLED
 # Player prototype board has a bit different schematics
 # S1 connected to PB0 instead of PA13
 # S2 connected to PB1 instead of PA13
-C_DEFS += -D_PLAYER_PROTOTYPE
 
 COMMON = ../common
 

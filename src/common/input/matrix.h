@@ -11,17 +11,10 @@ extern "C" {
 #define KEY_MATRIX_COLS         4
 
 // Input
-#ifdef _PLAYER_PROTOTYPE
-#define MATRIX_S1_Port          GPIOB
-#define MATRIX_S1_Pin           LL_GPIO_PIN_0
-#define MATRIX_S2_Port          GPIOB
-#define MATRIX_S2_Pin           LL_GPIO_PIN_1
-#else
 #define MATRIX_S1_Port          GPIOA
 #define MATRIX_S1_Pin           LL_GPIO_PIN_13
 #define MATRIX_S2_Port          GPIOA
 #define MATRIX_S2_Pin           LL_GPIO_PIN_14
-#endif
 #define MATRIX_S3_Port          GPIOB
 #define MATRIX_S3_Pin           LL_GPIO_PIN_3
 

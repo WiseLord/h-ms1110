@@ -28,6 +28,11 @@ typedef struct {
 
     uint8_t inputStatus;
     int8_t volume;
+
+    SpMode spMode;
+    bool spPeaks;
+    InputType inType;
+    Action syncAction;
 } AmpPriv;
 
 static void actionGetButtons(void);
@@ -42,8 +47,8 @@ static void actionRemapPlayerBtnShort(int16_t button);
 static void actionRemapPlayerBtnLong(int16_t button);
 static void actionRemapTunerBtnShort(int16_t button);
 static void actionRemapTunerBtnLong(int16_t button);
-static void actionRemapPlayerBtnShort(int16_t button);
-static void actionRemapPlayerBtnLong(int16_t button);
+static void actionRemapSpectrumBtnShort(int16_t button);
+static void actionRemapSpectrumBtnLong(int16_t button);
 
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
@@ -64,13 +69,13 @@ static AmpPriv ampPriv;
 
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
-    IN_END,
-    IN_END,
-    IN_END,
+    IN_NULL,
+    IN_NULL,
+    IN_NULL,
     IN_PC,
-    IN_END,
-    IN_END,
-    IN_END,
+    IN_NULL,
+    IN_NULL,
+    IN_NULL,
 };
 
 static Amp amp = {
@@ -169,9 +174,6 @@ static void inputSetPower(bool value)
     }
 
     amp.inType = inTypes[input];
-
-    syncMasterSendInType(AMP_TUNER_ADDR, amp.inType);
-    syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType);
 }
 
 static void ampPinMute(bool value)
@@ -271,6 +273,8 @@ void ampHandleStby(void)
             break;
         }
     }
+
+    ampPriv.syncAction = action;
 
     if (action.value == FLAG_EXIT) {
         ampExitStby();
@@ -944,8 +948,6 @@ void ampActionHandle(void)
 
     case ACTION_STANDBY:
         ampHandleStby();
-        syncMasterSendAction(AMP_TUNER_ADDR, &action);
-        syncMasterSendAction(AMP_SPECTRUM_ADDR, &action);
         break;
 
     case ACTION_RESTORE_VOLUME:
@@ -1076,22 +1078,55 @@ static void prepareAudioInput (Label *label)
 
 static void ampSendToSlaves(void)
 {
+    if (swTimGet(SW_TIM_SYNC) > 0) {
+        return;
+    }
+
+    if (ampPriv.syncAction.type != ACTION_NONE) {
+        syncMasterSendAction(AMP_TUNER_ADDR, &ampPriv.syncAction);
+        syncMasterSendAction(AMP_SPECTRUM_ADDR, &ampPriv.syncAction);
+        swTimSet(SW_TIM_SYNC, 50);
+        // Force everything to resend on exit standby
+        if (ampPriv.syncAction.type == ACTION_STANDBY && ampPriv.syncAction.value == FLAG_EXIT) {
+            ampPriv.inType = IN_NULL;
+            ampPriv.spMode = SP_MODE_NULL;
+        }
+        ampPriv.syncAction.type = ACTION_NONE;
+        return;
+    }
+
+    if (ampPriv.inType != amp.inType) {
+        syncMasterSendInType(AMP_TUNER_ADDR, amp.inType);
+        syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType);
+        swTimSet(SW_TIM_SYNC, 50);
+        ampPriv.inType = amp.inType;
+        return;
+    }
+
+    Spectrum *sp = &amp.sp;
+
+    if ((sp->mode != ampPriv.spMode) ||
+        (sp->peaks != ampPriv.spPeaks)) {
+        ampPriv.spMode = sp->mode;
+        ampPriv.spPeaks = sp->peaks;
+        syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
+        syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
+        swTimSet(SW_TIM_SYNC, 50);
+        glcdSetXY(0, 30);
+        glcdSetFont(&fontterminus12);
+        glcdSetFontColor(COLOR_WHITE);
+        glcdWriteString("bla");
+
+        return;
+    }
+
     if (ampPriv.rtcSyncRequired) {
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
         syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
+        swTimSet(SW_TIM_SYNC, 50);
         ampPriv.rtcSyncRequired = false;
-    }
-
-    Spectrum *sp = &amp.sp;
-    static Spectrum _sp;
-
-    if ((sp->mode != _sp.mode) ||
-        (sp->peaks != _sp.peaks)) {
-        _sp.mode = sp->mode;
-        _sp.peaks = sp->peaks;
-        syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
-        syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
+        return;
     }
 }
 

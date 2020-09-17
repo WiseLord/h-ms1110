@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "amp.h"
+#include "input/matrix.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
 #include "screen/setupview.h"

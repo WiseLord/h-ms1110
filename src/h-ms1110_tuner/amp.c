@@ -289,7 +289,7 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(InputType *)&syncData[1];
-        actionDispExpired();
+        actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }
 }

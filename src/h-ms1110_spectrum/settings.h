@@ -14,26 +14,7 @@ typedef uint8_t Param;
 enum {
     PARAM_NULL = 0,
 
-    //----------------------------------------------------------------
-
-    PARAM_TUNER_BEGIN,
-
-    PARAM_TUNER_IC = PARAM_TUNER_BEGIN,
-    PARAM_TUNER_BAND,
-    PARAM_TUNER_STEP,
-    PARAM_TUNER_DEEMPH,
-    PARAM_TUNER_STA_MODE,
-    PARAM_TUNER_FMONO,
-    PARAM_TUNER_RDS,
-    PARAM_TUNER_BASS,
-    PARAM_TUNER_VOLUME,
-    PARAM_TUNER_FREQ,
-
-    PARAM_TUNER_END,
-
-    //----------------------------------------------------------------
-
-    PARAM_SPECTRUM_MODE = PARAM_TUNER_END,
+    PARAM_SPECTRUM_MODE,
     PARAM_SPECTRUM_PEAKS,
     PARAM_SPECTRUM_GRAD,
 

@@ -23,6 +23,7 @@ enum {
     SW_TIM_RTC_INIT,
     SW_TIM_SOFT_VOLUME,
     SW_TIM_INPUT_POLL,
+    SW_TIM_SYNC,
 
     SW_TIM_DEC_END,
 

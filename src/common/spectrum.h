@@ -22,6 +22,8 @@ enum {
 
 typedef int8_t SpMode;
 enum {
+    SP_MODE_NULL = -1,
+
     SP_MODE_STEREO = 0,
     SP_MODE_MIRROR,
     SP_MODE_ANTIMIRROR,

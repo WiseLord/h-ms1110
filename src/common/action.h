@@ -110,8 +110,10 @@ enum {
     SCREEN_END
 };
 
-typedef uint8_t InputType;
+typedef int8_t InputType;
 enum {
+    IN_NULL = -1,
+
     IN_TUNER = 0,
     IN_PC,
     IN_TV,
