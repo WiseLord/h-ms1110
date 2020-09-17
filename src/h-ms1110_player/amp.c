@@ -995,6 +995,7 @@ void ampActionHandle(void)
 
     case ACTION_AUDIO_INPUT:
         ampSetInput(actionGetNextAudioInput((int8_t)action.value));
+        screenSet(SCREEN_INPUT, 1000);
         break;
     case ACTION_AUDIO_PARAM_CHANGE:
         audioChangeTune(aProc->tune, (int8_t)action.value);
