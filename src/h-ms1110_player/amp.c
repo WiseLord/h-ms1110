@@ -73,7 +73,7 @@ static const InputType inTypes[MAX_INPUTS] = {
     IN_NULL,
     IN_NULL,
     IN_PC,
-    IN_NULL,
+    IN_TV,
     IN_NULL,
     IN_NULL,
 };
@@ -1073,7 +1073,11 @@ static void prepareAudioInput (Label *label)
         ampPriv.clearScreen = true;
     }
 
-    *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
+    if (amp.inType == IN_NULL) {
+        *label = LABEL_BOOL_OFF;
+    } else {
+        *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
+    }
 }
 
 static void ampSendToSlaves(void)
@@ -1112,11 +1116,6 @@ static void ampSendToSlaves(void)
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
         syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
         swTimSet(SW_TIM_SYNC, 50);
-        glcdSetXY(0, 30);
-        glcdSetFont(&fontterminus12);
-        glcdSetFontColor(COLOR_WHITE);
-        glcdWriteString("bla");
-
         return;
     }
 
