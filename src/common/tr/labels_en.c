@@ -64,8 +64,8 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_RC_STBY_SWITCH]  = "Switch standby",
     [LABEL_RC_VOL_UP]       = "Volume up",
     [LABEL_RC_VOL_DOWN]     = "Volume down",
-
     [LABEL_RC_MUTE]         = "Mute",
+
     [LABEL_RC_MENU]         = "Menu",
     [LABEL_RC_CHAN_PREV]    = "Prev chan",
     [LABEL_RC_CHAN_NEXT]    = "Next chan",

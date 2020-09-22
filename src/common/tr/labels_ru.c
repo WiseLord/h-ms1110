@@ -64,8 +64,8 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_RC_STBY_SWITCH]  = "Режим ожидания",
     [LABEL_RC_VOL_UP]       = "Громкость +",
     [LABEL_RC_VOL_DOWN]     = "Громкость -",
-
     [LABEL_RC_MUTE]         = "Приглушение",
+
     [LABEL_RC_MENU]         = "Меню",
     [LABEL_RC_CHAN_PREV]    = "Предыдущий канал",
     [LABEL_RC_CHAN_NEXT]    = "Следующий канал",

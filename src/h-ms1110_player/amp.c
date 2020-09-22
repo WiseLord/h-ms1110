@@ -681,6 +681,9 @@ static void actionRemapRemote(void)
         audioGet()->tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, -1);
         break;
+    case RC_CMD_MUTE:
+        actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
+        break;
     default:
         break;
     }
@@ -769,6 +772,13 @@ static void actionRemapCommon(void)
         }
         break;
     default:
+        switch (action.type) {
+            case ACTION_AUDIO_MUTE:
+            if (FLAG_SWITCH == action.value) {
+                action.value = !audioGet()->par.mute;
+            }
+            break;
+        }
         break;
     }
 }
@@ -1024,6 +1034,9 @@ void ampActionHandle(void)
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
 
+    case ACTION_AUDIO_MUTE:
+        ampMute(action.value);
+        break;
 
     case ACTION_SP_CHANGE_MODE:
         if (scrMode == SCREEN_SPECTRUM) {

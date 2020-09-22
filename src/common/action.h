@@ -13,8 +13,8 @@ extern "C" {
     CMD(STBY_SWITCH)        \
     CMD(VOL_UP)             \
     CMD(VOL_DOWN)           \
-                            \
     CMD(MUTE)               \
+                            \
     CMD(MENU)               \
     CMD(CHAN_PREV)          \
     CMD(CHAN_NEXT)          \
@@ -90,9 +90,11 @@ enum {
     ACTION_AUDIO_SELECT_PARAM,
     ACTION_AUDIO_SET_PARAM,
 
-    ACTION_SP_CHANGE_MODE,
+    ACTION_AUDIO_MUTE,
 
-    ACTION_TUNER_SET_FREQ,
+    ACTION_SP_CHANGE_MODE = 60,
+
+    ACTION_TUNER_SET_FREQ = 80,
 
     ACTION_END
 };
