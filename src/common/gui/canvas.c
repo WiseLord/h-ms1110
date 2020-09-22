@@ -153,6 +153,8 @@ void canvasShowRadio(bool clear, RadioView *radio)
 
 void canvasDebugFPS(void)
 {
+    return;
+
     const Palette *pal = canvas.pal;
 
     glcdSetFont(&fontterminus12);

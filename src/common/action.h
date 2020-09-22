@@ -11,9 +11,10 @@ extern "C" {
 
 #define FOREACH_CMD(CMD)    \
     CMD(STBY_SWITCH)        \
-    CMD(MUTE)               \
     CMD(VOL_UP)             \
     CMD(VOL_DOWN)           \
+                            \
+    CMD(MUTE)               \
     CMD(MENU)               \
     CMD(CHAN_PREV)          \
     CMD(CHAN_NEXT)          \
@@ -55,6 +56,8 @@ typedef uint8_t ActionType;
 enum {
     ACTION_NONE = 0,
 
+    // Actions to be remapped
+
     ACTION_PLAYER_BTN_SHORT,
     ACTION_PLAYER_BTN_LONG,
     ACTION_PLAYER_ENCODER,
@@ -65,6 +68,10 @@ enum {
 
     ACTION_SPECTRUM_BTN_SHORT,
     ACTION_SPECTRUM_BTN_LONG,
+
+    ACTION_REMOTE,
+
+    // Actions to be handled
 
     ACTION_INIT_HW,
     ACTION_INIT_RTC,
@@ -78,18 +85,14 @@ enum {
     ACTION_SETUP_CHANGE_CHILD,
     ACTION_SETUP_BACK,
 
-    ACTION_REMOTE,
+    ACTION_AUDIO_MENU,
+    ACTION_AUDIO_SELECT_INPUT,
+    ACTION_AUDIO_SELECT_PARAM,
+    ACTION_AUDIO_SET_PARAM,
+
+    ACTION_SP_CHANGE_MODE,
 
     ACTION_TUNER_SET_FREQ,
-
-
-    ACTION_OPEN_MENU,
-
-    ACTION_AUDIO_INPUT,
-    ACTION_AUDIO_PARAM_CHANGE,
-    ACTION_AUDIO_PARAM_SET,
-
-    ACTION_SP_MODE,
 
     ACTION_END
 };

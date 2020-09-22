@@ -47,12 +47,12 @@ static void drawHead(bool clear)
         const Palette *pal = paletteGet();
         GlcdRect rect = glcdGet()->rect;
 
-        glcdDrawRect(0, 0, rect.w, 32, pal->bg);
+        glcdDrawRect(0, 20, rect.w, 22, pal->bg);
 
-        glcdSetFont(&fontterminus32);
+        glcdSetFont(&fontterminus22b);
         glcdSetFontColor(pal->fg);
 
-        glcdSetXY(0, 0);
+        glcdSetXY(0, 20);
         glcdWriteString(getHeadLabel(setup->active));
     }
 }
@@ -69,12 +69,12 @@ static void drawActive(bool clear)
         const Palette *pal = paletteGet();
         GlcdRect rect = glcdGet()->rect;
 
-        glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
+        glcdDrawRect(marginX, 42, rect.w - marginX * 2, 22, pal->bg);
 
-        glcdSetFont(&fontterminus32);
+        glcdSetFont(&fontterminus22b);
         glcdSetFontColor(pal->fg);
 
-        glcdSetXY(rect.w / 2, 32);
+        glcdSetXY(rect.w / 2, 42);
         glcdSetFontAlign(GLCD_ALIGN_CENTER);
         glcdWriteString(getHeadLabel(setup->child));
     }
@@ -105,7 +105,7 @@ static void drawTime(bool clear)
     RTC_type rtc;
     rtcGetTime(&rtc);
 
-    glcdSetFont(&fontterminus32);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char hour[3], min[3], sec[3];
@@ -123,7 +123,7 @@ static void drawTime(bool clear)
     len += glcdCalcStringLen(":");
     len += glcdCalcStringLen(sec);
 
-    glcdSetXY((rect.w - len) / 2, 32);
+    glcdSetXY((rect.w - len) / 2, 42);
 
     drawTm(hour, setup->child == RTC_HOUR);
     glcdWriteString(":");
@@ -147,7 +147,7 @@ static void drawDate(bool clear)
     RTC_type rtc;
     rtcGetTime(&rtc);
 
-    glcdSetFont(&fontterminus32);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char date[3], month[3], year[5];
@@ -165,7 +165,7 @@ static void drawDate(bool clear)
     len += glcdCalcStringLen(".");
     len += glcdCalcStringLen(year);
 
-    glcdSetXY((rect.w - len) / 2, 32);
+    glcdSetXY((rect.w - len) / 2, 42);
 
     drawTm(date, setup->child == RTC_DATE);
     glcdWriteString(".");
@@ -191,7 +191,7 @@ static void drawAlarm(bool clear)
     const Palette *pal = paletteGet();
     Setup *setup = setupGet();
 
-    glcdSetFont(&fontterminus32);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char hour[3], min[3];
@@ -211,10 +211,10 @@ static void drawAlarm(bool clear)
     len += glcdCalcStringLen(days);
 
     if (clear) {
-        glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
+        glcdDrawRect(marginX, 42, rect.w - marginX * 2, 22, pal->bg);
     }
 
-    glcdSetXY((rect.w - len) / 2, 32);
+    glcdSetXY((rect.w - len) / 2, 42);
 
     drawTm(hour, setup->child == ALARM_HOUR);
     glcdWriteString(":");
@@ -230,7 +230,7 @@ static void drawRemote(bool clear)
     const Palette *pal = paletteGet();
     Setup *setup = setupGet();
 
-    glcdSetFont(&fontterminus24b);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char code[7];
@@ -241,7 +241,7 @@ static void drawRemote(bool clear)
 
     GlcdRect rect = glcdGet()->rect;
 
-    glcdSetXY(rect.w, 4);
+    glcdSetXY(rect.w, 20);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     if (rcCode == EE_NOT_FOUND) {
         snprintf(code, sizeof(code), "------");
@@ -250,7 +250,7 @@ static void drawRemote(bool clear)
     }
     glcdWriteString(code);
 
-    glcdSetXY(rect.w / 2, 38);
+    glcdSetXY(rect.w / 2, 42);
     glcdSetFontAlign(GLCD_ALIGN_CENTER);
     glcdWriteString(funcLabel);
 }
@@ -267,7 +267,7 @@ static void drawChild(bool clear)
     }
 
     if (clear) {
-        glcdDrawRect(marginX, 32, rect.w - marginX * 2, 32, pal->bg);
+        glcdDrawRect(marginX, 42, rect.w - marginX * 2, 22, pal->bg);
     }
 
     switch (setup->active) {
@@ -295,14 +295,14 @@ static void drawArrows(bool clear)
     GlcdRect rect = glcdGet()->rect;
 
     if (clear) {
-        glcdSetFont(&fontterminus24b);
+        glcdSetFont(&fontterminus22b);
         glcdSetFontColor(pal->fg);
 
-        glcdSetXY(0, 38);
+        glcdSetXY(0, 42);
         glcdSetFontAlign(GLCD_ALIGN_LEFT);
         glcdWriteString("<");
 
-        glcdSetXY(rect.w, 38);
+        glcdSetXY(rect.w, 41);
         glcdSetFontAlign(GLCD_ALIGN_RIGHT);
         glcdWriteString(">");
     }
