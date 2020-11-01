@@ -16,6 +16,7 @@
 #include "sync.h"
 #include "timers.h"
 #include "tr/labels.h"
+#include "tuner/stations.h"
 #include "tuner/tuner.h"
 #include "utils.h"
 
@@ -319,14 +320,76 @@ void ampActionGet(void)
 static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
-
+    case BTN_TUNER_1:
+        stationZap(0);
+        break;
+    case BTN_TUNER_2:
+        stationZap(1);
+        break;
+    case BTN_TUNER_3:
+        stationZap(2);
+        break;
+    case BTN_TUNER_4:
+        stationZap(3);
+        break;
+    case BTN_TUNER_5:
+        stationZap(4);
+        break;
+    case BTN_TUNER_6:
+        stationZap(5);
+        break;
+    case BTN_TUNER_7:
+        stationZap(6);
+        break;
+    case BTN_TUNER_8:
+        stationZap(7);
+        break;
+    case BTN_TUNER_9:
+        stationZap(8);
+        break;
+    case BTN_TUNER_MWFM:
+        break;
+    case BTN_TUNER_RDS:
+        break;
+    case BTN_TUNER_ENC:
+        break;
+    default:
+        break;
     }
 }
 
 static void actionRemapTunerBtnLong(int16_t button)
 {
-    switch (button) {
+    Tuner *tuner = tunerGet();
 
+    switch (button) {
+    case BTN_TUNER_1:
+        break;
+    case BTN_TUNER_2:
+        break;
+    case BTN_TUNER_3:
+        break;
+    case BTN_TUNER_4:
+        break;
+    case BTN_TUNER_5:
+        break;
+    case BTN_TUNER_6:
+        break;
+    case BTN_TUNER_7:
+        break;
+    case BTN_TUNER_8:
+        break;
+    case BTN_TUNER_9:
+        break;
+    case BTN_TUNER_MWFM:
+        break;
+    case BTN_TUNER_RDS:
+        break;
+    case BTN_TUNER_ENC:
+        stationStore(tuner->status.freq, "test");
+        break;
+    default:
+        break;
     }
 }
 
@@ -410,6 +473,7 @@ static void prepareRadioView(RadioView *radio)
 
     radio->freq = tuner->status.freq;
     radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
+    radio->stationNum = stationGetNum(tuner->status.freq);
 }
 
 void ampScreenShow(void)

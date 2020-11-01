@@ -87,11 +87,13 @@ char *stationGetName(int8_t num)
 
 void stationZap(int8_t num)
 {
-    if (num < 0) {
+    if (num < 0 || num >= STATION_COUNT) {
         return;
     }
 
-    tunerSetFreq(stFlash[num].freq);
+    if (stFlash[num].freq != EE_EMPTY) {
+        tunerSetFreq(stFlash[num].freq);
+    }
 }
 
 void stationStore(uint16_t freq, char *name)

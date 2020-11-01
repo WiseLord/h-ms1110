@@ -12,6 +12,7 @@ extern "C" {
 
 typedef struct {
     uint16_t freq;
+    int8_t stationNum;
     bool stereo;
 } RadioView;
 

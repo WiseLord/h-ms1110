@@ -29,4 +29,12 @@ void radioViewDraw(bool clear, RadioView *radio)
     snprintf(buf, sizeof(buf), "Stereo: %d", radio->stereo);
     glcdSetXY(0, 44);
     glcdWriteString(buf);
+
+    if (radio->stationNum >= 0) {
+        snprintf(buf, sizeof(buf), "Station: %02d", radio->stationNum + 1);
+    } else {
+        snprintf(buf, sizeof(buf), "Station: --");
+    }
+    glcdSetXY(100, 44);
+    glcdWriteString(buf);
 }

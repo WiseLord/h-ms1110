@@ -577,13 +577,21 @@ static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_TUNER_1:
+        break;
     case BTN_TUNER_2:
+        break;
     case BTN_TUNER_3:
+        break;
     case BTN_TUNER_4:
+        break;
     case BTN_TUNER_5:
+        break;
     case BTN_TUNER_6:
+        break;
     case BTN_TUNER_7:
+        break;
     case BTN_TUNER_8:
+        break;
     case BTN_TUNER_9:
         break;
     case BTN_TUNER_MWFM:
@@ -601,13 +609,21 @@ static void actionRemapTunerBtnLong(int16_t button)
 {
     switch (button) {
     case BTN_TUNER_1:
+        break;
     case BTN_TUNER_2:
+        break;
     case BTN_TUNER_3:
+        break;
     case BTN_TUNER_4:
+        break;
     case BTN_TUNER_5:
+        break;
     case BTN_TUNER_6:
+        break;
     case BTN_TUNER_7:
+        break;
     case BTN_TUNER_8:
+        break;
     case BTN_TUNER_9:
         break;
     case BTN_TUNER_MWFM:
