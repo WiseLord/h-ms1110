@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "amputil.h"
 #include "audio/audio.h"
 #include "debug.h"
 #include "gui/canvas.h"
@@ -53,6 +52,8 @@ static void actionRemapSpectrumBtnLong(int16_t button);
 static void actionRemapRemote(void);
 static void actionRemapCommon(void);
 //static void actionRemapNavigate(void);
+
+static void ampInitMuteStby(void);
 
 static void actionRemapPlayerEncoder(int16_t encCnt);
 static void actionRemapTunerEncoder(int16_t encCnt);
@@ -783,7 +784,7 @@ static void actionRemapCommon(void)
     }
 }
 
-void ampInitMuteStby(void)
+static void ampInitMuteStby(void)
 {
     LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -810,7 +811,7 @@ void ampInit(void)
 
     rtcSetCb(rtcCb);
 
-    ampUtilHandleSwd(SCREEN_STANDBY);
+    ampHandleSwd(SCREEN_STANDBY);
 
     labelsInit();
     canvasInit();
@@ -834,7 +835,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampUtilHandleSwd(amp.screen);
+        ampHandleSwd(amp.screen);
 
         ampGetFromSlaves();
 

@@ -99,70 +99,10 @@ enum {
     ACTION_END
 };
 
-typedef uint8_t ScreenType;
-enum {
-    // Screens allowed to be default
-    SCREEN_SPECTRUM = 0,
-    SCREEN_TIME,
-    SCREEN_INPUT,
-
-    SCREEN_STANDBY,
-    SCREEN_TUNE,
-    SCREEN_SETUP,
-
-    SCREEN_TUNER,
-
-    SCREEN_END
-};
-
-typedef int8_t InputType;
-enum {
-    IN_NULL = -1,
-
-    IN_TUNER = 0,
-    IN_PC,
-    IN_TV,
-    IN_BLUETOOTH,
-    IN_DVD,
-    IN_USB,
-    IN_MICROPHONE,
-    IN_GUITAR,
-    IN_TURNTABLES,
-    IN_SDCARD,
-    IN_PROJECTOR,
-    IN_SATELLITE,
-    IN_MIXER,
-    IN_KARADIO,
-
-    IN_END
-};
-
 typedef struct {
     ActionType type;
     int16_t value;
 } Action;
-
-typedef struct {
-    ScreenType type;
-    int16_t timeout;
-} Screen;
-
-typedef uint8_t AmpStatus;
-enum {
-    AMP_STATUS_STBY,
-    AMP_STATUS_POWERED,
-    AMP_STATUS_HW_READY,
-    AMP_STATUS_ACTIVE,
-
-    AMP_STATUS_END
-};
-
-typedef struct {
-    AmpStatus status;
-    ScreenType screen;
-    InputType inType;
-    Spectrum sp;
-} Amp;
 
 #ifdef __cplusplus
 }

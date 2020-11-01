@@ -1,10 +1,10 @@
-#include "amputil.h"
+#include "amp.h"
 
 #include <stdbool.h>
 
 #include "hwlibs.h"
 
-void ampUtilHandleSwd(ScreenType screen)
+void ampHandleSwd(ScreenType screen)
 {
     static bool swd = false;
 

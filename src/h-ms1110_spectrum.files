@@ -1,6 +1,7 @@
+common/action.c
 common/action.h
-common/amputil.c
-common/amputil.h
+common/amp.c
+common/amp.h
 common/debug.c
 common/debug.h
 common/display/colors.h
@@ -84,6 +85,7 @@ common/input/analog.c
 common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
+common/main.c
 common/rtc.c
 common/rtc.h
 common/screen/radioview.c
@@ -135,8 +137,6 @@ common/usart.h
 common/utils.c
 common/utils.h
 h-ms1110_spectrum/Makefile
-h-ms1110_spectrum/amp.c
-h-ms1110_spectrum/amp.h
-h-ms1110_spectrum/main.c
+h-ms1110_spectrum/amp_spectrum.c
 h-ms1110_spectrum/settings.c
 h-ms1110_spectrum/settings.h

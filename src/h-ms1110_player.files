@@ -1,6 +1,7 @@
+common/action.c
 common/action.h
-common/amputil.c
-common/amputil.h
+common/amp.c
+common/amp.h
 common/audio/audio.c
 common/audio/audio.h
 common/audio/audiodefs.h
@@ -86,6 +87,7 @@ common/input/analog.c
 common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
+common/main.c
 common/rc.c
 common/rc.h
 common/rtc.c
@@ -138,9 +140,7 @@ common/usart.h
 common/utils.c
 common/utils.h
 h-ms1110_player/Makefile
-h-ms1110_player/amp.c
-h-ms1110_player/amp.h
-h-ms1110_player/main.c
+h-ms1110_player/amp_player.c
 h-ms1110_player/settings.c
 h-ms1110_player/settings.h
 h-ms1110_player/setup.c

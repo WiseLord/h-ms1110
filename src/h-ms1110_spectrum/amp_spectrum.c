@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "amputil.h"
 #include "debug.h"
 #include "gui/canvas.h"
 #include "hwlibs.h"
@@ -206,7 +205,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampUtilHandleSwd(amp.screen);
+        ampHandleSwd(amp.screen);
 
         ampActionSyncMaster();
 
