@@ -206,5 +206,8 @@ void lc7213xUpdateStatus(void)
     if (!(outBuf & LC7213X_OUT_I2)) {
         tStatus->flags |= TUNER_FLAG_STEREO;
     }
+    if (!(outBuf & LC7213X_OUT_I1)) {
+        tStatus->flags |= TUNER_FLAG_STATION;
+    }
     updateIn2();
 }

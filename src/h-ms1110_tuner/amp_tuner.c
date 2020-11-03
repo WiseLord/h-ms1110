@@ -495,6 +495,7 @@ static void prepareRadioView(RadioView *radio)
 
     radio->freq = tuner->status.freq;
     radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
+    radio->station = ((tuner->status.flags & TUNER_FLAG_STATION) == TUNER_FLAG_STATION);
     radio->stationNum = stationGetNum(tuner->status.freq);
     radio->favMask = stationFavGetMask(radio->freq);
 }

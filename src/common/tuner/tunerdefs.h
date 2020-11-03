@@ -43,6 +43,8 @@ enum {
     TUNER_FLAG_SEEKDOWN     = 0x0020, // Seek down in progress
 
     TUNER_FLAG_RDS_READY    = 0x0100, // RDS is ready
+
+    TUNER_FLAG_STATION      = 0x0200, // Tuned at station
 };
 
 typedef uint8_t TunerBand;

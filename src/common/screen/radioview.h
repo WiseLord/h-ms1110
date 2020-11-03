@@ -15,6 +15,7 @@ typedef struct {
     uint16_t favMask;
     int8_t stationNum;
     bool stereo;
+    bool station;
 } RadioView;
 
 void radioViewDraw(bool clear, RadioView *radio);

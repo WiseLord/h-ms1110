@@ -38,6 +38,11 @@ void radioViewDraw(bool clear, RadioView *radio)
     glcdSetXY(100, 44);
     glcdWriteString(buf);
 
+    if (radio->station) {
+        glcdWriteString(" +");
+    } else {
+        glcdWriteString(" -");
+    }
 
     for (int8_t i = 0; i < 3; i++) {
         for (int8_t j = 0; j < 3; j++) {
