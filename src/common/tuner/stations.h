@@ -35,6 +35,7 @@ void stationRemove(uint16_t freq);
 void stationFavInit(void);
 void stationFavZap(int8_t num);
 void stationFavStoreRemove(int8_t num);
+uint16_t stationFavGetMask(uint16_t freq);
 
 #ifdef __cplusplus
 }

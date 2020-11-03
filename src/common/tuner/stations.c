@@ -226,3 +226,16 @@ void stationFavStoreRemove(int8_t num)
     }
     settingsStore(PARAM_TUNER_FAV_0 + num, stFav[num]);
 }
+
+uint16_t stationFavGetMask(uint16_t freq)
+{
+    uint16_t mask = 0x0000;
+
+    for (uint8_t i = 0; i < STATION_FAV_COUNT; i++) {
+        if (freq == stFav[i]) {
+            mask |= (1 << i);
+        }
+    }
+
+    return mask;
+}

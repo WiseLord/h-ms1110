@@ -37,4 +37,15 @@ void radioViewDraw(bool clear, RadioView *radio)
     }
     glcdSetXY(100, 44);
     glcdWriteString(buf);
+
+
+    for (int8_t i = 0; i < 3; i++) {
+        for (int8_t j = 0; j < 3; j++) {
+            if (1 << (1 + i * 3 + j) & radio->favMask) {
+                glcdDrawRing(206 + 20 * j, 12 + 20 * i, 8, 2, pal->active);
+            } else {
+                glcdDrawRing(206 + 20 * j, 12 + 20 * i, 8, 2, pal->inactive);
+            }
+        }
+    }
 }
