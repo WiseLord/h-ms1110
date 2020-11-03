@@ -96,6 +96,9 @@ enum {
 
     ACTION_TUNER_SET_FREQ = 80,
 
+    ACTION_DIGIT,
+    ACTION_DIGIT_HOLD,
+
     ACTION_END
 };
 

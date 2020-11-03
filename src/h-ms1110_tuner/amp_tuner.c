@@ -321,31 +321,31 @@ static void actionRemapTunerBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_TUNER_1:
-        stationZap(0);
+        actionSet(ACTION_DIGIT, 1);
         break;
     case BTN_TUNER_2:
-        stationZap(1);
+        actionSet(ACTION_DIGIT, 2);
         break;
     case BTN_TUNER_3:
-        stationZap(2);
+        actionSet(ACTION_DIGIT, 3);
         break;
     case BTN_TUNER_4:
-        stationZap(3);
+        actionSet(ACTION_DIGIT, 4);
         break;
     case BTN_TUNER_5:
-        stationZap(4);
+        actionSet(ACTION_DIGIT, 5);
         break;
     case BTN_TUNER_6:
-        stationZap(5);
+        actionSet(ACTION_DIGIT, 6);
         break;
     case BTN_TUNER_7:
-        stationZap(6);
+        actionSet(ACTION_DIGIT, 7);
         break;
     case BTN_TUNER_8:
-        stationZap(7);
+        actionSet(ACTION_DIGIT, 8);
         break;
     case BTN_TUNER_9:
-        stationZap(8);
+        actionSet(ACTION_DIGIT, 9);
         break;
     case BTN_TUNER_MWFM:
         break;
@@ -364,22 +364,31 @@ static void actionRemapTunerBtnLong(int16_t button)
 
     switch (button) {
     case BTN_TUNER_1:
+        actionSet(ACTION_DIGIT_HOLD, 1);
         break;
     case BTN_TUNER_2:
+        actionSet(ACTION_DIGIT_HOLD, 2);
         break;
     case BTN_TUNER_3:
+        actionSet(ACTION_DIGIT_HOLD, 3);
         break;
     case BTN_TUNER_4:
+        actionSet(ACTION_DIGIT_HOLD, 4);
         break;
     case BTN_TUNER_5:
+        actionSet(ACTION_DIGIT_HOLD, 5);
         break;
     case BTN_TUNER_6:
+        actionSet(ACTION_DIGIT_HOLD, 6);
         break;
     case BTN_TUNER_7:
+        actionSet(ACTION_DIGIT_HOLD, 7);
         break;
     case BTN_TUNER_8:
+        actionSet(ACTION_DIGIT_HOLD, 8);
         break;
     case BTN_TUNER_9:
+        actionSet(ACTION_DIGIT_HOLD, 9);
         break;
     case BTN_TUNER_MWFM:
         break;
@@ -413,6 +422,19 @@ static void ampActionRemap(void)
         break;
     case ACTION_TUNER_ENCODER:
         actionRemapTunerEncoder(action.value);
+        break;
+    }
+
+    switch (action.type) {
+    case ACTION_DIGIT:
+        if (amp.inType == IN_TUNER) {
+            stationFavZap(action.value);
+        }
+        break;
+    case ACTION_DIGIT_HOLD:
+        if (amp.inType == IN_TUNER) {
+            stationFavStoreRemove(action.value);
+        }
         break;
     }
 }

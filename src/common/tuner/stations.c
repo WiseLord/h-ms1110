@@ -4,12 +4,14 @@
 #include <string.h>
 
 #include "eemul.h"
+#include "settings.h"
 #include "tuner.h"
 
 #define STATION_COUNT       (int8_t)(EE_PAGE_SIZE / sizeof(Station))
 #define EE_PAGE_FM          (EE_PAGE_COUNT - EE_PAGE_STEP * 2 - 1)
 
 static Station *stFlash;
+uint16_t stFav[STATION_FAV_COUNT];
 
 void stationsInit()
 {
@@ -186,4 +188,41 @@ void stationRemove(uint16_t freq)
     eeWritePage(EE_PAGE_FM, stRam, (uint16_t)((num) * sizeof(Station)));
 
     free(stRam);
+}
+
+void stationFavInit(void)
+{
+    for (uint8_t i = 0; i < STATION_FAV_COUNT; i++) {
+        uint16_t raw = (uint16_t)settingsRead(PARAM_TUNER_FAV_0 + i);
+        if (raw != EE_NOT_FOUND) {
+            stFav[i] = raw;
+        }
+    }
+}
+
+void stationFavZap(int8_t num)
+{
+    if (num < 0 || num >= STATION_FAV_COUNT) {
+        return;
+    }
+
+    if (stFav[num] != 0) {
+        tunerSetFreq(stFav[num]);
+    }
+}
+
+void stationFavStoreRemove(int8_t num)
+{
+    if (num < 0 || num >= STATION_FAV_COUNT) {
+        return;
+    }
+
+    uint16_t freq = tunerGet()->status.freq;
+
+    if (stFav[num] != freq) {
+        stFav[num] = freq;
+    } else {
+        stFav[num] = 0;
+    }
+    settingsStore(PARAM_TUNER_FAV_0 + num, stFav[num]);
 }

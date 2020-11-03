@@ -80,6 +80,7 @@ void tunerReadSettings(void)
     for (Param par = PARAM_TUNER_BEGIN; par < PARAM_TUNER_END; par++) {
         settingsSet(par, settingsRead(par));
     }
+    stationFavInit();
 
     // API initialization
     switch (tuner.par.ic) {
