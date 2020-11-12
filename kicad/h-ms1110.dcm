@@ -6,4 +6,10 @@ K connector
 F ~
 $ENDCMP
 #
+$CMP PT2579
+D Echo Processor IC
+K CMOS ADC DAC 44K Digital processing VCO
+F http://sound.westhost.com/pt2399.pdf
+$ENDCMP
+#
 #End Doc Library
