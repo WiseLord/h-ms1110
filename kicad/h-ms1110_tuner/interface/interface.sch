@@ -74,17 +74,7 @@ $EndComp
 Wire Wire Line
 	2900 1500 2900 1750
 Wire Wire Line
-	2900 1750 1150 1750
-Wire Wire Line
-	1150 1850 1450 1850
-Wire Wire Line
-	1150 1950 1450 1950
-Wire Wire Line
-	1150 2050 1450 2050
-Wire Wire Line
 	3100 1500 3100 2150
-Text Label 1200 1750 0    50   ~ 0
-+3.3VA
 Text Label 1200 1950 0    50   ~ 0
 RDDA
 Text Label 1200 2050 0    50   ~ 0
@@ -700,38 +690,6 @@ Wire Wire Line
 	10600 3250 10600 2950
 Wire Wire Line
 	10600 2950 10700 2950
-Wire Wire Line
-	3200 3250 3200 1500
-Wire Wire Line
-	3000 3050 3000 1500
-Text Label 1200 3150 0    50   ~ 0
-GNDD
-Wire Wire Line
-	1650 3150 1650 3850
-Wire Wire Line
-	1650 2750 1650 3150
-Connection ~ 1650 3150
-Wire Wire Line
-	1150 3150 1650 3150
-Text Label 1200 3250 0    50   ~ 0
-ROT-A
-Text Label 1200 3050 0    50   ~ 0
-ROT-B
-Wire Wire Line
-	1150 3250 3200 3250
-Wire Wire Line
-	1150 3050 3000 3050
-$Comp
-L Connector_Generic:Conn_01x03 J4
-U 1 1 5E26FD50
-P 950 3150
-F 0 "J4" H 950 3350 50  0000 C CNN
-F 1 "ROT" V 1050 3150 50  0000 C CNN
-F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 950 3150 50  0001 C CNN
-F 3 "~" H 950 3150 50  0001 C CNN
-	1    950  3150
-	-1   0    0    -1  
-$EndComp
 $Comp
 L Connector_Generic:Conn_01x06 J9
 U 1 1 5EB4B8B0
@@ -1219,4 +1177,14 @@ Wire Wire Line
 	5950 3800 5950 4050
 Text Label 1200 1850 0    50   ~ 0
 QUAL
+Wire Wire Line
+	1650 2750 1650 3850
+NoConn ~ 3000 1500
+NoConn ~ 3200 1500
+Wire Wire Line
+	1150 1850 1500 1850
+Wire Wire Line
+	1150 1950 1500 1950
+Wire Wire Line
+	1150 2050 1500 2050
 $EndSCHEMATC
