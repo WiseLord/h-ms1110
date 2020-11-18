@@ -227,8 +227,8 @@ void tda7719Reset(void)
     i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
     i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
     i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
-    i2cSend(I2C_AMP, 0x10);
-    i2cSend(I2C_AMP, 0x10);
+    i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
+    i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
 
     i2cTransmit(I2C_AMP);
 }
@@ -238,7 +238,7 @@ void tda7719SetTune(AudioTune tune, int8_t value)
     (void)value;
 
     AudioRaw raw;
-    audioSetRawBalance(&raw, aPar->tune[AUDIO_TUNE_VOLUME].value);
+    audioSetRawBalance(&raw, aPar->tune[AUDIO_TUNE_VOLUME].value, false);
 
     switch (tune) {
     case AUDIO_TUNE_VOLUME:
@@ -250,6 +250,8 @@ void tda7719SetTune(AudioTune tune, int8_t value)
         i2cSend(I2C_AMP, 0x10 + (uint8_t)(-raw.frontRight));
         i2cSend(I2C_AMP, 0x10 + (uint8_t)(-raw.rearLeft));
         i2cSend(I2C_AMP, 0x10 + (uint8_t)(-raw.rearRight));
+        i2cSend(I2C_AMP, 0x10 + (uint8_t)(-raw.subwoofer));
+        i2cSend(I2C_AMP, 0x10 + (uint8_t)(-raw.subwoofer));
         i2cTransmit(I2C_AMP);
         break;
     case AUDIO_TUNE_BASS:

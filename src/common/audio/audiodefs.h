@@ -61,6 +61,7 @@ enum {
     AUDIO_MODE_2_0 = 0,
     AUDIO_MODE_2_1,
     AUDIO_MODE_4_0,
+    AUDIO_MODE_4_1,
     AUDIO_MODE_5_1,
 
     AUDIO_MODE_END
@@ -71,6 +72,8 @@ typedef struct {
     int8_t frontRight;
     int8_t rearLeft;
     int8_t rearRight;
+    int8_t center;
+    int8_t subwoofer;
 } AudioRaw;
 
 #define STEP_MULT   8

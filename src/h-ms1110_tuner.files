@@ -1,3 +1,4 @@
+common/.astylerc
 common/action.c
 common/action.h
 common/amp.c

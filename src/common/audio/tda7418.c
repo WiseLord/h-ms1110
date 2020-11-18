@@ -115,7 +115,7 @@ static void tda7418InputGain(int8_t input, int8_t gain)
 static void tda7418SetSpeakers(void)
 {
     AudioRaw raw;
-    audioSetRawBalance(&raw, 0);
+    audioSetRawBalance(&raw, 0, false);
 
     i2cBegin(I2C_AMP, TDA7418_I2C_ADDR);
     i2cSend(I2C_AMP, TDA7418_SP_FRONT_LEFT | TDA7418_AUTO_INC);
@@ -139,9 +139,15 @@ void tda7418InitParam(AudioParam *param)
     aPar->tune[AUDIO_TUNE_BASS].grid      = &gridToneBal;
     aPar->tune[AUDIO_TUNE_MIDDLE].grid    = &gridToneBal;
     aPar->tune[AUDIO_TUNE_TREBLE].grid    = &gridToneBal;
-    aPar->tune[AUDIO_TUNE_FRONTREAR].grid = &gridToneBal;
+    if (aPar->mode == AUDIO_MODE_4_0 ||
+        aPar->mode == AUDIO_MODE_4_1) {
+        aPar->tune[AUDIO_TUNE_FRONTREAR].grid = &gridToneBal;
+    }
     aPar->tune[AUDIO_TUNE_BALANCE].grid   = &gridToneBal;
-    aPar->tune[AUDIO_TUNE_SUBWOOFER].grid = &gridSubwoofer;
+    if (aPar->mode == AUDIO_MODE_2_1 ||
+        aPar->mode == AUDIO_MODE_4_1) {
+        aPar->tune[AUDIO_TUNE_SUBWOOFER].grid = &gridSubwoofer;
+    }
     aPar->tune[AUDIO_TUNE_GAIN].grid      = &gridGain;
 }
 
