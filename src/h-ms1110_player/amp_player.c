@@ -239,7 +239,6 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
-    swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
     swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
@@ -255,11 +254,10 @@ void ampEnterStby(void)
 
     inputDisable();
 
-    ampPinStby(true);
-
     inputSetPower(false);   // Power off input device
 
     amp.status = AMP_STATUS_STBY;
+    swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
 void ampHandleStby(void)
@@ -309,6 +307,10 @@ void ampInitHw(void)
         ampMute(false);
 
         amp.status = AMP_STATUS_ACTIVE;
+        break;
+    case AMP_STATUS_STBY:
+        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+        ampPinStby(true);
         break;
     }
 }
@@ -767,6 +769,7 @@ static void actionRemapCommon(void)
             break;
         case ACTION_SETUP_SELECT:
         case ACTION_INIT_RTC:
+        case ACTION_INIT_HW:
             break;
         default:
             actionSet(ACTION_NONE, 0);
