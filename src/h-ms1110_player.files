@@ -79,7 +79,6 @@ common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
-common/hidkeys.h
 common/hwlibs.h
 common/i2c.c
 common/i2c.h
@@ -90,6 +89,7 @@ common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
 common/main.c
+common/mediakey.h
 common/mpc.c
 common/mpc.h
 common/rc.c

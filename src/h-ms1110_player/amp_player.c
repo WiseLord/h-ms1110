@@ -548,18 +548,18 @@ static void actionRemapPlayerBtnShort(int16_t button)
     case BTN_PLAYER_OPEN:
         break;
     case BTN_PLAYER_PLAYPAUSE:
-        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PAUSE);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PLAY_PAUSE);
         break;
     case BTN_PLAYER_STOP:
-        actionSet(ACTION_MEDIA, HIDMEDIAKEY_STOP);
+        actionSet(ACTION_MEDIA, MEDIAKEY_STOP);
         break;
     case BTN_PLAYER_REWIND:
-        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PREV_TRACK);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PREVIOUS);
         break;
     case BTN_PLAYER_REPEATE:
         break;
     case BTN_PLAYER_FORWARD:
-        actionSet(ACTION_MEDIA, HIDMEDIAKEY_NEXT_TRACK);
+        actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
         break;
     case BTN_PLAYER_AUDIO:
         if (SCREEN_SETUP == amp.screen) {
@@ -601,10 +601,12 @@ static void actionRemapPlayerBtnLong(int16_t button)
     case BTN_PLAYER_STOP:
         break;
     case BTN_PLAYER_REWIND:
+        actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
         break;
     case BTN_PLAYER_REPEATE:
         break;
     case BTN_PLAYER_FORWARD:
+        actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
         break;
     case BTN_PLAYER_AUDIO:
         break;
@@ -1011,7 +1013,7 @@ static void ampActionRemap(void)
     actionRemapCommon();
 }
 
-static void ampSendMediaKey(HidMediaKey key)
+static void ampSendMediaKey(MediaKey key)
 {
     InputType inType = amp.inType;
 
@@ -1132,7 +1134,7 @@ void ampActionHandle(void)
         break;
 
     case ACTION_MEDIA:
-        ampSendMediaKey((HidMediaKey)action.value);
+        ampSendMediaKey((MediaKey)action.value);
         break;
 
     default:

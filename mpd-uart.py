@@ -19,7 +19,6 @@ class Console(object):
         self.parse_cb = cb
 
     def send(self, info):
-        print(info)
         self.serial.write(bytes(info + '\r\n', 'utf-8'))
 
     def start(self):
@@ -53,6 +52,14 @@ class Player(object):
 
     def parse_cmd(self, cmd):
         self.acquire()
+
+        status = self.client.status()
+        if 'elapsed' in status:
+            elapsed = float(status['elapsed'])
+        else:
+            elapsed = 0
+        state = status['state']
+
         if cmd == 'play':
             self.client.play()
         if cmd == 'stop':
@@ -65,6 +72,14 @@ class Player(object):
         if cmd == 'previous':
             self.client.play()
             self.client.previous()
+        if cmd == 'rewind' and state == 'play':
+            pos = elapsed - 5
+            if pos < 0:
+                pos = 0
+            self.client.seekcur(pos)
+        if cmd == 'ffwd' and state == 'play':
+            pos = elapsed + 5
+            self.client.seekcur(pos)
         if cmd == 'load music':
             self.client.clear()
             self.client.load("Music")
@@ -128,7 +143,6 @@ class MpdControl(object):
     def cmd_parse(self, cmd):
         if str(cmd).startswith('cli.'):
             command = str(cmd).lstrip('cli.')
-            print(command)
             self.player.parse_cmd(command)
 
     def get_field(self, song, key):

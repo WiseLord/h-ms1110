@@ -53,8 +53,8 @@ extern "C" {
 
 // Handling long press actions
 #define SHORT_PRESS             60
-#define LONG_PRESS              600
-#define AUTOREPEAT              150
+#define LONG_PRESS              800
+#define AUTOREPEAT              400
 
 #define ENC_RES_MIN             -64
 #define ENC_RES_MAX             64

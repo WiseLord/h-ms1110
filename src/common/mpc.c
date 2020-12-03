@@ -40,29 +40,29 @@ Mpc *mpcGet(void)
     return &mpc;
 }
 
-void mpcSendMediaKey(HidMediaKey key)
+void mpcSendMediaKey(MediaKey key)
 {
     switch (key) {
-    case HIDMEDIAKEY_PREV_TRACK:
-        mpcSendCmd("previous");
-        break;
-    case HIDMEDIAKEY_NEXT_TRACK:
-        mpcSendCmd("next");
-        break;
-    case HIDMEDIAKEY_STOP:
-        mpcSendCmd("stop");
-        break;
-    case HIDMEDIAKEY_PLAY:
+    case MEDIAKEY_PLAY:
         mpcSendCmd("play");
         break;
-    case HIDMEDIAKEY_PAUSE:
+    case MEDIAKEY_PLAY_PAUSE:
         mpcSendCmd("pause");
         break;
-    case HIDMEDIAKEY_REWIND:
+    case MEDIAKEY_STOP:
+        mpcSendCmd("stop");
         break;
-    case HIDMEDIAKEY_FFWD:
+    case MEDIAKEY_PREVIOUS:
+        mpcSendCmd("previous");
         break;
-    case HIDMEDIAKEY_MUTE:
+    case MEDIAKEY_NEXT:
+        mpcSendCmd("next");
+        break;
+    case MEDIAKEY_REWIND:
+        mpcSendCmd("rewind");
+        break;
+    case MEDIAKEY_FFWD:
+        mpcSendCmd("ffwd");
         break;
     }
 }

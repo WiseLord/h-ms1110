@@ -52,6 +52,9 @@ static void inputHandleButtons(uint16_t btnNow)
             if (btnCnt == LONG_PRESS) {
                 input.btn = btnPrev;
                 input.flags |= BTN_FLAG_LONG_PRESS;
+                if (btnNow & (BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD)) {
+                    btnCnt -= AUTOREPEAT;
+                }
             }
         }
     } else {

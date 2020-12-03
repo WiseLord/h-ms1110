@@ -8,7 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "hidkeys.h"
+#include "mediakey.h"
 
 #define NAME_SIZE            40
 
@@ -19,7 +19,7 @@ typedef struct {
 void mpcInit(void);
 Mpc *mpcGet(void);
 
-void mpcSendMediaKey(HidMediaKey key);
+void mpcSendMediaKey(MediaKey key);
 void mpcGetData(void);
 
 #ifdef __cplusplus
