@@ -65,6 +65,7 @@ enum {
     IN_SATELLITE,
     IN_MIXER,
     IN_KARADIO,
+    IN_MPD,
 
     IN_END
 };

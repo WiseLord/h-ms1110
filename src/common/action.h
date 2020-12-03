@@ -99,6 +99,8 @@ enum {
     ACTION_DIGIT,
     ACTION_DIGIT_HOLD,
 
+    ACTION_MEDIA,
+
     ACTION_END
 };
 

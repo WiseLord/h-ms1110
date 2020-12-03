@@ -10,6 +10,7 @@
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"
+#include "mpc.h"
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
@@ -70,7 +71,7 @@ static AmpPriv ampPriv;
 
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
-    IN_NULL,
+    IN_MPD,
     IN_NULL,
     IN_NULL,
     IN_PC,
@@ -544,6 +545,22 @@ static void actionRemapPlayerBtnShort(int16_t button)
         }
         break;
 
+    case BTN_PLAYER_OPEN:
+        break;
+    case BTN_PLAYER_PLAYPAUSE:
+        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PAUSE);
+        break;
+    case BTN_PLAYER_STOP:
+        actionSet(ACTION_MEDIA, HIDMEDIAKEY_STOP);
+        break;
+    case BTN_PLAYER_REWIND:
+        actionSet(ACTION_MEDIA, HIDMEDIAKEY_PREV_TRACK);
+        break;
+    case BTN_PLAYER_REPEATE:
+        break;
+    case BTN_PLAYER_FORWARD:
+        actionSet(ACTION_MEDIA, HIDMEDIAKEY_NEXT_TRACK);
+        break;
     case BTN_PLAYER_AUDIO:
         if (SCREEN_SETUP == amp.screen) {
             actionSet(ACTION_SETUP_BACK, 0);
@@ -571,6 +588,27 @@ static void actionRemapPlayerBtnLong(int16_t button)
         if (SCREEN_STANDBY == amp.screen) {
             actionSet(ACTION_SETUP_SELECT, SETUP_MAIN);
         }
+        break;
+    case BTN_AMP_IN_PREV:
+        break;
+    case BTN_AMP_IN_NEXT:
+        break;
+
+    case BTN_PLAYER_OPEN:
+        break;
+    case BTN_PLAYER_PLAYPAUSE:
+        break;
+    case BTN_PLAYER_STOP:
+        break;
+    case BTN_PLAYER_REWIND:
+        break;
+    case BTN_PLAYER_REPEATE:
+        break;
+    case BTN_PLAYER_FORWARD:
+        break;
+    case BTN_PLAYER_AUDIO:
+        break;
+    case BTN_PLAYER_SUBTITLE:
         break;
     }
 }
@@ -793,7 +831,7 @@ static void actionRemapCommon(void)
         break;
     default:
         switch (action.type) {
-            case ACTION_AUDIO_MUTE:
+        case ACTION_AUDIO_MUTE:
             if (FLAG_SWITCH == action.value) {
                 action.value = !audioGet()->par.mute;
             }
@@ -822,8 +860,6 @@ static void ampInitMuteStby(void)
 
 void ampInit(void)
 {
-    dbgInit();
-
     settingsInit();
     ampInitMuteStby();
     rtcInit();
@@ -834,6 +870,8 @@ void ampInit(void)
 
     labelsInit();
     canvasInit();
+
+    mpcInit();
 
     inputInit();
     rcInit();
@@ -857,6 +895,8 @@ void ampRun(void)
         ampHandleSwd(amp.screen);
 
         ampGetFromSlaves();
+
+        mpcGetData();
 
         ampActionGet();
         ampActionRemap();
@@ -971,6 +1011,31 @@ static void ampActionRemap(void)
     actionRemapCommon();
 }
 
+static void ampSendMediaKey(HidMediaKey key)
+{
+    InputType inType = amp.inType;
+
+    switch (inType) {
+    case IN_TUNER:
+//        tunerSendMediaKey(key);
+//        break;
+//    case IN_PC:
+//#ifdef _ENABLE_USB
+//        usbHidSendMediaKey(key);
+//#endif
+//        break;
+//    case IN_KARADIO:
+//        karadioSendMediaKey(key);
+//        break;
+//    case IN_BLUETOOTH:
+//        btSendMediaKey(key);
+        break;
+    default:
+        mpcSendMediaKey(key);
+        break;
+    }
+}
+
 void ampActionHandle(void)
 {
     ScreenType scrMode = amp.screen;
@@ -1036,6 +1101,7 @@ void ampActionHandle(void)
     case ACTION_AUDIO_SELECT_INPUT:
         ampSetInput(actionGetNextAudioInput((int8_t)action.value));
         screenSet(SCREEN_INPUT, 1000);
+        ampPriv.clearScreen = true;
         break;
     case ACTION_AUDIO_SELECT_PARAM:
         audioChangeTune(aProc->tune, (int8_t)action.value);
@@ -1065,6 +1131,10 @@ void ampActionHandle(void)
         screenSet(SCREEN_SPECTRUM, 3000);
         break;
 
+    case ACTION_MEDIA:
+        ampSendMediaKey((HidMediaKey)action.value);
+        break;
+
     default:
         break;
     }
@@ -1072,7 +1142,7 @@ void ampActionHandle(void)
     if (scrMode != SCREEN_STANDBY && scrMode != SCREEN_SETUP) {
         // Reset silence timer on signal
 //        if (spCheckSignal()) {
-            actionResetSilenceTimer();
+        actionResetSilenceTimer();
 //        }
         // Reset silence timer on any user action
         if (action.type != ACTION_NONE &&
@@ -1110,18 +1180,18 @@ static void prepareAudioTune(TuneView *tune)
 
 static void prepareAudioInput (Label *label)
 {
-    static InputType _inType;
-
-    if (amp.inType != _inType) {
-        _inType = amp.inType;
-        ampPriv.clearScreen = true;
-    }
-
     if (amp.inType == IN_NULL) {
         *label = LABEL_BOOL_OFF;
     } else {
         *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
     }
+}
+
+static void prepareMpcView(MpcView *view)
+{
+    Mpc *mpc = mpcGet();
+
+    view->name = mpc->name;
 }
 
 static void ampSendToSlaves(void)
@@ -1199,8 +1269,14 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        prepareAudioInput(&label);
-        canvasShowInput(clear, audioGet()->par.input, label);
+        if (amp.inType == IN_MPD) {
+            MpcView view;
+            prepareMpcView(&view);
+            mpcViewDraw(clear, &view);
+        } else {
+            prepareAudioInput(&label);
+            canvasShowInput(clear, audioGet()->par.input, label);
+        }
         break;
     }
 

@@ -46,6 +46,7 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_IN_SATELLITE]    = "Спутник",
     [LABEL_IN_MIXER]        = "Микшер",
     [LABEL_IN_KARADIO]      = "KaRadio",
+    [LABEL_IN_MPD]          = "MPD",
 
     [LABEL_BOOL_OFF]        = "ВЫКЛ",
     [LABEL_BOOL_ON]         = "ВКЛ",

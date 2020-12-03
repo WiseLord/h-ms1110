@@ -44,7 +44,9 @@ C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
+C_SOURCES += $(COMMON)/mpc.c
 C_SOURCES += $(COMMON)/rc.c
+C_SOURCES += $(COMMON)/ringbuf.c
 C_SOURCES += $(COMMON)/rtc.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
@@ -70,6 +72,7 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
+C_SOURCES += $(COMMON)/screen/mpcview.c
 C_SOURCES += $(COMMON)/screen/setupview.c
 C_SOURCES += $(COMMON)/screen/spectrumview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
