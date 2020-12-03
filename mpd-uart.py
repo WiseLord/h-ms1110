@@ -58,7 +58,10 @@ class Player(object):
             elapsed = float(status['elapsed'])
         else:
             elapsed = 0
-        state = status['state']
+        if 'state' in status:
+            state = status['state']
+        else:
+            state = 'none'
 
         if cmd == 'play':
             self.client.play()
