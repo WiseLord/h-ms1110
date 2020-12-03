@@ -52,20 +52,9 @@ enum {
     IN_NULL = -1,
 
     IN_TUNER = 0,
-    IN_PC,
-    IN_TV,
-    IN_BLUETOOTH,
-    IN_DVD,
-    IN_USB,
-    IN_MICROPHONE,
-    IN_GUITAR,
-    IN_TURNTABLES,
-    IN_SDCARD,
-    IN_PROJECTOR,
-    IN_SATELLITE,
-    IN_MIXER,
-    IN_KARADIO,
     IN_MPD,
+    IN_AUX1,
+    IN_AUX2,
 
     IN_END
 };

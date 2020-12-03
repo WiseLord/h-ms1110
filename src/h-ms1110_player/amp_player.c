@@ -74,8 +74,8 @@ static const InputType inTypes[MAX_INPUTS] = {
     IN_MPD,
     IN_NULL,
     IN_NULL,
-    IN_PC,
-    IN_TV,
+    IN_AUX1,
+    IN_AUX2,
     IN_NULL,
     IN_NULL,
 };
