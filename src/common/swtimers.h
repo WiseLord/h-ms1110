@@ -24,6 +24,7 @@ enum {
     SW_TIM_SOFT_VOLUME,
     SW_TIM_INPUT_POLL,
     SW_TIM_SYNC,
+    SW_TIM_SCROLL,
 
     SW_TIM_DEC_END,
 

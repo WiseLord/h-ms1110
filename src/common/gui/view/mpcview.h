@@ -14,9 +14,13 @@ typedef struct {
     char *meta;
     int16_t elapsed;
     int16_t duration;
+    int16_t scroll_oft;
+    bool scroll_event;
+    bool scroll_left;
+    int16_t scroll_pause;
 } MpcView;
 
-void mpcViewDraw(bool clear, MpcView *view);
+void mpcViewDraw(MpcView *this, bool clear);
 
 #ifdef __cplusplus
 }

@@ -1196,6 +1196,14 @@ static void prepareMpcView(MpcView *view)
     view->meta = mpc->meta;
     view->elapsed = mpc->elapsed;
     view->duration = mpc->duration;
+
+    if (swTimGet(SW_TIM_SCROLL) <= 0) {
+        swTimSet(SW_TIM_SCROLL, 100);
+        view->scroll_event = true;
+    } else {
+        view->scroll_event = false;
+    }
+
 }
 
 static void ampSendToSlaves(void)
@@ -1276,7 +1284,7 @@ static void ampScreenShow(void)
         if (amp.inType == IN_AUX1) {
             MpcView view;
             prepareMpcView(&view);
-            mpcViewDraw(clear, &view);
+            mpcViewDraw(&view, clear);
         } else {
             prepareAudioInput(&label);
             canvasShowInput(clear, audioGet()->par.input, label);

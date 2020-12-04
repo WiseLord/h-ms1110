@@ -25,27 +25,80 @@ static void mpcViewDrawIcon(const GlcdRect *rect)
     glcdResetRect();
 }
 
-static void mpcViewDrawName(const GlcdRect *rect, const char *name)
+static void mpcViewCalcNameScroll(MpcView *this, int16_t max_oft)
+{
+    if (this->scroll_oft >= 0 && !this->scroll_pause) {
+        this->scroll_oft = 0;
+        this->scroll_left = true;
+        this->scroll_pause = 20;
+    }
+
+    if (this->scroll_oft <= -max_oft && !this->scroll_pause) {
+        this->scroll_oft = -max_oft;
+        this->scroll_left = false;
+        this->scroll_pause = 20;
+    }
+
+    if (this->scroll_pause > 0) {
+        this->scroll_pause--;
+    }
+
+    if (0 == this->scroll_pause) {
+        if (this->scroll_left) {
+            this->scroll_oft--;
+        } else {
+            this->scroll_oft++;
+        }
+    }
+}
+
+static void mpcViewResetNameScroll(MpcView *this)
+{
+    this->scroll_oft = 0;
+    this->scroll_left = true;
+    this->scroll_pause = false;
+}
+
+static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
 {
     glcdSetRect(rect);
 
+    if (clear) {
+        mpcViewResetNameScroll(this);
+    }
+
     const Palette *pal = paletteGet();
 
-    glcdSetFont(&fontterminus14);
+    glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
-    glcdSetXY(0, 0);
-    int16_t len = glcdWriteString(name);
-    glcdDrawRect(len, 0, rect->w - len, rect->h, pal->bg);
+    int16_t len = glcdCalcStringLen(this->meta);
+
+    int16_t max_oft = len - rect->w;
+
+    if (max_oft <= 0) {
+        glcdDrawRect(len, 0, rect->w - len, rect->h, pal->bg);
+        mpcViewResetNameScroll(this);
+    } else {
+        if (this->scroll_event) {
+            this->scroll_event = false;
+            mpcViewCalcNameScroll(this, max_oft);
+        }
+    }
+
+    glcdSetXY(this->scroll_oft, 0);
+    glcdWriteString(this->meta);
 
     glcdResetRect();
 }
 
-static void mpcViewDrawTime(const GlcdRect *rect, int16_t time)
+static void mpcViewDrawTime(MpcView *this, const GlcdRect *rect)
 {
     glcdSetRect(rect);
 
     const Palette *pal = paletteGet();
+
+    int16_t time = this->elapsed;
 
     int8_t sec = time % 60;
     time /= 60;
@@ -69,7 +122,7 @@ static void mpcViewDrawTime(const GlcdRect *rect, int16_t time)
     glcdResetRect();
 }
 
-static void mpcViewDrawProgress(const GlcdRect *rect, int16_t time, int16_t duration)
+static void mpcViewDrawProgress(MpcView *this, const GlcdRect *rect)
 {
     glcdSetRect(rect);
 
@@ -82,21 +135,21 @@ static void mpcViewDrawProgress(const GlcdRect *rect, int16_t time, int16_t dura
     bar.lt.frame_width = 1;
     bar.lt.mark_count = 208;
     bar.lt.mark_width = 1;
-    bar.value = time;
+    bar.value = this->elapsed;
     bar.min = 0;
-    bar.max = duration;
+    bar.max = this->duration;
 
     progressBarDraw(true, &bar);
 
     glcdResetRect();
 }
 
-void mpcViewDraw(bool clear, MpcView *view)
+void mpcViewDraw(MpcView *this, bool clear)
 {
-    (void)clear;
-
-    mpcViewDrawIcon(&iconRect);
-    mpcViewDrawName(&metaRect, view->meta);
-    mpcViewDrawTime(&timeRect, view->elapsed);
-    mpcViewDrawProgress(&progressRect, view->elapsed, view->duration);
+    if (clear) {
+        mpcViewDrawIcon(&iconRect);
+    }
+    mpcViewDrawName(this, clear, &metaRect);
+    mpcViewDrawTime(this, &timeRect);
+    mpcViewDrawProgress(this, &progressRect);
 }
