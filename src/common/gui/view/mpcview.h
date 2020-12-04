@@ -12,7 +12,7 @@ extern "C" {
 
 typedef struct {
     char *meta;
-    int16_t time;
+    int16_t elapsed;
     int16_t duration;
 } MpcView;
 

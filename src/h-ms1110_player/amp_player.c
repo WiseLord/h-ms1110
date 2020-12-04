@@ -1194,8 +1194,8 @@ static void prepareMpcView(MpcView *view)
     Mpc *mpc = mpcGet();
 
     view->meta = mpc->meta;
-    view->time = 153;
-    view->duration = 348;
+    view->elapsed = mpc->elapsed;
+    view->duration = mpc->duration;
 }
 
 static void ampSendToSlaves(void)

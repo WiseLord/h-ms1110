@@ -75,7 +75,11 @@ static void mpcUpdateMeta(const char *str)
 
 static void mpcParseCli(char *line)
 {
-    if (utilIsPrefix(line, "META#: ")) {
+    if (utilIsPrefix(line, "ELAPSED#: ")) {
+        sscanf(line, "ELAPSED#: %d", &mpc.elapsed);
+    } else if (utilIsPrefix(line, "DURATION#: ")) {
+        sscanf(line, "DURATION#: %d", &mpc.duration);
+    } else if (utilIsPrefix(line, "META#: ")) {
         mpcUpdateMeta(line + strlen("META#: "));
     }
 }

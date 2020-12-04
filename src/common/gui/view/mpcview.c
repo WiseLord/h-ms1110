@@ -97,6 +97,6 @@ void mpcViewDraw(bool clear, MpcView *view)
 
     mpcViewDrawIcon(&iconRect);
     mpcViewDrawName(&metaRect, view->meta);
-    mpcViewDrawTime(&timeRect, view->time);
-    mpcViewDrawProgress(&progressRect, view->time, view->duration);
+    mpcViewDrawTime(&timeRect, view->elapsed);
+    mpcViewDrawProgress(&progressRect, view->elapsed, view->duration);
 }

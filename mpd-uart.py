@@ -8,30 +8,52 @@ import mpd
 from select import select
 
 
+def do_meta(song):
+    title = song.get('title', '')
+    name = song.get('name', '')
+    artist = song.get('artist', '')
+
+    if title:
+        if artist:
+            meta = artist + ' - ' + title
+        else:
+            meta = title
+    else:
+        if name:
+            meta = name
+        else:
+            meta = ''
+
+    return meta
+
+
 class Console(object):
     def __init__(self, port, baudrate):
         self.serial = serial.Serial(port=port, baudrate=baudrate)
         self.alive = False
         self.reader_thread = None
         self.parse_cb = None
+        self.write_lock = threading.Lock()
 
     def set_parse_cb(self, cb):
         self.parse_cb = cb
 
     def send(self, info):
+        self.write_lock.acquire()
         print(">>>: " + info)
         self.serial.write(bytes(info + '\r\n', 'utf-8'))
+        self.write_lock.release()
 
     def start(self):
         self.alive = True
-        self.reader_thread = threading.Thread(target=self.reader, name='reader')
+        self.reader_thread = threading.Thread(target=self.reader_fn, name='reader')
         self.reader_thread.daemon = True
         self.reader_thread.start()
 
     def join(self):
         self.reader_thread.join()
 
-    def reader(self):
+    def reader_fn(self):
         while self.alive:
             str_seq = self.serial.read_until(serial.LF, 256)
             str_seq = str(str_seq, 'utf-8').strip()
@@ -42,14 +64,18 @@ class Console(object):
 
 
 class Player(object):
-    def __init__(self, host, port):
+    def __init__(self, sport, baudrate, host, port):
         self.client = mpd.MPDClient()
+        self.console = Console(port=sport, baudrate=baudrate)
+        self.console.set_parse_cb(self.cmd_parse)
         self.client.connect(host=host, port=port)
         self.alive = False
         self.notify_thread = None
-        self.song_update_cb = None
+        self.update_player_info_cb = None
         self.idling = False
-        self.cmd_lock = False
+        self.cmd_lock = []
+        self.player_info = []
+        self.last_elapsed = 0
 
     def parse_cmd(self, cmd):
         print("cmd: " + cmd)
@@ -57,10 +83,10 @@ class Player(object):
         try:
             status = self.client.status()
             elapsed = float(status.get('elapsed', 0))
-            state = status.get('state', 'unknown')
+            state = status.get('state', 'stop')
 
             if cmd == 'info':
-                self.update_player()
+                self.update_player_info()
             if cmd == 'play':
                 self.client.play()
             if cmd == 'stop':
@@ -92,91 +118,86 @@ class Player(object):
         self.release()
 
     def acquire(self):
-        self.cmd_lock = True
+        self.cmd_lock.append(1)
         if self.idling:
-            self.client.noidle()
             self.idling = False
+            self.client.noidle()
 
     def release(self):
-        self.cmd_lock = False
+        self.cmd_lock.pop()
         if not self.cmd_lock and not self.idling:
-            self.client.send_idle()
             self.idling = True
+            self.client.send_idle()
 
-    def notify(self):
-        self.update_player()
-        self.client.send_idle()
-        self.idling = True
-
+    def notify_fn(self):
         while self.alive:
             can_read = select([self.client], [], [], 0)[0]
             if can_read and not self.cmd_lock:
                 self.idling = False
                 changes = self.client.fetch_idle()
                 if 'player' in changes:
-                    self.update_player()
+                    self.update_player_info()
                 self.client.send_idle()
                 self.idling = True
+            self.update_elapsed()
             time.sleep(0.2)
 
     def start(self):
         self.alive = True
-        self.notify_thread = threading.Thread(target=self.notify, name='notify')
+        self.update_player_info()
+        self.client.send_idle()
+        self.idling = True
+        self.console.start()
+        self.notify_thread = threading.Thread(target=self.notify_fn, name='notify')
         self.notify_thread.daemon = True
         self.notify_thread.start()
 
     def join(self):
+        self.console.join()
         self.notify_thread.join()
 
-    def update_player(self):
+    def update_player_info(self):
         song = self.client.currentsong()
-        if self.song_update_cb:
-            self.song_update_cb(song)
+        status = self.client.status()
+        print(status)
 
-    def set_song_update_cb(self, cb):
-        self.song_update_cb = cb
+        self.player_info = {
+            'name': song.get('name', ''),
+            'title': song.get('title', ''),
+            'artist': song.get('artist', ''),
+            'elapsed': float(status.get('elapsed', 0)),
+            'duration': float(status.get('duration', 0)),
+            'is_playing': True if status.get('state') == 'play' else False,
+            'timestamp': time.time(),
+        }
 
+        print(self.player_info)
+        self.send_meta()
+        self.send_elapsed(self.player_info['elapsed'])
+        self.send_duration()
 
-class MpdControl(object):
-    def __init__(self, sport, baudrate, host, port):
-        self.console = Console(port=sport, baudrate=baudrate)
-        self.player = Player(host=host, port=port)
+    def update_elapsed(self):
+        if self.player_info.get('is_playing'):
+            play_time = time.time() - self.player_info.get('timestamp')
+            elapsed = self.player_info.get('elapsed') + play_time
+            self.send_elapsed(elapsed)
+
+    def send_meta(self):
+        self.console.send('##CLI.META#: ' + do_meta(self.player_info))
+
+    def send_elapsed(self, elapsed):
+        elapsed = round(elapsed)
+        if elapsed != self.last_elapsed:
+            self.last_elapsed = elapsed
+            self.console.send('##CLI.ELAPSED#: ' + str(elapsed))
+
+    def send_duration(self):
+        self.console.send('##CLI.DURATION#: ' + str(round(self.player_info['duration'])))
 
     def cmd_parse(self, cmd):
         if cmd.startswith('cli.'):
             command = cmd[len('cli.'):]
-            self.player.parse_cmd(command)
-
-    def do_meta(self, song):
-        title = song.get('title', '')
-        name = song.get('name', '')
-        artist = song.get('artist', '')
-
-        if title != '':
-            if artist != '':
-                meta = artist + ' - ' + title
-            else:
-                meta = title
-        else:
-            if name != '':
-                meta = name
-            else:
-                meta = ''
-        return meta
-
-    def song_update(self, song):
-        meta = self.do_meta(song)
-        self.console.send('##CLI.META#: ' + meta)
-
-    def run(self):
-        self.console.set_parse_cb(self.cmd_parse)
-        self.player.set_song_update_cb(self.song_update)
-
-        self.console.start()
-        self.player.start()
-
-        self.console.join()
-        self.player.join()
+            self.parse_cmd(command)
 
 
 def main(argv):
@@ -194,8 +215,9 @@ def main(argv):
         if opt in ("-b", "--baudrate"):
             baudrate = arg
 
-    mc = MpdControl(port, baudrate, "localhost", 6600)
-    mc.run()
+    player = Player(sport=port, baudrate=baudrate, host="localhost", port=6600)
+    player.start()
+    player.join()
 
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ extern "C" {
 
 typedef struct {
     char meta[META_SIZE];
+    int32_t elapsed;
+    int32_t duration;
 } Mpc;
 
 void mpcInit(void);
