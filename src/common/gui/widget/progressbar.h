@@ -12,9 +12,9 @@ extern "C" {
 
 typedef struct {
     GlcdRect rect;
-    int16_t fw;
-    int16_t sc;
-    int8_t sw;
+    int16_t frame_width;
+    int16_t mark_count;
+    int8_t mark_width;
 } LayoutProgressBar;
 
 typedef struct {

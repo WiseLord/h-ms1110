@@ -10,7 +10,7 @@ extern "C" {
 
 #include "display/glcd.h"
 #include "gui/palette.h"
-#include "screen/mpcview.h"
+#include "gui/view/mpcview.h"
 #include "screen/radioview.h"
 #include "screen/tuneview.h"
 #include "spectrum.h"

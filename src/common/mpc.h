@@ -10,7 +10,7 @@ extern "C" {
 
 #include "mediakey.h"
 
-#define NAME_SIZE            40
+#define NAME_SIZE            128
 
 typedef struct {
     char name[NAME_SIZE];

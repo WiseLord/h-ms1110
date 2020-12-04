@@ -73,8 +73,13 @@ common/gui/canvas.c
 common/gui/canvas.h
 common/gui/fonts/font-terminus-dig-40.c
 common/gui/fonts/font-terminus-dig-64.c
+common/gui/icons.h
+common/gui/icons.c
+common/gui/icons/icons_h-ms1100.c
 common/gui/palette.c
 common/gui/palette.h
+common/gui/view/mpcview.c
+common/gui/view/mpcview.h
 common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
 common/gui/widget/spectrumcolumn.c
@@ -98,8 +103,6 @@ common/ringbuf.c
 common/ringbuf.h
 common/rtc.c
 common/rtc.h
-common/screen/mpcview.c
-common/screen/mpcview.h
 common/screen/radioview.c
 common/screen/radioview.h
 common/screen/setupview.c

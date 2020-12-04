@@ -72,7 +72,8 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
-C_SOURCES += $(COMMON)/screen/mpcview.c
+C_SOURCES += $(COMMON)/gui/view/mpcview.c
+
 C_SOURCES += $(COMMON)/screen/setupview.c
 C_SOURCES += $(COMMON)/screen/spectrumview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
@@ -88,6 +89,9 @@ C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
+
+C_SOURCES += $(wildcard $(COMMON)/gui/icons.c)
+C_SOURCES += $(wildcard $(COMMON)/gui/icons/icon*.c)
 
 # Audio source files
 C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))

@@ -35,9 +35,9 @@ void tuneViewDraw(bool clear, TuneView *tune)
     bar.lt.rect.y = 48;
     bar.lt.rect.w = rect->w - 2;
     bar.lt.rect.h = rect->h - bar.lt.rect.y;
-    bar.lt.fw = 2;
-    bar.lt.sc = 83;
-    bar.lt.sw = 2;
+    bar.lt.frame_width = 2;
+    bar.lt.mark_count = 83;
+    bar.lt.mark_width = 2;
     bar.value = tune->value;
     bar.min = tune->min;
     bar.max = tune->max;

@@ -1194,6 +1194,8 @@ static void prepareMpcView(MpcView *view)
     Mpc *mpc = mpcGet();
 
     view->name = mpc->name;
+    view->time = 153;
+    view->duration = 348;
 }
 
 static void ampSendToSlaves(void)
@@ -1271,7 +1273,7 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        if (amp.inType == IN_MPD) {
+        if (amp.inType == IN_AUX1) {
             MpcView view;
             prepareMpcView(&view);
             mpcViewDraw(clear, &view);

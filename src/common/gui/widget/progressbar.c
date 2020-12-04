@@ -10,11 +10,12 @@ void progressBarDraw(bool clear, ProgressBar *bar)
 
     const LayoutProgressBar *lt = &bar->lt;
     const GlcdRect *rect = &lt->rect;
-    const int16_t fw = lt->fw;
+    const int16_t fw = lt->frame_width;
 
-    const int16_t sc = lt->sc;         // Scale count
-    const uint8_t sw = lt->sw;         // Scale width
-    const int16_t barPos = rect->y + fw + 1;
+    const int16_t sc = lt->mark_count;
+    const uint8_t sw = lt->mark_width;
+    const int16_t barX = rect->x + fw + 1;
+    const int16_t barY = rect->y + fw + 1;
     const int16_t barH = rect->h - 2 * (fw + 1);
     const int16_t width = rect->w - 1 - 2 * fw;
 
@@ -44,8 +45,8 @@ void progressBarDraw(bool clear, ProgressBar *bar)
             }
         }
 
-        glcdDrawRect(4 + i * (width / sc), barPos, sw, barH, color);
+        glcdDrawRect(barX + i * (width / sc), barY, sw, barH, color);
     }
 
-    glcdDrawRFrame(rect->x, rect->y, rect->w, rect->h, fw, 3, COLOR_WHITE);
+    glcdDrawRFrame(rect->x, rect->y, rect->w, rect->h, fw, fw + 1, COLOR_WHITE);
 }

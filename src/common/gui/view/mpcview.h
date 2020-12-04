@@ -12,6 +12,8 @@ extern "C" {
 
 typedef struct {
     char *name;
+    int16_t time;
+    int16_t duration;
 } MpcView;
 
 void mpcViewDraw(bool clear, MpcView *view);

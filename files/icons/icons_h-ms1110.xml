@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data type="font" name="icons_h-ms1110">
+    <family>xos4 Terminus</family>
+    <size>36</size>
+    <ascent>26</ascent>
+    <descent>14</descent>
+    <style>Bold</style>
+    <widthType>proportional</widthType>
+    <antialiasing>false</antialiasing>
+    <foreground>ff000000</foreground>
+    <background>ffffffff</background>
+    <multiplicityWidth>1</multiplicityWidth>
+    <multiplicityHeight>1</multiplicityHeight>
+    <string>\x0000\x0040ABC</string>
+    <converted>/home/STM32/Projects/h-ms1110/src/common/gui/icons/icons_h-ms1100.c</converted>
+    <chars>
+        <char character="\x0000" code="0000">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAHElEQVRYhe3BAQ0AAADCoPdPbQ43oAAAAADg3wAS6AABuHYUGQAAAABJRU5ErkJggg==</picture>
+        </char>
+        <char character="\x0040" code="0040">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
+        </char>
+        <char character="A" code="0041">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABAklEQVRYhe2W2w7DIAiGYdn7vzK7IGMU0QpaTRb/i2XdlE/kUAA2CQGAiFZTEV+LkaIDTggRETG66z3C4y+cm/zYn6cXMCLqnca0/qVkEFHIb3vVsrnmAX3Vz3Blr1of/NH6dpKLeU93FT+5GtRaHuTBPSbKLEtfzMXjWyuNrI4q1kAk/OMZ8AMvfkfdexztDNPAOfFZ9addAMFLNuWkMVruGt3V8y8JgzSk8nzyyLEbBZdIbb32LyRi3B8XqTo3xismELcuFo0+zNb40fE2OngIe9Tj6KFl/YYpk9kbwHMaSNs6y50Vp4FNwegSmtOra6SQnaGWuXQCmagDPuD/A2/TB73MnERqfkaoAAAAAElFTkSuQmCC</picture>
+        </char>
+        <char character="B" code="0042">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
+        </char>
+        <char character="C" code="0043">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
+        </char>
+    </chars>
+</data>
