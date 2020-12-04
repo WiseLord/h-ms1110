@@ -32,7 +32,7 @@ void mpcInit()
     usartInit(USART_MPC, 115200);
     usartSetRxIRQ(USART_MPC, true);
 
-    usartSendChar(USART_MPC, '\r');
+    mpcSendCmd("info");
 }
 
 Mpc *mpcGet(void)
@@ -67,23 +67,25 @@ void mpcSendMediaKey(MediaKey key)
     }
 }
 
-static void mpcUpdateName(const char *str)
+static void mpcUpdateMeta(const char *str)
 {
-    strncpy(mpc.name, str, NAME_SIZE);
-    utilTrimLineEnd(mpc.name);
+    strncpy(mpc.meta, str, META_SIZE);
+    utilTrimLineEnd(mpc.meta);
 }
 
 static void mpcParseCli(char *line)
 {
-    mpcUpdateName(line);
+    if (utilIsPrefix(line, "META#: ")) {
+        mpcUpdateMeta(line + strlen("META#: "));
+    }
 }
 
 static void mpcParseLine(char *line)
 {
     mpcParseCli(line);
-//    if (utilIsPrefix(line, "##CLI.")) {
-//        karadioParseCli(line + strlen("##CLI."));
-//    }
+    if (utilIsPrefix(line, "##CLI.")) {
+        mpcParseCli(line + strlen("##CLI."));
+    }
 }
 
 void mpcGetData(void)

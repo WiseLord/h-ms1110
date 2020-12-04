@@ -1193,7 +1193,7 @@ static void prepareMpcView(MpcView *view)
 {
     Mpc *mpc = mpcGet();
 
-    view->name = mpc->name;
+    view->meta = mpc->meta;
     view->time = 153;
     view->duration = 348;
 }

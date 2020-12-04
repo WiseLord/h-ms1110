@@ -10,10 +10,10 @@ extern "C" {
 
 #include "mediakey.h"
 
-#define NAME_SIZE            128
+#define META_SIZE            128
 
 typedef struct {
-    char name[NAME_SIZE];
+    char meta[META_SIZE];
 } Mpc;
 
 void mpcInit(void);

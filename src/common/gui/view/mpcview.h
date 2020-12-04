@@ -11,7 +11,7 @@ extern "C" {
 #include "tr/labels.h"
 
 typedef struct {
-    char *name;
+    char *meta;
     int16_t time;
     int16_t duration;
 } MpcView;

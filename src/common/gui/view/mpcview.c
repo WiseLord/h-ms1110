@@ -9,7 +9,7 @@
 
 static const GlcdRect iconRect = {0, 24, 40, 40};
 static const GlcdRect timeRect = {218, 24, 38, 14};
-static const GlcdRect nameRect = {44, 40, 212, 14};
+static const GlcdRect metaRect = {44, 40, 212, 14};
 static const GlcdRect progressRect = {44, 56, 212, 8};
 
 static void mpcViewDrawIcon(const GlcdRect *rect)
@@ -96,7 +96,7 @@ void mpcViewDraw(bool clear, MpcView *view)
     (void)clear;
 
     mpcViewDrawIcon(&iconRect);
-    mpcViewDrawName(&nameRect, view->name);
+    mpcViewDrawName(&metaRect, view->meta);
     mpcViewDrawTime(&timeRect, view->time);
     mpcViewDrawProgress(&progressRect, view->time, view->duration);
 }

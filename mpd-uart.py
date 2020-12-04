@@ -19,6 +19,7 @@ class Console(object):
         self.parse_cb = cb
 
     def send(self, info):
+        print(">>>: " + info)
         self.serial.write(bytes(info + '\r\n', 'utf-8'))
 
     def start(self):
@@ -51,44 +52,43 @@ class Player(object):
         self.cmd_lock = False
 
     def parse_cmd(self, cmd):
+        print("cmd: " + cmd)
         self.acquire()
+        try:
+            status = self.client.status()
+            elapsed = float(status.get('elapsed', 0))
+            state = status.get('state', 'unknown')
 
-        status = self.client.status()
-        if 'elapsed' in status:
-            elapsed = float(status['elapsed'])
-        else:
-            elapsed = 0
-        if 'state' in status:
-            state = status['state']
-        else:
-            state = 'none'
-
-        if cmd == 'play':
-            self.client.play()
-        if cmd == 'stop':
-            self.client.stop()
-        if cmd == 'pause':
-            self.client.pause()
-        if cmd == 'next':
-            self.client.play()
-            self.client.next()
-        if cmd == 'previous':
-            self.client.play()
-            self.client.previous()
-        if cmd == 'rewind' and state == 'play':
-            pos = elapsed - 5
-            if pos < 0:
-                pos = 0
-            self.client.seekcur(pos)
-        if cmd == 'ffwd' and state == 'play':
-            pos = elapsed + 5
-            self.client.seekcur(pos)
-        if cmd == 'load music':
-            self.client.clear()
-            self.client.load("Music")
-        if cmd == 'load radio':
-            self.client.clear()
-            self.client.load("Radio")
+            if cmd == 'info':
+                self.update_player()
+            if cmd == 'play':
+                self.client.play()
+            if cmd == 'stop':
+                self.client.stop()
+            if cmd == 'pause':
+                self.client.pause()
+            if cmd == 'next':
+                self.client.play()
+                self.client.next()
+            if cmd == 'previous':
+                self.client.play()
+                self.client.previous()
+            if cmd == 'rewind' and state == 'play':
+                pos = elapsed - 5
+                if pos < 0:
+                    pos = 0
+                self.client.seekcur(pos)
+            if cmd == 'ffwd' and state == 'play':
+                pos = elapsed + 5
+                self.client.seekcur(pos)
+            if cmd == 'load music':
+                self.client.clear()
+                self.client.load("Music")
+            if cmd == 'load radio':
+                self.client.clear()
+                self.client.load("Radio")
+        except mpd.base.CommandError:
+            pass
         self.release()
 
     def acquire(self):
@@ -141,38 +141,32 @@ class MpdControl(object):
     def __init__(self, sport, baudrate, host, port):
         self.console = Console(port=sport, baudrate=baudrate)
         self.player = Player(host=host, port=port)
-        self.last_name = ''
 
     def cmd_parse(self, cmd):
-        if str(cmd).startswith('cli.'):
-            command = str(cmd).lstrip('cli.')
+        if cmd.startswith('cli.'):
+            command = cmd[len('cli.'):]
             self.player.parse_cmd(command)
 
-    def get_field(self, song, key):
-        if key in song:
-            return song[key]
-        else:
-            return ''
-
-    def song_update(self, song):
-        title = self.get_field(song, 'title')
-        name = self.get_field(song, 'name')
-        artist = self.get_field(song, 'artist')
+    def do_meta(self, song):
+        title = song.get('title', '')
+        name = song.get('name', '')
+        artist = song.get('artist', '')
 
         if title != '':
             if artist != '':
-                show_name = artist + ' - ' + title
+                meta = artist + ' - ' + title
             else:
-                show_name = title
+                meta = title
         else:
             if name != '':
-                show_name = name
+                meta = name
             else:
-                show_name = ''
+                meta = ''
+        return meta
 
-        if (show_name != self.last_name):
-            self.console.send(show_name)
-            self.last_name = show_name
+    def song_update(self, song):
+        meta = self.do_meta(song)
+        self.console.send('##CLI.META#: ' + meta)
 
     def run(self):
         self.console.set_parse_cb(self.cmd_parse)
