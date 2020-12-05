@@ -98,6 +98,7 @@ static void mpcParseCli(char *line)
     } else if (utilIsPrefix(line, "STOPPED#")) {
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
         mpc.status = MPC_STATUS_STOPPED;
+        mpc.flags |= MPC_FLAG_UPDATE_ELAPSED;
     }
 }
 

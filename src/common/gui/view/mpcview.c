@@ -34,6 +34,14 @@ static void mpcViewDrawIcon(MpcView *this, bool clear, const GlcdRect *rect)
 
 static void mpcViewDrawStatusIcon(MpcView *this, bool clear, const GlcdRect *rect)
 {
+    if (this->mpc->flags & MPC_FLAG_UPDATE_STATUS) {
+        clear = true;
+    }
+
+    if (!clear) {
+        return;
+    }
+
     glcdSetRect(rect);
 
     Icon icon = ICON_STOPPED;
@@ -90,7 +98,7 @@ static void mpcViewResetNameScroll(MpcView *this)
 
 static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
 {
-    if (this->mpc->flags & MPC_FLAG_UPDATE_META) {
+    if (this->mpc->flags & (MPC_FLAG_UPDATE_META | MPC_FLAG_UPDATE_STATUS)) {
         clear = true;
     }
 
@@ -105,7 +113,9 @@ static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
-    int16_t len = glcdCalcStringLen(this->mpc->meta);
+    const char *meta = this->mpc->status == MPC_STATUS_STOPPED ? "" : this->mpc->meta;
+
+    int16_t len = glcdCalcStringLen(meta);
 
     int16_t max_oft = len - rect->w;
 
@@ -122,7 +132,7 @@ static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
 
     if (clear) {
         glcdSetXY(this->scroll.oft, 0);
-        glcdWriteString(this->mpc->meta);
+        glcdWriteString(meta);
     }
 
     glcdResetRect();
@@ -152,7 +162,9 @@ static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
     time /= 24;
 
     char buf[16];
-    if (time > 0) {
+    if (this->mpc->status == MPC_STATUS_STOPPED) {
+        snprintf(buf, sizeof(buf), "  \u2008 -:--");
+    } else if (time > 0) {
         snprintf(buf, sizeof(buf), "%2d.%02d:%02d", time, hour, min);
     } else if (hour > 0) {
         snprintf(buf, sizeof(buf), "%2d:%02d:%02d", hour, min, sec);
@@ -171,8 +183,7 @@ static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
 
 static void mpcViewDrawProgress(MpcView *this, bool clear, const GlcdRect *rect)
 {
-    if (this->mpc->flags & MPC_FLAG_UPDATE_ELAPSED ||
-        this->mpc->flags & MPC_FLAG_UPDATE_DURATION) {
+    if (this->mpc->flags & (MPC_FLAG_UPDATE_ELAPSED | MPC_FLAG_UPDATE_DURATION)) {
         clear = true;
     }
 
