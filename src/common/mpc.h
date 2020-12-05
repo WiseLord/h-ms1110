@@ -14,9 +14,17 @@ extern "C" {
 
 typedef uint32_t MpcFlags;
 enum {
-    MPC_FLAG_UPDATE_META        = 0x01,
-    MPC_FLAG_UPDATE_ELAPSED     = 0x02,
-    MPC_FLAG_UPDATE_DURATION    = 0x04,
+    MPC_FLAG_UPDATE_META        = 0x0001,
+    MPC_FLAG_UPDATE_ELAPSED     = 0x0002,
+    MPC_FLAG_UPDATE_DURATION    = 0x0004,
+    MPC_FLAG_UPDATE_STATUS      = 0x0008,
+};
+
+typedef uint8_t MpcStatus;
+enum {
+    MPC_STATUS_PLAYING,
+    MPC_STATUS_PAUSED,
+    MPC_STATUS_STOPPED,
 };
 
 typedef struct {
@@ -24,6 +32,7 @@ typedef struct {
     MpcFlags flags;
     int32_t elapsed;
     int32_t duration;
+    MpcStatus status;
 } Mpc;
 
 void mpcInit(void);

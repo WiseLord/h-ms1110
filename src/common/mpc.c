@@ -89,6 +89,15 @@ static void mpcParseCli(char *line)
     } else if (utilIsPrefix(line, "META#: ")) {
         mpcUpdateMeta(line + strlen("META#: "));
         mpc.flags |= MPC_FLAG_UPDATE_META;
+    } else if (utilIsPrefix(line, "PLAYING#")) {
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+        mpc.status = MPC_STATUS_PLAYING;
+    } else if (utilIsPrefix(line, "PAUSED#")) {
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+        mpc.status = MPC_STATUS_PAUSED;
+    } else if (utilIsPrefix(line, "STOPPED#")) {
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+        mpc.status = MPC_STATUS_STOPPED;
     }
 }
 

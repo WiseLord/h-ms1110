@@ -8,12 +8,19 @@
 #include "gui/widget/progressbar.h"
 
 static const GlcdRect iconRect = {0, 24, 40, 40};
+static const GlcdRect statusIconRect = {44, 24, 16, 16};
 static const GlcdRect timeRect = {196, 24, 60, 14};
 static const GlcdRect metaRect = {44, 42, 212, 14};
 static const GlcdRect progressRect = {44, 58, 212, 6};
 
-static void mpcViewDrawIcon(const GlcdRect *rect)
+static void mpcViewDrawIcon(MpcView *this, bool clear, const GlcdRect *rect)
 {
+    (void)this;
+
+    if (!clear) {
+        return;
+    }
+
     glcdSetRect(rect);
 
     const Palette *pal = paletteGet();
@@ -23,6 +30,27 @@ static void mpcViewDrawIcon(const GlcdRect *rect)
     glcdDrawImage(icon, pal->fg, pal->bg);
 
     glcdResetRect();
+}
+
+static void mpcViewDrawStatusIcon(MpcView *this, bool clear, const GlcdRect *rect)
+{
+    glcdSetRect(rect);
+
+    Icon icon = ICON_STOPPED;
+    if (this->mpc->status == MPC_STATUS_PLAYING) {
+        icon = ICON_PLAYING;
+    } else if (this->mpc->status == MPC_STATUS_PAUSED) {
+        icon = ICON_PAUSED;
+    }
+
+    const Palette *pal = paletteGet();
+
+    const tImage *img = iconFind(icon, &icons_hms1110);
+    glcdSetXY(0, 0);
+    glcdDrawImage(img, pal->fg, pal->bg);
+
+    glcdResetRect();
+
 }
 
 static void mpcViewCalcNameScroll(MpcView *this, int16_t max_oft)
@@ -174,9 +202,8 @@ static void mpcViewDrawProgress(MpcView *this, bool clear, const GlcdRect *rect)
 
 void mpcViewDraw(MpcView *this, bool clear)
 {
-    if (clear) {
-        mpcViewDrawIcon(&iconRect);
-    }
+    mpcViewDrawIcon(this, clear, &iconRect);
+    mpcViewDrawStatusIcon(this, clear, &statusIconRect);
     mpcViewDrawName(this, clear, &metaRect);
     mpcViewDrawTime(this, clear, &timeRect);
     mpcViewDrawProgress(this, clear, &progressRect);

@@ -13,6 +13,11 @@ typedef uint8_t Icon;
 enum {
     ICON_EMPTY = 0x00,
 
+    // Player status icons
+    ICON_STOPPED = 0x10,
+    ICON_PLAYING,
+    ICON_PAUSED,
+
     // Input icons
     ICON_TUNER = 0x40,
     ICON_MPD,

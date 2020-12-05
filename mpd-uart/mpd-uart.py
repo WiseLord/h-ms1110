@@ -80,7 +80,6 @@ class Player(object):
         if cmd == 'stop':
             self.client.stop()
         if cmd == 'pause':
-            print(status)
             if state == 'stop':
                 self.client.play()
             else:
@@ -131,13 +130,15 @@ class Player(object):
             status = self.client.status()
         song = self.client.currentsong()
 
+        # print(status)
+
         player_info = {
             'name': song.get('name', ''),
             'artist': song.get('artist', ''),
             'title': song.get('title', ''),
             'elapsed': float(status.get('elapsed', 0)),
             'duration': float(status.get('duration', 0)),
-            'is_playing': status.get('state') == 'play',
+            'state': status.get('state'),
             'timestamp': time.time(),
         }
 
@@ -151,10 +152,12 @@ class Player(object):
         update_artist = player_info['artist'] != self.player_info['artist']
         update_meta = update_name or update_title or update_artist
 
-        update_elapsed = (player_info['is_playing'] and
+        update_elapsed = (player_info['state'] == 'play' and
                           round(player_info['elapsed']) != round(self.player_info['elapsed']))
 
         update_duration = player_info['duration'] != self.player_info['duration']
+
+        update_state = player_info['state'] != self.player_info['state']
 
         self.player_info = player_info
 
@@ -164,6 +167,8 @@ class Player(object):
             self.send_elapsed()
         if update_all or update_duration:
             self.send_duration()
+        if update_all or update_state:
+            self.send_state()
 
     def send_meta(self):
         self.console.send('##CLI.META#: ' + do_meta(self.player_info))
@@ -174,8 +179,17 @@ class Player(object):
     def send_duration(self):
         self.console.send('##CLI.DURATION#: ' + str(round(self.player_info['duration'])))
 
+    def send_state(self):
+        if self.player_info['state'] == 'play':
+            self.console.send('##CLI.PLAYING#')
+        elif self.player_info['state'] == 'pause':
+            self.console.send('##CLI.PAUSED#')
+        else:
+            self.console.send('##CLI.STOPPED#')
+
+
     def parse_handler(self, input):
-        print("input: " + input)
+        print("input: '" + input + "'")
         if input.startswith('cli.'):
             command = input[len('cli.'):]
             self.cmd_queue.append(command)

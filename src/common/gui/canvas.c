@@ -24,7 +24,7 @@ void canvasInit()
     canvas.pal = paletteGet();
 
     // Default font parameters
-    glcdSetFont(&fontterminus12);
+    glcdSetFont(&fontterminus14b);
     glcdSetFontColor(canvas.pal->fg);
     glcdSetFontBgColor(canvas.pal->bg);
 
@@ -125,7 +125,7 @@ void canvasShowInput(bool clear, int8_t input, Label label)
     const Palette *pal = canvas.pal;
     GlcdRect rect = canvas.glcd->rect;
 
-    glcdSetFont(&fontterminus32);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char buf[32];
@@ -157,7 +157,7 @@ void canvasDebugFPS(void)
 
     const Palette *pal = canvas.pal;
 
-    glcdSetFont(&fontterminus12);
+    glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->inactive);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
 

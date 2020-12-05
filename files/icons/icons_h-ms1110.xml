@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data type="font" name="icons_h-ms1110">
+<data name="icons_h-ms1110" type="font">
     <family>xos4 Terminus</family>
     <size>36</size>
     <ascent>26</ascent>
@@ -11,22 +11,31 @@
     <background>ffffffff</background>
     <multiplicityWidth>1</multiplicityWidth>
     <multiplicityHeight>1</multiplicityHeight>
-    <string>\x0000\x0040ABC</string>
+    <string>\x0000\x0010\x0011\x0012\x0040ABC</string>
     <converted>/home/STM32/Projects/h-ms1110/src/common/gui/icons/icons_h-ms1100.c</converted>
     <chars>
-        <char character="\x0000" code="0000">
+        <char code="0000" character="\x0000">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAHElEQVRYhe3BAQ0AAADCoPdPbQ43oAAAAADg3wAS6AABuHYUGQAAAABJRU5ErkJggg==</picture>
         </char>
-        <char character="\x0040" code="0040">
+        <char code="0010" character="\x0010">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAI0lEQVQokWNgoDVghFD///8nrJSRkYGBgYlUG0Y1jBQNtAcAGXoDGOJEiuIAAAAASUVORK5CYII=</picture>
+        </char>
+        <char code="0011" character="\x0011">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAV0lEQVQokY3SSw4AIQgD0Hbi/a+Mm4lRxFJ3Ql/8BAIAEBHwFveNw3iXNOMKkdZpTO2WZdCyGgimQMm+V+61huiVV6qBeHQG7bcOP/rH7pI1Gk70AP54TymTOQDS8J4OAAAAAElFTkSuQmCC</picture>
+        </char>
+        <char code="0012" character="\x0012">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAM0lEQVQokWP4//8/Awb4//8/LnEmTFH8AKEBj6nI4hTYMKpheGtggbMYGRmxqkATJ9kGAJDIGA9KfjJeAAAAAElFTkSuQmCC</picture>
+        </char>
+        <char code="0040" character="\x0040">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
         </char>
-        <char character="A" code="0041">
+        <char code="0041" character="A">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABDklEQVRYhe1X0Q7DIAgEs///ZfbQxDJBPcG12dJ7WkTvPEVYmYiISEQIADPbyXrw+F1RZ9rx4gYQeWRhL8rMBaRwGXtLRMQ9Qj1edCDsO4BS94LTaTeuM2ae8pyOA9rTlBxMKO68Vd821LtmX3hVexX6Cl42LCI2acGHDkJE2OW1dvcKk+u4EcPLBYiDtr3jyzBy3EP42PWBRYQbltg+gsJum9omPE6lZJ47yZUsWyBax8mbw+G3xW+rfghfqUpE89K4sVrpt+C3xQtwJtdYdUu1coSX/t5m9nEK4xSZamV9r3WnjUmwUKszqnbtbf34EX6E/08Yfcfbv2huc8zJttN85OFsv+MYvOwp7W2O379XpUYyr+0+AAAAAElFTkSuQmCC</picture>
         </char>
-        <char character="B" code="0042">
+        <char code="0042" character="B">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
         </char>
-        <char character="C" code="0043">
+        <char code="0043" character="C">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAANklEQVRYhe3NQQEAIAgEsMP+nfFnBHi4FViypJJ09/RadYbLRywWi8VisVgsFovFYrH4h3jNBSDvA0yKZ/KAAAAAAElFTkSuQmCC</picture>
         </char>
     </chars>
