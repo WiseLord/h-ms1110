@@ -12,8 +12,16 @@ extern "C" {
 
 #define META_SIZE            128
 
+typedef uint32_t MpcFlags;
+enum {
+    MPC_FLAG_UPDATE_META        = 0x01,
+    MPC_FLAG_UPDATE_ELAPSED     = 0x02,
+    MPC_FLAG_UPDATE_DURATION    = 0x04,
+};
+
 typedef struct {
     char meta[META_SIZE];
+    MpcFlags flags;
     int32_t elapsed;
     int32_t duration;
 } Mpc;

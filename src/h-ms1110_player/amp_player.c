@@ -1191,17 +1191,13 @@ static void prepareAudioInput (Label *label)
 
 static void prepareMpcView(MpcView *view)
 {
-    Mpc *mpc = mpcGet();
-
-    view->meta = mpc->meta;
-    view->elapsed = mpc->elapsed;
-    view->duration = mpc->duration;
+    view->mpc = mpcGet();
 
     if (swTimGet(SW_TIM_SCROLL) <= 0) {
         swTimSet(SW_TIM_SCROLL, 100);
-        view->scroll_event = true;
+        view->scroll.event = true;
     } else {
-        view->scroll_event = false;
+        view->scroll.event = false;
     }
 
 }
@@ -1263,7 +1259,8 @@ static void ampScreenShow(void)
         canvasClear();
     }
 
-    TuneView tune;
+    static TuneView tune;
+    static MpcView view;
     Label label;
 
     switch (amp.screen) {
@@ -1281,8 +1278,7 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        if (amp.inType == IN_AUX1) {
-            MpcView view;
+        if (amp.inType == IN_MPD || amp.inType == IN_AUX1) {
             prepareMpcView(&view);
             mpcViewDraw(&view, clear);
         } else {

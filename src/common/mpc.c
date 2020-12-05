@@ -76,11 +76,19 @@ static void mpcUpdateMeta(const char *str)
 static void mpcParseCli(char *line)
 {
     if (utilIsPrefix(line, "ELAPSED#: ")) {
-        sscanf(line, "ELAPSED#: %d", &mpc.elapsed);
+        int elapsed;
+        sscanf(line, "ELAPSED#: %d", &elapsed);
+        mpc.elapsed = elapsed;
+        mpc.flags |= MPC_FLAG_UPDATE_ELAPSED;
     } else if (utilIsPrefix(line, "DURATION#: ")) {
-        sscanf(line, "DURATION#: %d", &mpc.duration);
+        int duration;
+        sscanf(line, "DURATION#: %d", &duration);
+        mpc.duration = duration;
+        mpc.flags |= MPC_FLAG_UPDATE_DURATION;
+        mpc.flags |= MPC_FLAG_UPDATE_META;
     } else if (utilIsPrefix(line, "META#: ")) {
         mpcUpdateMeta(line + strlen("META#: "));
+        mpc.flags |= MPC_FLAG_UPDATE_META;
     }
 }
 

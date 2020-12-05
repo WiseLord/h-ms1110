@@ -15,16 +15,11 @@ def do_meta(song):
 
     if title:
         if artist:
-            meta = artist + ' - ' + title
+            name = artist + ' - ' + title
         else:
-            meta = title
-    else:
-        if name:
-            meta = name
-        else:
-            meta = ''
+            name = title
 
-    return meta
+    return name
 
 
 class Console(object):
@@ -67,86 +62,58 @@ class Player(object):
     def __init__(self, sport, baudrate, host, port):
         self.client = mpd.MPDClient()
         self.console = Console(port=sport, baudrate=baudrate)
-        self.console.set_parse_cb(self.cmd_parse)
+        self.console.set_parse_cb(self.parse_handler)
         self.client.connect(host=host, port=port)
         self.alive = False
         self.notify_thread = None
-        self.update_player_info_cb = None
-        self.idling = False
-        self.cmd_lock = []
         self.player_info = []
-        self.last_elapsed = 0
+        self.cmd_queue = []
 
-    def parse_cmd(self, cmd):
-        print("cmd: " + cmd)
-        self.acquire()
-        try:
-            status = self.client.status()
-            elapsed = float(status.get('elapsed', 0))
-            state = status.get('state', 'stop')
+    def parse_cmd(self, cmd, status):
+        elapsed = float(status.get('elapsed', 0))
+        state = status.get('state', 'stop')
 
-            if cmd == 'info':
-                self.update_player_info()
-            if cmd == 'play':
+        if cmd == 'info':
+            self.player_info = []
+        if cmd == 'play':
+            self.client.play()
+        if cmd == 'stop':
+            self.client.stop()
+        if cmd == 'pause':
+            print(status)
+            if state == 'stop':
                 self.client.play()
-            if cmd == 'stop':
-                self.client.stop()
-            if cmd == 'pause':
+            else:
                 self.client.pause()
-            if cmd == 'next':
-                self.client.play()
+        if cmd == 'next':
+            if state == 'play':
                 self.client.next()
-            if cmd == 'previous':
-                self.client.play()
+        if cmd == 'previous':
+            if state == 'play':
                 self.client.previous()
-            if cmd == 'rewind' and state == 'play':
-                pos = elapsed - 5
-                if pos < 0:
-                    pos = 0
-                self.client.seekcur(pos)
-            if cmd == 'ffwd' and state == 'play':
-                pos = elapsed + 5
-                self.client.seekcur(pos)
-            if cmd == 'load music':
-                self.client.clear()
-                self.client.load("Music")
-            if cmd == 'load radio':
-                self.client.clear()
-                self.client.load("Radio")
-        except mpd.base.CommandError:
-            pass
-        self.release()
-
-    def acquire(self):
-        self.cmd_lock.append(1)
-        if self.idling:
-            self.idling = False
-            self.client.noidle()
-
-    def release(self):
-        self.cmd_lock.pop()
-        if not self.cmd_lock and not self.idling:
-            self.idling = True
-            self.client.send_idle()
+        if cmd == 'rewind' and state == 'play':
+            pos = elapsed - 5
+            if pos < 0:
+                pos = 0
+            self.client.seekcur(pos)
+        if cmd == 'ffwd' and state == 'play':
+            pos = elapsed + 5
+            self.client.seekcur(pos)
+        if cmd == 'load music':
+            self.client.clear()
+            self.client.load("Music")
+        if cmd == 'load radio':
+            self.client.clear()
+            self.client.load("Radio")
 
     def notify_fn(self):
         while self.alive:
-            can_read = select([self.client], [], [], 0)[0]
-            if can_read and not self.cmd_lock:
-                self.idling = False
-                changes = self.client.fetch_idle()
-                if 'player' in changes:
-                    self.update_player_info()
-                self.client.send_idle()
-                self.idling = True
-            self.update_elapsed()
+            self.update_player_info()
             time.sleep(0.2)
+            pass
 
     def start(self):
         self.alive = True
-        self.update_player_info()
-        self.client.send_idle()
-        self.idling = True
         self.console.start()
         self.notify_thread = threading.Thread(target=self.notify_fn, name='notify')
         self.notify_thread.daemon = True
@@ -157,47 +124,61 @@ class Player(object):
         self.notify_thread.join()
 
     def update_player_info(self):
-        song = self.client.currentsong()
         status = self.client.status()
-        print(status)
+        if self.cmd_queue:
+            cmd = self.cmd_queue.pop(0)
+            self.parse_cmd(cmd, status)
+            status = self.client.status()
+        song = self.client.currentsong()
 
-        self.player_info = {
+        player_info = {
             'name': song.get('name', ''),
-            'title': song.get('title', ''),
             'artist': song.get('artist', ''),
+            'title': song.get('title', ''),
             'elapsed': float(status.get('elapsed', 0)),
             'duration': float(status.get('duration', 0)),
-            'is_playing': True if status.get('state') == 'play' else False,
+            'is_playing': status.get('state') == 'play',
             'timestamp': time.time(),
         }
 
-        print(self.player_info)
-        self.send_meta()
-        self.send_elapsed(self.player_info['elapsed'])
-        self.send_duration()
+        update_all = False
+        if not self.player_info:
+            self.player_info = player_info
+            update_all = True
 
-    def update_elapsed(self):
-        if self.player_info.get('is_playing'):
-            play_time = time.time() - self.player_info.get('timestamp')
-            elapsed = self.player_info.get('elapsed') + play_time
-            self.send_elapsed(elapsed)
+        update_name = player_info['name'] != self.player_info['name']
+        update_title = player_info['title'] != self.player_info['title']
+        update_artist = player_info['artist'] != self.player_info['artist']
+        update_meta = update_name or update_title or update_artist
+
+        update_elapsed = (player_info['is_playing'] and
+                          round(player_info['elapsed']) != round(self.player_info['elapsed']))
+
+        update_duration = player_info['duration'] != self.player_info['duration']
+
+        self.player_info = player_info
+
+        if update_all or update_meta:
+            self.send_meta()
+        if update_all or update_elapsed:
+            self.send_elapsed()
+        if update_all or update_duration:
+            self.send_duration()
 
     def send_meta(self):
         self.console.send('##CLI.META#: ' + do_meta(self.player_info))
 
-    def send_elapsed(self, elapsed):
-        elapsed = round(elapsed)
-        if elapsed != self.last_elapsed:
-            self.last_elapsed = elapsed
-            self.console.send('##CLI.ELAPSED#: ' + str(elapsed))
+    def send_elapsed(self):
+        self.console.send('##CLI.ELAPSED#: ' + str(round(self.player_info['elapsed'])))
 
     def send_duration(self):
         self.console.send('##CLI.DURATION#: ' + str(round(self.player_info['duration'])))
 
-    def cmd_parse(self, cmd):
-        if cmd.startswith('cli.'):
-            command = cmd[len('cli.'):]
-            self.parse_cmd(command)
+    def parse_handler(self, input):
+        print("input: " + input)
+        if input.startswith('cli.'):
+            command = input[len('cli.'):]
+            self.cmd_queue.append(command)
 
 
 def main(argv):

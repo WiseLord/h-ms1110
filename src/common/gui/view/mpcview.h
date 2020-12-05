@@ -8,16 +8,21 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "mpc.h"
 #include "tr/labels.h"
 
 typedef struct {
-    char *meta;
-    int16_t elapsed;
-    int16_t duration;
-    int16_t scroll_oft;
-    bool scroll_event;
-    bool scroll_left;
-    int16_t scroll_pause;
+    Mpc *mpc;
+//    struct {
+//        int32_t elapsed;
+//        int32_t duration;
+//    } progress;
+    struct {
+        int16_t oft;
+        int16_t pause;
+        bool event;
+        bool left;
+    } scroll;
 } MpcView;
 
 void mpcViewDraw(MpcView *this, bool clear);
