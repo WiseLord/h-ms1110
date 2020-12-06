@@ -137,7 +137,7 @@ common/usart.c
 common/usart.h
 common/utils.c
 common/utils.h
-h-ms1110_tuner/Makefile
-h-ms1110_tuner/amp_tuner.c
-h-ms1110_tuner/settings.c
-h-ms1110_tuner/settings.h
+tuner/Makefile
+tuner/amp.c
+tuner/settings.c
+tuner/settings.h

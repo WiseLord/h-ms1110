@@ -1,13 +1,12 @@
 PROJECT = H-MS1110
 
-MODULE = TUNER
+MODULE = SPECTRUM
 
 STM32_MCU = F103CB
 
 DISPLAY = SSD1322
 DISPVAR = SPI
 
-TUNER_LIST = LC7213X
 FEATURE_LIST =
 
 DEBUG = 1
@@ -30,14 +29,17 @@ C_DEFS += -D_PRINTF_USART1
 C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
 
+# Player prototype board has a bit different schematics
+# S1 connected to PB0 instead of PA13
+# S2 connected to PB1 instead of PA13
+
 COMMON = ../common
 
 C_SOURCES += $(COMMON)/main.c
 
-C_SOURCES += amp_$(call lc, $(MODULE)).c
+C_SOURCES += amp.c
 C_SOURCES += settings.c
 
-C_SOURCES += $(COMMON)/amp.c
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c
@@ -82,13 +84,6 @@ C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
-
-# Tuner source files
-C_SOURCES += $(addprefix $(COMMON)/tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
-C_SOURCES += $(COMMON)/tuner/rds.c
-C_SOURCES += $(COMMON)/tuner/stations.c
-C_SOURCES += $(COMMON)/tuner/tuner.c
-C_DEFS += $(addprefix -D_, $(TUNER_LIST))
 
 C_INCLUDES += \
   -I$(COMMON)/display/fonts \

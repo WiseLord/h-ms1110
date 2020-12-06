@@ -874,7 +874,7 @@ void ampInit(void)
 
     rtcSetCb(rtcCb);
 
-    ampHandleSwd(SCREEN_STANDBY);
+    utilEnableSwd(SCREEN_STANDBY);
 
     labelsInit();
     canvasInit();
@@ -900,7 +900,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampHandleSwd(amp.screen);
+        utilEnableSwd(SCREEN_STANDBY == amp.screen);
 
         ampGetFromSlaves();
 
@@ -1284,7 +1284,7 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        if (amp.inType == IN_MPD || amp.inType == IN_AUX1) {
+        if (amp.inType == IN_MPD) {
             prepareMpcView(&view);
             mpcViewDraw(&view, clear);
         } else {

@@ -71,9 +71,6 @@ typedef struct {
     Spectrum sp;
 } Amp;
 
-void ampHandleSwd(ScreenType screen);
-
-
 void ampInit(void);
 void ampRun(void);
 

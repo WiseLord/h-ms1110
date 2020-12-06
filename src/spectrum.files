@@ -137,7 +137,7 @@ common/usart.c
 common/usart.h
 common/utils.c
 common/utils.h
-h-ms1110_spectrum/Makefile
-h-ms1110_spectrum/amp_spectrum.c
-h-ms1110_spectrum/settings.c
-h-ms1110_spectrum/settings.h
+spectrum/Makefile
+spectrum/amp.c
+spectrum/settings.c
+spectrum/settings.h

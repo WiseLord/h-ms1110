@@ -1,7 +1,6 @@
 common/.astylerc
 common/action.c
 common/action.h
-common/amp.c
 common/amp.h
 common/audio/audio.c
 common/audio/audio.h
@@ -152,9 +151,9 @@ common/usart.c
 common/usart.h
 common/utils.c
 common/utils.h
-h-ms1110_player/Makefile
-h-ms1110_player/amp_player.c
-h-ms1110_player/settings.c
-h-ms1110_player/settings.h
-h-ms1110_player/setup.c
-h-ms1110_player/setup.h
+player/Makefile
+player/amp.c
+player/settings.c
+player/settings.h
+player/setup.c
+player/setup.h

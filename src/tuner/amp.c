@@ -240,7 +240,7 @@ void ampInit(void)
 void ampRun(void)
 {
     while (1) {
-        ampHandleSwd(amp.screen);
+        utilEnableSwd(SCREEN_STANDBY == amp.screen);
 
         ampActionSyncMaster();
 
