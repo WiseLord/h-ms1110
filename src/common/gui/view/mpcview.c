@@ -7,13 +7,19 @@
 #include "gui/palette.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect iconRect = {0, 24, 40, 40};
-static const GlcdRect statusIconRect = {44, 24, 16, 16};
-static const GlcdRect timeRect = {196, 24, 60, 14};
-static const GlcdRect metaRect = {44, 42, 212, 14};
-static const GlcdRect progressRect = {44, 58, 212, 6};
+static const GlcdRect rectIconMpc = {0, 24, 40, 40};
 
-static void mpcViewDrawIcon(MpcView *this, bool clear, const GlcdRect *rect)
+static const GlcdRect rectIconStatus = {44, 24, 16, 16};
+static const GlcdRect rectIconRepeat = {64, 24, 16, 16};
+static const GlcdRect rectIconSingle = {84, 24, 16, 16};
+static const GlcdRect rectIconRandom = {104, 24, 16, 16};
+static const GlcdRect rectIconConsume = {124, 24, 16, 16};
+
+static const GlcdRect rectElapsed = {196, 24, 60, 14};
+static const GlcdRect rectMeta = {44, 42, 212, 14};
+static const GlcdRect rectProgress = {44, 58, 212, 6};
+
+static void drawMpcIcon(MpcView *this, bool clear)
 {
     (void)this;
 
@@ -21,7 +27,7 @@ static void mpcViewDrawIcon(MpcView *this, bool clear, const GlcdRect *rect)
         return;
     }
 
-    glcdSetRect(rect);
+    glcdSetRect(&rectIconMpc);
 
     const Palette *pal = paletteGet();
 
@@ -32,7 +38,18 @@ static void mpcViewDrawIcon(MpcView *this, bool clear, const GlcdRect *rect)
     glcdResetRect();
 }
 
-static void mpcViewDrawStatusIcon(MpcView *this, bool clear, const GlcdRect *rect)
+static void drawStatusIcon(Icon icon, const GlcdRect *rect)
+{
+    const Palette *pal = paletteGet();
+    const tImage *img = iconFind(icon, &icons_hms1110);
+
+    glcdSetRect(rect);
+    glcdSetXY(0, 0);
+    glcdDrawImage(img, pal->fg, pal->bg);
+    glcdResetRect();
+}
+
+static void drawStatusIcons(MpcView *this, bool clear)
 {
     if (this->mpc->flags & MPC_FLAG_UPDATE_STATUS) {
         clear = true;
@@ -42,26 +59,17 @@ static void mpcViewDrawStatusIcon(MpcView *this, bool clear, const GlcdRect *rec
         return;
     }
 
-    glcdSetRect(rect);
+    MpcStatus st = this->mpc->status;
 
-    Icon icon = ICON_STOPPED;
-    if (this->mpc->status == MPC_STATUS_PLAYING) {
-        icon = ICON_PLAYING;
-    } else if (this->mpc->status == MPC_STATUS_PAUSED) {
-        icon = ICON_PAUSED;
-    }
-
-    const Palette *pal = paletteGet();
-
-    const tImage *img = iconFind(icon, &icons_hms1110);
-    glcdSetXY(0, 0);
-    glcdDrawImage(img, pal->fg, pal->bg);
-
-    glcdResetRect();
-
+    drawStatusIcon(st & MPC_PAUSED ? ICON_PAUSED:
+                   st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED, &rectIconStatus);
+    drawStatusIcon(st & MPC_REPEAT ? ICON_REPEAT : ICON_IDLE, &rectIconRepeat);
+    drawStatusIcon(st & MPC_SINGLE ? ICON_SINGLE : ICON_IDLE, &rectIconSingle);
+    drawStatusIcon(st & MPC_RANDOM ? ICON_RANDOM : ICON_IDLE, &rectIconRandom);
+    drawStatusIcon(st & MPC_CONSUME ? ICON_CONSUME : ICON_IDLE, &rectIconConsume);
 }
 
-static void mpcViewCalcNameScroll(MpcView *this, int16_t max_oft)
+static void calcNameScroll(MpcView *this, int16_t max_oft)
 {
     if (this->scroll.oft >= 0 && !this->scroll.pause) {
         this->scroll.oft = 0;
@@ -88,7 +96,7 @@ static void mpcViewCalcNameScroll(MpcView *this, int16_t max_oft)
     }
 }
 
-static void mpcViewResetNameScroll(MpcView *this)
+static void resetNameScroll(MpcView *this)
 {
     this->scroll.oft = 0;
     this->scroll.left = true;
@@ -96,24 +104,25 @@ static void mpcViewResetNameScroll(MpcView *this)
     this->scroll.event = false;
 }
 
-static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
+static void drawMeta(MpcView *this, bool clear)
 {
     if (this->mpc->flags & (MPC_FLAG_UPDATE_META | MPC_FLAG_UPDATE_STATUS)) {
         clear = true;
     }
 
     if (clear) {
-        mpcViewResetNameScroll(this);
+        resetNameScroll(this);
     }
 
-    glcdSetRect(rect);
-
     const Palette *pal = paletteGet();
+    const GlcdRect *rect = &rectMeta;
+
+    glcdSetRect(rect);
 
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
-    const char *meta = this->mpc->status == MPC_STATUS_STOPPED ? "" : this->mpc->meta;
+    const char *meta = this->mpc->status & (MPC_PLAYING) ? this->mpc->meta : "";
 
     int16_t len = glcdCalcStringLen(meta);
 
@@ -121,12 +130,12 @@ static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
 
     if (max_oft <= 0) {
         glcdDrawRect(len, 0, rect->w - len, rect->h, pal->bg);
-        mpcViewResetNameScroll(this);
+        resetNameScroll(this);
     } else {
         if (this->scroll.event) {
             clear = true;
             this->scroll.event = false;
-            mpcViewCalcNameScroll(this, max_oft);
+            calcNameScroll(this, max_oft);
         }
     }
 
@@ -138,7 +147,7 @@ static void mpcViewDrawName(MpcView *this, bool clear, const GlcdRect *rect)
     glcdResetRect();
 }
 
-static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
+static void drawElapsed(MpcView *this, bool clear)
 {
     if (this->mpc->flags & MPC_FLAG_UPDATE_ELAPSED) {
         clear = true;
@@ -148,7 +157,7 @@ static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
         return;
     }
 
-    glcdSetRect(rect);
+    glcdSetRect(&rectElapsed);
 
     const Palette *pal = paletteGet();
 
@@ -162,7 +171,7 @@ static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
     time /= 24;
 
     char buf[16];
-    if (this->mpc->status == MPC_STATUS_STOPPED) {
+    if (!(this->mpc->status & MPC_PLAYING)) {
         snprintf(buf, sizeof(buf), "  \u2008 -:--");
     } else if (time > 0) {
         snprintf(buf, sizeof(buf), "%2d.%02d:%02d", time, hour, min);
@@ -181,7 +190,7 @@ static void mpcViewDrawTime(MpcView *this, bool clear, const GlcdRect *rect)
     glcdResetRect();
 }
 
-static void mpcViewDrawProgress(MpcView *this, bool clear, const GlcdRect *rect)
+static void drawProgress(MpcView *this, bool clear)
 {
     if (this->mpc->flags & (MPC_FLAG_UPDATE_ELAPSED | MPC_FLAG_UPDATE_DURATION)) {
         clear = true;
@@ -190,6 +199,8 @@ static void mpcViewDrawProgress(MpcView *this, bool clear, const GlcdRect *rect)
     if (!clear) {
         return;
     }
+
+    const GlcdRect *rect = &rectProgress;
 
     glcdSetRect(rect);
 
@@ -213,11 +224,11 @@ static void mpcViewDrawProgress(MpcView *this, bool clear, const GlcdRect *rect)
 
 void mpcViewDraw(MpcView *this, bool clear)
 {
-    mpcViewDrawIcon(this, clear, &iconRect);
-    mpcViewDrawStatusIcon(this, clear, &statusIconRect);
-    mpcViewDrawName(this, clear, &metaRect);
-    mpcViewDrawTime(this, clear, &timeRect);
-    mpcViewDrawProgress(this, clear, &progressRect);
+    drawMpcIcon(this, clear);
+    drawStatusIcons(this, clear);
+    drawMeta(this, clear);
+    drawElapsed(this, clear);
+    drawProgress(this, clear);
 
     this->mpc->flags = 0;
 }

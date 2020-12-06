@@ -13,10 +13,6 @@ extern "C" {
 
 typedef struct {
     Mpc *mpc;
-//    struct {
-//        int32_t elapsed;
-//        int32_t duration;
-//    } progress;
     struct {
         int16_t oft;
         int16_t pause;

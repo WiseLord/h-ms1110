@@ -91,14 +91,34 @@ static void mpcParseCli(char *line)
         mpc.flags |= MPC_FLAG_UPDATE_META;
     } else if (utilIsPrefix(line, "PLAYING#")) {
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
-        mpc.status = MPC_STATUS_PLAYING;
+        mpc.status |= MPC_PLAYING;
+        mpc.status &= ~MPC_PAUSED;
     } else if (utilIsPrefix(line, "PAUSED#")) {
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
-        mpc.status = MPC_STATUS_PAUSED;
+        mpc.status |= MPC_PAUSED;
     } else if (utilIsPrefix(line, "STOPPED#")) {
+        mpc.flags |= (MPC_FLAG_UPDATE_STATUS | MPC_FLAG_UPDATE_ELAPSED);
+        mpc.status &= ~(MPC_PLAYING | MPC_PAUSED);
+    } else if (utilIsPrefix(line, "REPEAT#: ")) {
+        int repeat;
+        sscanf(line, "REPEAT#: %d", &repeat);
+        repeat ? (mpc.status |= MPC_REPEAT) : (mpc.status &= ~MPC_REPEAT);
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
-        mpc.status = MPC_STATUS_STOPPED;
-        mpc.flags |= MPC_FLAG_UPDATE_ELAPSED;
+    } else if (utilIsPrefix(line, "RANDOM#: ")) {
+        int random;
+        sscanf(line, "RANDOM#: %d", &random);
+        random ? (mpc.status |= MPC_RANDOM) : (mpc.status &= ~MPC_RANDOM);
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+    } else if (utilIsPrefix(line, "SINGLE#: ")) {
+        int single;
+        sscanf(line, "SINGLE#: %d", &single);
+        single ? (mpc.status |= MPC_SINGLE) : (mpc.status &= ~MPC_SINGLE);
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+    } else if (utilIsPrefix(line, "CONSUME#: ")) {
+        int consume;
+        sscanf(line, "CONSUME#: %d", &consume);
+        consume ? (mpc.status |= MPC_CONSUME) : (mpc.status &= ~MPC_CONSUME);
+        mpc.flags |= MPC_FLAG_UPDATE_STATUS;
     }
 }
 

@@ -14,9 +14,14 @@ enum {
     ICON_EMPTY = 0x00,
 
     // Player status icons
-    ICON_STOPPED = 0x10,
+    ICON_IDLE = 0x10,
+    ICON_STOPPED,
     ICON_PLAYING,
     ICON_PAUSED,
+    ICON_REPEAT,
+    ICON_RANDOM,
+    ICON_SINGLE,
+    ICON_CONSUME,
 
     // Input icons
     ICON_TUNER = 0x40,

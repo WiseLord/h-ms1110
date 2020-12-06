@@ -12,7 +12,7 @@ extern "C" {
 
 #define META_SIZE            128
 
-typedef uint32_t MpcFlags;
+typedef uint16_t MpcFlags;
 enum {
     MPC_FLAG_UPDATE_META        = 0x0001,
     MPC_FLAG_UPDATE_ELAPSED     = 0x0002,
@@ -20,19 +20,22 @@ enum {
     MPC_FLAG_UPDATE_STATUS      = 0x0008,
 };
 
-typedef uint8_t MpcStatus;
+typedef uint16_t MpcStatus;
 enum {
-    MPC_STATUS_PLAYING,
-    MPC_STATUS_PAUSED,
-    MPC_STATUS_STOPPED,
+    MPC_PLAYING = 0x0001,
+    MPC_PAUSED  = 0x0002,
+    MPC_REPEAT  = 0x0010,
+    MPC_SINGLE  = 0x0020,
+    MPC_RANDOM  = 0x0040,
+    MPC_CONSUME = 0x0080,
 };
 
 typedef struct {
-    char meta[META_SIZE];
     MpcFlags flags;
+    MpcStatus status;
     int32_t elapsed;
     int32_t duration;
-    MpcStatus status;
+    char meta[META_SIZE];
 } Mpc;
 
 void mpcInit(void);
