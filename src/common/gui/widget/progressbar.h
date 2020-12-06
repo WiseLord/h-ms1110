@@ -12,9 +12,9 @@ extern "C" {
 
 typedef struct {
     GlcdRect rect;
-    int16_t frame_width;
-    int16_t mark_count;
-    int8_t mark_width;
+    uint8_t frame_width;
+    uint8_t mark_width;
+    uint8_t mark_count;
 } LayoutProgressBar;
 
 typedef struct {
@@ -22,6 +22,7 @@ typedef struct {
     int16_t value;
     int16_t min;
     int16_t max;
+    color_t bgColor;
 } ProgressBar;
 
 void progressBarDraw(bool clear, ProgressBar *bar);

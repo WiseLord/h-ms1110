@@ -22,6 +22,8 @@ enum {
     ICON_RANDOM,
     ICON_SINGLE,
     ICON_CONSUME,
+    ICON_STREAM,
+    ICON_FILE,
 
     // Input icons
     ICON_TUNER = 0x40,

@@ -41,6 +41,7 @@ typedef struct {
 void mpcInit(void);
 Mpc *mpcGet(void);
 
+void mpcLoadPlaylist(const char *name);
 void mpcSendMediaKey(MediaKey key);
 void mpcGetData(void);
 

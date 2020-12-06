@@ -40,6 +40,13 @@ Mpc *mpcGet(void)
     return &mpc;
 }
 
+void mpcLoadPlaylist(const char *name)
+{
+    char buf[32];
+    snprintf(buf, sizeof(buf), "load %s", name);
+    mpcSendCmd(buf);
+}
+
 void mpcSendMediaKey(MediaKey key)
 {
     switch (key) {
@@ -63,6 +70,24 @@ void mpcSendMediaKey(MediaKey key)
         break;
     case MEDIAKEY_FFWD:
         mpcSendCmd("ffwd");
+        break;
+    case MEDIAKEY_REPEAT:
+        mpcSendCmd("repeat");
+        break;
+    case MEDIAKEY_RANDOM:
+        mpcSendCmd("random");
+        break;
+    case MEDIAKEY_SINGLE:
+        mpcSendCmd("single");
+        break;
+    case MEDIAKEY_CONSUME:
+        mpcSendCmd("consume");
+        break;
+    case MEDIAKEY_EJECT:
+        mpcSendCmd("load(\"Music\")");
+        break;
+    case MEDIAKEY_INJECT:
+        mpcSendCmd("load(\"Radio\")");
         break;
     }
 }

@@ -41,6 +41,7 @@ void tuneViewDraw(bool clear, TuneView *tune)
     bar.value = tune->value;
     bar.min = tune->min;
     bar.max = tune->max;
+    bar.bgColor = pal->inactive;
 
     progressBarDraw(clear, &bar);
 }

@@ -546,6 +546,7 @@ static void actionRemapPlayerBtnShort(int16_t button)
         break;
 
     case BTN_PLAYER_OPEN:
+        actionSet(ACTION_MEDIA, MEDIAKEY_EJECT);
         break;
     case BTN_PLAYER_PLAYPAUSE:
         actionSet(ACTION_MEDIA, MEDIAKEY_PLAY_PAUSE);
@@ -557,6 +558,7 @@ static void actionRemapPlayerBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_PREVIOUS);
         break;
     case BTN_PLAYER_REPEATE:
+        actionSet(ACTION_MEDIA, MEDIAKEY_REPEAT);
         break;
     case BTN_PLAYER_FORWARD:
         actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
@@ -595,15 +597,19 @@ static void actionRemapPlayerBtnLong(int16_t button)
         break;
 
     case BTN_PLAYER_OPEN:
+        actionSet(ACTION_MEDIA, MEDIAKEY_INJECT);
         break;
     case BTN_PLAYER_PLAYPAUSE:
+        actionSet(ACTION_MEDIA, MEDIAKEY_SINGLE);
         break;
     case BTN_PLAYER_STOP:
+        actionSet(ACTION_MEDIA, MEDIAKEY_CONSUME);
         break;
     case BTN_PLAYER_REWIND:
         actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
         break;
     case BTN_PLAYER_REPEATE:
+        actionSet(ACTION_MEDIA, MEDIAKEY_RANDOM);
         break;
     case BTN_PLAYER_FORWARD:
         actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
@@ -1018,6 +1024,9 @@ static void ampSendMediaKey(MediaKey key)
     InputType inType = amp.inType;
 
     switch (inType) {
+    case IN_MPD:
+        mpcSendMediaKey(key);
+        break;
     case IN_TUNER:
 //        tunerSendMediaKey(key);
 //        break;
@@ -1031,9 +1040,6 @@ static void ampSendMediaKey(MediaKey key)
 //        break;
 //    case IN_BLUETOOTH:
 //        btSendMediaKey(key);
-        break;
-    default:
-        mpcSendMediaKey(key);
         break;
     }
 }

@@ -73,6 +73,8 @@ class Player(object):
         elapsed = float(status.get('elapsed', 0))
         state = status.get('state', 'stop')
 
+        cmd = str(cmd)
+
         if cmd == 'info':
             self.player_info = []
         if cmd == 'play':
@@ -90,20 +92,32 @@ class Player(object):
         if cmd == 'previous':
             if state == 'play':
                 self.client.previous()
-        if cmd == 'rewind' and state == 'play':
-            pos = elapsed - 5
-            if pos < 0:
-                pos = 0
+        if cmd == 'rewind':
+            if state == 'play':
+                pos = elapsed - 5
+                if pos < 0:
+                    pos = 0
             self.client.seekcur(pos)
-        if cmd == 'ffwd' and state == 'play':
-            pos = elapsed + 5
-            self.client.seekcur(pos)
-        if cmd == 'load music':
-            self.client.clear()
-            self.client.load("Music")
-        if cmd == 'load radio':
-            self.client.clear()
-            self.client.load("Radio")
+        if cmd == 'ffwd':
+            if state == 'play':
+                pos = elapsed + 5
+                self.client.seekcur(pos)
+        if cmd.startswith('load'):
+            playlists = self.client.listplaylists()
+            pl_name = cmd[6:-2].strip()
+            print(pl_name)
+            if next((pl for pl in playlists if pl['playlist'] == pl_name), False):
+                self.client.clear()
+                self.client.load(pl_name)
+                self.client.play()
+        if cmd == 'repeat':
+            self.client.repeat(int(not int(status.get(cmd))))
+        if cmd == 'random':
+            self.client.random(int(not int(status.get(cmd))))
+        if cmd == 'single':
+            self.client.single(int(not int(status.get(cmd))))
+        if cmd == 'consume':
+            self.client.consume(int(not int(status.get(cmd))))
 
     def notify_fn(self):
         while self.alive:
@@ -130,8 +144,6 @@ class Player(object):
             status = self.client.status()
         song = self.client.currentsong()
 
-        # print(status)
-
         player_info = {
             'name': song.get('name', ''),
             'artist': song.get('artist', ''),
@@ -139,6 +151,10 @@ class Player(object):
             'elapsed': float(status.get('elapsed', 0)),
             'duration': float(status.get('duration', 0)),
             'state': status.get('state'),
+            'repeat': status.get('repeat'),
+            'random': status.get('random'),
+            'single': status.get('single'),
+            'consume': status.get('consume'),
             'timestamp': time.time(),
         }
 
@@ -159,6 +175,11 @@ class Player(object):
 
         update_state = player_info['state'] != self.player_info['state']
 
+        update_repeat = player_info['repeat'] != self.player_info['repeat']
+        update_random = player_info['random'] != self.player_info['random']
+        update_single = player_info['single'] != self.player_info['single']
+        update_consume = player_info['consume'] != self.player_info['consume']
+
         self.player_info = player_info
 
         if update_all or update_meta:
@@ -169,6 +190,14 @@ class Player(object):
             self.send_duration()
         if update_all or update_state:
             self.send_state()
+        if update_all or update_repeat:
+            self.send_repeat()
+        if update_all or update_random:
+            self.send_random()
+        if update_all or update_single:
+            self.send_single()
+        if update_all or update_consume:
+            self.send_consume()
 
     def send_meta(self):
         self.console.send('##CLI.META#: ' + do_meta(self.player_info))
@@ -187,6 +216,17 @@ class Player(object):
         else:
             self.console.send('##CLI.STOPPED#')
 
+    def send_repeat(self):
+        self.console.send('##CLI.REPEAT#: ' + self.player_info['repeat'])
+
+    def send_random(self):
+        self.console.send('##CLI.RANDOM#: ' + self.player_info['random'])
+
+    def send_single(self):
+        self.console.send('##CLI.SINGLE#: ' + self.player_info['single'])
+
+    def send_consume(self):
+        self.console.send('##CLI.CONSUME#: ' + self.player_info['consume'])
 
     def parse_handler(self, input):
         print("input: '" + input + "'")

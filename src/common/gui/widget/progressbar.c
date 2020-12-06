@@ -33,17 +33,17 @@ void progressBarDraw(bool clear, ProgressBar *bar)
         color_t color = pal->fg;
 
         if (min == max) { // Empty scale
-            color = pal->bg;
+            color = bar->bgColor;
         } else if (min + max) { // Non-symmetric scale
             if (i >= value) {
-                color = pal->bg;
+                color = bar->bgColor;
             }
         } else { // Symmetric scale
             if ((value > 0 && i > value + (sc / 2)) ||
                 (value >= 0 && i < (sc / 2)) ||
                 (value < 0 && i < value + (sc / 2)) ||
                 (value <= 0 && i > (sc / 2))) {
-                color = pal->bg;
+                color = bar->bgColor;
             }
         }
 

@@ -10,12 +10,15 @@
 static const GlcdRect rectIconMpc = {0, 24, 40, 40};
 
 static const GlcdRect rectIconStatus = {44, 24, 16, 16};
-static const GlcdRect rectIconRepeat = {64, 24, 16, 16};
-static const GlcdRect rectIconSingle = {84, 24, 16, 16};
-static const GlcdRect rectIconRandom = {104, 24, 16, 16};
-static const GlcdRect rectIconConsume = {124, 24, 16, 16};
 
-static const GlcdRect rectElapsed = {196, 24, 60, 14};
+static const GlcdRect rectIconMedia = {74, 24, 16, 16};
+
+static const GlcdRect rectIconRepeat = {104, 24, 16, 16};
+static const GlcdRect rectIconSingle = {124, 24, 16, 16};
+static const GlcdRect rectIconRandom = {144, 24, 16, 16};
+static const GlcdRect rectIconConsume = {164, 24, 16, 16};
+
+static const GlcdRect rectElapsed = {184, 20, 72, 22};
 static const GlcdRect rectMeta = {44, 42, 212, 14};
 static const GlcdRect rectProgress = {44, 58, 212, 6};
 
@@ -38,20 +41,20 @@ static void drawMpcIcon(MpcView *this, bool clear)
     glcdResetRect();
 }
 
-static void drawStatusIcon(Icon icon, const GlcdRect *rect)
+static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
 {
     const Palette *pal = paletteGet();
     const tImage *img = iconFind(icon, &icons_hms1110);
 
     glcdSetRect(rect);
     glcdSetXY(0, 0);
-    glcdDrawImage(img, pal->fg, pal->bg);
+    glcdDrawImage(img, color, pal->bg);
     glcdResetRect();
 }
 
 static void drawStatusIcons(MpcView *this, bool clear)
 {
-    if (this->mpc->flags & MPC_FLAG_UPDATE_STATUS) {
+    if (this->mpc->flags & (MPC_FLAG_UPDATE_STATUS | MPC_FLAG_UPDATE_DURATION)) {
         clear = true;
     }
 
@@ -59,14 +62,18 @@ static void drawStatusIcons(MpcView *this, bool clear)
         return;
     }
 
+    const Palette *pal = paletteGet();
     MpcStatus st = this->mpc->status;
+    int32_t duration = this->mpc->duration;
 
-    drawStatusIcon(st & MPC_PAUSED ? ICON_PAUSED:
-                   st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED, &rectIconStatus);
-    drawStatusIcon(st & MPC_REPEAT ? ICON_REPEAT : ICON_IDLE, &rectIconRepeat);
-    drawStatusIcon(st & MPC_SINGLE ? ICON_SINGLE : ICON_IDLE, &rectIconSingle);
-    drawStatusIcon(st & MPC_RANDOM ? ICON_RANDOM : ICON_IDLE, &rectIconRandom);
-    drawStatusIcon(st & MPC_CONSUME ? ICON_CONSUME : ICON_IDLE, &rectIconConsume);
+    drawStatusIcon(st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
+                   &rectIconStatus, pal->fg);
+    drawStatusIcon(ICON_REPEAT, &rectIconRepeat, st & MPC_REPEAT ? pal->fg : pal->inactive);
+    drawStatusIcon(ICON_SINGLE, &rectIconSingle, st & MPC_SINGLE ? pal->fg : pal->inactive);
+    drawStatusIcon(ICON_RANDOM, &rectIconRandom, st & MPC_RANDOM ? pal->fg : pal->inactive);
+    drawStatusIcon(ICON_CONSUME, &rectIconConsume, st & MPC_CONSUME ? pal->fg : pal->inactive);
+    drawStatusIcon(st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
+                   &rectIconMedia, pal->fg);
 }
 
 static void calcNameScroll(MpcView *this, int16_t max_oft)
@@ -157,9 +164,9 @@ static void drawElapsed(MpcView *this, bool clear)
         return;
     }
 
-    glcdSetRect(&rectElapsed);
-
     const Palette *pal = paletteGet();
+
+    glcdSetRect(&rectElapsed);
 
     int16_t time = this->mpc->elapsed;
 
@@ -181,7 +188,7 @@ static void drawElapsed(MpcView *this, bool clear)
         snprintf(buf, sizeof(buf), "  \u2008%2d:%02d", min, sec);
     }
 
-    glcdSetFont(&fontterminus14b);
+    glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->active);
 
     glcdSetXY(0, 0);
@@ -200,6 +207,8 @@ static void drawProgress(MpcView *this, bool clear)
         return;
     }
 
+    const Palette *pal = paletteGet();
+
     const GlcdRect *rect = &rectProgress;
 
     glcdSetRect(rect);
@@ -216,6 +225,7 @@ static void drawProgress(MpcView *this, bool clear)
     bar.value = this->mpc->elapsed;
     bar.min = 0;
     bar.max = this->mpc->duration;
+    bar.bgColor = pal->bg;
 
     progressBarDraw(true, &bar);
 
