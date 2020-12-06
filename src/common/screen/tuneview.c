@@ -13,8 +13,8 @@ void tuneViewDraw(bool clear, TuneView *tune)
     const Palette *pal = paletteGet();
     GlcdRect *rect = glcdGetRect();
 
-    const tFont *labelFont = &fontterminus22b;
-    const tFont *valueFont = &fontterminus22b;
+    const tFont *labelFont = &fontterminus24b;
+    const tFont *valueFont = &fontterminus24b;
 
     glcdSetFont(labelFont);
     glcdSetFontColor(pal->fg);

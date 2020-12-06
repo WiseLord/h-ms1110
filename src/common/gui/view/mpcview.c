@@ -9,17 +9,17 @@
 
 static const GlcdRect rectIconMpc = {0, 24, 40, 40};
 
-static const GlcdRect rectIconStatus = {44, 24, 16, 16};
+static const GlcdRect rectIconStatus = {44, 24, 15, 15};
 
-static const GlcdRect rectIconMedia = {74, 24, 16, 16};
+static const GlcdRect rectIconMedia = {68, 24, 15, 15};
 
-static const GlcdRect rectIconRepeat = {104, 24, 16, 16};
-static const GlcdRect rectIconSingle = {124, 24, 16, 16};
-static const GlcdRect rectIconRandom = {144, 24, 16, 16};
-static const GlcdRect rectIconConsume = {164, 24, 16, 16};
+static const GlcdRect rectIconRepeat = {92, 24, 15, 15};
+static const GlcdRect rectIconSingle = {112, 24, 15, 15};
+static const GlcdRect rectIconRandom = {132, 24, 15, 15};
+static const GlcdRect rectIconConsume = {152, 24, 15, 15};
 
-static const GlcdRect rectElapsed = {184, 20, 72, 22};
-static const GlcdRect rectMeta = {44, 42, 212, 14};
+static const GlcdRect rectElapsed = {178, 24, 78, 15};
+static const GlcdRect rectMeta = {44, 41, 212, 14};
 static const GlcdRect rectProgress = {44, 58, 212, 6};
 
 static void drawMpcIcon(MpcView *this, bool clear)
@@ -188,10 +188,10 @@ static void drawElapsed(MpcView *this, bool clear)
         snprintf(buf, sizeof(buf), "  \u2008%2d:%02d", min, sec);
     }
 
-    glcdSetFont(&fontterminus22b);
+    glcdSetFont(&fontterminus24b);
     glcdSetFontColor(pal->active);
 
-    glcdSetXY(0, 0);
+    glcdSetXY(0, -4);
     glcdWriteString(buf);
 
     glcdResetRect();
