@@ -264,7 +264,7 @@ void spGetADC(SpChan chan, uint8_t *out, size_t size, fftGet fn)
     free(smpl);
 }
 
-void spConvertADC(void)
+static void spConvertADC(void)
 {
     if (LL_ADC_IsEnabled(ADC1) == 1) {
 #ifdef STM32F1
@@ -283,4 +283,15 @@ bool spCheckSignal()
     LL_ADC_ClearFlag_AWD1(ADC1);
 
     return ret;
+}
+
+void TIM_SPECTRUM_HANDLER(void)
+{
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
+        // Clear the update interrupt flag
+        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
+
+        // Callbacks
+        spConvertADC();
+    }
 }

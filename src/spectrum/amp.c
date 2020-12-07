@@ -22,19 +22,17 @@ typedef struct {
     bool clearScreen;
 } AmpPriv;
 
+static void ampActionSyncMaster(void);
+
 static void actionGetButtons(void);
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
 
-static void ampActionSyncMaster(void);
-
 static void ampActionGet(void);
 static void ampActionRemap(void);
 static void ampActionHandle(void);
-
-static void ampPollInput(void);
 
 static void ampScreenShow(void);
 
@@ -212,8 +210,6 @@ void ampRun(void)
         ampActionRemap();
         ampActionHandle();
 
-        ampPollInput();
-
         ampScreenShow();
     }
 }
@@ -262,14 +258,6 @@ void ampActionGet(void)
 {
     if (ACTION_NONE == action.type) {
         actionGetButtons();
-    }
-
-    if (ACTION_NONE == action.type) {
-        ScreenType scrMode = amp.screen;
-
-        if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
-            actionSet(ACTION_STANDBY, FLAG_EXIT);
-        }
     }
 
     if (ACTION_NONE == action.type) {
@@ -357,16 +345,6 @@ static void ampActionHandle(void)
     screen.timeout = SW_TIM_OFF;
 }
 
-static void ampPollInput(void)
-{
-    if (amp.screen != SCREEN_STANDBY) {
-        if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
-
-            swTimSet(SW_TIM_INPUT_POLL, 200);
-        }
-    }
-}
-
 void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
@@ -396,19 +374,6 @@ void ampScreenShow(void)
     canvasDebugFPS();
 
     glcdFbSync();
-}
-
-void TIM_SPECTRUM_HANDLER(void)
-{
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
-        // Clear the update interrupt flag
-        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
-
-        // Callbacks
-        spConvertADC();
-
-        // Callbacks
-    }
 }
 
 void USART_DBG_HANDLER(void)

@@ -303,14 +303,6 @@ void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
-        ScreenType scrMode = amp.screen;
-
-        if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
-            actionSet(ACTION_STANDBY, FLAG_EXIT);
-        }
-    }
-
-    if (ACTION_NONE == action.type) {
         actionGetTimers();
     }
 }
@@ -532,17 +524,6 @@ void ampScreenShow(void)
     canvasDebugFPS();
 
     glcdFbSync();
-}
-
-void TIM_SPECTRUM_HANDLER(void)
-{
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
-        // Clear the update interrupt flag
-        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
-
-        // Callbacks
-        spConvertADC();
-    }
 }
 
 void USART_DBG_HANDLER(void)

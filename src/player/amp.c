@@ -38,9 +38,7 @@ typedef struct {
 static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetRemote(void);
-#ifdef _INPUT_ANALOG
 static void actionGetPots(void);
-#endif
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
@@ -436,8 +434,6 @@ static void actionGetRemote(void)
     }
 }
 
-#ifdef _INPUT_ANALOG
-
 static void actionGetPots(void)
 {
     static int8_t potPrev[AIN_POT_END];
@@ -474,8 +470,6 @@ static void actionGetPots(void)
         }
     }
 }
-
-#endif // _INPUT_ANALOG
 
 static void actionGetTimers(void)
 {
@@ -850,11 +844,9 @@ static void ampActionGet(void)
         actionGetRemote();
     }
 
-#ifdef _INPUT_ANALOG
     if (ACTION_NONE == action.type) {
         actionGetPots();
     }
-#endif // _INPUT_ANALOG
 
     if (ACTION_NONE == action.type) {
         ScreenType scrMode = amp.screen;
