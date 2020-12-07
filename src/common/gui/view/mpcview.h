@@ -9,7 +9,6 @@ extern "C" {
 #include <stdint.h>
 
 #include "mpc.h"
-#include "tr/labels.h"
 
 typedef struct {
     Mpc *mpc;

@@ -1186,28 +1186,6 @@ static void prepareAudioTune(TuneView *tune)
     tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
-static void prepareAudioInput (Label *label)
-{
-    if (amp.inType == IN_NULL) {
-        *label = LABEL_BOOL_OFF;
-    } else {
-        *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
-    }
-}
-
-static void prepareMpcView(MpcView *view)
-{
-    view->mpc = mpcGet();
-
-    if (swTimGet(SW_TIM_SCROLL) <= 0) {
-        swTimSet(SW_TIM_SCROLL, 100);
-        view->scroll.event = true;
-    } else {
-        view->scroll.event = false;
-    }
-
-}
-
 static void ampSendToSlaves(void)
 {
     if (swTimGet(SW_TIM_SYNC) > 0) {
@@ -1266,8 +1244,6 @@ static void ampScreenShow(void)
     }
 
     static TuneView tune;
-    static MpcView view;
-    Label label;
 
     switch (amp.screen) {
     case SCREEN_TIME:
@@ -1284,13 +1260,7 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        if (amp.inType == IN_MPD) {
-            prepareMpcView(&view);
-            mpcViewDraw(&view, clear);
-        } else {
-            prepareAudioInput(&label);
-            canvasShowInput(clear, audioGet()->par.input, label);
-        }
+        canvasShowInput(clear);
         break;
     }
 

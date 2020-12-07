@@ -71,6 +71,7 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
+C_SOURCES += $(COMMON)/gui/view/inputview.c
 C_SOURCES += $(COMMON)/gui/view/mpcview.c
 
 C_SOURCES += $(COMMON)/screen/setupview.c

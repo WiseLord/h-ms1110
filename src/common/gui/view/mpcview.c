@@ -7,8 +7,6 @@
 #include "gui/palette.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect rectIconMpc = {0, 24, 40, 40};
-
 static const GlcdRect rectIconStatus = {44, 24, 15, 15};
 
 static const GlcdRect rectIconMedia = {68, 24, 15, 15};
@@ -21,25 +19,6 @@ static const GlcdRect rectIconConsume = {152, 24, 15, 15};
 static const GlcdRect rectElapsed = {178, 24, 78, 15};
 static const GlcdRect rectMeta = {44, 41, 212, 14};
 static const GlcdRect rectProgress = {44, 58, 212, 6};
-
-static void drawMpcIcon(MpcView *this, bool clear)
-{
-    (void)this;
-
-    if (!clear) {
-        return;
-    }
-
-    glcdSetRect(&rectIconMpc);
-
-    const Palette *pal = paletteGet();
-
-    const tImage *icon = iconFind(ICON_MPD, &icons_hms1110);
-    glcdSetXY(0, 0);
-    glcdDrawImage(icon, pal->fg, pal->bg);
-
-    glcdResetRect();
-}
 
 static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
 {
@@ -168,7 +147,7 @@ static void drawElapsed(MpcView *this, bool clear)
 
     glcdSetRect(&rectElapsed);
 
-    int16_t time = this->mpc->elapsed;
+    int time = this->mpc->elapsed;
 
     int8_t sec = time % 60;
     time /= 60;
@@ -234,7 +213,6 @@ static void drawProgress(MpcView *this, bool clear)
 
 void mpcViewDraw(MpcView *this, bool clear)
 {
-    drawMpcIcon(this, clear);
     drawStatusIcons(this, clear);
     drawMeta(this, clear);
     drawElapsed(this, clear);

@@ -77,6 +77,8 @@ common/gui/icons.c
 common/gui/icons/icons_h-ms1100.c
 common/gui/palette.c
 common/gui/palette.h
+common/gui/view/inputview.c
+common/gui/view/inputview.h
 common/gui/view/mpcview.c
 common/gui/view/mpcview.h
 common/gui/widget/progressbar.c

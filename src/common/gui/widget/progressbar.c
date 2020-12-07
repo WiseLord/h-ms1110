@@ -19,9 +19,9 @@ void progressBarDraw(bool clear, ProgressBar *bar)
     const int16_t barH = rect->h - 2 * (fw + 1);
     const int16_t width = rect->w - 1 - 2 * fw;
 
-    int16_t value = bar->value;
-    int16_t min = bar->min;
-    int16_t max = bar->max;
+    int32_t value = bar->value;
+    int32_t min = bar->min;
+    int32_t max = bar->max;
 
     if (min + max) { // Non-symmectic scale => rescale to 0..sc
         value = sc * (value - min) / (max - min);

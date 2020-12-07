@@ -19,9 +19,9 @@ typedef struct {
 
 typedef struct {
     LayoutProgressBar lt;
-    int16_t value;
-    int16_t min;
-    int16_t max;
+    int32_t value;
+    int32_t min;
+    int32_t max;
     color_t bgColor;
 } ProgressBar;
 

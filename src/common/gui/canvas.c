@@ -10,6 +10,7 @@
 #include "screen/setupview.h"
 #include "screen/timeview.h"
 #include "swtimers.h"
+#include "view/inputview.h"
 
 static Canvas canvas;
 
@@ -118,22 +119,69 @@ void canvasShowWday(bool clear, bool active)
     wdayViewDraw(clear, active, rtc.wday);
 }
 
-void canvasShowInput(bool clear, int8_t input, Label label)
+static void prepareMpcView(MpcView *view)
 {
-    (void)clear;
+    view->mpc = mpcGet();
 
-    const Palette *pal = canvas.pal;
-    GlcdRect rect = canvas.glcd->rect;
+    if (swTimGet(SW_TIM_SCROLL) <= 0) {
+        swTimSet(SW_TIM_SCROLL, 100);
+        view->scroll.event = true;
+    } else {
+        view->scroll.event = false;
+    }
+}
 
-    glcdSetFont(&fontterminus22b);
-    glcdSetFontColor(pal->fg);
+static const GlcdRect rectIconInput = {0, 24, 40, 40};
 
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%d : %s", input, labelsGet(label));
+static void drawInputIcon(bool clear, Icon icon)
+{
+    if (!clear) {
+        return;
+    }
 
-    glcdSetXY(rect.w / 2, 28);
-    glcdSetFontAlign(GLCD_ALIGN_CENTER);
-    glcdWriteString(buf);
+    glcdSetRect(&rectIconInput);
+
+    const Palette *pal = paletteGet();
+
+    const tImage *img = iconFind(icon, &icons_hms1110);
+    glcdSetXY(0, 0);
+    glcdDrawImage(img, pal->fg, pal->bg);
+
+    glcdResetRect();
+}
+
+static void canvasShowMpc(bool clear)
+{
+    static MpcView view;
+
+    prepareMpcView(&view);
+    mpcViewDraw(&view, clear);
+}
+
+void canvasShowInput(bool clear)
+{
+    Amp *amp = ampGet();
+
+    Label label = LABEL_BOOL_OFF;
+    Icon icon = ICON_EMPTY;
+
+    if (amp->inType != IN_NULL) {
+        label = LABEL_IN_TUNER + amp->inType;
+        icon = ICON_TUNER + amp->inType;
+    }
+
+    drawInputIcon(clear, icon);
+
+    if (amp->inType == IN_MPD) {
+        canvasShowMpc(clear);
+        return;
+    }
+
+    static InputView view;
+
+    view.name = labelsGet(label);
+
+    inputViewDraw(&view, clear);
 }
 
 void canvasShowTune(bool clear, TuneView *tune)
