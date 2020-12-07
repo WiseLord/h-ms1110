@@ -38,6 +38,11 @@ static void ampSyncTxCb(int16_t bytes)
             i2cSend(I2C_SYNC, ampSyncTxData[1 + i]);
         }
         break;
+    case SYNC_SPECTRUM:
+        for (size_t i = 0; i < sizeof(Spectrum); i++) {
+            i2cSend(I2C_SYNC, ampSyncTxData[1 + i]);
+        }
+        break;
     }
 }
 
@@ -99,6 +104,10 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
         i2cBegin(I2C_SYNC, slaveAddr);
         i2cReceive(I2C_SYNC, data, 1 + sizeof(Action));
         break;
+    case SYNC_SPECTRUM:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(Action));
+        break;
     }
 
     return type;
@@ -117,6 +126,12 @@ void syncSlaveSendAction(Action *action)
 {
     ampSyncTxData[0] = SYNC_ACTION;
     memcpy(&ampSyncTxData[1], action, sizeof(Action));
+}
+
+void syncSlaveSendSpectrum(Spectrum *spectrum)
+{
+    ampSyncTxData[0] = SYNC_SPECTRUM;
+    memcpy(&ampSyncTxData[1], spectrum, sizeof(Spectrum));
 }
 
 void syncSlaveReceive(uint8_t **data, uint8_t *size)

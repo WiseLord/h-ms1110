@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "debug.h"
@@ -281,8 +282,6 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_SPECTRUM:
         *sp = *((Spectrum *)&syncData[1]);
-        settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
         ampPriv.clearScreen = true;
         break;
     case SYNC_IN_TYPE:

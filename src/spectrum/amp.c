@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "debug.h"
@@ -232,20 +233,12 @@ static void ampActionSyncMaster(void)
 
     SyncType syncType = syncData[0];
 
-    Spectrum *sp = spGet();
-
     switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
         break;
     case SYNC_TIME:
         rtcSetRaw(*(uint32_t *)&syncData[1]);
-        break;
-    case SYNC_SPECTRUM:
-        *sp = *((Spectrum *)&syncData[1]);
-        settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-        settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
-        ampPriv.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(InputType *)&syncData[1];
@@ -307,6 +300,30 @@ static void ampActionRemap(void)
     }
 }
 
+static void spModeChange(int16_t value)
+{
+    Spectrum *sp = spGet();
+
+    if (value > 0) {
+        if (++sp->mode > SP_MODE_STEREO_END) {
+            sp->mode = SP_MODE_STEREO;
+            sp->peaks = !sp->peaks;
+        }
+    } else if (value < 0) {
+        if (--sp->mode < SP_MODE_STEREO) {
+            sp->mode = SP_MODE_STEREO_END;
+            sp->peaks = !sp->peaks;
+        }
+    }
+
+    ampPriv.clearScreen = true;
+
+    settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+    settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
+
+    syncSlaveSendSpectrum(sp);
+}
+
 static void ampActionHandle(void)
 {
     switch (action.type) {
@@ -325,6 +342,13 @@ static void ampActionHandle(void)
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired();
+        break;
+
+    case ACTION_SP_CHANGE_MODE:
+        if (amp.screen == SCREEN_SPECTRUM) {
+            spModeChange(action.value);
+        }
+        screenSet(SCREEN_SPECTRUM, 3000);
         break;
 
     default:

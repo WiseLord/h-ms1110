@@ -103,7 +103,6 @@ typedef struct {
     AmpStatus status;
     ScreenType screen;
     InputType inType;
-    Spectrum sp;
 } Amp;
 
 void ampInit(void);

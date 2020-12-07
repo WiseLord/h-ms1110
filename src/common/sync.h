@@ -32,6 +32,7 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data);
 
 void syncSlaveInit(uint8_t addr);
 void syncSlaveSendAction(Action *action);
+void syncSlaveSendSpectrum(Spectrum *spectrum);
 void syncSlaveReceive(uint8_t **data, uint8_t *size);
 
 #ifdef __cplusplus

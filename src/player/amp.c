@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "audio/audio.h"
@@ -20,8 +21,15 @@
 #include "tr/labels.h"
 #include "utils.h"
 
+typedef uint8_t SyncFlags;
+enum {
+    SYNC_FLAG_RTC       = 0x01,
+    SYNC_FLAG_SPECTRUM  = 0x02,
+};
+
 typedef struct {
-    bool rtcSyncRequired;
+    SyncFlags syncFlags;
+
     bool clearScreen;
 
     ScreenType prevScreen;
@@ -30,8 +38,7 @@ typedef struct {
     int8_t volume;
     uint8_t silenceTimer;
 
-    SpMode spMode;
-    bool spPeaks;
+    Spectrum sp;
     InputType inType;
     Action syncAction;
 } AmpPriv;
@@ -99,7 +106,7 @@ static void screenSet(ScreenType type, int16_t timeout)
 
 static void rtcCb(void)
 {
-    ampPriv.rtcSyncRequired = true;
+    ampPriv.syncFlags |= SYNC_FLAG_RTC;
 }
 
 static bool screenCheckClear(void)
@@ -488,27 +495,6 @@ static void actionGetTimers(void)
     }
 }
 
-static void spModeChange(int16_t value)
-{
-    Spectrum *sp = &amp.sp;
-
-    if (value > 0) {
-        if (++sp->mode > SP_MODE_STEREO_END) {
-            sp->mode = SP_MODE_STEREO;
-            sp->peaks = !sp->peaks;
-        }
-    } else if (value < 0) {
-        if (--sp->mode < SP_MODE_STEREO) {
-            sp->mode = SP_MODE_STEREO_END;
-            sp->peaks = !sp->peaks;
-        }
-    }
-
-    ampPriv.clearScreen = true;
-    settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-    settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
-}
-
 static void actionRemapBtnShort(int16_t button)
 {
     switch (button) {
@@ -809,10 +795,6 @@ Amp *ampGet(void)
 
 static void ampGetFromSlaves(void)
 {
-    if (amp.status != AMP_STATUS_ACTIVE) {
-        return;
-    }
-
     uint8_t syncData[AMP_SYNC_DATASIZE];
     SyncType syncType;
 
@@ -827,6 +809,10 @@ static void ampGetFromSlaves(void)
     switch (syncType) {
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
+        return;
+    case SYNC_SPECTRUM:
+        memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
+        ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
         return;
     }
 }
@@ -949,7 +935,7 @@ void ampActionHandle(void)
         setupChangeChild(action.value);
         SetupType active = setupGet()->active;
         if (active == SETUP_TIME || active == SETUP_DATE) {
-            ampPriv.rtcSyncRequired = true;
+            ampPriv.syncFlags |= SYNC_FLAG_RTC;
         }
         ampHandleSetup();
         break;
@@ -996,13 +982,6 @@ void ampActionHandle(void)
 
     case ACTION_AUDIO_MUTE:
         ampMute(action.value);
-        break;
-
-    case ACTION_SP_CHANGE_MODE:
-        if (scrMode == SCREEN_SPECTRUM) {
-            spModeChange(action.value);
-        }
-        screenSet(SCREEN_SPECTRUM, 3000);
         break;
 
     case ACTION_MEDIA:
@@ -1065,7 +1044,6 @@ static void ampSendToSlaves(void)
         // Force everything to resend on exit standby
         if (ampPriv.syncAction.type == ACTION_STANDBY && ampPriv.syncAction.value == FLAG_EXIT) {
             ampPriv.inType = IN_NULL;
-            ampPriv.spMode = SP_MODE_NULL;
         }
         ampPriv.syncAction.type = ACTION_NONE;
         return;
@@ -1079,24 +1057,21 @@ static void ampSendToSlaves(void)
         return;
     }
 
-    Spectrum *sp = &amp.sp;
+    Spectrum *sp = &ampPriv.sp;
 
-    if ((sp->mode != ampPriv.spMode) ||
-        (sp->peaks != ampPriv.spPeaks)) {
-        ampPriv.spMode = sp->mode;
-        ampPriv.spPeaks = sp->peaks;
+    if (ampPriv.syncFlags & SYNC_FLAG_SPECTRUM) {
+        ampPriv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
         syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
-        syncMasterSendSpectrum(AMP_SPECTRUM_ADDR, sp);
         swTimSet(SW_TIM_SYNC, 50);
         return;
     }
 
-    if (ampPriv.rtcSyncRequired) {
+    if (ampPriv.syncFlags & SYNC_FLAG_RTC) {
+        ampPriv.syncFlags &= ~SYNC_FLAG_RTC;
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
         syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
         swTimSet(SW_TIM_SYNC, 50);
-        ampPriv.rtcSyncRequired = false;
         return;
     }
 }
