@@ -520,13 +520,13 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_EJECT);
         break;
     case BTN_PLAYER_PLAYPAUSE:
-        actionSet(ACTION_MEDIA, MEDIAKEY_PLAY_PAUSE);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
         break;
     case BTN_PLAYER_STOP:
         actionSet(ACTION_MEDIA, MEDIAKEY_STOP);
         break;
     case BTN_PLAYER_REWIND:
-        actionSet(ACTION_MEDIA, MEDIAKEY_PREVIOUS);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PREV);
         break;
     case BTN_PLAYER_REPEATE:
         actionSet(ACTION_MEDIA, MEDIAKEY_REPEAT);
@@ -624,6 +624,36 @@ static void actionRemapRemote(void)
         break;
     case RC_CMD_MUTE:
         actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
+        break;
+
+
+    case RC_CMD_IN_PREV:
+        actionSet(ACTION_AUDIO_SELECT_INPUT, -1);
+        break;
+    case RC_CMD_IN_NEXT:
+        actionSet(ACTION_AUDIO_SELECT_INPUT, +1);
+        break;
+
+    case RC_CMD_PLAY:
+        actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
+        break;
+    case RC_CMD_PAUSE:
+        actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
+        break;
+    case RC_CMD_STOP:
+        actionSet(ACTION_MEDIA, MEDIAKEY_STOP);
+        break;
+    case RC_CMD_PREV:
+        actionSet(ACTION_MEDIA, MEDIAKEY_PREV);
+        break;
+    case RC_CMD_NEXT:
+        actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
+        break;
+    case RC_CMD_REW:
+        actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
+        break;
+    case RC_CMD_FWD:
+        actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
         break;
     default:
         break;

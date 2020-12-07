@@ -53,13 +53,13 @@ void mpcSendMediaKey(MediaKey key)
     case MEDIAKEY_PLAY:
         mpcSendCmd("play");
         break;
-    case MEDIAKEY_PLAY_PAUSE:
+    case MEDIAKEY_PAUSE:
         mpcSendCmd("pause");
         break;
     case MEDIAKEY_STOP:
         mpcSendCmd("stop");
         break;
-    case MEDIAKEY_PREVIOUS:
+    case MEDIAKEY_PREV:
         mpcSendCmd("previous");
         break;
     case MEDIAKEY_NEXT:
