@@ -1,8 +1,8 @@
 #include "analog.h"
 
-#include "audio/audio.h"
+#include <stdbool.h>
+
 #include "hwlibs.h"
-#include "input.h"
 
 #define ADC_MAX         4095
 #define ABS(x)          ((x) > 0 ? (x) : -(x))
@@ -85,7 +85,7 @@ void inputAnalogHandle(void)
     LL_ADC_REG_StartConversionSWStart(ADC2);
 }
 
-uint16_t inputAnalogGetBtn(void)
+AnalogBtn inputAnalogGetBtn(void)
 {
     AnalogBtn aBtn = ABTN_RELEASED;
 
@@ -97,11 +97,7 @@ uint16_t inputAnalogGetBtn(void)
         }
     }
 
-    if (aBtn >= 0) {
-        return (uint16_t)(BTN_AMP_STBY << aBtn);
-    }
-
-    return BTN_NO;
+    return aBtn;
 }
 
 uint16_t inputAnalogGetPot(AinChannel chan)

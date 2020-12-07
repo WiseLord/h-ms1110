@@ -1,6 +1,5 @@
 #include "input.h"
 
-#include "audio/audio.h"
 #include "hwlibs.h"
 #include "input/analog.h"
 #include "input/matrix.h"
@@ -52,7 +51,7 @@ static void inputHandleButtons(uint16_t btnNow)
             if (btnCnt == LONG_PRESS) {
                 input.btn = btnPrev;
                 input.flags |= BTN_FLAG_LONG_PRESS;
-                if (btnNow & (BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD)) {
+                if (btnNow & input.autoRepeat) {
                     btnCnt -= AUTOREPEAT;
                 }
             }
@@ -87,8 +86,11 @@ static void inputHandleEncoder(uint16_t encNow)
     }
 }
 
-void inputInit(void)
+void inputInit(uint16_t autoRepeat)
 {
+    input.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
+    input.autoRepeat = autoRepeat;
+
     inputMatrixInit();
 #ifdef _INPUT_ANALOG
     inputAnalogInit();
@@ -96,8 +98,6 @@ void inputInit(void)
     inputEncoderInit();
 
     timerInit(TIM_INPUT, 199, 359);  // 1kHz polling
-
-    input.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
 }
 
 Input *inputGet()
@@ -114,11 +114,13 @@ void TIM_INPUT_HANDLER(void)
 #ifdef _INPUT_ANALOG
         inputAnalogHandle();
 #endif // _INPUT_ANALOG
-
         uint16_t encNow = readEncoder();
         uint16_t btnNow = inputMatrixGet();
 #ifdef _INPUT_ANALOG
-        btnNow |= inputAnalogGetBtn();
+        AnalogBtn aBtn = inputAnalogGetBtn();
+        if (aBtn >= 0) {
+            btnNow |= (uint16_t)(BTN_ANALOG_START << aBtn);
+        }
 #endif // _INPUT_ANALOG
 
         inputHandleButtons(btnNow);

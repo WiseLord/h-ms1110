@@ -881,7 +881,7 @@ void ampInit(void)
 
     mpcInit();
 
-    inputInit();
+    inputInit(BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD);
     rcInit();
 
     i2cInit(I2C_SYNC, 400000, 0x00);

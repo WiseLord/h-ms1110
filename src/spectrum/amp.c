@@ -190,7 +190,7 @@ void ampInit(void)
 
     spInit();
 
-    inputInit();
+    inputInit(BTN_NO);
 
     syncSlaveInit(AMP_SPECTRUM_ADDR);
 
@@ -352,19 +352,6 @@ static void ampPollInput(void)
     }
 }
 
-static void prepareAudioInput (Label *label)
-{
-    static InputType _inType;
-
-    if (amp.inType != _inType) {
-        _inType = amp.inType;
-        ampPriv.clearScreen = true;
-    }
-
-    *label = LABEL_IN_TUNER + (amp.inType - IN_TUNER);
-
-}
-
 void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
@@ -372,8 +359,6 @@ void ampScreenShow(void)
     if (clear) {
         canvasClear();
     }
-
-    Label label;
 
     Spectrum *sp = spGet();
 
@@ -390,8 +375,6 @@ void ampScreenShow(void)
         canvasShowDate(clear, false);
         break;
     default:
-        prepareAudioInput(&label);
-        canvasShowInput(clear, 1, label);
         break;
     }
 

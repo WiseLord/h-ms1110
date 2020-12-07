@@ -52,7 +52,7 @@ void inputAnalogInit(void);
 InputAnalog *inputAnalogGet(void);
 
 void inputAnalogHandle(void);
-uint16_t inputAnalogGetBtn(void);
+AnalogBtn inputAnalogGetBtn(void);
 
 uint16_t inputAnalogGetPot(AinChannel chan);
 int8_t inputAnalogGetPotZone(AinChannel chan, uint8_t zoneCnt);
