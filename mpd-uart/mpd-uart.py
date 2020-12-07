@@ -105,7 +105,6 @@ class Player(object):
         if cmd.startswith('load'):
             playlists = self.client.listplaylists()
             pl_name = cmd[6:-2].strip()
-            print(pl_name)
             if next((pl for pl in playlists if pl['playlist'] == pl_name), False):
                 self.client.clear()
                 self.client.load(pl_name)
@@ -229,10 +228,12 @@ class Player(object):
         self.console.send('##CLI.CONSUME#: ' + self.player_info['consume'])
 
     def parse_handler(self, input):
-        print("input: '" + input + "'")
-        if input.startswith('cli.'):
-            command = input[len('cli.'):]
-            self.cmd_queue.append(command)
+        input = str(input).strip()
+        if input:
+            print("<<<: '" + input + "'")
+            if input.startswith('cli.'):
+                command = input[len('cli.'):]
+                self.cmd_queue.append(command)
 
 
 def main(argv):
