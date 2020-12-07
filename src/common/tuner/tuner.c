@@ -77,16 +77,16 @@ void tunerReadSettings(TunerIC defIC)
     // Read stored parameters
     memset(&tuner, 0, sizeof(tuner));
 
-    settingsRead(PARAM_TUNER_IC, defIC);
-    settingsRead(PARAM_TUNER_BAND, TUNER_BAND_FM_US_EUROPE);
-    settingsRead(PARAM_TUNER_STEP, TUNER_STEP_100K);
-    settingsRead(PARAM_TUNER_DEEMPH, TUNER_DEEMPH_50u);
-    settingsRead(PARAM_TUNER_STA_MODE, false);
-    settingsRead(PARAM_TUNER_FMONO, false);
-    settingsRead(PARAM_TUNER_RDS, true);
-    settingsRead(PARAM_TUNER_BASS, false);
-    settingsRead(PARAM_TUNER_VOLUME, TUNER_VOLUME_MAX);
-    settingsRead(PARAM_TUNER_FREQ, 9950);
+    tuner.par.ic = settingsRead(PARAM_TUNER_IC, defIC);
+    tuner.par.band = settingsRead(PARAM_TUNER_BAND, TUNER_BAND_FM_US_EUROPE);
+    tuner.par.step = settingsRead(PARAM_TUNER_STEP, TUNER_STEP_100K);
+    tuner.par.deemph = settingsRead(PARAM_TUNER_DEEMPH, TUNER_DEEMPH_50u);
+    tuner.par.stationMode = settingsRead(PARAM_TUNER_STA_MODE, false);
+    tuner.par.forcedMono = settingsRead(PARAM_TUNER_FMONO, false);
+    tuner.par.rds = settingsRead(PARAM_TUNER_RDS, true);
+    tuner.par.bassBoost = settingsRead(PARAM_TUNER_BASS, false);
+    tuner.par.volume = settingsRead(PARAM_TUNER_VOLUME, TUNER_VOLUME_MAX);
+    tuner.status.freq = settingsRead(PARAM_TUNER_FREQ, 9950);
 
     stationFavInit();
 

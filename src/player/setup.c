@@ -108,8 +108,7 @@ void setupChangeChild(int8_t direction)
         if (setup.child >= RC_CMD_STBY_SWITCH && setup.child <= RC_CMD_SCR_DEF) {
             RcData rcData = rcRead(false);
             uint16_t raw = (int16_t)(((rcData.addr & 0xFF) << 8) | rcData.cmd);
-            Param param = PARAM_RC_STBY_SWITCH + setup.child;
-            settingsStore(param, raw);
+            rcSaveCode(setup.child, raw);
         }
         break;
     }

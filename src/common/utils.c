@@ -85,17 +85,19 @@ void utilTrimLineEnd(char *line)
 
 void utilEnableSwd(bool value)
 {
+//    value = true;
+
     static bool swd = false;
 
-//    if (value) {
+    if (value) {
         if (!swd) {
             LL_GPIO_AF_Remap_SWJ_NOJTAG();
             swd = true;
         }
-//    } else {
-//        if (swd) {
-//            LL_GPIO_AF_DisableRemap_SWJ();
-//            swd = false;
-//        }
-//    }
+    } else {
+        if (swd) {
+            LL_GPIO_AF_DisableRemap_SWJ();
+            swd = false;
+        }
+    }
 }

@@ -224,7 +224,7 @@ void ampInit(void)
 
     spInit();
 
-    inputInit(BTN_NO, 4);
+    inputInit(BTN_NO, -4);
 
     syncSlaveInit(AMP_TUNER_ADDR);
 
