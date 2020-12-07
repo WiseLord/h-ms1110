@@ -70,16 +70,24 @@ static const TunerApi tunerTestApi = {
 };
 
 
-void tunerReadSettings(void)
+void tunerReadSettings(TunerIC defIC)
 {
     stationsInit();
 
     // Read stored parameters
     memset(&tuner, 0, sizeof(tuner));
 
-    for (Param par = PARAM_TUNER_BEGIN; par < PARAM_TUNER_END; par++) {
-        settingsSet(par, settingsRead(par));
-    }
+    settingsRead(PARAM_TUNER_IC, defIC);
+    settingsRead(PARAM_TUNER_BAND, TUNER_BAND_FM_US_EUROPE);
+    settingsRead(PARAM_TUNER_STEP, TUNER_STEP_100K);
+    settingsRead(PARAM_TUNER_DEEMPH, TUNER_DEEMPH_50u);
+    settingsRead(PARAM_TUNER_STA_MODE, false);
+    settingsRead(PARAM_TUNER_FMONO, false);
+    settingsRead(PARAM_TUNER_RDS, true);
+    settingsRead(PARAM_TUNER_BASS, false);
+    settingsRead(PARAM_TUNER_VOLUME, TUNER_VOLUME_MAX);
+    settingsRead(PARAM_TUNER_FREQ, 9950);
+
     stationFavInit();
 
     // API initialization

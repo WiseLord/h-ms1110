@@ -4,6 +4,14 @@ common/amp.h
 common/audio/audio.c
 common/audio/audio.h
 common/audio/audiodefs.h
+common/audio/pt232x.c
+common/audio/pt232x.h
+common/audio/tda731x.c
+common/audio/tda731x.h
+common/audio/tda7418.c
+common/audio/tda7418.h
+common/audio/tda7439.c
+common/audio/tda7439.h
 common/audio/tda7719.c
 common/audio/tda7719.h
 common/debug.c
@@ -113,6 +121,8 @@ common/screen/timeview.c
 common/screen/timeview.h
 common/screen/tuneview.c
 common/screen/tuneview.h
+common/settings.c
+common/settings.h
 common/spectrum.c
 common/spectrum.h
 common/spi.c
@@ -154,7 +164,5 @@ common/utils.c
 common/utils.h
 player/Makefile
 player/amp.c
-player/settings.c
-player/settings.h
 player/setup.c
 player/setup.h

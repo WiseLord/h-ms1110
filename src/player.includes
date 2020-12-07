@@ -9,3 +9,4 @@ player
 common/screen
 common/gui/icons
 common/gui/view
+common/audio

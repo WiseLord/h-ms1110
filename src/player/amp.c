@@ -28,6 +28,7 @@ typedef struct {
 
     uint8_t inputStatus;
     int8_t volume;
+    uint8_t silenceTimer;
 
     SpMode spMode;
     bool spPeaks;
@@ -136,10 +137,8 @@ static void actionDispExpired(void)
 
 static void actionResetSilenceTimer(void)
 {
-    int16_t silenceTimer = settingsGet(PARAM_SYSTEM_SIL_TIM);
-
-    if (silenceTimer) {
-        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * silenceTimer + 999);
+    if (ampPriv.silenceTimer) {
+        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * ampPriv.silenceTimer + 999);
     }
 }
 
@@ -206,8 +205,9 @@ static void ampReadSettings(void)
     AudioProc *aProc = audioGet();
     AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
 
-    audioReadSettings();
-    audioInitParam();
+    audioReadSettings(AUDIO_IC_TDA7719);
+
+    ampPriv.silenceTimer = settingsRead(PARAM_SYSTEM_SIL_TIM, 0);
 
     ampPriv.volume = volItem->value;
     volItem->value = volItem->grid->min;
@@ -766,7 +766,8 @@ void ampInit(void)
 
     mpcInit();
 
-    inputInit(BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD);
+    inputInit(BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD, -2);
+
     rcInit();
 
     i2cInit(I2C_SYNC, 400000, 0x00);

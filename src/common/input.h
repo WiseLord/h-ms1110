@@ -51,7 +51,7 @@ typedef struct {
     int8_t encRes;
 } Input;
 
-void inputInit(uint16_t autoRepeat);
+void inputInit(uint16_t autoRepeat, int8_t encRes);
 Input *inputGet(void);
 
 int8_t inputGetEncoder(void);

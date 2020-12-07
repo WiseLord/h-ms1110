@@ -193,7 +193,7 @@ void stationRemove(uint16_t freq)
 void stationFavInit(void)
 {
     for (uint8_t i = 0; i < STATION_FAV_COUNT; i++) {
-        uint16_t raw = (uint16_t)settingsRead(PARAM_TUNER_FAV_0 + i);
+        uint16_t raw = (uint16_t)settingsRead(PARAM_TUNER_FAV_0 + i, 0);
         if (raw != EE_NOT_FOUND) {
             stFav[i] = raw;
         }

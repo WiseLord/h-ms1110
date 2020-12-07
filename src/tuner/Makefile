@@ -35,7 +35,6 @@ COMMON = ../common
 C_SOURCES += $(COMMON)/main.c
 
 C_SOURCES += amp.c
-C_SOURCES += settings.c
 
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
@@ -43,6 +42,7 @@ C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
 C_SOURCES += $(COMMON)/rtc.c
+C_SOURCES += $(COMMON)/settings.c
 C_SOURCES += $(COMMON)/spectrum.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
@@ -134,7 +134,8 @@ endif
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 OPT_FLAGS = $(OPT) -fshort-enums -ffunction-sections -fdata-sections -ffreestanding
 #OPT_FLAGS += -flto
-WARN = -Wall
+WARN += -Wall
+WARN += -Werror
 
 CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT_FLAGS) $(WARN)
 ASFLAGS = $(MCU) $(AS_DEFS) $(WARN)

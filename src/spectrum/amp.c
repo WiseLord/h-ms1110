@@ -187,7 +187,7 @@ void ampInit(void)
 
     spInit();
 
-    inputInit(BTN_NO);
+    inputInit(BTN_NO, 0);
 
     syncSlaveInit(AMP_SPECTRUM_ADDR);
 

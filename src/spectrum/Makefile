@@ -38,7 +38,6 @@ COMMON = ../common
 C_SOURCES += $(COMMON)/main.c
 
 C_SOURCES += amp.c
-C_SOURCES += settings.c
 
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
@@ -46,6 +45,7 @@ C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
 C_SOURCES += $(COMMON)/rtc.c
+C_SOURCES += $(COMMON)/settings.c
 C_SOURCES += $(COMMON)/spectrum.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c

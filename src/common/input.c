@@ -86,9 +86,9 @@ static void inputHandleEncoder(uint16_t encNow)
     }
 }
 
-void inputInit(uint16_t autoRepeat)
+void inputInit(uint16_t autoRepeat, int8_t encRes)
 {
-    input.encRes = (int8_t)settingsGet(PARAM_SYSTEM_ENC_RES);
+    input.encRes = (int8_t)settingsRead(PARAM_SYSTEM_ENC_RES, encRes);
     input.autoRepeat = autoRepeat;
 
     inputMatrixInit();

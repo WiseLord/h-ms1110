@@ -51,5 +51,5 @@ const char *labelsGet(Label value)
 
 void labelsInit(void)
 {
-    lang = (Lang)(settingsGet(PARAM_SYSTEM_LANG));
+    lang = (Lang)(settingsRead(PARAM_SYSTEM_LANG, LANG_RU));
 }

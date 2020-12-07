@@ -94,6 +94,8 @@ common/screen/spectrumview.c
 common/screen/spectrumview.h
 common/screen/timeview.c
 common/screen/timeview.h
+common/settings.c
+common/settings.h
 common/spectrum.c
 common/spectrum.h
 common/spi.c
@@ -138,5 +140,3 @@ common/utils.c
 common/utils.h
 tuner/Makefile
 tuner/amp.c
-tuner/settings.c
-tuner/settings.h

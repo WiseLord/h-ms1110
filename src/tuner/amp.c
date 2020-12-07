@@ -132,7 +132,7 @@ static void inputEnable(void)
 
 static void ampReadSettings(void)
 {
-    tunerReadSettings();
+    tunerReadSettings(TUNER_IC_LC7213X);
 }
 
 void ampExitStby(void)
@@ -223,7 +223,7 @@ void ampInit(void)
 
     spInit();
 
-    inputInit(BTN_NO);
+    inputInit(BTN_NO, 4);
 
     syncSlaveInit(AMP_TUNER_ADDR);
 
