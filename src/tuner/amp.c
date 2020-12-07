@@ -29,9 +29,9 @@ static void actionGetButtons(void);
 static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
-static void actionRemapTunerBtnShort(int16_t button);
-static void actionRemapTunerBtnLong(int16_t button);
-static void actionRemapTunerEncoder(int16_t encCnt);
+static void actionRemapBtnShort(int16_t button);
+static void actionRemapBtnLong(int16_t button);
+static void actionRemapEncoder(int16_t encCnt);
 
 static void ampActionSyncMaster(void);
 
@@ -185,11 +185,10 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_TUNER_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_TUNER_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
-        syncSlaveSendAction(&action);
     }
 }
 
@@ -198,8 +197,7 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
-        actionSet(ACTION_TUNER_ENCODER, encVal);
-        syncSlaveSendAction(&action);
+        actionSet(ACTION_ENCODER, encVal);
     }
 }
 
@@ -317,7 +315,7 @@ void ampActionGet(void)
     }
 }
 
-static void actionRemapTunerBtnShort(int16_t button)
+static void actionRemapBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_TUNER_1:
@@ -358,7 +356,7 @@ static void actionRemapTunerBtnShort(int16_t button)
     }
 }
 
-static void actionRemapTunerBtnLong(int16_t button)
+static void actionRemapBtnLong(int16_t button)
 {
     Tuner *tuner = tunerGet();
 
@@ -402,7 +400,7 @@ static void actionRemapTunerBtnLong(int16_t button)
     }
 }
 
-static void actionRemapTunerEncoder(int16_t encCnt)
+static void actionRemapEncoder(int16_t encCnt)
 {
     if (amp.inType == IN_TUNER) {
         tunerStep(encCnt);
@@ -414,14 +412,14 @@ static void actionRemapTunerEncoder(int16_t encCnt)
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_TUNER_BTN_SHORT:
-        actionRemapTunerBtnShort(action.value);
+    case ACTION_BTN_SHORT:
+        actionRemapBtnShort(action.value);
         break;
-    case ACTION_TUNER_BTN_LONG:
-        actionRemapTunerBtnLong(action.value);
+    case ACTION_BTN_LONG:
+        actionRemapBtnLong(action.value);
         break;
-    case ACTION_TUNER_ENCODER:
-        actionRemapTunerEncoder(action.value);
+    case ACTION_ENCODER:
+        actionRemapEncoder(action.value);
         break;
     }
 

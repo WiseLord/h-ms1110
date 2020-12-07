@@ -25,8 +25,8 @@ typedef struct {
 static void actionGetButtons(void);
 static void actionGetTimers(void);
 
-static void actionRemapSpectrumBtnShort(int16_t button);
-static void actionRemapSpectrumBtnLong(int16_t button);
+static void actionRemapBtnShort(int16_t button);
+static void actionRemapBtnLong(int16_t button);
 
 static void ampActionSyncMaster(void);
 
@@ -160,11 +160,10 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_SPECTRUM_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_SPECTRUM_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
-        syncSlaveSendAction(&action);
     }
 }
 
@@ -278,28 +277,44 @@ void ampActionGet(void)
     }
 }
 
-static void actionRemapSpectrumBtnShort(int16_t button)
+static void actionRemapBtnShort(int16_t button)
 {
     switch (button) {
-
+    case BTN_SPECTRUM_AUTO:
+        break;
+    case BTN_SPECTRUM_DEMO:
+        break;
+    case BTN_SPECTRUM_DISP_PREV:
+        actionSet(ACTION_SP_CHANGE_MODE, -1);
+        break;
+    case BTN_SPECTRUM_DISP_NEXT:
+        actionSet(ACTION_SP_CHANGE_MODE, +1);
+        break;
     }
 }
 
-static void actionRemapSpectrumBtnLong(int16_t button)
+static void actionRemapBtnLong(int16_t button)
 {
     switch (button) {
-
+    case BTN_SPECTRUM_AUTO:
+        break;
+    case BTN_SPECTRUM_DEMO:
+        break;
+    case BTN_SPECTRUM_DISP_PREV:
+        break;
+    case BTN_SPECTRUM_DISP_NEXT:
+        break;
     }
 }
 
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_SPECTRUM_BTN_SHORT:
-        actionRemapSpectrumBtnShort(action.value);
+    case ACTION_BTN_SHORT:
+        actionRemapBtnShort(action.value);
         break;
-    case ACTION_SPECTRUM_BTN_LONG:
-        actionRemapSpectrumBtnLong(action.value);
+    case ACTION_BTN_LONG:
+        actionRemapBtnLong(action.value);
         break;
     }
 }

@@ -43,21 +43,12 @@ static void actionGetPots(void);
 #endif
 static void actionGetTimers(void);
 
-static void actionRemapPlayerBtnShort(int16_t button);
-static void actionRemapPlayerBtnLong(int16_t button);
-static void actionRemapTunerBtnShort(int16_t button);
-static void actionRemapTunerBtnLong(int16_t button);
-static void actionRemapSpectrumBtnShort(int16_t button);
-static void actionRemapSpectrumBtnLong(int16_t button);
-
+static void actionRemapBtnShort(int16_t button);
+static void actionRemapBtnLong(int16_t button);
 static void actionRemapRemote(void);
+static void actionRemapEncoder(int16_t encCnt);
+
 static void actionRemapCommon(void);
-//static void actionRemapNavigate(void);
-
-static void ampInitMuteStby(void);
-
-static void actionRemapPlayerEncoder(int16_t encCnt);
-static void actionRemapTunerEncoder(int16_t encCnt);
 
 static void ampGetFromSlaves(void);
 static void ampActionGet(void);
@@ -373,9 +364,9 @@ static void actionGetButtons(void)
 
     if (cmdBtn.btn) {
         if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_PLAYER_BTN_LONG, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
         } else {
-            actionSet(ACTION_PLAYER_BTN_SHORT, (int16_t)cmdBtn.btn);
+            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
         }
     }
 }
@@ -385,7 +376,7 @@ static void actionGetEncoder(void)
     int8_t encVal = inputGetEncoder();
 
     if (encVal) {
-        actionSet(ACTION_PLAYER_ENCODER, encVal);
+        actionSet(ACTION_ENCODER, encVal);
     }
 }
 
@@ -524,7 +515,7 @@ static void spModeChange(int16_t value)
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 }
 
-static void actionRemapPlayerBtnShort(int16_t button)
+static void actionRemapBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_AMP_STBY:
@@ -583,7 +574,7 @@ static void actionRemapPlayerBtnShort(int16_t button)
     }
 }
 
-static void actionRemapPlayerBtnLong(int16_t button)
+static void actionRemapBtnLong(int16_t button)
 {
     switch (button) {
     case BTN_AMP_STBY:
@@ -620,101 +611,6 @@ static void actionRemapPlayerBtnLong(int16_t button)
         break;
     }
 }
-
-static void actionRemapTunerBtnShort(int16_t button)
-{
-    switch (button) {
-    case BTN_TUNER_1:
-        break;
-    case BTN_TUNER_2:
-        break;
-    case BTN_TUNER_3:
-        break;
-    case BTN_TUNER_4:
-        break;
-    case BTN_TUNER_5:
-        break;
-    case BTN_TUNER_6:
-        break;
-    case BTN_TUNER_7:
-        break;
-    case BTN_TUNER_8:
-        break;
-    case BTN_TUNER_9:
-        break;
-    case BTN_TUNER_MWFM:
-        break;
-    case BTN_TUNER_RDS:
-        break;
-    case BTN_TUNER_ENC:
-        break;
-    default:
-        break;
-    }
-}
-
-static void actionRemapTunerBtnLong(int16_t button)
-{
-    switch (button) {
-    case BTN_TUNER_1:
-        break;
-    case BTN_TUNER_2:
-        break;
-    case BTN_TUNER_3:
-        break;
-    case BTN_TUNER_4:
-        break;
-    case BTN_TUNER_5:
-        break;
-    case BTN_TUNER_6:
-        break;
-    case BTN_TUNER_7:
-        break;
-    case BTN_TUNER_8:
-        break;
-    case BTN_TUNER_9:
-        break;
-    case BTN_TUNER_MWFM:
-        break;
-    case BTN_TUNER_RDS:
-        break;
-    case BTN_TUNER_ENC:
-        break;
-    default:
-        break;
-    }
-}
-
-static void actionRemapSpectrumBtnShort(int16_t button)
-{
-    switch (button) {
-    case BTN_SPECTRUM_AUTO:
-        break;
-    case BTN_SPECTRUM_DEMO:
-        break;
-    case BTN_SPECTRUM_DISP_PREV:
-        actionSet(ACTION_SP_CHANGE_MODE, -1);
-        break;
-    case BTN_SPECTRUM_DISP_NEXT:
-        actionSet(ACTION_SP_CHANGE_MODE, +1);
-        break;
-    }
-}
-
-static void actionRemapSpectrumBtnLong(int16_t button)
-{
-    switch (button) {
-    case BTN_SPECTRUM_AUTO:
-        break;
-    case BTN_SPECTRUM_DEMO:
-        break;
-    case BTN_SPECTRUM_DISP_PREV:
-        break;
-    case BTN_SPECTRUM_DISP_NEXT:
-        break;
-    }
-}
-
 
 static void actionRemapRemote(void)
 {
@@ -754,7 +650,7 @@ static void actionRemapRemote(void)
     }
 }
 
-static void actionRemapPlayerEncoder(int16_t encCnt)
+static void actionRemapEncoder(int16_t encCnt)
 {
     ScreenType scrMode = amp.screen;
     AudioProc *aProc = audioGet();
@@ -786,11 +682,6 @@ static void actionRemapPlayerEncoder(int16_t encCnt)
             break;
         }
     }
-}
-
-static void actionRemapTunerEncoder(int16_t encCnt)
-{
-    (void)encCnt;
 }
 
 static void actionRemapCommon(void)
@@ -981,33 +872,15 @@ static void ampActionGet(void)
 static void ampActionRemap(void)
 {
     switch (action.type) {
-    case ACTION_PLAYER_BTN_SHORT:
-        actionRemapPlayerBtnShort(action.value);
+    case ACTION_BTN_SHORT:
+        actionRemapBtnShort(action.value);
         break;
-    case ACTION_PLAYER_BTN_LONG:
-        actionRemapPlayerBtnLong(action.value);
+    case ACTION_BTN_LONG:
+        actionRemapBtnLong(action.value);
         break;
-    case ACTION_PLAYER_ENCODER:
-        actionRemapPlayerEncoder(action.value);
+    case ACTION_ENCODER:
+        actionRemapEncoder(action.value);
         break;
-
-    case ACTION_TUNER_BTN_SHORT:
-        actionRemapTunerBtnShort(action.value);
-        break;
-    case ACTION_TUNER_BTN_LONG:
-        actionRemapTunerBtnLong(action.value);
-        break;
-    case ACTION_TUNER_ENCODER:
-        actionRemapTunerEncoder(action.value);
-        break;
-
-    case ACTION_SPECTRUM_BTN_SHORT:
-        actionRemapSpectrumBtnShort(action.value);
-        break;
-    case ACTION_SPECTRUM_BTN_LONG:
-        actionRemapSpectrumBtnLong(action.value);
-        break;
-
     case ACTION_REMOTE:
         actionRemapRemote();
         break;
