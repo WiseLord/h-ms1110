@@ -792,6 +792,7 @@ void ampInit(void)
     ampReadSettings();
 
     swTimInit();
+    tunerSyncInit();
 
     inputSetPower(false);    // Power off input device
 

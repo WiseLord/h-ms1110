@@ -25,6 +25,7 @@
 typedef struct {
     ScreenType prevScreen;
     bool clearScreen;
+    bool isSlave;
 } AmpPriv;
 
 static void actionGetButtons(void);
@@ -99,7 +100,9 @@ static void actionDispExpired(void)
 
     switch (amp.inType) {
     case IN_TUNER:
-        defScreen = SCREEN_TUNER;
+        if (!ampPriv.isSlave) {
+            defScreen = SCREEN_TUNER;
+        }
         break;
     }
 
@@ -289,6 +292,11 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(InputType *)&syncData[1];
+        actionSet(ACTION_DISP_EXPIRED, 0);
+        break;
+    case SYNC_REQUEST:
+        memset(tunerSyncGet(), 0, sizeof(TunerSync));
+        ampPriv.isSlave = true;
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }

@@ -26,6 +26,8 @@ enum {
     SYNC_TUNER_FAVS,
     SYNC_TUNER_BAND,
 
+    SYNC_REQUEST,
+
     SYNC_END
 };
 

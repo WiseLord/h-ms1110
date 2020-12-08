@@ -30,6 +30,7 @@ typedef struct {
     TunerSyncBand band;
 } TunerSync;
 
+void tunerSyncInit(void);
 TunerSync *tunerSyncGet(void);
 
 #ifdef __cplusplus
