@@ -786,7 +786,7 @@ void ampInit(void)
 
     rcInit();
 
-    i2cInit(I2C_SYNC, 400000, 0x00);
+    syncMasterInit();
 
     ampReadSettings();
 
@@ -825,25 +825,22 @@ Amp *ampGet(void)
 
 static void ampGetFromSlaves(void)
 {
-    uint8_t syncData[AMP_SYNC_DATASIZE];
+    uint8_t syncData[SYNC_DATASIZE];
     SyncType syncType;
 
-    syncType = syncMasterReceive(AMP_TUNER_ADDR, syncData);
-    switch (syncType) {
-    case SYNC_ACTION:
-        action = *(Action *)&syncData[1];
-        return;
-    }
+    const uint8_t slaves[] = {AMP_TUNER_ADDR, AMP_SPECTRUM_ADDR};
 
-    syncType = syncMasterReceive(AMP_SPECTRUM_ADDR, syncData);
-    switch (syncType) {
-    case SYNC_ACTION:
-        action = *(Action *)&syncData[1];
-        return;
-    case SYNC_SPECTRUM:
-        memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
-        ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
-        return;
+    for (uint8_t i = 0; i < sizeof(slaves); i++) {
+        syncType = syncMasterReceive(slaves[i], syncData);
+        switch (syncType) {
+        case SYNC_ACTION:
+            action = *(Action *)&syncData[1];
+            return;
+        case SYNC_SPECTRUM:
+            memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
+            ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
+            return;
+        }
     }
 }
 
@@ -1068,8 +1065,8 @@ static void ampSendToSlaves(void)
     }
 
     if (ampPriv.syncAction.type != ACTION_NONE) {
-        syncMasterSendAction(AMP_TUNER_ADDR, &ampPriv.syncAction);
-        syncMasterSendAction(AMP_SPECTRUM_ADDR, &ampPriv.syncAction);
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_ACTION, &ampPriv.syncAction, sizeof(Action));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_ACTION, &ampPriv.syncAction, sizeof(Action));
         swTimSet(SW_TIM_SYNC, 50);
         // Force everything to resend on exit standby
         if (ampPriv.syncAction.type == ACTION_STANDBY && ampPriv.syncAction.value == FLAG_EXIT) {
@@ -1080,8 +1077,8 @@ static void ampSendToSlaves(void)
     }
 
     if (ampPriv.inType != amp.inType) {
-        syncMasterSendInType(AMP_TUNER_ADDR, amp.inType);
-        syncMasterSendInType(AMP_SPECTRUM_ADDR, amp.inType);
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
         swTimSet(SW_TIM_SYNC, 50);
         ampPriv.inType = amp.inType;
         return;
@@ -1091,7 +1088,8 @@ static void ampSendToSlaves(void)
 
     if (ampPriv.syncFlags & SYNC_FLAG_SPECTRUM) {
         ampPriv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
-        syncMasterSendSpectrum(AMP_TUNER_ADDR, sp);
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
         swTimSet(SW_TIM_SYNC, 50);
         return;
     }
@@ -1099,8 +1097,8 @@ static void ampSendToSlaves(void)
     if (ampPriv.syncFlags & SYNC_FLAG_RTC) {
         ampPriv.syncFlags &= ~SYNC_FLAG_RTC;
         uint32_t rtcRaw = rtcGetRaw();
-        syncMasterSendTime(AMP_TUNER_ADDR, rtcRaw);
-        syncMasterSendTime(AMP_SPECTRUM_ADDR, rtcRaw);
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
         swTimSet(SW_TIM_SYNC, 50);
         return;
     }

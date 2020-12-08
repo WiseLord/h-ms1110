@@ -7,8 +7,6 @@ extern "C" {
 
 #include <stdint.h>
 
-#include "spectrum.h"
-
 #define FOREACH_CMD(CMD)    \
     CMD(STBY_SWITCH)        \
     CMD(VOL_UP)             \

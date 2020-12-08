@@ -321,7 +321,7 @@ static void spModeChange(int16_t value)
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 
-    syncSlaveSendSpectrum(sp);
+    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 
 static void ampActionHandle(void)

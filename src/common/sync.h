@@ -6,11 +6,10 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stddef.h>
 
-#include "action.h"
-#include "spectrum.h"
-
-#define AMP_SYNC_DATASIZE   16
+#define SYNC_DATASIZE   16
+#define SYNC_I2C_FREQ   400000
 
 typedef uint8_t SyncType;
 enum {
@@ -24,15 +23,12 @@ enum {
     SYNC_END
 };
 
-void syncMasterSendTime(uint8_t slaveAddr, uint32_t time);
-void syncMasterSendAction(uint8_t slaveAddr, Action *action);
-void syncMasterSendSpectrum(uint8_t slaveAddr, Spectrum *spectrum);
-void syncMasterSendInType(uint8_t slaveAddr, uint8_t inType);
+void syncMasterInit(void);
+void syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size);
 SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data);
 
 void syncSlaveInit(uint8_t addr);
-void syncSlaveSendAction(Action *action);
-void syncSlaveSendSpectrum(Spectrum *spectrum);
+void syncSlaveSend(SyncType type, void *data, size_t size);
 void syncSlaveReceive(uint8_t **data, uint8_t *size);
 
 #ifdef __cplusplus
