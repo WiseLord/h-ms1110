@@ -7,10 +7,43 @@
 #include "gui/palette.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect rectFreq = {44, 24, 199, 15};
+static const GlcdRect rectFreq = {44, 24, 99, 15};
 static const GlcdRect rectMeta = {44, 41, 212, 14};
 static const GlcdRect rectScale = {44, 58, 212, 6};
 static const GlcdRect rectFav = {246, 24, 10, 15};
+static const GlcdRect rectIconStereo = {150, 24, 18, 15};
+static const GlcdRect rectIconRds = {173, 24, 27, 15};
+
+static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
+{
+    const Palette *pal = paletteGet();
+    const tImage *img = iconFind(icon, &icons_hms1110);
+
+    glcdSetRect(rect);
+
+    glcdSetXY(0, 0);
+    glcdDrawImage(img, color, pal->bg);
+
+    glcdResetRect();
+}
+
+static void drawStatusIcons(TunerView *this, bool clear)
+{
+    if (this->sync.flags & TUNERSYNC_FLAG_FLAGS) {
+        clear = true;
+    }
+
+    if (!clear) {
+        return;
+    }
+
+    const Palette *pal = paletteGet();
+
+    TunerFlag flags = this->sync.tFlags;
+
+    drawStatusIcon(ICON_STEREO, &rectIconStereo, flags & TUNER_FLAG_STEREO ? pal->fg : pal->inactive);
+    drawStatusIcon(ICON_RDS, &rectIconRds, flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive);
+}
 
 static void drawMeta(TunerView *this, bool clear)
 {
@@ -25,9 +58,8 @@ static void drawMeta(TunerView *this, bool clear)
     glcdSetFontColor(pal->active);
 
     char meta[32];
-    snprintf(meta, sizeof(meta), "%d-%d, 0x%04x",
-             this->sync.band.fMin / 100, this->sync.band.fMax / 100,
-             this->sync.tFlags);
+    snprintf(meta, sizeof(meta), "%d-%d",
+             this->sync.band.fMin / 100, this->sync.band.fMax / 100);
 
     int16_t len = glcdCalcStringLen(meta);
 
@@ -125,7 +157,7 @@ static void drawFavNum(TunerView *this, bool clear)
     char buf[22];
 
     bool favFound = false;
-    for (uint16_t i = 0; i < 9; i++) {
+    for (uint16_t i = 0; i < 10; i++) {
         if ((1 << i) & this->sync.favMask) {
             snprintf(buf, sizeof(buf), "%d", i);
             favFound = true;
@@ -150,6 +182,7 @@ void tunerViewDraw(TunerView *this, bool clear)
     drawMeta(this, clear);
     drawProgress(this, clear);
     drawFavNum(this, clear);
+    drawStatusIcons(this, clear);
 
     this->sync.flags = 0;
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data type="font" name="icons_h-ms1110">
+<data name="icons_h-ms1110" type="font">
     <family>xos4 Terminus</family>
     <size>36</size>
     <ascent>26</ascent>
@@ -11,7 +11,7 @@
     <background>ffffffff</background>
     <multiplicityWidth>1</multiplicityWidth>
     <multiplicityHeight>1</multiplicityHeight>
-    <string>\x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x0040ABC</string>
+    <string>\x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x0040ABC</string>
     <converted>/home/STM32/Projects/h-ms1110/src/common/gui/icons/icons_h-ms1100.c</converted>
     <chars>
         <char code="0000" character="\x0000">
@@ -46,6 +46,12 @@
         </char>
         <char code="0019" character="\x0019">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAIAAAC0tAIdAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAW0lEQVQokY1QQQoAMAjS0f+/7A6DGK1WnkLMUkrCACQBrLkUgA11B6U3SZf6t4n37RdS2VBXen9aalKGg02DoRNL2YpclTQ/9VJ3ytBS87dvnoGS2pod6zX4YANtAycrxn+NRwAAAABJRU5ErkJggg==</picture>
+        </char>
+        <char code="001a" character="\x001a">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABIAAAAPCAIAAABm5AhFAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAZ0lEQVQokZ2SSw4AIQhDKZn7X7mzIGZANNbpxoi88okgaWYATFPkj+NGJJEv+S3qd9OI+5I5dvF0p8zkmnn+gnV+J58aEzfk3V6Bv2oAJlhtssMHTJ8qVDapk4uV7CJF//6k35KR/AJ1gEIHoOEGLwAAAABJRU5ErkJggg==</picture>
+        </char>
+        <char code="001b" character="\x001b">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABsAAAAPCAIAAACa8SOPAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAh0lEQVQ4ja1TWw7AIAizxPtfufsgc4zXlig/i6UWOhAkxxgAxnao1P05FCTxkjehXTvcWqlS0lRrwJhdyEzrpPUVJLloKb/sMUYzPQCd6/+zIhnJUjH6fXIj+nBtLfSi6ei3XKflxaUbUQumf1BjujOAuCX2crPkSY/xTpWKnAc5/q7loKjqXPm1bAI0ygSLAAAAAElFTkSuQmCC</picture>
         </char>
         <char code="0040" character="\x0040">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABNElEQVRYhd2X2Q7EIAhFpen//zLzYGNJe1nEpcncR8dyBBEYYuYyLCIqpXSZOqcgE8qDJTIRtgx4EJkBT0H2gScio+DpSB+8CGmBlyIxeAPyAlXr6TqQ0OXPUrcM9qbANrXQUoT6voiRU1Zr0eek/QRPIJuVlq0q2E7vO2JEhvePo8vNh/0BM0O7ct19EdAI8PjR1TW7zRwR2X5D4QIirbgWmdlmw6Mf7o643OR3kqu3ltWYGzcC19WsXl1P7lAnJkWp3jipWZ0Dx6Xe8WrhArJBfx1qmLZ3qAdHEe1RyHYi10PdyVYuQviOtaakyThlK2pqqN+/9Ur7PNQW363GLcJuyYMb8ARjTzbuNnv0qSu4gEhvoMdyfVpyNXPaS4BHdO2EQv3QivH2s4H+s78wx352xf0AQLT/RyrGwr4AAAAASUVORK5CYII=</picture>

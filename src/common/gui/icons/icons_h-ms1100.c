@@ -7,7 +7,7 @@
 * family: xos4 Terminus
 * size: 36
 * style: Bold
-* included characters: \x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x0040ABC
+* included characters: \x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x0040ABC
 * antialiasing: no
 * type: proportional
 * encoding: UTF-16
@@ -324,6 +324,50 @@ static const __flash tImage icons_hms1110_0x0019 = { image_data_icons_hms1110_0x
 #endif
 
 #if (0x0 == 0x0)
+static const __flash uint8_t image_data_icons_hms1110_0x001a[37] = {
+    // ∙∙██████████████∙∙
+    // ∙████████████████∙
+    // ███∙∙∙∙∙██∙∙∙∙∙∙██
+    // ██∙∙∙∙∙∙∙█∙∙∙∙∙∙██
+    // ██∙∙███∙∙███∙∙████
+    // ██∙∙████████∙∙████
+    // ██∙∙∙∙██████∙∙████
+    // ███∙∙∙∙∙████∙∙████
+    // █████∙∙∙∙███∙∙████
+    // ███████∙∙███∙∙████
+    // ██∙∙███∙∙███∙∙████
+    // ██∙∙∙∙∙∙∙███∙∙████
+    // ███∙∙∙∙∙████∙∙████
+    // ∙████████████████∙
+    // ∙∙██████████████∙∙
+    0xe5, 0xfc, 0xfe, 0x87, 0x03, 0x33, 0x33, 0x73, 0x63, 0xe7, 0xff, 0xf3, 0xf3, 0x03, 0x03, 0xf3, 0xf3, 0xfe, 0xfc, 0x1f, 0x3f, 0x73, 0x63, 0x67, 0x66, 0x66, 0x60, 0x70, 0x03, 0x7f, 0xfa, 0x60, 0x60, 0x7f, 0x7f, 0x3f, 0x1f
+};
+static const __flash tImage icons_hms1110_0x001a = { image_data_icons_hms1110_0x001a, 18, 15, 37, yes};
+#endif
+
+#if (0x0 == 0x0)
+static const __flash uint8_t image_data_icons_hms1110_0x001b[55] = {
+    // ∙∙███████████████████████∙∙
+    // ∙█████████████████████████∙
+    // ██∙∙∙∙∙∙██∙∙∙∙∙████∙∙∙∙∙███
+    // ██∙∙∙∙∙∙∙█∙∙∙∙∙∙██∙∙∙∙∙∙∙██
+    // ██∙∙███∙∙█∙∙██∙∙∙█∙∙███∙∙██
+    // ██∙∙███∙∙█∙∙███∙∙█∙∙███████
+    // ██∙∙██∙∙∙█∙∙███∙∙█∙∙∙∙█████
+    // ██∙∙∙∙∙∙██∙∙███∙∙██∙∙∙∙∙███
+    // ██∙∙∙∙████∙∙███∙∙████∙∙∙∙██
+    // ██∙∙∙∙∙███∙∙███∙∙██████∙∙██
+    // ██∙∙█∙∙∙██∙∙██∙∙∙█∙∙███∙∙██
+    // ██∙∙██∙∙∙█∙∙∙∙∙∙██∙∙∙∙∙∙∙██
+    // ██∙∙███∙∙█∙∙∙∙∙████∙∙∙∙∙███
+    // ∙█████████████████████████∙
+    // ∙∙███████████████████████∙∙
+    0xca, 0xfc, 0xfe, 0x03, 0x03, 0x73, 0x73, 0x33, 0x03, 0x87, 0xff, 0x03, 0x03, 0xf3, 0xf3, 0xe3, 0x07, 0x0f, 0xff, 0x87, 0x03, 0x33, 0x33, 0x73, 0x63, 0xe7, 0xfe, 0xfc, 0x1f, 0x3f, 0x60, 0x60, 0x7c, 0x78, 0x71, 0x63, 0x67, 0x7f, 0x60, 0x60, 0x67, 0x67, 0x63, 0x70, 0x78, 0x7f, 0x73, 0x63, 0x67, 0x66, 0x66, 0x60, 0x70, 0x3f, 0x1f
+};
+static const __flash tImage icons_hms1110_0x001b = { image_data_icons_hms1110_0x001b, 27, 15, 55, yes};
+#endif
+
+#if (0x0 == 0x0)
 static const __flash uint8_t image_data_icons_hms1110_0x0040[153] = {
     // ∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙██∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙
     // ∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙████∙∙∙∙∙∙∙∙∙∙∙∙∙∙∙
@@ -603,6 +647,22 @@ static const __flash tChar icons_hms1110_array[] = {
 #endif
 
 #if (0x0 == 0x0)
+    // character: '\x001a'
+    {0x001a, &icons_hms1110_0x001a},
+#else
+    // character: '\x001a' == ''
+    {0x001a, &icons_hms1110_0x},
+#endif
+
+#if (0x0 == 0x0)
+    // character: '\x001b'
+    {0x001b, &icons_hms1110_0x001b},
+#else
+    // character: '\x001b' == ''
+    {0x001b, &icons_hms1110_0x},
+#endif
+
+#if (0x0 == 0x0)
     // character: '\x0040'
     {0x0040, &icons_hms1110_0x0040},
 #else
@@ -637,4 +697,4 @@ static const __flash tChar icons_hms1110_array[] = {
 };
 
 
-const tFont __flash icons_hms1110 = { 15, icons_hms1110_array };
+const tFont __flash icons_hms1110 = { 17, icons_hms1110_array };
