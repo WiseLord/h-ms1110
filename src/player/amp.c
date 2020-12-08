@@ -19,6 +19,7 @@
 #include "swtimers.h"
 #include "timers.h"
 #include "tr/labels.h"
+#include "tunersync.h"
 #include "utils.h"
 
 typedef uint8_t SyncFlags;
@@ -827,6 +828,7 @@ static void ampGetFromSlaves(void)
 {
     uint8_t syncData[SYNC_DATASIZE];
     SyncType syncType;
+    TunerSync *tunerSync = tunerSyncGet();
 
     const uint8_t slaves[] = {AMP_TUNER_ADDR, AMP_SPECTRUM_ADDR};
 
@@ -840,6 +842,14 @@ static void ampGetFromSlaves(void)
             memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
             ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
             return;
+        case SYNC_TUNER_BAND:
+            memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
+            tunerSync->flags |= TUNERSYNC_FLAG_BAND;
+            break;
+        case SYNC_TUNER_FREQ:
+            memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
+            tunerSync->flags |= TUNERSYNC_FLAG_FREQ;
+            break;
         }
     }
 }

@@ -11,8 +11,11 @@
 #include "screen/timeview.h"
 #include "swtimers.h"
 #include "view/inputview.h"
+#include "view/mpcview.h"
+#include "view/tunerview.h"
 
 static Canvas canvas;
+static const GlcdRect rectIconInput = {0, 24, 40, 40};
 
 void canvasInit()
 {
@@ -119,20 +122,6 @@ void canvasShowWday(bool clear, bool active)
     wdayViewDraw(clear, active, rtc.wday);
 }
 
-static void prepareMpcView(MpcView *view)
-{
-    view->mpc = mpcGet();
-
-    if (swTimGet(SW_TIM_SCROLL) <= 0) {
-        swTimSet(SW_TIM_SCROLL, 100);
-        view->scroll.event = true;
-    } else {
-        view->scroll.event = false;
-    }
-}
-
-static const GlcdRect rectIconInput = {0, 24, 40, 40};
-
 static void drawInputIcon(bool clear, Icon icon)
 {
     if (!clear) {
@@ -150,38 +139,66 @@ static void drawInputIcon(bool clear, Icon icon)
     glcdResetRect();
 }
 
-static void canvasShowMpc(bool clear)
+static void canvasShowInputTuner(bool clear)
+{
+    static TunerView view;
+    TunerSync *sync = tunerSyncGet();
+
+    view.sync = *sync;
+
+    tunerViewDraw(&view, clear);
+}
+
+static void canvasShowInputMpc(bool clear)
 {
     static MpcView view;
 
-    prepareMpcView(&view);
+    view.mpc = mpcGet();
+
+    if (swTimGet(SW_TIM_SCROLL) <= 0) {
+        swTimSet(SW_TIM_SCROLL, 100);
+        view.scroll.event = true;
+    } else {
+        view.scroll.event = false;
+    }
+
     mpcViewDraw(&view, clear);
 }
 
-void canvasShowInput(bool clear)
+static void canvasShowInputDefault(bool clear)
 {
     Amp *amp = ampGet();
 
     Label label = LABEL_BOOL_OFF;
-    Icon icon = ICON_EMPTY;
 
     if (amp->inType != IN_NULL) {
         label = LABEL_IN_TUNER + amp->inType;
-        icon = ICON_TUNER + amp->inType;
-    }
-
-    drawInputIcon(clear, icon);
-
-    if (amp->inType == IN_MPD) {
-        canvasShowMpc(clear);
-        return;
     }
 
     static InputView view;
-
     view.name = labelsGet(label);
 
     inputViewDraw(&view, clear);
+}
+
+void canvasShowInput(bool clear)
+{
+    InputType inType = ampGet()->inType;
+    Icon icon = (inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType);
+
+    drawInputIcon(clear, icon);
+
+    switch (inType) {
+    case IN_MPD:
+        canvasShowInputMpc(clear);
+        break;
+    case IN_TUNER:
+        canvasShowInputTuner(clear);
+        break;
+    default:
+        canvasShowInputDefault(clear);
+        break;
+    }
 }
 
 void canvasShowTune(bool clear, TuneView *tune)
@@ -201,7 +218,7 @@ void canvasShowRadio(bool clear, RadioView *radio)
 
 void canvasDebugFPS(void)
 {
-    return;
+//    return;
 
     const Palette *pal = canvas.pal;
 
@@ -228,6 +245,6 @@ void canvasDebugFPS(void)
 
     glcdSetXY(canvas.glcd->rect.w, 52);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    snprintf(buf, sizeof(buf), "%d", (int)oldFps);
+    snprintf(buf, sizeof(buf), "%0d", (int)oldFps);
     glcdWriteString(buf);
 }

@@ -8,6 +8,7 @@
 
 #include "action.h"
 #include "spectrum.h"
+#include "tunersync.h"
 
 uint8_t ampSyncRxData[SYNC_DATASIZE];
 uint8_t ampSyncRxSize;
@@ -70,6 +71,14 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
     case SYNC_SPECTRUM:
         i2cBegin(I2C_SYNC, slaveAddr);
         i2cReceive(I2C_SYNC, data, 1 + sizeof(Spectrum));
+        break;
+    case SYNC_TUNER_BAND:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerSyncBand));
+        break;
+    case SYNC_TUNER_FREQ:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(uint16_t));
         break;
     }
 

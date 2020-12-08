@@ -26,8 +26,10 @@ static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
     const tImage *img = iconFind(icon, &icons_hms1110);
 
     glcdSetRect(rect);
+
     glcdSetXY(0, 0);
     glcdDrawImage(img, color, pal->bg);
+
     glcdResetRect();
 }
 
@@ -103,16 +105,15 @@ static void drawMeta(MpcView *this, bool clear)
     const Palette *pal = paletteGet();
     const GlcdRect *rect = &rectMeta;
 
-    glcdSetRect(rect);
-
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
     const char *meta = this->mpc->status & (MPC_PLAYING) ? this->mpc->meta : "";
 
     int16_t len = glcdCalcStringLen(meta);
-
     int16_t max_oft = len - rect->w;
+
+    glcdSetRect(rect);
 
     if (max_oft <= 0) {
         glcdDrawRect(len, 0, rect->w - len, rect->h, pal->bg);
@@ -145,7 +146,6 @@ static void drawElapsed(MpcView *this, bool clear)
 
     const Palette *pal = paletteGet();
 
-    glcdSetRect(&rectElapsed);
 
     int time = this->mpc->elapsed;
 
@@ -170,6 +170,8 @@ static void drawElapsed(MpcView *this, bool clear)
     glcdSetFont(&fontterminus24b);
     glcdSetFontColor(pal->active);
 
+    glcdSetRect(&rectElapsed);
+
     glcdSetXY(0, -4);
     glcdWriteString(buf);
 
@@ -187,10 +189,7 @@ static void drawProgress(MpcView *this, bool clear)
     }
 
     const Palette *pal = paletteGet();
-
     const GlcdRect *rect = &rectProgress;
-
-    glcdSetRect(rect);
 
     ProgressBar bar;
 
@@ -205,6 +204,8 @@ static void drawProgress(MpcView *this, bool clear)
     bar.min = 0;
     bar.max = this->mpc->duration;
     bar.bgColor = pal->bg;
+
+    glcdSetRect(rect);
 
     progressBarDraw(true, &bar);
 

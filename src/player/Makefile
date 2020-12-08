@@ -51,6 +51,7 @@ C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
 C_SOURCES += $(COMMON)/sync.c
 C_SOURCES += $(COMMON)/timers.c
+C_SOURCES += $(COMMON)/tunersync.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 
@@ -73,6 +74,7 @@ endif
 
 C_SOURCES += $(COMMON)/gui/view/inputview.c
 C_SOURCES += $(COMMON)/gui/view/mpcview.c
+C_SOURCES += $(COMMON)/gui/view/tunerview.c
 
 C_SOURCES += $(COMMON)/screen/setupview.c
 C_SOURCES += $(COMMON)/screen/spectrumview.c

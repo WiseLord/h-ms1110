@@ -134,6 +134,8 @@ common/tuner/tea5767_regs.h
 common/tuner/tuner.c
 common/tuner/tuner.h
 common/tuner/tunerdefs.h
+common/tunersync.c
+common/tunersync.h
 common/usart.c
 common/usart.h
 common/utils.c

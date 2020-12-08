@@ -48,6 +48,7 @@ C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
 C_SOURCES += $(COMMON)/sync.c
 C_SOURCES += $(COMMON)/timers.c
+C_SOURCES += $(COMMON)/tunersync.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 

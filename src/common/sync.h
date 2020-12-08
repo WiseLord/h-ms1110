@@ -20,6 +20,10 @@ enum {
     SYNC_SPECTRUM,
     SYNC_IN_TYPE,
 
+    SYNC_TUNER_BAND,
+    SYNC_TUNER_FREQ,
+    SYNC_TUNER_FLAGS,
+
     SYNC_END
 };
 

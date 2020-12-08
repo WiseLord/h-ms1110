@@ -88,6 +88,8 @@ common/gui/view/inputview.c
 common/gui/view/inputview.h
 common/gui/view/mpcview.c
 common/gui/view/mpcview.h
+common/gui/view/tunerview.c
+common/gui/view/tunerview.h
 common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
 common/gui/widget/spectrumcolumn.c
@@ -158,6 +160,8 @@ common/tuner/tea5767_regs.h
 common/tuner/tuner.c
 common/tuner/tuner.h
 common/tuner/tunerdefs.h
+common/tunersync.c
+common/tunersync.h
 common/usart.c
 common/usart.h
 common/utils.c

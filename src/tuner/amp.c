@@ -19,6 +19,7 @@
 #include "tr/labels.h"
 #include "tuner/stations.h"
 #include "tuner/tuner.h"
+#include "tunersync.h"
 #include "utils.h"
 
 typedef struct {
@@ -466,12 +467,30 @@ static void ampActionHandle(void)
     screen.timeout = SW_TIM_OFF;
 }
 
+static void syncTuner(void)
+{
+    Tuner *tuner = tunerGet();
+    TunerSync *sync = tunerSyncGet();
+
+    if (sync->band.fMin != tuner->par.fMin ||
+        sync->band.fMax != tuner->par.fMax) {
+        sync->band.fMin = tuner->par.fMin;
+        sync->band.fMax = tuner->par.fMax;
+        syncSlaveSend(SYNC_TUNER_BAND, &sync->band, sizeof(TunerSyncBand));
+    }
+    if (sync->freq != tuner->status.freq) {
+        sync->freq = tuner->status.freq;
+        syncSlaveSend(SYNC_TUNER_FREQ, &sync->freq, sizeof(uint16_t));
+    }
+}
+
 static void ampPollInput(void)
 {
     if (amp.screen != SCREEN_STANDBY) {
         if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
             if (amp.inType == IN_TUNER) {
                 tunerUpdateStatus();
+                syncTuner();
             }
             swTimSet(SW_TIM_INPUT_POLL, 200);
         }
