@@ -15,6 +15,7 @@ uint8_t ampSyncRxSize;
 
 uint8_t ampSyncTxData[SYNC_DATASIZE];
 uint8_t ampSyncTxSize;
+volatile bool ampSyncTxIsBusy;
 
 static void ampSyncRxCb(int16_t bytes)
 {
@@ -39,6 +40,8 @@ static void ampSyncTxCb(int16_t bytes)
     } else {
         i2cSend(I2C_SYNC, SYNC_NONE);
     }
+
+    ampSyncTxIsBusy = false;
 }
 
 void syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size)
@@ -72,13 +75,18 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
         i2cBegin(I2C_SYNC, slaveAddr);
         i2cReceive(I2C_SYNC, data, 1 + sizeof(Spectrum));
         break;
+    case SYNC_TUNER_FREQ:
+    case SYNC_TUNER_FAVS:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(uint16_t));
+        break;
+    case SYNC_TUNER_FLAGS:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerFlag));
+        break;
     case SYNC_TUNER_BAND:
         i2cBegin(I2C_SYNC, slaveAddr);
         i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerSyncBand));
-        break;
-    case SYNC_TUNER_FREQ:
-        i2cBegin(I2C_SYNC, slaveAddr);
-        i2cReceive(I2C_SYNC, data, 1 + sizeof(uint16_t));
         break;
     }
 
@@ -96,6 +104,12 @@ void syncSlaveInit(uint8_t addr)
 
 void syncSlaveSend(SyncType type, void *data, size_t size)
 {
+    if (ampSyncTxIsBusy) {
+        return;
+    }
+
+    ampSyncTxIsBusy = true;
+
     ampSyncTxData[0] = type;
     memcpy(&ampSyncTxData[1], data, size);
     ampSyncTxSize = size + 1;
@@ -107,4 +121,9 @@ void syncSlaveReceive(uint8_t **data, uint8_t *size)
     *size = ampSyncRxSize;
 
     ampSyncRxSize = 0;
+}
+
+bool syncTxIsBusy(void)
+{
+    return ampSyncTxIsBusy;
 }

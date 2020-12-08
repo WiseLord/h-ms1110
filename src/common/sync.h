@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -20,9 +21,10 @@ enum {
     SYNC_SPECTRUM,
     SYNC_IN_TYPE,
 
-    SYNC_TUNER_BAND,
     SYNC_TUNER_FREQ,
     SYNC_TUNER_FLAGS,
+    SYNC_TUNER_FAVS,
+    SYNC_TUNER_BAND,
 
     SYNC_END
 };
@@ -34,6 +36,8 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data);
 void syncSlaveInit(uint8_t addr);
 void syncSlaveSend(SyncType type, void *data, size_t size);
 void syncSlaveReceive(uint8_t **data, uint8_t *size);
+
+bool syncTxIsBusy(void);
 
 #ifdef __cplusplus
 }

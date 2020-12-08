@@ -218,7 +218,7 @@ void canvasShowRadio(bool clear, RadioView *radio)
 
 void canvasDebugFPS(void)
 {
-//    return;
+    return;
 
     const Palette *pal = canvas.pal;
 

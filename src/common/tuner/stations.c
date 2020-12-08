@@ -219,12 +219,15 @@ void stationFavStoreRemove(int8_t num)
 
     uint16_t freq = tunerGet()->status.freq;
 
-    if (stFav[num] != freq) {
-        stFav[num] = freq;
-    } else {
-        stFav[num] = 0;
+    for (int8_t i = 0; i < STATION_FAV_COUNT; i++) {
+        if (stFav[i] == freq) {
+            stFav[i] = 0;
+            settingsStore(PARAM_TUNER_FAV_0 + i, stFav[i]);
+        } else if (i == num) {
+            stFav[i] = freq;
+            settingsStore(PARAM_TUNER_FAV_0 + i, stFav[i]);
+        }
     }
-    settingsStore(PARAM_TUNER_FAV_0 + num, stFav[num]);
 }
 
 uint16_t stationFavGetMask(uint16_t freq)

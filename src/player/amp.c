@@ -842,13 +842,21 @@ static void ampGetFromSlaves(void)
             memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
             ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
             return;
-        case SYNC_TUNER_BAND:
-            memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
-            tunerSync->flags |= TUNERSYNC_FLAG_BAND;
-            break;
         case SYNC_TUNER_FREQ:
             memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
             tunerSync->flags |= TUNERSYNC_FLAG_FREQ;
+            break;
+        case SYNC_TUNER_FLAGS:
+            memcpy(&tunerSync->tFlags, &syncData[1], sizeof(TunerFlag));
+            tunerSync->flags |= TUNERSYNC_FLAG_FLAGS;
+            break;
+        case SYNC_TUNER_FAVS:
+            memcpy(&tunerSync->favMask, &syncData[1], sizeof(uint16_t));
+            tunerSync->flags |= TUNERSYNC_FLAG_FAVS;
+            break;
+        case SYNC_TUNER_BAND:
+            memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
+            tunerSync->flags |= TUNERSYNC_FLAG_BAND;
             break;
         }
     }

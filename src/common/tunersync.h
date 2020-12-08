@@ -12,8 +12,9 @@ extern "C" {
 typedef uint16_t TunerSyncFlags;
 enum {
     TUNERSYNC_FLAG_FREQ    = 0x0001,
-    TUNERSYNC_FLAG_BAND    = 0x0002,
-    TUNERSYNC_FLAG_FLAGS   = 0x0004,
+    TUNERSYNC_FLAG_FLAGS   = 0x0002,
+    TUNERSYNC_FLAG_FAVS    = 0x0004,
+    TUNERSYNC_FLAG_BAND    = 0x0008,
 };
 
 typedef struct {
@@ -24,8 +25,9 @@ typedef struct {
 typedef struct {
     TunerSyncFlags flags;
     uint16_t freq;
+    TunerFlag tFlags;
+    uint16_t favMask;
     TunerSyncBand band;
-    TunerFlag tunerFlag;
 } TunerSync;
 
 TunerSync *tunerSyncGet(void);

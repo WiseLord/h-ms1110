@@ -42,6 +42,7 @@ static void ampActionRemap(void);
 static void ampActionHandle(void);
 
 static void ampPollInput(void);
+static void ampSyncTuner(void);
 
 static void ampScreenShow(void);
 
@@ -249,6 +250,7 @@ void ampRun(void)
         ampActionHandle();
 
         ampPollInput();
+        ampSyncTuner();
 
         ampScreenShow();
     }
@@ -467,20 +469,40 @@ static void ampActionHandle(void)
     screen.timeout = SW_TIM_OFF;
 }
 
-static void syncTuner(void)
+static void ampSyncTuner(void)
 {
+    if (syncTxIsBusy()) {
+        return;
+    }
+
     Tuner *tuner = tunerGet();
     TunerSync *sync = tunerSyncGet();
+
+    if (sync->freq != tuner->status.freq) {
+        sync->freq = tuner->status.freq;
+        syncSlaveSend(SYNC_TUNER_FREQ, &sync->freq, sizeof(uint16_t));
+        return;
+    }
+
+    if (sync->tFlags != tuner->status.flags) {
+        sync->tFlags = tuner->status.flags;
+        syncSlaveSend(SYNC_TUNER_FLAGS, &sync->tFlags, sizeof(TunerFlag));
+        return;
+    }
+
+    uint16_t favMask = stationFavGetMask(tuner->status.freq);
+    if (sync->favMask != favMask) {
+        sync->favMask = favMask;
+        syncSlaveSend(SYNC_TUNER_FAVS, &sync->favMask, sizeof(uint16_t));
+        return;
+    }
 
     if (sync->band.fMin != tuner->par.fMin ||
         sync->band.fMax != tuner->par.fMax) {
         sync->band.fMin = tuner->par.fMin;
         sync->band.fMax = tuner->par.fMax;
         syncSlaveSend(SYNC_TUNER_BAND, &sync->band, sizeof(TunerSyncBand));
-    }
-    if (sync->freq != tuner->status.freq) {
-        sync->freq = tuner->status.freq;
-        syncSlaveSend(SYNC_TUNER_FREQ, &sync->freq, sizeof(uint16_t));
+        return;
     }
 }
 
@@ -490,7 +512,6 @@ static void ampPollInput(void)
         if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
             if (amp.inType == IN_TUNER) {
                 tunerUpdateStatus();
-                syncTuner();
             }
             swTimSet(SW_TIM_INPUT_POLL, 200);
         }
