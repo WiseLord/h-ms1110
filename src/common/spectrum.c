@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "settings.h"
+#include "timers.h"
 #include "utils.h"
 
 #define DMA_BUF_SIZE        (FFT_SIZE * SP_CHAN_END)
@@ -231,6 +232,8 @@ void spInit(void)
 
     spInitDMA();
     spInitADC();
+
+    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
 }
 
 Spectrum *spGet(void)

@@ -153,13 +153,39 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
-    swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+    swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
     inputDisable();
 
-    amp.status = AMP_STATUS_STBY;
+    amp.status = AMP_STATUS_INACTIVE;
+    swTimSet(SW_TIM_AMP_INIT, 1000);
+}
+
+void ampHandleStby(void)
+{
+    if (FLAG_SWITCH == action.value) {
+        switch (amp.status) {
+        case AMP_STATUS_STBY:
+            action.value = FLAG_EXIT;
+            break;
+        case AMP_STATUS_ACTIVE:
+            action.value = FLAG_ENTER;
+            break;
+        }
+    }
+
+    switch (action.value) {
+    case FLAG_ENTER:
+        ampEnterStby();
+        screenSet(SCREEN_STANDBY, 0);
+        break;
+    case FLAG_EXIT:
+        ampExitStby();
+        screenSet(SCREEN_TIME, 1000);
+        break;
+    }
 }
 
 void ampInitHw(void)
@@ -177,10 +203,14 @@ void ampInitHw(void)
         break;
     case AMP_STATUS_HW_READY:
         inputEnable();
-        amp.status = AMP_STATUS_ACTIVE;
-
         swTimSet(SW_TIM_INPUT_POLL, 200);
 
+        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+        amp.status = AMP_STATUS_ACTIVE;
+        break;
+    case AMP_STATUS_INACTIVE:
+        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+        amp.status = AMP_STATUS_STBY;
         break;
     }
 }
@@ -216,26 +246,37 @@ static void actionGetTimers(void)
     }
 }
 
+static void ampInitMuteStby(void)
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+
+    GPIO_InitStruct.Pin = MUTE_Pin;
+    LL_GPIO_Init(MUTE_Port, &GPIO_InitStruct);
+    GPIO_InitStruct.Pin = STBY_Pin;
+    LL_GPIO_Init(STBY_Port, &GPIO_InitStruct);
+}
+
 void ampInit(void)
 {
-    dbgInit();
-
+    settingsInit();
     utilInitSysCounter();
 
-    settingsInit();
+    ampInitMuteStby();
 
     labelsInit();
     canvasInit();
 
-    spInit();
-
     inputInit(BTN_NO, -4);
+
+    spInit();
 
     syncSlaveInit(AMP_TUNER_ADDR);
 
     ampReadSettings();
 
-    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
     swTimInit();
 
     amp.status = AMP_STATUS_STBY;
@@ -268,6 +309,18 @@ static void ampActionSyncMaster(void)
 {
     uint8_t *syncData;
     uint8_t syncSize;
+
+    if (!!READ(STBY)) {
+        if (amp.status == AMP_STATUS_STBY) {
+            actionSet(ACTION_STANDBY, FLAG_EXIT);
+            return;
+        }
+    } else {
+        if (amp.status == AMP_STATUS_ACTIVE) {
+            actionSet(ACTION_STANDBY, FLAG_ENTER);
+            return;
+        }
+    }
 
     syncSlaveReceive(&syncData, &syncSize);
 
@@ -446,14 +499,7 @@ static void ampActionHandle(void)
         ampInitHw();
         break;
     case ACTION_STANDBY:
-        if (action.value == FLAG_EXIT) {
-            ampExitStby();
-            screenSet(SCREEN_TIME, 1000);
-        } else {
-            ampEnterStby();
-            screenSet(SCREEN_STANDBY, 0);
-        }
-        break;
+        ampHandleStby();
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired();

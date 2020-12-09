@@ -74,10 +74,11 @@ enum {
 
 typedef uint8_t AmpStatus;
 enum {
-    AMP_STATUS_STBY,
-    AMP_STATUS_POWERED,
-    AMP_STATUS_HW_READY,
-    AMP_STATUS_ACTIVE,
+    AMP_STATUS_STBY,        // Standby mode:    STBY=0, MUTE=1
+    AMP_STATUS_POWERED,     // Power devices:   STBY=1, MUTE=1
+    AMP_STATUS_HW_READY,    // HW is ready:     STBY=1, MUTE=1
+    AMP_STATUS_ACTIVE,      // HW is inited:    STBY=1, MUTE=0
+    AMP_STATUS_INACTIVE,    // Exiting active:  STBY=1, MUTE=1
 
     AMP_STATUS_END
 };

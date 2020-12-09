@@ -232,14 +232,12 @@ void ampExitStby(void)
     amp.status = AMP_STATUS_POWERED;
 
     swTimSet(SW_TIM_AMP_INIT, 200);
-    swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
 void ampEnterStby(void)
 {
     swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
-    swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
 
     ampMute(true);
 
@@ -254,7 +252,7 @@ void ampEnterStby(void)
 
     inputSetPower(false);   // Power off input device
 
-    amp.status = AMP_STATUS_STBY;
+    amp.status = AMP_STATUS_INACTIVE;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
@@ -271,14 +269,16 @@ void ampHandleStby(void)
         }
     }
 
-    ampPriv.syncAction = action;
-
-    if (action.value == FLAG_EXIT) {
-        ampExitStby();
-        screenSet(SCREEN_TIME, 1000);
-    } else {
+    switch (action.value) {
+    case FLAG_ENTER:
+        ampPriv.syncAction = action;    // Send to slaves
         ampEnterStby();
         screenSet(SCREEN_STANDBY, 0);
+        break;
+    case FLAG_EXIT:
+        ampExitStby();
+        screenSet(SCREEN_TIME, 1000);
+        break;
     }
 }
 
@@ -295,20 +295,22 @@ void ampInitHw(void)
         audioSetPower(true);
         ampMute(true);
 
-        amp.status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 300);
-
+        amp.status = AMP_STATUS_HW_READY;
         break;
     case AMP_STATUS_HW_READY:
         inputEnable();
 
         ampMute(false);
 
+        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
         amp.status = AMP_STATUS_ACTIVE;
         break;
-    case AMP_STATUS_STBY:
-        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+    case AMP_STATUS_INACTIVE:
         ampPinStby(true);
+
+        swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
+        amp.status = AMP_STATUS_STBY;
         break;
     }
 }
@@ -771,17 +773,15 @@ static void ampInitMuteStby(void)
 void ampInit(void)
 {
     settingsInit();
+    utilInitSysCounter();
+
     ampInitMuteStby();
-    rtcInit();
-
-    rtcSetCb(rtcCb);
-
-    utilEnableSwd(SCREEN_STANDBY);
 
     labelsInit();
     canvasInit();
 
-    mpcInit();
+    rtcInit();
+    rtcSetCb(rtcCb);
 
     inputInit(BTN_PLAYER_REWIND | BTN_PLAYER_FORWARD, -2);
 
@@ -792,6 +792,8 @@ void ampInit(void)
     ampReadSettings();
 
     swTimInit();
+
+    mpcInit();
     tunerSyncInit();
 
     inputSetPower(false);    // Power off input device
