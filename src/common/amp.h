@@ -111,6 +111,9 @@ void ampRun(void);
 
 Amp *ampGet(void);
 
+Action ampGetButtons();
+Action ampGetEncoder(void);
+
 #ifdef __cplusplus
 }
 #endif

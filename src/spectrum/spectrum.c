@@ -25,7 +25,6 @@ typedef struct {
 
 static void ampActionSyncMaster(void);
 
-static void actionGetButtons(void);
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
@@ -177,20 +176,6 @@ void ampInitHw(void)
     }
 }
 
-
-static void actionGetButtons(void)
-{
-    CmdBtn cmdBtn = inputGetBtnCmd();
-
-    if (cmdBtn.btn) {
-        if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
-        } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
-        }
-    }
-}
-
 static void ampInitMuteStby(void)
 {
     LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -295,7 +280,7 @@ static void ampActionSyncMaster(void)
 void ampActionGet(void)
 {
     if (ACTION_NONE == action.type) {
-        actionGetButtons();
+        action = ampGetButtons();
     }
 
     if (ACTION_NONE == action.type) {

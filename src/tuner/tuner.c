@@ -28,8 +28,6 @@ typedef struct {
     bool isSlave;
 } AmpPriv;
 
-static void actionGetButtons(void);
-static void actionGetEncoder(void);
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
@@ -211,28 +209,6 @@ void ampInitHw(void)
     }
 }
 
-static void actionGetButtons(void)
-{
-    CmdBtn cmdBtn = inputGetBtnCmd();
-
-    if (cmdBtn.btn) {
-        if (cmdBtn.flags & BTN_FLAG_LONG_PRESS) {
-            actionSet(ACTION_BTN_LONG, (int16_t)cmdBtn.btn);
-        } else {
-            actionSet(ACTION_BTN_SHORT, (int16_t)cmdBtn.btn);
-        }
-    }
-}
-
-static void actionGetEncoder(void)
-{
-    int8_t encVal = inputGetEncoder();
-
-    if (encVal) {
-        actionSet(ACTION_ENCODER, encVal);
-    }
-}
-
 static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_AMP_INIT) == 0) {
@@ -353,11 +329,11 @@ static void ampActionSyncMaster(void)
 void ampActionGet(void)
 {
     if (ACTION_NONE == action.type) {
-        actionGetButtons();
+        action = ampGetButtons();
     }
 
     if (ACTION_NONE == action.type) {
-        actionGetEncoder();
+        action = ampGetEncoder();
     }
 
     if (ACTION_NONE == action.type) {
