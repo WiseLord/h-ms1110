@@ -125,6 +125,8 @@ common/screen/tuneview.c
 common/screen/tuneview.h
 common/settings.c
 common/settings.h
+common/setup.c
+common/setup.h
 common/spectrum.c
 common/spectrum.h
 common/spi.c
@@ -167,6 +169,4 @@ common/usart.h
 common/utils.c
 common/utils.h
 player/Makefile
-player/amp.c
-player/setup.c
-player/setup.h
+player/player.c

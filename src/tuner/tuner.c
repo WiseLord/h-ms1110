@@ -47,7 +47,7 @@ static void ampSyncTuner(void);
 
 static void ampScreenShow(void);
 
-static AmpPriv ampPriv;
+static AmpPriv priv;
 
 static Amp amp = {
     .status = AMP_STATUS_STBY,
@@ -80,16 +80,16 @@ static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    if (ampPriv.clearScreen) {
+    if (priv.clearScreen) {
         clear = true;
-        ampPriv.clearScreen = false;
+        priv.clearScreen = false;
     } else {
-        if (amp.screen != ampPriv.prevScreen) {
+        if (amp.screen != priv.prevScreen) {
             clear = true;
         }
     }
 
-    ampPriv.prevScreen = amp.screen;
+    priv.prevScreen = amp.screen;
 
     return clear;
 }
@@ -100,7 +100,7 @@ static void actionDispExpired(void)
 
     switch (amp.inType) {
     case IN_TUNER:
-        if (!ampPriv.isSlave) {
+        if (!priv.isSlave) {
             defScreen = SCREEN_TUNER;
         }
         break;
@@ -341,7 +341,7 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_SPECTRUM:
         *sp = *((Spectrum *)&syncData[1]);
-        ampPriv.clearScreen = true;
+        priv.clearScreen = true;
         break;
     case SYNC_IN_TYPE:
         amp.inType = *(InputType *)&syncData[1];
@@ -349,7 +349,7 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_REQUEST:
         memset(tunerSyncGet(), 0, sizeof(TunerSync));
-        ampPriv.isSlave = true;
+        priv.isSlave = true;
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }

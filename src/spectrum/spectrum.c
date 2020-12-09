@@ -37,7 +37,7 @@ static void ampActionHandle(void);
 
 static void ampScreenShow(void);
 
-static AmpPriv ampPriv;
+static AmpPriv priv;
 
 static Amp amp = {
     .status = AMP_STATUS_STBY,
@@ -70,16 +70,16 @@ static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    if (ampPriv.clearScreen) {
+    if (priv.clearScreen) {
         clear = true;
-        ampPriv.clearScreen = false;
+        priv.clearScreen = false;
     } else {
-        if (amp.screen != ampPriv.prevScreen) {
+        if (amp.screen != priv.prevScreen) {
             clear = true;
         }
     }
 
-    ampPriv.prevScreen = amp.screen;
+    priv.prevScreen = amp.screen;
 
     return clear;
 }
@@ -368,7 +368,7 @@ static void spModeChange(int16_t value)
         }
     }
 
-    ampPriv.clearScreen = true;
+    priv.clearScreen = true;
 
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);

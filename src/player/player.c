@@ -65,7 +65,7 @@ static void ampActionHandle(void);
 static void ampSendToSlaves(void);
 static void ampScreenShow(void);
 
-static AmpPriv ampPriv;
+static AmpPriv priv;
 
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
@@ -107,23 +107,23 @@ static void screenSet(ScreenType type, int16_t timeout)
 
 static void rtcCb(void)
 {
-    ampPriv.syncFlags |= SYNC_FLAG_RTC;
+    priv.syncFlags |= SYNC_FLAG_RTC;
 }
 
 static bool screenCheckClear(void)
 {
     bool clear = false;
 
-    if (ampPriv.clearScreen) {
+    if (priv.clearScreen) {
         clear = true;
-        ampPriv.clearScreen = false;
+        priv.clearScreen = false;
     } else {
-        if (amp.screen != ampPriv.prevScreen) {
+        if (amp.screen != priv.prevScreen) {
             clear = true;
         }
     }
 
-    ampPriv.prevScreen = amp.screen;
+    priv.prevScreen = amp.screen;
 
     return clear;
 }
@@ -145,8 +145,8 @@ static void actionDispExpired(void)
 
 static void actionResetSilenceTimer(void)
 {
-    if (ampPriv.silenceTimer) {
-        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * ampPriv.silenceTimer + 999);
+    if (priv.silenceTimer) {
+        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * priv.silenceTimer + 999);
     }
 }
 
@@ -166,9 +166,9 @@ static void inputSetPower(bool value)
     int8_t input = aProc->par.input;
 
     if (value) {
-        ampPriv.inputStatus = (uint8_t)(1 << input);
+        priv.inputStatus = (uint8_t)(1 << input);
     } else {
-        ampPriv.inputStatus = 0x00;
+        priv.inputStatus = 0x00;
     }
 
     amp.inType = inTypes[input];
@@ -215,9 +215,9 @@ static void ampReadSettings(void)
 
     audioReadSettings(AUDIO_IC_TDA7719);
 
-    ampPriv.silenceTimer = settingsRead(PARAM_SYSTEM_SIL_TIM, 0);
+    priv.silenceTimer = settingsRead(PARAM_SYSTEM_SIL_TIM, 0);
 
-    ampPriv.volume = volItem->value;
+    priv.volume = volItem->value;
     volItem->value = volItem->grid->min;
 }
 
@@ -244,7 +244,7 @@ void ampEnterStby(void)
     // Restore volume value before saving
     AudioProc *aProc = audioGet();
     AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
-    volItem->value = ampPriv.volume;
+    volItem->value = priv.volume;
 
     audioSetPower(false);
 
@@ -271,7 +271,7 @@ void ampHandleStby(void)
 
     switch (action.value) {
     case FLAG_ENTER:
-        ampPriv.syncAction = action;    // Send to slaves
+        priv.syncAction = action;    // Send to slaves
         ampEnterStby();
         screenSet(SCREEN_STANDBY, 0);
         break;
@@ -461,14 +461,14 @@ static void actionGetPots(void)
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
                         aProc->tune = AUDIO_TUNE_BASS;
-                        ampPriv.clearScreen = true;
+                        priv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_SET_PARAM, pot + grid->min);
                     break;
                 case AIN_POT_B:
                     if (aProc->tune != AUDIO_TUNE_TREBLE) {
                         aProc->tune = AUDIO_TUNE_TREBLE;
-                        ampPriv.clearScreen = true;
+                        priv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_SET_PARAM, pot + grid->min);
                     break;
@@ -492,7 +492,7 @@ static void actionGetTimers(void)
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
         actionSet(ACTION_INIT_RTC, 0);
     } else if (swTimGet(SW_TIM_SOFT_VOLUME) == 0) {
-        actionSet(ACTION_RESTORE_VOLUME, ampPriv.volume);
+        actionSet(ACTION_RESTORE_VOLUME, priv.volume);
     } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
         actionSet(ACTION_DISP_EXPIRED, 0);
     }
@@ -678,7 +678,7 @@ static void actionRemapEncoder(int16_t encCnt)
         break;
     default:
         if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
-            ampPriv.clearScreen = true;
+            priv.clearScreen = true;
             aProc->tune = AUDIO_TUNE_VOLUME;
         }
         actionSet(ACTION_AUDIO_SELECT_PARAM, encCnt);
@@ -842,8 +842,8 @@ static void ampGetFromSlaves(void)
             action = *(Action *)&syncData[1];
             return;
         case SYNC_SPECTRUM:
-            memcpy(&ampPriv.sp, &syncData[1], sizeof(Spectrum));
-            ampPriv.syncFlags |= SYNC_FLAG_SPECTRUM;
+            memcpy(&priv.sp, &syncData[1], sizeof(Spectrum));
+            priv.syncFlags |= SYNC_FLAG_SPECTRUM;
             return;
         case SYNC_TUNER_FREQ:
             memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
@@ -983,7 +983,7 @@ void ampActionHandle(void)
         setupChangeChild(action.value);
         SetupType active = setupGet()->active;
         if (active == SETUP_TIME || active == SETUP_DATE) {
-            ampPriv.syncFlags |= SYNC_FLAG_RTC;
+            priv.syncFlags |= SYNC_FLAG_RTC;
         }
         ampHandleSetup();
         break;
@@ -998,7 +998,7 @@ void ampActionHandle(void)
 
     case ACTION_AUDIO_MENU:
         if (scrMode == SCREEN_TUNE) {
-            ampPriv.clearScreen = true;
+            priv.clearScreen = true;
             actionNextAudioParam(aProc);
         } else {
             aProc->tune = AUDIO_TUNE_VOLUME;
@@ -1009,12 +1009,12 @@ void ampActionHandle(void)
     case ACTION_AUDIO_SELECT_INPUT:
         ampSetInput(actionGetNextAudioInput((int8_t)action.value));
         screenSet(SCREEN_INPUT, 1000);
-        ampPriv.clearScreen = true;
+        priv.clearScreen = true;
         break;
     case ACTION_AUDIO_SELECT_PARAM:
         audioChangeTune(aProc->tune, (int8_t)action.value);
         if (aProc->tune == AUDIO_TUNE_VOLUME) {
-            ampPriv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
+            priv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
         }
         if (aProc->par.mute) {
             ampMute(false);
@@ -1085,38 +1085,38 @@ static void ampSendToSlaves(void)
         return;
     }
 
-    if (ampPriv.syncAction.type != ACTION_NONE) {
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_ACTION, &ampPriv.syncAction, sizeof(Action));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_ACTION, &ampPriv.syncAction, sizeof(Action));
+    if (priv.syncAction.type != ACTION_NONE) {
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
         swTimSet(SW_TIM_SYNC, 50);
         // Force everything to resend on exit standby
-        if (ampPriv.syncAction.type == ACTION_STANDBY && ampPriv.syncAction.value == FLAG_EXIT) {
-            ampPriv.inType = IN_NULL;
+        if (priv.syncAction.type == ACTION_STANDBY && priv.syncAction.value == FLAG_EXIT) {
+            priv.inType = IN_NULL;
         }
-        ampPriv.syncAction.type = ACTION_NONE;
+        priv.syncAction.type = ACTION_NONE;
         return;
     }
 
-    if (ampPriv.inType != amp.inType) {
+    if (priv.inType != amp.inType) {
         syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
         swTimSet(SW_TIM_SYNC, 50);
-        ampPriv.inType = amp.inType;
+        priv.inType = amp.inType;
         return;
     }
 
-    Spectrum *sp = &ampPriv.sp;
+    Spectrum *sp = &priv.sp;
 
-    if (ampPriv.syncFlags & SYNC_FLAG_SPECTRUM) {
-        ampPriv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
+    if (priv.syncFlags & SYNC_FLAG_SPECTRUM) {
+        priv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
         syncMasterSend(AMP_TUNER_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
         swTimSet(SW_TIM_SYNC, 50);
         return;
     }
 
-    if (ampPriv.syncFlags & SYNC_FLAG_RTC) {
-        ampPriv.syncFlags &= ~SYNC_FLAG_RTC;
+    if (priv.syncFlags & SYNC_FLAG_RTC) {
+        priv.syncFlags &= ~SYNC_FLAG_RTC;
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSend(AMP_TUNER_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));

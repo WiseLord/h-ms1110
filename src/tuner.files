@@ -141,4 +141,4 @@ common/usart.h
 common/utils.c
 common/utils.h
 tuner/Makefile
-tuner/amp.c
+tuner/tuner.c

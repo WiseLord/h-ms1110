@@ -33,20 +33,19 @@ C_DEFS += -D_INPUT_ANALOG
 
 COMMON = ../common
 
-C_SOURCES += $(COMMON)/main.c
-
-C_SOURCES += amp.c
-C_SOURCES += setup.c
+C_SOURCES += $(call lc, $(MODULE)).c
 
 C_SOURCES += $(COMMON)/debug.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
+C_SOURCES += $(COMMON)/main.c
 C_SOURCES += $(COMMON)/mpc.c
 C_SOURCES += $(COMMON)/rc.c
 C_SOURCES += $(COMMON)/ringbuf.c
 C_SOURCES += $(COMMON)/rtc.c
 C_SOURCES += $(COMMON)/settings.c
+C_SOURCES += $(COMMON)/setup.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
 C_SOURCES += $(COMMON)/sync.c
