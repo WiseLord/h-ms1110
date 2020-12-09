@@ -1,5 +1,6 @@
 common/.astylerc
 common/action.h
+common/amp.c
 common/amp.h
 common/audio/audio.c
 common/audio/audio.h

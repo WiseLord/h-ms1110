@@ -66,6 +66,7 @@ static void ampSendToSlaves(void);
 static void ampScreenShow(void);
 
 static AmpPriv priv;
+static Amp *amp;
 
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
@@ -76,11 +77,6 @@ static const InputType inTypes[MAX_INPUTS] = {
     IN_AUX2,
     IN_NULL,
     IN_NULL,
-};
-
-static Amp amp = {
-    .status = AMP_STATUS_STBY,
-    .screen = SCREEN_STANDBY,
 };
 
 static Action action = {
@@ -118,12 +114,12 @@ static bool screenCheckClear(void)
         clear = true;
         priv.clearScreen = false;
     } else {
-        if (amp.screen != priv.prevScreen) {
+        if (amp->screen != priv.prevScreen) {
             clear = true;
         }
     }
 
-    priv.prevScreen = amp.screen;
+    priv.prevScreen = amp->screen;
 
     return clear;
 }
@@ -132,7 +128,7 @@ static void actionDispExpired(void)
 {
     rtcSetMode(RTC_NOEDIT);
 
-    switch (amp.screen) {
+    switch (amp->screen) {
     case SCREEN_STANDBY:
     case SCREEN_SETUP:
         screenSet(SCREEN_STANDBY, 0);
@@ -171,7 +167,7 @@ static void inputSetPower(bool value)
         priv.inputStatus = 0x00;
     }
 
-    amp.inType = inTypes[input];
+    amp->inType = inTypes[input];
 }
 
 static void ampPinMute(bool value)
@@ -229,7 +225,7 @@ void ampExitStby(void)
 
     inputSetPower(true);    // Power on input device
 
-    amp.status = AMP_STATUS_POWERED;
+    amp->status = AMP_STATUS_POWERED;
 
     swTimSet(SW_TIM_AMP_INIT, 200);
 }
@@ -252,14 +248,14 @@ void ampEnterStby(void)
 
     inputSetPower(false);   // Power off input device
 
-    amp.status = AMP_STATUS_INACTIVE;
+    amp->status = AMP_STATUS_INACTIVE;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
 void ampHandleStby(void)
 {
     if (FLAG_SWITCH == action.value) {
-        switch (amp.status) {
+        switch (amp->status) {
         case AMP_STATUS_STBY:
             action.value = FLAG_EXIT;
             break;
@@ -286,7 +282,7 @@ void ampInitHw(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
 
-    switch (amp.status) {
+    switch (amp->status) {
     case AMP_STATUS_POWERED:
         i2cInit(I2C_AMP, 100000, 0x00);
 
@@ -296,7 +292,7 @@ void ampInitHw(void)
         ampMute(true);
 
         swTimSet(SW_TIM_AMP_INIT, 300);
-        amp.status = AMP_STATUS_HW_READY;
+        amp->status = AMP_STATUS_HW_READY;
         break;
     case AMP_STATUS_HW_READY:
         inputEnable();
@@ -304,13 +300,13 @@ void ampInitHw(void)
         ampMute(false);
 
         swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
-        amp.status = AMP_STATUS_ACTIVE;
+        amp->status = AMP_STATUS_ACTIVE;
         break;
     case AMP_STATUS_INACTIVE:
         ampPinStby(true);
 
         swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
-        amp.status = AMP_STATUS_STBY;
+        amp->status = AMP_STATUS_STBY;
         break;
     }
 }
@@ -324,7 +320,7 @@ static void ampSetInput(int8_t value)
     audioSetInput(value);
     inputSetPower(true);
 
-    amp.status = AMP_STATUS_HW_READY;
+    amp->status = AMP_STATUS_HW_READY;
     swTimSet(SW_TIM_AMP_INIT, 300);
 }
 
@@ -390,7 +386,7 @@ static void actionGetEncoder(void)
 
 static bool isRemoteCmdRepeatable(RcCmd cmd)
 {
-    ScreenType scrMode = amp.screen;
+    ScreenType scrMode = amp->screen;
 
     switch (cmd) {
     case RC_CMD_VOL_UP:
@@ -455,8 +451,8 @@ static void actionGetPots(void)
     for (AinChannel ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
         int8_t pot = inputAnalogGetPotZone(ain, zoneCnt);
         if (pot != potPrev[ain]) {
-            if (amp.status == AMP_STATUS_ACTIVE) {
-                amp.screen = SCREEN_TUNE;
+            if (amp->status == AMP_STATUS_ACTIVE) {
+                amp->screen = SCREEN_TUNE;
                 switch (ain) {
                 case  AIN_POT_A:
                     if (aProc->tune != AUDIO_TUNE_BASS) {
@@ -505,14 +501,14 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
     case BTN_AMP_IN_PREV:
-        if (SCREEN_SETUP == amp.screen) {
+        if (SCREEN_SETUP == amp->screen) {
             actionSet(ACTION_SETUP_SWITCH_CHILD, -1);
         } else {
             actionSet(ACTION_AUDIO_SELECT_INPUT, -1);
         }
         break;
     case BTN_AMP_IN_NEXT:
-        if (SCREEN_SETUP == amp.screen) {
+        if (SCREEN_SETUP == amp->screen) {
             actionSet(ACTION_SETUP_SWITCH_CHILD, +1);
         } else {
             actionSet(ACTION_AUDIO_SELECT_INPUT, +1);
@@ -538,14 +534,14 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
         break;
     case BTN_PLAYER_AUDIO:
-        if (SCREEN_SETUP == amp.screen) {
+        if (SCREEN_SETUP == amp->screen) {
             actionSet(ACTION_SETUP_BACK, 0);
         } else {
             action.type = ACTION_AUDIO_MENU;
         }
         break;
     case BTN_PLAYER_SUBTITLE:
-        if (SCREEN_SETUP == amp.screen) {
+        if (SCREEN_SETUP == amp->screen) {
             Setup *setup = setupGet();
             if (setup->active <= SETUP_MAIN) { // has childs
                 actionSet(ACTION_SETUP_SELECT, setup->child);
@@ -561,7 +557,7 @@ static void actionRemapBtnLong(int16_t button)
 {
     switch (button) {
     case BTN_AMP_STBY:
-        if (SCREEN_STANDBY == amp.screen) {
+        if (SCREEN_STANDBY == amp->screen) {
             actionSet(ACTION_SETUP_SELECT, SETUP_MAIN);
         }
         break;
@@ -597,7 +593,7 @@ static void actionRemapBtnLong(int16_t button)
 
 static void actionRemapRemote(void)
 {
-    ScreenType scrMode = amp.screen;
+    ScreenType scrMode = amp->screen;
 
     if (SCREEN_SETUP == scrMode) {
         Setup *setup = setupGet();
@@ -616,12 +612,12 @@ static void actionRemapRemote(void)
         actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
     case RC_CMD_VOL_UP:
-        amp.screen = SCREEN_TUNE;
+        amp->screen = SCREEN_TUNE;
         audioGet()->tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, +1);
         break;
     case RC_CMD_VOL_DOWN:
-        amp.screen = SCREEN_TUNE;
+        amp->screen = SCREEN_TUNE;
         audioGet()->tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, -1);
         break;
@@ -665,7 +661,7 @@ static void actionRemapRemote(void)
 
 static void actionRemapEncoder(int16_t encCnt)
 {
-    ScreenType scrMode = amp.screen;
+    ScreenType scrMode = amp->screen;
     AudioProc *aProc = audioGet();
 
     if (SCREEN_STANDBY == scrMode) {
@@ -686,7 +682,7 @@ static void actionRemapEncoder(int16_t encCnt)
     }
 
     if (ACTION_AUDIO_SELECT_PARAM == action.type) {
-        amp.screen = SCREEN_TUNE;
+        amp->screen = SCREEN_TUNE;
         switch (scrMode) {
         case SCREEN_SPECTRUM:
             aProc->tune = AUDIO_TUNE_VOLUME;
@@ -699,12 +695,12 @@ static void actionRemapEncoder(int16_t encCnt)
 
 static void actionRemapCommon(void)
 {
-    switch (amp.screen) {
+    switch (amp->screen) {
     case SCREEN_STANDBY:
         switch (action.type) {
         case ACTION_STANDBY:
             if (FLAG_SWITCH == action.value) {
-                switch (amp.status) {
+                switch (amp->status) {
                 case AMP_STATUS_STBY:
                     action.value = FLAG_EXIT;
                     break;
@@ -772,6 +768,8 @@ static void ampInitMuteStby(void)
 
 void ampInit(void)
 {
+    amp = ampGet();
+
     settingsInit();
     utilInitSysCounter();
 
@@ -800,13 +798,13 @@ void ampInit(void)
 
     swTimSet(SW_TIM_RTC_INIT, 500);
 
-    amp.status = AMP_STATUS_STBY;
+    amp->status = AMP_STATUS_STBY;
 }
 
 void ampRun(void)
 {
     while (1) {
-        utilEnableSwd(SCREEN_STANDBY == amp.screen);
+        utilEnableSwd(SCREEN_STANDBY == amp->screen);
 
         ampGetFromSlaves();
 
@@ -820,11 +818,6 @@ void ampRun(void)
 
         ampScreenShow();
     }
-}
-
-Amp *ampGet(void)
-{
-    return &amp;
 }
 
 static void ampGetFromSlaves(void)
@@ -884,7 +877,7 @@ static void ampActionGet(void)
     }
 
     if (ACTION_NONE == action.type) {
-        ScreenType scrMode = amp.screen;
+        ScreenType scrMode = amp->screen;
 
         if (scrMode == SCREEN_STANDBY && rtcCheckAlarm()) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
@@ -921,7 +914,7 @@ static void ampActionRemap(void)
 
 static void ampSendMediaKey(MediaKey key)
 {
-    InputType inType = amp.inType;
+    InputType inType = amp->inType;
 
     switch (inType) {
     case IN_MPD:
@@ -946,7 +939,7 @@ static void ampSendMediaKey(MediaKey key)
 
 void ampActionHandle(void)
 {
-    ScreenType scrMode = amp.screen;
+    ScreenType scrMode = amp->screen;
 
     AudioProc *aProc = audioGet();
 
@@ -1054,7 +1047,7 @@ void ampActionHandle(void)
     }
 
     if (action.type != ACTION_NONE) {
-        amp.screen = screen.type;
+        amp->screen = screen.type;
     }
 
     if (screen.timeout > 0) {
@@ -1097,11 +1090,11 @@ static void ampSendToSlaves(void)
         return;
     }
 
-    if (priv.inType != amp.inType) {
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp.inType, sizeof(InputType));
+    if (priv.inType != amp->inType) {
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
+        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
         swTimSet(SW_TIM_SYNC, 50);
-        priv.inType = amp.inType;
+        priv.inType = amp->inType;
         return;
     }
 
@@ -1135,7 +1128,7 @@ static void ampScreenShow(void)
 
     static TuneView tune;
 
-    switch (amp.screen) {
+    switch (amp->screen) {
     case SCREEN_TIME:
         canvasShowTime(clear, true);
         break;

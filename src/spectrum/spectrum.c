@@ -38,11 +38,7 @@ static void ampActionHandle(void);
 static void ampScreenShow(void);
 
 static AmpPriv priv;
-
-static Amp amp = {
-    .status = AMP_STATUS_STBY,
-    .screen = SCREEN_STANDBY,
-};
+static Amp *amp;
 
 static Action action = {
     .type = ACTION_NONE,
@@ -74,12 +70,12 @@ static bool screenCheckClear(void)
         clear = true;
         priv.clearScreen = false;
     } else {
-        if (amp.screen != priv.prevScreen) {
+        if (amp->screen != priv.prevScreen) {
             clear = true;
         }
     }
 
-    priv.prevScreen = amp.screen;
+    priv.prevScreen = amp->screen;
 
     return clear;
 }
@@ -88,7 +84,7 @@ static void actionDispExpired(void)
 {
     rtcSetMode(RTC_NOEDIT);
 
-    switch (amp.screen) {
+    switch (amp->screen) {
     case SCREEN_STANDBY:
         screenSet(SCREEN_STANDBY, 0);
         break;
@@ -114,7 +110,7 @@ void ampExitStby(void)
 {
     ampReadSettings();
 
-    amp.status = AMP_STATUS_POWERED;
+    amp->status = AMP_STATUS_POWERED;
 
     swTimSet(SW_TIM_AMP_INIT, 200);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
@@ -128,14 +124,14 @@ void ampEnterStby(void)
 
     inputDisable();
 
-    amp.status = AMP_STATUS_INACTIVE;
+    amp->status = AMP_STATUS_INACTIVE;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
 void ampHandleStby(void)
 {
     if (FLAG_SWITCH == action.value) {
-        switch (amp.status) {
+        switch (amp->status) {
         case AMP_STATUS_STBY:
             action.value = FLAG_EXIT;
             break;
@@ -161,22 +157,22 @@ void ampInitHw(void)
 {
     swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
 
-    switch (amp.status) {
+    switch (amp->status) {
     case AMP_STATUS_POWERED:
         i2cInit(I2C_AMP, 100000, 0x00);
 
-        amp.status = AMP_STATUS_HW_READY;
+        amp->status = AMP_STATUS_HW_READY;
         swTimSet(SW_TIM_AMP_INIT, 300);
         break;
     case AMP_STATUS_HW_READY:
         inputEnable();
 
         swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
-        amp.status = AMP_STATUS_ACTIVE;
+        amp->status = AMP_STATUS_ACTIVE;
         break;
     case AMP_STATUS_INACTIVE:
         swTimSet(SW_TIM_AMP_INIT, SW_TIM_OFF);
-        amp.status = AMP_STATUS_STBY;
+        amp->status = AMP_STATUS_STBY;
         break;
     }
 }
@@ -219,6 +215,8 @@ static void actionGetTimers(void)
 
 void ampInit(void)
 {
+    amp = ampGet();
+
     settingsInit();
     utilInitSysCounter();
 
@@ -237,13 +235,13 @@ void ampInit(void)
 
     swTimInit();
 
-    amp.status = AMP_STATUS_STBY;
+    amp->status = AMP_STATUS_STBY;
 }
 
 void ampRun(void)
 {
     while (1) {
-        utilEnableSwd(SCREEN_STANDBY == amp.screen);
+        utilEnableSwd(SCREEN_STANDBY == amp->screen);
 
         ampActionSyncMaster();
 
@@ -255,23 +253,18 @@ void ampRun(void)
     }
 }
 
-Amp *ampGet(void)
-{
-    return &amp;
-}
-
 static void ampActionSyncMaster(void)
 {
     uint8_t *syncData;
     uint8_t syncSize;
 
     if (!!READ(STBY)) {
-        if (amp.status == AMP_STATUS_STBY) {
+        if (amp->status == AMP_STATUS_STBY) {
             actionSet(ACTION_STANDBY, FLAG_EXIT);
             return;
         }
     } else {
-        if (amp.status == AMP_STATUS_ACTIVE) {
+        if (amp->status == AMP_STATUS_ACTIVE) {
             actionSet(ACTION_STANDBY, FLAG_ENTER);
             return;
         }
@@ -293,7 +286,7 @@ static void ampActionSyncMaster(void)
         rtcSetRaw(*(uint32_t *)&syncData[1]);
         break;
     case SYNC_IN_TYPE:
-        amp.inType = *(InputType *)&syncData[1];
+        amp->inType = *(InputType *)&syncData[1];
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }
@@ -390,7 +383,7 @@ static void ampActionHandle(void)
         break;
 
     case ACTION_SP_CHANGE_MODE:
-        if (amp.screen == SCREEN_SPECTRUM) {
+        if (amp->screen == SCREEN_SPECTRUM) {
             spModeChange(action.value);
         }
         screenSet(SCREEN_SPECTRUM, 3000);
@@ -401,7 +394,7 @@ static void ampActionHandle(void)
     }
 
     if (action.type != ACTION_NONE) {
-        amp.screen = screen.type;
+        amp->screen = screen.type;
     }
 
     if (screen.timeout > 0) {
@@ -426,7 +419,7 @@ void ampScreenShow(void)
 
     SpMode spMode = sp->mode == SP_MODE_ANTIMIRROR ? SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
 
-    switch (amp.screen) {
+    switch (amp->screen) {
     case SCREEN_SPECTRUM:
         canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
