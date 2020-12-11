@@ -107,9 +107,11 @@ void tunerReadSettings(TunerIC defIC)
         tuner.api = tea5767GetApi();
         break;
 #endif
+#ifdef _LC7213X
     case TUNER_IC_LC7213X:
         tuner.api = lc7213xGetApi();
         break;
+#endif
     case TUNER_IC_TEST:
         tuner.api = &tunerTestApi;
         break;
