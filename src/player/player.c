@@ -204,12 +204,13 @@ static void ampMute(bool value)
 
 static void ampReadSettings(void)
 {
+    audioReadSettings(AUDIO_IC_TDA7719);
+}
+
+static void ampVolumeInit(void)
+{
     AudioProc *aProc = audioGet();
     AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
-
-    audioReadSettings(AUDIO_IC_TDA7719);
-
-    priv.silenceTimer = settingsRead(PARAM_SYSTEM_SIL_TIM, 0);
 
     priv.volume = volItem->value;
     volItem->value = volItem->grid->min;
@@ -284,7 +285,8 @@ void ampInitHw(void)
     case AMP_STATUS_POWERED:
         i2cInit(I2C_AMP, 100000, 0x00);
 
-        audioReset();
+        audioInit();
+        ampVolumeInit();
 
         audioSetPower(true);
         ampMute(true);
