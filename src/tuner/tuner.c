@@ -17,6 +17,7 @@
 #include "sync.h"
 #include "timers.h"
 #include "tr/labels.h"
+#include "tuner/rds/demod.h"
 #include "tuner/stations.h"
 #include "tuner/tuner.h"
 #include "tunersync.h"
@@ -271,6 +272,8 @@ void ampRun(void)
 
         ampPollInput();
         ampSyncTuner();
+
+        rdsDemodHandle();
 
         ampScreenShow();
     }

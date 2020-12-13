@@ -30,7 +30,7 @@ void radioViewDraw(bool clear, RadioView *radio)
 
     RdsParser *parser = rdsParserGet();
 
-    snprintf(buf, sizeof(buf), "%s", parser->text);
+    snprintf(buf, sizeof(buf), "%s: %s", parser->PS, parser->text);
     glcdSetXY(0, 30);
     glcdWriteString(buf);
 

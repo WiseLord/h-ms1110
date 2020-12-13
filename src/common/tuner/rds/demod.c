@@ -4,6 +4,12 @@
 
 #include "decoder.h"
 #include "hwlibs.h"
+#include "ringbuf.h"
+
+#define RING_BUF_SIZE 128
+
+static RingBuf rbuf;
+static char rbData[RING_BUF_SIZE];
 
 static void rdsDemodInitPins(void)
 {
@@ -23,15 +29,27 @@ static void rdsDemodIRQ(void)
 {
     bool rdda = !!READ(RDDA);
 
-    rdsDecoderPushBit(rdda);
+    ringBufPushChar(&rbuf, rdda);
 }
 
 void rdsDemodInit(void)
 {
+    ringBufInit(&rbuf, rbData, sizeof(rbData));
+
     rdsDemodInitPins();
 
     NVIC_SetPriority(EXTI2_IRQn, 0);
     NVIC_EnableIRQ(EXTI2_IRQn);
+}
+
+void rdsDemodHandle(void)
+{
+    uint16_t size = ringBufGetSize(&rbuf);
+
+    for (uint16_t i = 0; i < size; i++) {
+        char ch = ringBufPopChar(&rbuf);
+        rdsDecoderPushBit(ch);
+    }
 }
 
 void EXTI_RDS_HANDLER()

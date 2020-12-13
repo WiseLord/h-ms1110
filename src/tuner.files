@@ -86,6 +86,8 @@ common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
 common/main.c
+common/mpc.c
+common/mpc.h
 common/rc.c
 common/rc.h
 common/rtc.c

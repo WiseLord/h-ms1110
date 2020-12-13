@@ -35,8 +35,6 @@ static RdsParser parser;
 void rdsParserReset()
 {
     memset(&parser, 0, sizeof (parser));
-    memset(&parser.PS, ' ', 8);
-    memset(&parser.text, ' ', 64);
 }
 
 void rdsParserDecode(RdsBlock *block)
