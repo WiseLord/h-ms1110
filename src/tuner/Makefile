@@ -84,7 +84,7 @@ C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
 
 # Tuner source files
 C_SOURCES += $(addprefix $(COMMON)/tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
-C_SOURCES += $(COMMON)/tuner/rds.c
+C_SOURCES += $(COMMON)/tuner/rds/parser.c
 C_SOURCES += $(COMMON)/tuner/stations.c
 C_SOURCES += $(COMMON)/tuner/tuner.c
 C_DEFS += $(addprefix -D_, $(TUNER_LIST))

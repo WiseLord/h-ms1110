@@ -121,8 +121,8 @@ common/tuner/lc7213x_regs.h
 common/tuner/rda580x.c
 common/tuner/rda580x.h
 common/tuner/rda580x_regs.h
-common/tuner/rds.c
-common/tuner/rds.h
+common/tuner/rds/parser.c
+common/tuner/rds/parser.h
 common/tuner/si470x.c
 common/tuner/si470x.h
 common/tuner/si470x_regs.h

@@ -5,8 +5,3 @@ common/drivers/CMSIS/Include
 common/drivers/STM32F1xx_HAL_Driver/Inc
 common/gui
 player
-.
-common/screen
-common/gui/icons
-common/gui/view
-common/audio
