@@ -86,6 +86,8 @@ common/input/analog.h
 common/input/matrix.c
 common/input/matrix.h
 common/main.c
+common/rc.c
+common/rc.h
 common/rtc.c
 common/rtc.h
 common/screen/radioview.c
@@ -121,6 +123,10 @@ common/tuner/lc7213x_regs.h
 common/tuner/rda580x.c
 common/tuner/rda580x.h
 common/tuner/rda580x_regs.h
+common/tuner/rds/decoder.c
+common/tuner/rds/decoder.h
+common/tuner/rds/demod.c
+common/tuner/rds/demod.h
 common/tuner/rds/parser.c
 common/tuner/rds/parser.h
 common/tuner/si470x.c

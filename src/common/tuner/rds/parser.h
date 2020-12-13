@@ -1,5 +1,5 @@
-#ifndef RDS_H
-#define RDS_H
+#ifndef RDS_PARSER_H
+#define RDS_PARSER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -8,11 +8,14 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct {
-    uint16_t a;
-    uint16_t b;
-    uint16_t c;
-    uint16_t d;
+typedef union {
+    struct {
+        uint16_t a;
+        uint16_t b;
+        uint16_t c;
+        uint16_t d;
+    };
+    uint16_t blk[4];
 } RdsBlock;
 
 typedef struct {
@@ -41,4 +44,4 @@ RdsParser *rdsParserGet(void);
 }
 #endif
 
-#endif // RDS_H
+#endif // RDS_PARSER_H

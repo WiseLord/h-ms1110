@@ -43,6 +43,7 @@ extern "C" {
 
 // Project-specific definitions
 #define EXTI_RC_HANDLER         EXTI9_5_IRQHandler
+#define EXTI_RDS_HANDLER        EXTI2_IRQHandler
 
 #define I2C_AMP                 I2C1
 #define I2C_SYNC                I2C2

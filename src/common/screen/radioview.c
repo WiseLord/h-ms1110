@@ -5,6 +5,8 @@
 #include "display/glcd.h"
 #include "gui/palette.h"
 
+#include "tuner/rds/parser.h"
+
 void radioViewDraw(bool clear, RadioView *radio)
 {
     (void)clear;
@@ -17,14 +19,20 @@ void radioViewDraw(bool clear, RadioView *radio)
 
     uint16_t freq = radio->freq;
 
-    char buf[20];
+    char buf[80];
 
     snprintf(buf, sizeof(buf), "FM %3u.%02u", freq / 100, freq % 100);
     glcdSetXY(0, 0);
     glcdWriteString(buf);
 
-    font = &fontterminus20;
+    font = &fontterminus14b;
     glcdSetFont(font);
+
+    RdsParser *parser = rdsParserGet();
+
+    snprintf(buf, sizeof(buf), "%s", parser->text);
+    glcdSetXY(0, 30);
+    glcdWriteString(buf);
 
     snprintf(buf, sizeof(buf), "Stereo: %d", radio->stereo);
     glcdSetXY(0, 44);
