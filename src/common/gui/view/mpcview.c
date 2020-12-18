@@ -5,6 +5,7 @@
 #include "display/glcd.h"
 #include "gui/icons.h"
 #include "gui/palette.h"
+#include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
 
 static const GlcdRect rectIconStatus = {44, 24, 15, 15};
@@ -20,19 +21,6 @@ static const GlcdRect rectElapsed = {178, 24, 78, 15};
 static const GlcdRect rectMeta = {44, 41, 212, 14};
 static const GlcdRect rectProgress = {44, 58, 212, 6};
 
-static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
-{
-    const Palette *pal = paletteGet();
-    const tImage *img = iconFind(icon, &icons_hms1110);
-
-    glcdSetRect(rect);
-
-    glcdSetXY(0, 0);
-    glcdDrawImage(img, color, pal->bg);
-
-    glcdResetRect();
-}
-
 static void drawStatusIcons(MpcView *this, bool clear)
 {
     if (this->mpc->flags & (MPC_FLAG_UPDATE_STATUS | MPC_FLAG_UPDATE_DURATION)) {
@@ -47,13 +35,13 @@ static void drawStatusIcons(MpcView *this, bool clear)
     MpcStatus st = this->mpc->status;
     int32_t duration = this->mpc->duration;
 
-    drawStatusIcon(st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
+    iconImageDraw(clear, st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
                    &rectIconStatus, pal->fg);
-    drawStatusIcon(ICON_REPEAT, &rectIconRepeat, st & MPC_REPEAT ? pal->fg : pal->inactive);
-    drawStatusIcon(ICON_SINGLE, &rectIconSingle, st & MPC_SINGLE ? pal->fg : pal->inactive);
-    drawStatusIcon(ICON_RANDOM, &rectIconRandom, st & MPC_RANDOM ? pal->fg : pal->inactive);
-    drawStatusIcon(ICON_CONSUME, &rectIconConsume, st & MPC_CONSUME ? pal->fg : pal->inactive);
-    drawStatusIcon(st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
+    iconImageDraw(clear, ICON_REPEAT, &rectIconRepeat, st & MPC_REPEAT ? pal->fg : pal->inactive);
+    iconImageDraw(clear, ICON_SINGLE, &rectIconSingle, st & MPC_SINGLE ? pal->fg : pal->inactive);
+    iconImageDraw(clear, ICON_RANDOM, &rectIconRandom, st & MPC_RANDOM ? pal->fg : pal->inactive);
+    iconImageDraw(clear, ICON_CONSUME, &rectIconConsume, st & MPC_CONSUME ? pal->fg : pal->inactive);
+    iconImageDraw(clear, st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
                    &rectIconMedia, pal->fg);
 }
 

@@ -5,6 +5,7 @@
 #include "display/glcd.h"
 #include "gui/icons.h"
 #include "gui/palette.h"
+#include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
 
 static const GlcdRect rectFreq = {44, 24, 99, 15};
@@ -13,19 +14,6 @@ static const GlcdRect rectScale = {44, 58, 212, 6};
 static const GlcdRect rectFav = {246, 24, 10, 15};
 static const GlcdRect rectIconStereo = {150, 24, 18, 15};
 static const GlcdRect rectIconRds = {173, 24, 27, 15};
-
-static void drawStatusIcon(Icon icon, const GlcdRect *rect, color_t color)
-{
-    const Palette *pal = paletteGet();
-    const tImage *img = iconFind(icon, &icons_hms1110);
-
-    glcdSetRect(rect);
-
-    glcdSetXY(0, 0);
-    glcdDrawImage(img, color, pal->bg);
-
-    glcdResetRect();
-}
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
@@ -41,8 +29,8 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
     TunerFlag flags = this->sync.tFlags;
 
-    drawStatusIcon(ICON_STEREO, &rectIconStereo, flags & TUNER_FLAG_STEREO ? pal->fg : pal->inactive);
-    drawStatusIcon(ICON_RDS, &rectIconRds, flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive);
+    iconImageDraw(clear, ICON_STEREO, &rectIconStereo, flags & TUNER_FLAG_STEREO ? pal->fg : pal->inactive);
+    iconImageDraw(clear, ICON_RDS, &rectIconRds, flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive);
 }
 
 static void drawMeta(TunerView *this, bool clear)

@@ -13,6 +13,7 @@
 #include "view/inputview.h"
 #include "view/mpcview.h"
 #include "view/tunerview.h"
+#include "widget/iconimage.h"
 
 static Canvas canvas;
 static const GlcdRect rectIconInput = {0, 24, 40, 40};
@@ -122,23 +123,6 @@ void canvasShowWday(bool clear, bool active)
     wdayViewDraw(clear, active, rtc.wday);
 }
 
-static void drawInputIcon(bool clear, Icon icon)
-{
-    if (!clear) {
-        return;
-    }
-
-    glcdSetRect(&rectIconInput);
-
-    const Palette *pal = paletteGet();
-
-    const tImage *img = iconFind(icon, &icons_hms1110);
-    glcdSetXY(0, 0);
-    glcdDrawImage(img, pal->fg, pal->bg);
-
-    glcdResetRect();
-}
-
 static void canvasShowInputTuner(bool clear)
 {
     static TunerView view;
@@ -186,7 +170,9 @@ void canvasShowInput(bool clear)
     InputType inType = ampGet()->inType;
     Icon icon = (inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType);
 
-    drawInputIcon(clear, icon);
+    const Palette *pal = paletteGet();
+
+    iconImageDraw(clear, icon, &rectIconInput, pal->fg);
 
     switch (inType) {
     case IN_MPD:
