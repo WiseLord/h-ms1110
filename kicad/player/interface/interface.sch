@@ -231,8 +231,6 @@ Wire Wire Line
 Wire Wire Line
 	1100 3450 2450 3450
 Wire Wire Line
-	4150 1400 4150 3550
-Wire Wire Line
 	1100 3550 2750 3550
 Wire Wire Line
 	3450 1400 3450 3650
@@ -464,9 +462,9 @@ Wire Wire Line
 Wire Wire Line
 	5450 1600 5750 1600
 Text Label 5550 2000 1    50   ~ 0
-MP3_L
+QD_L
 Text Label 5650 2000 1    50   ~ 0
-MP3_R
+QD_R
 Text Label 5850 2000 1    50   ~ 0
 TUN_L
 Text Label 5950 2000 1    50   ~ 0
@@ -480,9 +478,9 @@ TUN_L
 Text Label 6200 3600 0    50   ~ 0
 TUN_R
 Text Label 6200 3950 0    50   ~ 0
-MP3_L
+DIG_L
 Text Label 6200 4050 0    50   ~ 0
-MP3_R
+DIG_R
 Text Label 6200 4550 0    50   ~ 0
 AUX1_L
 Text Label 6200 4650 0    50   ~ 0
@@ -491,12 +489,6 @@ Text Label 6200 4750 0    50   ~ 0
 AUX2_L
 Text Label 6200 4850 0    50   ~ 0
 AUX2_R
-Text Label 4750 2000 1    50   ~ 0
-QD_R
-Text Label 4550 2000 1    50   ~ 0
-QD_L
-Text Label 4250 2000 1    50   ~ 0
-QD_G
 Text Label 6200 4200 0    50   ~ 0
 QD_L
 Text Label 6200 4300 0    50   ~ 0
@@ -504,9 +496,9 @@ QD_G
 Text Label 6200 4400 0    50   ~ 0
 QD_R
 Text Label 6200 3700 0    50   ~ 0
-DIG_L
+RPI_L
 Text Label 6200 3850 0    50   ~ 0
-DIG_R
+RPI_R
 $Comp
 L Device:CP_Small C5
 U 1 1 5E7FE5FC
@@ -754,13 +746,7 @@ Wire Wire Line
 Wire Wire Line
 	5950 3600 6600 3600
 Wire Wire Line
-	5550 1400 5550 3950
-Wire Wire Line
-	5550 3950 6600 3950
-Wire Wire Line
-	5650 1400 5650 4050
-Wire Wire Line
-	5650 4050 6600 4050
+	5350 3950 6600 3950
 Wire Wire Line
 	8450 4550 9150 4550
 Wire Wire Line
@@ -783,18 +769,6 @@ Wire Wire Line
 	4950 1400 4950 3100
 Wire Wire Line
 	8450 4450 9050 4450
-Wire Wire Line
-	4550 1400 4550 4200
-Wire Wire Line
-	4550 4200 6600 4200
-Wire Wire Line
-	4250 1400 4250 4300
-Wire Wire Line
-	4250 4300 6600 4300
-Wire Wire Line
-	4750 1400 4750 4400
-Wire Wire Line
-	4750 4400 6600 4400
 $Comp
 L power:GNDA #PWR02
 U 1 1 5FB4A266
@@ -806,8 +780,6 @@ F 3 "" H 900 5750 50  0001 C CNN
 	1    900  5750
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	5300 3700 6600 3700
 Wire Wire Line
 	900  5750 900  5700
 Wire Wire Line
@@ -865,8 +837,6 @@ Wire Wire Line
 	1200 5300 1100 5300
 Wire Wire Line
 	1200 4750 1200 5300
-Wire Wire Line
-	5300 3850 6600 3850
 $Comp
 L power:+12VA #PWR07
 U 1 1 5FCC54BA
@@ -1257,4 +1227,78 @@ F 3 "~" H 2200 2550 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2350 2550 3750 2550
+$Comp
+L Connector_Generic:Conn_01x03 J13
+U 1 1 5FE04C52
+P 5000 3450
+F 0 "J13" H 5000 3650 50  0000 C CNN
+F 1 "RPI_SND" V 5100 3450 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 3450 50  0001 C CNN
+F 3 "~" H 5000 3450 50  0001 C CNN
+	1    5000 3450
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 3350 5750 3350
+Wire Wire Line
+	5750 3350 5750 3700
+Wire Wire Line
+	5750 3700 6600 3700
+Wire Wire Line
+	5450 3550 5200 3550
+Wire Wire Line
+	5450 3550 5450 3850
+Wire Wire Line
+	5450 3850 6600 3850
+Wire Wire Line
+	5200 3850 5350 3850
+Wire Wire Line
+	5350 3850 5350 3950
+Wire Wire Line
+	5200 4050 6600 4050
+$Comp
+L power:GNDA #PWR010
+U 1 1 5FE5006A
+P 5250 4100
+F 0 "#PWR010" H 5250 3850 50  0001 C CNN
+F 1 "GNDA" H 5255 3927 50  0000 C CNN
+F 2 "" H 5250 4100 50  0001 C CNN
+F 3 "" H 5250 4100 50  0001 C CNN
+	1    5250 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5250 4100 5250 3950
+Wire Wire Line
+	5250 3950 5200 3950
+Wire Wire Line
+	5250 3950 5250 3450
+Wire Wire Line
+	5250 3450 5200 3450
+Connection ~ 5250 3950
+Wire Wire Line
+	4150 1400 4150 3550
+$Comp
+L Connector_Generic:Conn_01x03 J14
+U 1 1 5FE065A4
+P 5000 3950
+F 0 "J14" H 5000 4150 50  0000 C CNN
+F 1 "SPDIF" V 5100 3950 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 3950 50  0001 C CNN
+F 3 "~" H 5000 3950 50  0001 C CNN
+	1    5000 3950
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5550 1400 5550 4200
+Wire Wire Line
+	5550 4200 6600 4200
+Wire Wire Line
+	5650 1400 5650 4400
+Wire Wire Line
+	5650 4400 6600 4400
+Wire Wire Line
+	4750 4300 6600 4300
+Wire Wire Line
+	4750 1400 4750 4300
 $EndSCHEMATC
