@@ -59,6 +59,7 @@ enum {
     LABEL_IN_MPD,
     LABEL_IN_AUX1,
     LABEL_IN_AUX2,
+    LABEL_IN_SPDIF,
 
     LABEL_BOOL_OFF,
     LABEL_BOOL_ON,

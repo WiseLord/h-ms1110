@@ -91,6 +91,7 @@ enum {
     IN_MPD,
     IN_AUX1,
     IN_AUX2,
+    IN_SPDIF,
 
     IN_END
 };

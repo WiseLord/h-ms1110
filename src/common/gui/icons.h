@@ -32,6 +32,7 @@ enum {
     ICON_MPD,
     ICON_AUX1,
     ICON_AUX2,
+    ICON_SPDIF,
 };
 
 extern const tFont icons_hms1110;

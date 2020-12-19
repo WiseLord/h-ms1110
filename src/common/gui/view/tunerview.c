@@ -12,8 +12,8 @@ static const GlcdRect rectFreq = {44, 0, 99, 15};
 static const GlcdRect rectMeta = {44, 17, 212, 14};
 static const GlcdRect rectScale = {44, 34, 212, 6};
 static const GlcdRect rectFav = {246, 0, 10, 15};
-static const GlcdRect rectIconStereo = {150, 0, 18, 15};
-static const GlcdRect rectIconRds = {173, 0, 27, 15};
+static const GlcdRect rectIconStereo = {150, 0, 20, 12};
+static const GlcdRect rectIconRds = {175, 0, 27, 12};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
@@ -46,9 +46,9 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
 static void drawMeta(TunerView *this, bool clear)
 {
-//    if (this->mpc->flags & (MPC_FLAG_UPDATE_META | MPC_FLAG_UPDATE_STATUS)) {
-    clear = true;
-//    }
+    if (this->sync->flags & (TUNERSYNC_FLAG_FREQ | TUNERSYNC_FLAG_RDS)) {
+        clear = true;
+    }
 
     const Palette *pal = paletteGet();
     const GlcdRect *rect = &rectMeta;

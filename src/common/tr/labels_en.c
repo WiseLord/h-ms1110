@@ -36,6 +36,7 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_IN_MPD]          = "MPD",
     [LABEL_IN_AUX1]         = "AUX1",
     [LABEL_IN_AUX2]         = "AUX2",
+    [LABEL_IN_SPDIF]        = "SPDIF",
 
     [LABEL_BOOL_OFF]        = "OFF",
     [LABEL_BOOL_ON]         = "ON",

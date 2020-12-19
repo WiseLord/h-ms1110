@@ -72,7 +72,7 @@ static Amp *amp;
 static const InputType inTypes[MAX_INPUTS] = {
     IN_TUNER,
     IN_MPD,
-    IN_NULL,
+    IN_SPDIF,
     IN_NULL,
     IN_AUX1,
     IN_AUX2,
