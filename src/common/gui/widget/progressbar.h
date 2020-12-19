@@ -25,7 +25,7 @@ typedef struct {
     color_t bgColor;
 } ProgressBar;
 
-void progressBarDraw(bool clear, ProgressBar *bar);
+void progressBarDraw(ProgressBar *bar, bool clear);
 
 #ifdef __cplusplus
 }

@@ -168,11 +168,15 @@ static void canvasShowInputDefault(bool clear)
 void canvasShowInput(bool clear)
 {
     InputType inType = ampGet()->inType;
-    Icon icon = (inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType);
 
     const Palette *pal = paletteGet();
 
-    iconImageDraw(clear, icon, &rectIconInput, pal->fg);
+    IconImage iconInput = {
+        .rect = &rectIconInput,
+        .color = pal->fg,
+        .icon = inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType,
+    };
+    iconImageDraw(&iconInput, clear);
 
     switch (inType) {
     case IN_MPD:

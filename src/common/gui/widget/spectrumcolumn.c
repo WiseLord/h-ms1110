@@ -4,16 +4,16 @@
 
 #include "gui/palette.h"
 
-void spectrumColumnDraw(bool clear, SpectrumColumn *col, GlcdRect *rect, bool mirror, color_t *grad)
+void spectrumColumnDraw(SpectrumColumn *this, bool clear, GlcdRect *rect, bool mirror, color_t *grad)
 {
     int16_t x = rect->x;
     int16_t y = rect->y;
     int16_t w = rect->w;
     int16_t h = rect->h;
 
-    int16_t s = col->showW;
-    int16_t os = col->prevW;
-    int16_t p = col->peakW;
+    int16_t s = this->showW;
+    int16_t os = this->prevW;
+    int16_t p = this->peakW;
 
     const Palette *pal = paletteGet();
 

@@ -2,13 +2,13 @@
 
 #include "gui/palette.h"
 
-void progressBarDraw(bool clear, ProgressBar *bar)
+void progressBarDraw(ProgressBar *this, bool clear)
 {
     (void)clear;
 
     const Palette *pal = paletteGet();
 
-    const LayoutProgressBar *lt = &bar->lt;
+    const LayoutProgressBar *lt = &this->lt;
     const GlcdRect *rect = &lt->rect;
     const int16_t fw = lt->frame_width;
 
@@ -19,9 +19,9 @@ void progressBarDraw(bool clear, ProgressBar *bar)
     const int16_t barH = rect->h - 2 * (fw + 1);
     const int16_t width = rect->w - 1 - 2 * fw;
 
-    int32_t value = bar->value;
-    int32_t min = bar->min;
-    int32_t max = bar->max;
+    int32_t value = this->value;
+    int32_t min = this->min;
+    int32_t max = this->max;
 
     if (min + max) { // Non-symmectic scale => rescale to 0..sc
         value = sc * (value - min) / (max - min);
@@ -33,17 +33,17 @@ void progressBarDraw(bool clear, ProgressBar *bar)
         color_t color = pal->fg;
 
         if (min == max) { // Empty scale
-            color = bar->bgColor;
+            color = this->bgColor;
         } else if (min + max) { // Non-symmetric scale
             if (i >= value) {
-                color = bar->bgColor;
+                color = this->bgColor;
             }
         } else { // Symmetric scale
             if ((value > 0 && i > value + (sc / 2)) ||
                 (value >= 0 && i < (sc / 2)) ||
                 (value < 0 && i < value + (sc / 2)) ||
                 (value <= 0 && i > (sc / 2))) {
-                color = bar->bgColor;
+                color = this->bgColor;
             }
         }
 

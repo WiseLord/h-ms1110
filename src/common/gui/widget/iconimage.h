@@ -10,7 +10,13 @@ extern "C" {
 #include "display/glcd.h"
 #include "gui/icons.h"
 
-void iconImageDraw(bool clear, Icon icon, const GlcdRect *rect, color_t color);
+typedef struct {
+    const GlcdRect *rect;
+    color_t color;
+    Icon icon;
+} IconImage;
+
+void iconImageDraw(IconImage *this, bool clear);
 
 #ifdef __cplusplus
 }

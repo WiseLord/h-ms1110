@@ -35,14 +35,47 @@ static void drawStatusIcons(MpcView *this, bool clear)
     MpcStatus st = this->mpc->status;
     int32_t duration = this->mpc->duration;
 
-    iconImageDraw(clear, st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
-                   &rectIconStatus, pal->fg);
-    iconImageDraw(clear, ICON_REPEAT, &rectIconRepeat, st & MPC_REPEAT ? pal->fg : pal->inactive);
-    iconImageDraw(clear, ICON_SINGLE, &rectIconSingle, st & MPC_SINGLE ? pal->fg : pal->inactive);
-    iconImageDraw(clear, ICON_RANDOM, &rectIconRandom, st & MPC_RANDOM ? pal->fg : pal->inactive);
-    iconImageDraw(clear, ICON_CONSUME, &rectIconConsume, st & MPC_CONSUME ? pal->fg : pal->inactive);
-    iconImageDraw(clear, st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
-                   &rectIconMedia, pal->fg);
+    IconImage iconStatus = {
+        .rect = &rectIconStatus,
+        .color = pal->fg,
+        .icon = st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
+    };
+    iconImageDraw(&iconStatus, clear);
+
+    IconImage iconRepeat = {
+        .rect = &rectIconRepeat,
+        .color = st & MPC_REPEAT ? pal->fg : pal->inactive,
+        .icon = ICON_REPEAT,
+    };
+    iconImageDraw(&iconRepeat, clear);
+
+    IconImage iconSingle = {
+        .rect = &rectIconSingle,
+        .color = st & MPC_SINGLE ? pal->fg : pal->inactive,
+        .icon = ICON_SINGLE,
+    };
+    iconImageDraw(&iconSingle, clear);
+
+    IconImage iconRandom = {
+        .rect = &rectIconRandom,
+        .color = st & MPC_RANDOM ? pal->fg : pal->inactive,
+        .icon = ICON_RANDOM,
+    };
+    iconImageDraw(&iconRandom, clear);
+
+    IconImage iconConsume = {
+        .rect = &rectIconConsume,
+        .color = st & MPC_CONSUME ? pal->fg : pal->inactive,
+        .icon = ICON_CONSUME,
+    };
+    iconImageDraw(&iconConsume, clear);
+
+    IconImage iconMedia = {
+        .rect = &rectIconMedia,
+        .color = pal->fg,
+        .icon = st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
+    };
+    iconImageDraw(&iconMedia, clear);
 }
 
 static void calcNameScroll(MpcView *this, int16_t max_oft)
@@ -195,7 +228,7 @@ static void drawProgress(MpcView *this, bool clear)
 
     glcdSetRect(rect);
 
-    progressBarDraw(true, &bar);
+    progressBarDraw(&bar, true);
 
     glcdResetRect();
 }

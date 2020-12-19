@@ -29,8 +29,19 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
     TunerFlag flags = this->sync.tFlags;
 
-    iconImageDraw(clear, ICON_STEREO, &rectIconStereo, flags & TUNER_FLAG_STEREO ? pal->fg : pal->inactive);
-    iconImageDraw(clear, ICON_RDS, &rectIconRds, flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive);
+    IconImage iconStereo = {
+        .rect = &rectIconStereo,
+        .color = flags & TUNER_FLAG_STEREO ? pal->fg : pal->inactive,
+        .icon = ICON_STEREO,
+    };
+    iconImageDraw(&iconStereo, clear);
+
+    IconImage iconRds = {
+        .rect = &rectIconRds,
+        .color = flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive,
+        .icon = ICON_RDS,
+    };
+    iconImageDraw(&iconRds, clear);
 }
 
 static void drawMeta(TunerView *this, bool clear)
@@ -122,7 +133,7 @@ static void drawProgress(TunerView *this, bool clear)
 
     glcdSetRect(rect);
 
-    progressBarDraw(true, &bar);
+    progressBarDraw(&bar, true);
 
     glcdResetRect();
 }

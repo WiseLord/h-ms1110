@@ -2,11 +2,15 @@
 
 #include "gui/palette.h"
 
-void iconImageDraw(bool clear, Icon icon, const GlcdRect *rect, color_t color)
+void iconImageDraw(IconImage *this, bool clear)
 {
     if (!clear) {
         return;
     }
+
+    const Icon icon = this->icon;
+    const GlcdRect *rect = this->rect;
+    const color_t color = this->color;
 
     const Palette *pal = paletteGet();
     const tImage *img = iconFind(icon, &icons_hms1110);
