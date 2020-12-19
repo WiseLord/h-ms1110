@@ -18,21 +18,23 @@ typedef union {
     uint16_t blk[4];
 } RdsBlock;
 
+typedef uint8_t RDS_Flags;
+enum {
+    RDS_FLAG_TP         = 0x01,
+    RDS_FLAG_TA         = 0x02,
+    RDS_FLAG_MS         = 0x04,
+    RDS_FLAG_DI_ST      = 0x10,
+    RDS_FLAG_DI_AH      = 0x20,
+    RDS_FLAG_DI_CMP     = 0x40,
+    RDS_FLAG_DI_STPTY   = 0x80,
+};
+
 typedef struct {
-    uint16_t PI;        // Program identification code
-
-    uint8_t TP;         // Traffic program identification code
-    uint8_t PTY;        // Program type code
-
-    bool TA;            // Traffic announcement
-    bool MS;            // Music / speach
-    bool DI_ST;         // Decoder identification: stereo
-    bool DI_AH;
-    bool DI_CMP;
-    bool DI_stPTY;
-    char PS[9];
-
-    char text[65];
+    uint16_t PI;        // Program identification code (16 bits)
+    uint8_t PTY;        // Program type code (5 bits)
+    RDS_Flags flags;
+    char PS[8 + 1];
+    char text[64 + 1];
 } RdsParser;
 
 void rdsParserReset(void);

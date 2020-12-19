@@ -44,32 +44,47 @@ void rdsParserDecode(RdsBlock *block)
     uint8_t rdsGroup = (block->b >> RDS_B_GROUP_POS) & (RDS_B_GROUP_MASK >> RDS_B_GROUP_POS);
     uint8_t rdsVersion = (block->b >> RDS_B_VERSION_POS) & (RDS_B_VERSION_MASK >> RDS_B_VERSION_POS);
 
-    parser.TP = (block->b >> RDS_B_TP_POS) & (RDS_B_TP_MASK >> RDS_B_TP_POS);
-    parser.PTY = (block->b >> RDS_B_PTY_POS) & (RDS_B_PTY_MASK >> RDS_B_PTY_POS);
+    parser.PTY = (block->b & RDS_B_PTY_MASK) >> RDS_B_PTY_POS;
+
+    if (block->b & RDS_B_TP_MASK) {
+        parser.flags |= RDS_FLAG_TP;
+    } else {
+        parser.flags &= ~RDS_FLAG_TP;
+    }
 
     switch (rdsGroup) {
     case 0: {
         uint8_t PSN_index = (block->b >> RDS_B_PS_POS) & (RDS_B_PS_MASK >> RDS_B_PS_POS);
-        bool DI = (block->b >> RDS_B_DI_POS) & (RDS_B_DI_MASK >> RDS_B_DI_POS);
+
+        bool DI = (block->b & RDS_B_DI_MASK) >> RDS_B_DI_POS;
 
         parser.PS[2 * PSN_index + 0] = (block->d >> 8) & 0x7F;
         parser.PS[2 * PSN_index + 1] = (block->d >> 0) & 0x7F;
 
-        parser.TA = (block->b >> RDS_B_TA_POS) & (RDS_B_TP_MASK >> RDS_B_TA_POS);
-        parser.MS = (block->b >> RDS_B_MS_POS) & (RDS_B_MS_MASK >> RDS_B_MS_POS);
+        if (block->b & RDS_B_TP_MASK) {
+            parser.flags |= RDS_FLAG_TA;
+        } else {
+            parser.flags &= ~RDS_FLAG_TA;
+        }
+
+        if (block->b & RDS_B_MS_MASK) {
+            parser.flags |= RDS_FLAG_MS;
+        } else {
+            parser.flags &= ~RDS_FLAG_MS;
+        }
 
         switch (PSN_index) {
         case 0:
-            parser.DI_ST = DI;
+            DI ? (parser.flags |= RDS_FLAG_DI_ST) : (parser.flags &= ~RDS_FLAG_DI_ST);
             break;
         case 1:
-            parser.DI_AH = DI;
+            DI ? (parser.flags |= RDS_FLAG_DI_AH) : (parser.flags &= ~RDS_FLAG_DI_AH);
             break;
         case 2:
-            parser.DI_CMP = DI;
+            DI ? (parser.flags |= RDS_FLAG_DI_CMP) : (parser.flags &= ~RDS_FLAG_DI_CMP);
             break;
         case 3:
-            parser.DI_stPTY = DI;
+            DI ? (parser.flags |= RDS_FLAG_DI_STPTY) : (parser.flags &= ~RDS_FLAG_DI_STPTY);
             break;
         }
         break;
