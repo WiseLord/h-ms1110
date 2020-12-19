@@ -151,6 +151,17 @@ static void inputDisable(void)
 
 static void inputEnable(void)
 {
+    InputType inType = amp->inType;
+
+    switch (inType) {
+    case IN_TUNER:
+        tunerSyncRequest();
+        break;
+    case IN_MPD:
+        mpcSyncRequest();
+        break;
+    }
+
     // TODO: Power on current input device
 }
 
@@ -290,6 +301,8 @@ void ampInitHw(void)
 
         audioSetPower(true);
         ampMute(true);
+
+        rdsParserReset();
 
         swTimSet(SW_TIM_AMP_INIT, 300);
         amp->status = AMP_STATUS_HW_READY;

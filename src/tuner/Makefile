@@ -68,7 +68,8 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
-C_SOURCES += $(COMMON)/screen/radioview.c
+C_SOURCES += $(COMMON)/gui/view/tunerview.c
+
 C_SOURCES += $(COMMON)/screen/spectrumview.c
 C_SOURCES += $(COMMON)/screen/timeview.c
 
@@ -82,6 +83,9 @@ C_SOURCES += $(COMMON)/gui/canvas.c
 C_SOURCES += $(COMMON)/gui/palette.c
 C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
+
+C_SOURCES += $(wildcard $(COMMON)/gui/icons.c)
+C_SOURCES += $(wildcard $(COMMON)/gui/icons/icon*.c)
 
 # Tuner source files
 C_SOURCES += $(addprefix $(COMMON)/tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))

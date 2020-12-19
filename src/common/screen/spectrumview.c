@@ -135,8 +135,13 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
         spGetADC(SP_CHAN_RIGHT, spData[SP_CHAN_RIGHT].raw, SPECTRUM_SIZE, fftGet43);
     }
 
-    const int16_t step = 6;                                     // Step of columns
-    const int16_t width = 4;                                    // Width of spectrum
+    int16_t step = 6;                                     // Step of columns
+    int16_t width = 4;                                    // Width of spectrum
+
+    if (rect->w == 125) {
+        step = 3;
+        width = 2;
+    }
 
     if (clear) {
         memset(&spDrawData, 0, sizeof (SpDrawData));
@@ -144,6 +149,8 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
     }
 
     color_t *grad = NULL;
+
+    glcdSetRect(rect);
 
     for (uint8_t col = 0; col < SPECTRUM_SIZE; col++) {
         int16_t x = col * step;
@@ -156,4 +163,6 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
         GlcdRect colRect = {x, rect->y, width, rect->h};
         spectrumColumnDraw(&spCol, clear, &colRect, mirror, grad);
     }
+
+    glcdResetRect();
 }

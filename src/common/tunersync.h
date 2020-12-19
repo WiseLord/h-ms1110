@@ -7,6 +7,8 @@ extern "C" {
 
 #include <stdint.h>
 
+#include "tuner/rds/parser.h"
+#include "tuner/stations.h"
 #include "tuner/tuner.h"
 
 typedef uint16_t TunerSyncFlags;
@@ -23,6 +25,7 @@ typedef struct {
 } TunerSyncBand;
 
 typedef struct {
+    RdsParser *rdsParser;
     TunerSyncFlags flags;
     uint16_t freq;
     TunerFlag tFlags;
@@ -31,6 +34,7 @@ typedef struct {
 } TunerSync;
 
 void tunerSyncInit(void);
+void tunerSyncRequest(void);
 TunerSync *tunerSyncGet(void);
 
 #ifdef __cplusplus

@@ -10,7 +10,6 @@ extern "C" {
 
 #include "display/glcd.h"
 #include "gui/palette.h"
-#include "screen/radioview.h"
 #include "screen/tuneview.h"
 #include "spectrum.h"
 #include "tr/labels.h"
@@ -32,7 +31,7 @@ void canvasShowWday(bool clear, bool active);
 void canvasShowInput(bool clear);
 void canvasShowTune(bool clear, TuneView *tune);
 void canvasShowSetup(bool clear);
-void canvasShowRadio(bool clear, RadioView *radio);
+void canvasShowTuner(bool clear);
 
 void canvasDebugFPS(void);
 

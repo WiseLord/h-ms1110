@@ -25,13 +25,16 @@ static void mpcSendCmd(const char *cmd)
     usartSendString(USART_MPC, buf);
 }
 
-void mpcInit()
+void mpcInit(void)
 {
     ringBufInit(&rbuf, rbData, sizeof(rbData));
 
     usartInit(USART_MPC, 115200);
     usartSetRxIRQ(USART_MPC, true);
+}
 
+void mpcSyncRequest(void)
+{
     mpcSendCmd("info");
 }
 

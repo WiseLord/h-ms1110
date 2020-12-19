@@ -56,9 +56,9 @@ static void drawMeta(TunerView *this, bool clear)
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
-    char meta[32];
-    snprintf(meta, sizeof(meta), "%d-%d",
-             this->sync.band.fMin / 100, this->sync.band.fMax / 100);
+    char meta[80];
+    snprintf(meta, sizeof(meta), "%s: %s",
+             this->sync.rdsParser->PS, this->sync.rdsParser->text);
 
     int16_t len = glcdCalcStringLen(meta);
 

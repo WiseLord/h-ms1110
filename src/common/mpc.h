@@ -38,6 +38,7 @@ typedef struct {
 } Mpc;
 
 void mpcInit(void);
+void mpcSyncRequest(void);
 Mpc *mpcGet(void);
 
 void mpcLoadPlaylist(const char *name);

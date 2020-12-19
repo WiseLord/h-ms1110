@@ -95,9 +95,9 @@ static void actionDispExpired(void)
 
     switch (amp->inType) {
     case IN_TUNER:
-        if (!priv.isSlave) {
+//        if (!priv.isSlave) {
             defScreen = SCREEN_TUNER;
-        }
+//        }
         break;
     }
 
@@ -253,6 +253,8 @@ void ampInit(void)
     ampReadSettings();
 
     swTimInit();
+
+    tunerSyncInit();
 
     amp->status = AMP_STATUS_STBY;
 }
@@ -546,17 +548,6 @@ static void ampPollInput(void)
     }
 }
 
-static void prepareRadioView(RadioView *radio)
-{
-    Tuner *tuner = tunerGet();
-
-    radio->freq = tuner->status.freq;
-    radio->stereo = ((tuner->status.flags & TUNER_FLAG_STEREO) == TUNER_FLAG_STEREO);
-    radio->station = ((tuner->status.flags & TUNER_FLAG_STATION) == TUNER_FLAG_STATION);
-    radio->stationNum = stationGetNum(tuner->status.freq);
-    radio->favMask = stationFavGetMask(radio->freq);
-}
-
 void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
@@ -564,8 +555,6 @@ void ampScreenShow(void)
     if (clear) {
         canvasClear();
     }
-
-    RadioView radio;
 
     Spectrum *sp = spGet();
     SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
@@ -581,8 +570,7 @@ void ampScreenShow(void)
         canvasShowDate(clear, false);
         break;
     case SCREEN_TUNER:
-        prepareRadioView(&radio);
-        canvasShowRadio(clear, &radio);
+        canvasShowTuner(clear);
         break;
     default:
         break;

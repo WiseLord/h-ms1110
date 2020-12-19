@@ -55,6 +55,8 @@ C_SOURCES += $(COMMON)/tunersync.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 
+C_SOURCES += $(COMMON)/tuner/rds/parser.c
+
 C_SOURCES += $(wildcard $(COMMON)/tr/labels*.c)
 
 # Input source files

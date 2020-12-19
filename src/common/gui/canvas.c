@@ -201,9 +201,35 @@ void canvasShowSetup(bool clear)
     setupViewDraw(clear);
 }
 
-void canvasShowRadio(bool clear, RadioView *radio)
+void canvasShowTuner(bool clear)
 {
-    radioViewDraw(clear, radio);
+    Spectrum *sp = spGet();
+
+    GlcdRect rectL = {0, 0, 125, 20};
+    spViewDraw(clear, true, false, sp->peaks, SP_CHAN_LEFT, &rectL);
+    GlcdRect rectR = {131, 0, 125, 20};
+    spViewDraw(clear, false, false, sp->peaks, SP_CHAN_RIGHT, &rectR);
+
+    const Palette *pal = paletteGet();
+
+    IconImage iconInput = {
+        .rect = &rectIconInput,
+        .color = pal->fg,
+        .icon = ICON_TUNER,
+    };
+    iconImageDraw(&iconInput, clear);
+
+    static TunerView view;
+    Tuner *tuner = tunerGet();
+
+    view.sync.freq = tuner->status.freq;
+    view.sync.tFlags = tuner->status.flags;
+    view.sync.favMask = stationFavGetMask(tuner->status.freq);
+    view.sync.band.fMin = tuner->par.fMin;
+    view.sync.band.fMax = tuner->par.fMax;
+    view.sync.rdsParser = rdsParserGet();
+
+    tunerViewDraw(&view, true);
 }
 
 void canvasDebugFPS(void)
