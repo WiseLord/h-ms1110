@@ -24,6 +24,7 @@
 #include "utils.h"
 
 typedef struct {
+    RdsParser rdsParser;
     ScreenType prevScreen;
     bool clearScreen;
     bool isSlave;
@@ -95,9 +96,9 @@ static void actionDispExpired(void)
 
     switch (amp->inType) {
     case IN_TUNER:
-//        if (!priv.isSlave) {
+        if (!priv.isSlave) {
             defScreen = SCREEN_TUNER;
-//        }
+        }
         break;
     }
 
@@ -235,6 +236,7 @@ static void ampInitMuteStby(void)
 void ampInit(void)
 {
     amp = ampGet();
+    amp->inType = IN_TUNER;
 
     settingsInit();
     utilInitSysCounter();
@@ -325,6 +327,7 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_REQUEST:
         priv.isSlave = true;
+        tunerSyncInit();
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }
@@ -531,6 +534,12 @@ static void ampSyncTuner(void)
         sync->band.fMin = tuner->par.fMin;
         sync->band.fMax = tuner->par.fMax;
         syncSlaveSend(SYNC_TUNER_BAND, &sync->band, sizeof(TunerSyncBand));
+        return;
+    }
+
+    if (memcmp(sync->rdsParser, &priv.rdsParser, sizeof(RdsParser))) {
+        syncSlaveSend(SYNC_TUNER_RDS, sync->rdsParser, sizeof (RdsParser));
+        memcpy(&priv.rdsParser, sync->rdsParser, sizeof(RdsParser));
         return;
     }
 }

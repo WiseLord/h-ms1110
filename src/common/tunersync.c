@@ -10,12 +10,8 @@ static TunerSync tunerSync;
 
 void tunerSyncInit(void)
 {
+    memset(&tunerSync, 0, sizeof(TunerSync));
     tunerSync.rdsParser = rdsParserGet();
-}
-
-void tunerSyncRequest(void)
-{
-    syncMasterSend(AMP_TUNER_ADDR, SYNC_REQUEST, NULL, 0);
 }
 
 TunerSync *tunerSyncGet()

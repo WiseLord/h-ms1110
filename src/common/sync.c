@@ -88,6 +88,10 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
         i2cBegin(I2C_SYNC, slaveAddr);
         i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerSyncBand));
         break;
+    case SYNC_TUNER_RDS:
+        i2cBegin(I2C_SYNC, slaveAddr);
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(RdsParser));
+        break;
     }
 
     return type;

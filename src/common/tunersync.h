@@ -13,10 +13,13 @@ extern "C" {
 
 typedef uint16_t TunerSyncFlags;
 enum {
+    TUNERSYNC_FLAG_NO_FLAG = 0x0000,
+
     TUNERSYNC_FLAG_FREQ    = 0x0001,
     TUNERSYNC_FLAG_FLAGS   = 0x0002,
     TUNERSYNC_FLAG_FAVS    = 0x0004,
     TUNERSYNC_FLAG_BAND    = 0x0008,
+    TUNERSYNC_FLAG_RDS     = 0x0010,
 };
 
 typedef struct {
@@ -34,7 +37,6 @@ typedef struct {
 } TunerSync;
 
 void tunerSyncInit(void);
-void tunerSyncRequest(void);
 TunerSync *tunerSyncGet(void);
 
 #ifdef __cplusplus

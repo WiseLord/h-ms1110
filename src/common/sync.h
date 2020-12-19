@@ -9,7 +9,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-#define SYNC_DATASIZE   16
+#define SYNC_DATASIZE   96
 #define SYNC_I2C_FREQ   400000
 
 typedef uint8_t SyncType;
@@ -25,6 +25,7 @@ enum {
     SYNC_TUNER_FLAGS,
     SYNC_TUNER_FAVS,
     SYNC_TUNER_BAND,
+    SYNC_TUNER_RDS,
 
     SYNC_REQUEST,
 

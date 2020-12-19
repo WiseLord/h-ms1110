@@ -22,10 +22,13 @@
 #include "tunersync.h"
 #include "utils.h"
 
+#define SYNC_PERIOD     10
+
 typedef uint8_t SyncFlags;
 enum {
     SYNC_FLAG_RTC       = 0x01,
     SYNC_FLAG_SPECTRUM  = 0x02,
+    SYNC_FLAG_TUNER     = 0x04,
 };
 
 typedef struct {
@@ -155,7 +158,7 @@ static void inputEnable(void)
 
     switch (inType) {
     case IN_TUNER:
-        tunerSyncRequest();
+        priv.syncFlags |= SYNC_FLAG_TUNER;
         break;
     case IN_MPD:
         mpcSyncRequest();
@@ -845,6 +848,10 @@ static void ampGetFromSlaves(void)
             memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
             tunerSync->flags |= TUNERSYNC_FLAG_BAND;
             break;
+        case SYNC_TUNER_RDS:
+            memcpy(tunerSync->rdsParser, &syncData[1], sizeof(RdsParser));
+            tunerSync->flags |= TUNERSYNC_FLAG_RDS;
+            break;
         }
     }
 }
@@ -1072,7 +1079,7 @@ static void ampSendToSlaves(void)
     if (priv.syncAction.type != ACTION_NONE) {
         syncMasterSend(AMP_TUNER_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
-        swTimSet(SW_TIM_SYNC, 50);
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         // Force everything to resend on exit standby
         if (priv.syncAction.type == ACTION_STANDBY && priv.syncAction.value == FLAG_EXIT) {
             priv.inType = IN_NULL;
@@ -1084,7 +1091,7 @@ static void ampSendToSlaves(void)
     if (priv.inType != amp->inType) {
         syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
-        swTimSet(SW_TIM_SYNC, 50);
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         priv.inType = amp->inType;
         return;
     }
@@ -1095,7 +1102,7 @@ static void ampSendToSlaves(void)
         priv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
         syncMasterSend(AMP_TUNER_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
-        swTimSet(SW_TIM_SYNC, 50);
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
 
@@ -1104,7 +1111,14 @@ static void ampSendToSlaves(void)
         uint32_t rtcRaw = rtcGetRaw();
         syncMasterSend(AMP_TUNER_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
         syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
-        swTimSet(SW_TIM_SYNC, 50);
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
+        return;
+    }
+
+    if (priv.syncFlags & SYNC_FLAG_TUNER) {
+        priv.syncFlags &= ~SYNC_FLAG_TUNER;
+        syncMasterSend(AMP_TUNER_ADDR, SYNC_REQUEST, NULL, 0);
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
 }
