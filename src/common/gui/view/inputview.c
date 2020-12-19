@@ -5,7 +5,7 @@
 #include "display/glcd.h"
 #include "gui/palette.h"
 
-static const GlcdRect rectName = {56, 28, 200, 32};
+static const GlcdRect rectName = {56, 4, 200, 32};
 
 void inputViewDraw(InputView *this, bool clear)
 {

@@ -8,12 +8,12 @@
 #include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect rectFreq = {44, 24, 99, 15};
-static const GlcdRect rectMeta = {44, 41, 212, 14};
-static const GlcdRect rectScale = {44, 58, 212, 6};
-static const GlcdRect rectFav = {246, 24, 10, 15};
-static const GlcdRect rectIconStereo = {150, 24, 18, 15};
-static const GlcdRect rectIconRds = {173, 24, 27, 15};
+static const GlcdRect rectFreq = {44, 0, 99, 15};
+static const GlcdRect rectMeta = {44, 17, 212, 14};
+static const GlcdRect rectScale = {44, 34, 212, 6};
+static const GlcdRect rectFav = {246, 0, 10, 15};
+static const GlcdRect rectIconStereo = {150, 0, 18, 15};
+static const GlcdRect rectIconRds = {173, 0, 27, 15};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {

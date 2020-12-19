@@ -8,18 +8,18 @@
 #include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect rectIconStatus = {44, 24, 15, 15};
+static const GlcdRect rectIconStatus = {44, 0, 15, 15};
 
-static const GlcdRect rectIconMedia = {68, 24, 15, 15};
+static const GlcdRect rectIconMedia = {68, 0, 15, 15};
 
-static const GlcdRect rectIconRepeat = {92, 24, 15, 15};
-static const GlcdRect rectIconSingle = {112, 24, 15, 15};
-static const GlcdRect rectIconRandom = {132, 24, 15, 15};
-static const GlcdRect rectIconConsume = {152, 24, 15, 15};
+static const GlcdRect rectIconRepeat = {92, 0, 15, 15};
+static const GlcdRect rectIconSingle = {112, 0, 15, 15};
+static const GlcdRect rectIconRandom = {132, 0, 15, 15};
+static const GlcdRect rectIconConsume = {152, 0, 15, 15};
 
-static const GlcdRect rectElapsed = {178, 24, 78, 15};
-static const GlcdRect rectMeta = {44, 41, 212, 14};
-static const GlcdRect rectProgress = {44, 58, 212, 6};
+static const GlcdRect rectElapsed = {178, 0, 78, 15};
+static const GlcdRect rectMeta = {44, 17, 212, 14};
+static const GlcdRect rectProgress = {44, 34, 212, 6};
 
 static void drawStatusIcons(MpcView *this, bool clear)
 {

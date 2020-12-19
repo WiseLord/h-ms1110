@@ -15,7 +15,7 @@
 #include "widget/iconimage.h"
 
 static Canvas canvas;
-static const GlcdRect rectIconInput = {0, 24, 40, 40};
+static const GlcdRect rectIconInput = {0, 0, 40, 40};
 
 void canvasInit()
 {
@@ -127,9 +127,9 @@ void canvasShowInputCommon(InputType inType, bool clear)
 #if !defined(_MODULE_PLAYER)
     Spectrum *sp = spGet();
 
-    GlcdRect rectL = {0, 0, 125, 20};
+    GlcdRect rectL = {0, 40, 125, 24};
     spViewDraw(clear, true, false, sp->peaks, SP_CHAN_LEFT, &rectL);
-    GlcdRect rectR = {131, 0, 125, 20};
+    GlcdRect rectR = {131, 40, 125, 24};
     spViewDraw(clear, false, false, sp->peaks, SP_CHAN_RIGHT, &rectR);
 #endif
 

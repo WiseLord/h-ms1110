@@ -32,7 +32,7 @@ void timeViewDraw(bool clear, bool active, int8_t hour, int8_t min, int8_t sec)
         snprintf(buf, sizeof(buf), "%02d\u2008:\u2008%02d\u2008:\u2008%02d", hour, min, sec);
         sLen = glcdCalcStringLen(buf);
 
-        glcdSetXY((rect.w - sLen) / 2, 24);
+        glcdSetXY((rect.w - sLen) / 2, 0);
         glcdWriteString(buf);
     }
 }

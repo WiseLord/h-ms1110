@@ -18,13 +18,13 @@ void tuneViewDraw(bool clear, TuneView *tune)
 
     glcdSetFont(labelFont);
     glcdSetFontColor(pal->fg);
-    glcdSetXY(0, 22);
+    glcdSetXY(0, -2);
     glcdWriteString(labelsGet(tune->label));
 
     glcdSetFont(valueFont);
     glcdSetFontColor(pal->fg);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    glcdSetXY(rect->w, 22);
+    glcdSetXY(rect->w, -2);
 
     char buf[4];
     snprintf(buf, sizeof(buf), "%3d", tune->value);
@@ -32,7 +32,7 @@ void tuneViewDraw(bool clear, TuneView *tune)
 
     ProgressBar bar;
     bar.lt.rect.x = 1;
-    bar.lt.rect.y = 48;
+    bar.lt.rect.y = 24;
     bar.lt.rect.w = rect->w - 2;
     bar.lt.rect.h = rect->h - bar.lt.rect.y;
     bar.lt.frame_width = 2;
