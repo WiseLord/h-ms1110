@@ -141,9 +141,9 @@ static void canvasShowInputMpc(bool clear)
 
     if (swTimGet(SW_TIM_SCROLL) <= 0) {
         swTimSet(SW_TIM_SCROLL, 100);
-        view.scroll.event = true;
+        view.scroll.flags |= SCROLL_EVENT;
     } else {
-        view.scroll.event = false;
+        view.scroll.flags &= ~SCROLL_EVENT;
     }
 
     mpcViewDraw(&view, clear);

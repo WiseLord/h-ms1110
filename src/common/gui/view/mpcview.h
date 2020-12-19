@@ -8,16 +8,12 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "gui/widget/scrolltext.h"
 #include "mpc.h"
 
 typedef struct {
     Mpc *mpc;
-    struct {
-        int16_t oft;
-        int16_t pause;
-        bool event;
-        bool left;
-    } scroll;
+    ScrollText scroll;
 } MpcView;
 
 void mpcViewDraw(MpcView *this, bool clear);

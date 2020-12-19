@@ -95,6 +95,8 @@ common/gui/widget/iconimage.c
 common/gui/widget/iconimage.h
 common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
+common/gui/widget/scrolltext.c
+common/gui/widget/scrolltext.h
 common/gui/widget/spectrumcolumn.c
 common/gui/widget/spectrumcolumn.h
 common/hwlibs.h

@@ -3,6 +3,4 @@ common/display/fonts
 common/drivers/CMSIS/Device/ST/STM32F1xx/Include
 common/drivers/CMSIS/Include
 common/drivers/STM32F1xx_HAL_Driver/Inc
-common/gui
 player
-common/gui/widget
