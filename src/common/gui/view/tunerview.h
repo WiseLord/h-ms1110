@@ -7,7 +7,7 @@
 #include "tunersync.h"
 
 typedef struct {
-    TunerSync sync;
+    TunerSync *sync;
 } TunerView;
 
 void tunerViewDraw(TunerView *this, bool clear);

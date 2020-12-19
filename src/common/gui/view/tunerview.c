@@ -17,7 +17,7 @@ static const GlcdRect rectIconRds = {173, 24, 27, 15};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
-    if (this->sync.flags & TUNERSYNC_FLAG_FLAGS) {
+    if (this->sync->flags & TUNERSYNC_FLAG_FLAGS) {
         clear = true;
     }
 
@@ -27,7 +27,7 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
     const Palette *pal = paletteGet();
 
-    TunerFlag flags = this->sync.tFlags;
+    TunerFlag flags = this->sync->tFlags;
 
     IconImage iconStereo = {
         .rect = &rectIconStereo,
@@ -58,7 +58,7 @@ static void drawMeta(TunerView *this, bool clear)
 
     char meta[80];
     snprintf(meta, sizeof(meta), "%s: %s",
-             this->sync.rdsParser->PS, this->sync.rdsParser->text);
+             this->sync->rdsParser->PS, this->sync->rdsParser->text);
 
     int16_t len = glcdCalcStringLen(meta);
 
@@ -76,7 +76,7 @@ static void drawMeta(TunerView *this, bool clear)
 
 static void drawFreqValue(TunerView *this, bool clear)
 {
-    if (this->sync.flags & TUNERSYNC_FLAG_FREQ) {
+    if (this->sync->flags & TUNERSYNC_FLAG_FREQ) {
         clear = true;
     }
 
@@ -86,7 +86,7 @@ static void drawFreqValue(TunerView *this, bool clear)
 
     const Palette *pal = paletteGet();
 
-    uint16_t freq = this->sync.freq;
+    uint16_t freq = this->sync->freq;
     uint8_t freqM = freq / 100;
     uint8_t freqK = freq % 100;
 
@@ -106,7 +106,7 @@ static void drawFreqValue(TunerView *this, bool clear)
 
 static void drawProgress(TunerView *this, bool clear)
 {
-    if (this->sync.flags & (TUNERSYNC_FLAG_FREQ | TUNERSYNC_FLAG_BAND)) {
+    if (this->sync->flags & (TUNERSYNC_FLAG_FREQ | TUNERSYNC_FLAG_BAND)) {
         clear = true;
     }
 
@@ -126,9 +126,9 @@ static void drawProgress(TunerView *this, bool clear)
     bar.lt.frame_width = 1;
     bar.lt.mark_count = 208;
     bar.lt.mark_width = 1;
-    bar.value = this->sync.freq;
-    bar.min = this->sync.band.fMin;
-    bar.max = this->sync.band.fMax;
+    bar.value = this->sync->freq;
+    bar.min = this->sync->band.fMin;
+    bar.max = this->sync->band.fMax;
     bar.bgColor = pal->bg;
 
     glcdSetRect(rect);
@@ -140,7 +140,7 @@ static void drawProgress(TunerView *this, bool clear)
 
 static void drawFavNum(TunerView *this, bool clear)
 {
-    if (this->sync.flags & TUNERSYNC_FLAG_FAVS) {
+    if (this->sync->flags & TUNERSYNC_FLAG_FAVS) {
         clear = true;
     }
 
@@ -157,7 +157,7 @@ static void drawFavNum(TunerView *this, bool clear)
 
     bool favFound = false;
     for (uint16_t i = 0; i < 10; i++) {
-        if ((1 << i) & this->sync.favMask) {
+        if ((1 << i) & this->sync->favMask) {
             snprintf(buf, sizeof(buf), "%d", i);
             favFound = true;
             break;
@@ -183,5 +183,5 @@ void tunerViewDraw(TunerView *this, bool clear)
     drawFavNum(this, clear);
     drawStatusIcons(this, clear);
 
-    this->sync.flags = 0;
+    this->sync->flags = 0;
 }

@@ -324,7 +324,6 @@ static void ampActionSyncMaster(void)
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     case SYNC_REQUEST:
-        memset(tunerSyncGet(), 0, sizeof(TunerSync));
         priv.isSlave = true;
         actionSet(ACTION_DISP_EXPIRED, 0);
         break;
@@ -570,7 +569,8 @@ void ampScreenShow(void)
         canvasShowDate(clear, false);
         break;
     case SCREEN_TUNER:
-        canvasShowTuner(clear);
+        canvasShowInputCommon(IN_TUNER, clear);
+        canvasShowInputTuner(true);
         break;
     default:
         break;

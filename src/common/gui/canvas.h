@@ -8,6 +8,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "amp.h"
 #include "display/glcd.h"
 #include "gui/palette.h"
 #include "screen/tuneview.h"
@@ -28,10 +29,15 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 void canvasShowTime(bool clear, bool active);
 void canvasShowDate(bool clear, bool active);
 void canvasShowWday(bool clear, bool active);
-void canvasShowInput(bool clear);
+
+void canvasShowInputCommon(InputType inType, bool clear);
+void canvasShowInputTuner(bool clear);
+void canvasShowInputMpc(bool clear);
+void canvasShowInputDefault(bool clear);
+void canvasShowInput(InputType inType, bool clear);
+
 void canvasShowTune(bool clear, TuneView *tune);
 void canvasShowSetup(bool clear);
-void canvasShowTuner(bool clear);
 
 void canvasDebugFPS(void);
 

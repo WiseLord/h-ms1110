@@ -1134,7 +1134,7 @@ static void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     default:
-        canvasShowInput(clear);
+        canvasShowInput(amp->inType, clear);
         break;
     }
 

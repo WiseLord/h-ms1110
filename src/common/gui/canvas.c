@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "amp.h"
 #include "input/matrix.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
@@ -123,17 +122,37 @@ void canvasShowWday(bool clear, bool active)
     wdayViewDraw(clear, active, rtc.wday);
 }
 
-static void canvasShowInputTuner(bool clear)
+void canvasShowInputCommon(InputType inType, bool clear)
+{
+#if !defined(_MODULE_PLAYER)
+    Spectrum *sp = spGet();
+
+    GlcdRect rectL = {0, 0, 125, 20};
+    spViewDraw(clear, true, false, sp->peaks, SP_CHAN_LEFT, &rectL);
+    GlcdRect rectR = {131, 0, 125, 20};
+    spViewDraw(clear, false, false, sp->peaks, SP_CHAN_RIGHT, &rectR);
+#endif
+
+    const Palette *pal = paletteGet();
+
+    IconImage iconInput = {
+        .rect = &rectIconInput,
+        .color = pal->fg,
+        .icon = inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType,
+    };
+    iconImageDraw(&iconInput, clear);
+}
+
+void canvasShowInputTuner(bool clear)
 {
     static TunerView view;
-    TunerSync *sync = tunerSyncGet();
 
-    view.sync = *sync;
+    view.sync = tunerSyncGet();
 
     tunerViewDraw(&view, clear);
 }
 
-static void canvasShowInputMpc(bool clear)
+void canvasShowInputMpc(bool clear)
 {
     static MpcView view;
 
@@ -149,7 +168,7 @@ static void canvasShowInputMpc(bool clear)
     mpcViewDraw(&view, clear);
 }
 
-static void canvasShowInputDefault(bool clear)
+void canvasShowInputDefault(bool clear)
 {
     Amp *amp = ampGet();
 
@@ -165,18 +184,9 @@ static void canvasShowInputDefault(bool clear)
     inputViewDraw(&view, clear);
 }
 
-void canvasShowInput(bool clear)
+void canvasShowInput(InputType inType, bool clear)
 {
-    InputType inType = ampGet()->inType;
-
-    const Palette *pal = paletteGet();
-
-    IconImage iconInput = {
-        .rect = &rectIconInput,
-        .color = pal->fg,
-        .icon = inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType,
-    };
-    iconImageDraw(&iconInput, clear);
+    canvasShowInputCommon(inType, clear);
 
     switch (inType) {
     case IN_MPD:
@@ -199,37 +209,6 @@ void canvasShowTune(bool clear, TuneView *tune)
 void canvasShowSetup(bool clear)
 {
     setupViewDraw(clear);
-}
-
-void canvasShowTuner(bool clear)
-{
-    Spectrum *sp = spGet();
-
-    GlcdRect rectL = {0, 0, 125, 20};
-    spViewDraw(clear, true, false, sp->peaks, SP_CHAN_LEFT, &rectL);
-    GlcdRect rectR = {131, 0, 125, 20};
-    spViewDraw(clear, false, false, sp->peaks, SP_CHAN_RIGHT, &rectR);
-
-    const Palette *pal = paletteGet();
-
-    IconImage iconInput = {
-        .rect = &rectIconInput,
-        .color = pal->fg,
-        .icon = ICON_TUNER,
-    };
-    iconImageDraw(&iconInput, clear);
-
-    static TunerView view;
-    Tuner *tuner = tunerGet();
-
-    view.sync.freq = tuner->status.freq;
-    view.sync.tFlags = tuner->status.flags;
-    view.sync.favMask = stationFavGetMask(tuner->status.freq);
-    view.sync.band.fMin = tuner->par.fMin;
-    view.sync.band.fMax = tuner->par.fMax;
-    view.sync.rdsParser = rdsParserGet();
-
-    tunerViewDraw(&view, true);
 }
 
 void canvasDebugFPS(void)
