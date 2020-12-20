@@ -54,13 +54,20 @@ static void drawMeta(TunerView *this, bool clear)
     const Palette *pal = paletteGet();
     const GlcdRect *rect = &rectMeta;
 
+    RDS_Flag rdsFlags = rdsParserGet()->flags;
+
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
     RdsParser *rdsParser = rdsParserGet();
 
     char meta[80];
-    snprintf(meta, sizeof(meta), "%s: %s", rdsParser->PS, rdsParser->text);
+
+    if (rdsFlags & RDS_FLAG_READY) {
+        snprintf(meta, sizeof(meta), "%s: %s", rdsParser->PS, rdsParser->text);
+    } else {
+        snprintf(meta, sizeof(meta), "%s", "");
+    }
 
     int16_t len = glcdCalcStringLen(meta);
 

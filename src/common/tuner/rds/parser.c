@@ -31,15 +31,25 @@
 #define RDS_B_TEXT_POS          0
 
 static RdsParser parser;
+static RdsParserCb rdsParserCb;
 
-void rdsParserReset()
+static void informReady(void)
+{
+    parser.flags |= RDS_FLAG_READY;
+
+    if (rdsParserCb) {
+        rdsParserCb();
+    }
+}
+
+void rdsParserReset(void)
 {
     memset(&parser, 0, sizeof (parser));
 }
 
-void rdsParserClearFlag(RDS_Flag mask)
+void rdsParserSetCb(RdsParserCb cb)
 {
-    parser.flags &= ~mask;
+    rdsParserCb = cb;
 }
 
 void rdsParserDecode(RdsBlock *block)
@@ -65,7 +75,6 @@ void rdsParserDecode(RdsBlock *block)
 
         parser.PS[2 * PSN_index + 0] = (block->d >> 8) & 0x7F;
         parser.PS[2 * PSN_index + 1] = (block->d >> 0) & 0x7F;
-        parser.flags |= RDS_FLAG_READY;
 
         if (block->b & RDS_B_TP_MASK) {
             parser.flags |= RDS_FLAG_TA;
@@ -93,6 +102,7 @@ void rdsParserDecode(RdsBlock *block)
             DI ? (parser.flags |= RDS_FLAG_DI_STPTY) : (parser.flags &= ~RDS_FLAG_DI_STPTY);
             break;
         }
+        informReady();
         break;
     }
     case 2: {
@@ -109,6 +119,8 @@ void rdsParserDecode(RdsBlock *block)
             parser.text[2 * text_index + 1] = (block->d >> 0) & 0x7F;
             break;
         }
+        informReady();
+        break;
     }
     }
 }

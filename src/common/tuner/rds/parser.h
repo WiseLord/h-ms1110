@@ -39,8 +39,10 @@ typedef struct {
     char text[64 + 1];
 } RdsParser;
 
+typedef void (*RdsParserCb)(void);
+
 void rdsParserReset(void);
-void rdsParserClearFlag(RDS_Flag mask);
+void rdsParserSetCb(RdsParserCb cb);
 
 void rdsParserDecode(RdsBlock *block);
 RdsParser *rdsParserGet(void);

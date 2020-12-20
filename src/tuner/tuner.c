@@ -72,6 +72,11 @@ static void screenSet(ScreenType type, int16_t timeout)
     screen.timeout = timeout;
 }
 
+static void rdsParserCb(void)
+{
+    swTimSet(SW_TIM_RDS_HOLD, 1000);
+}
+
 static bool screenCheckClear(void)
 {
     bool clear = false;
@@ -96,9 +101,9 @@ static void actionDispExpired(void)
 
     switch (amp->inType) {
     case IN_TUNER:
-//        if (!priv.isSlave) {
-        defScreen = SCREEN_TUNER;
-//        }
+        if (!priv.isSlave) {
+            defScreen = SCREEN_TUNER;
+        }
         break;
     }
 
@@ -257,6 +262,7 @@ void ampInit(void)
     swTimInit();
 
     tunerSyncInit();
+    rdsParserSetCb(rdsParserCb);
 
     amp->status = AMP_STATUS_STBY;
 }
@@ -554,12 +560,9 @@ static void ampPollInput(void)
                 tunerUpdateStatus();
                 swTimSet(SW_TIM_INPUT_POLL, 200);
             }
-            RdsParser *rdsParser = rdsParserGet();
-            if (rdsParser->flags & RDS_FLAG_READY) {
-                swTimSet(SW_TIM_RDS_HOLD, 500);
-            }
             if (swTimGet(SW_TIM_RDS_HOLD) == 0) {
-                rdsParserClearFlag(RDS_FLAG_READY);
+                rdsParserReset();
+                swTimSet(SW_TIM_RDS_HOLD, SW_TIM_OFF);
             }
         }
     }
