@@ -28,7 +28,6 @@ typedef struct {
 } TunerSyncBand;
 
 typedef struct {
-    RdsParser *rdsParser;
     TunerSyncFlags flags;
     uint16_t freq;
     TunerFlag tFlags;

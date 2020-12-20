@@ -537,9 +537,11 @@ static void ampSyncTuner(void)
         return;
     }
 
-    if (memcmp(sync->rdsParser, &priv.rdsParser, sizeof(RdsParser))) {
-        syncSlaveSend(SYNC_TUNER_RDS, sync->rdsParser, sizeof (RdsParser));
-        memcpy(&priv.rdsParser, sync->rdsParser, sizeof(RdsParser));
+    RdsParser *rdsParser = rdsParserGet();
+
+    if (memcmp(rdsParser, &priv.rdsParser, sizeof(RdsParser))) {
+        memcpy(&priv.rdsParser, rdsParser, sizeof(RdsParser));
+        syncSlaveSend(SYNC_TUNER_RDS, rdsParser, sizeof (RdsParser));
         return;
     }
 }

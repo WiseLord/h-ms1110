@@ -11,7 +11,6 @@ static TunerSync tunerSync;
 void tunerSyncInit(void)
 {
     memset(&tunerSync, 0, sizeof(TunerSync));
-    tunerSync.rdsParser = rdsParserGet();
 }
 
 TunerSync *tunerSyncGet()

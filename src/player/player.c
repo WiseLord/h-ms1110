@@ -819,6 +819,7 @@ static void ampGetFromSlaves(void)
     uint8_t syncData[SYNC_DATASIZE];
     SyncType syncType;
     TunerSync *tunerSync = tunerSyncGet();
+    RdsParser *rdsParser = rdsParserGet();
 
     const uint8_t slaves[] = {AMP_TUNER_ADDR, AMP_SPECTRUM_ADDR};
 
@@ -849,7 +850,7 @@ static void ampGetFromSlaves(void)
             tunerSync->flags |= TUNERSYNC_FLAG_BAND;
             break;
         case SYNC_TUNER_RDS:
-            memcpy(tunerSync->rdsParser, &syncData[1], sizeof(RdsParser));
+            memcpy(rdsParser, &syncData[1], sizeof(RdsParser));
             tunerSync->flags |= TUNERSYNC_FLAG_RDS;
             break;
         }

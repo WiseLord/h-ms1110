@@ -17,7 +17,7 @@ static const GlcdRect rectIconRds = {175, 0, 27, 12};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
-    if (this->sync->flags & TUNERSYNC_FLAG_FLAGS) {
+    if (this->sync->flags & (TUNERSYNC_FLAG_FLAGS | TUNERSYNC_FLAG_RDS)) {
         clear = true;
     }
 
@@ -28,7 +28,7 @@ static void drawStatusIcons(TunerView *this, bool clear)
     const Palette *pal = paletteGet();
 
     TunerFlag flags = this->sync->tFlags;
-    RDS_Flag rdsFlags = this->sync->rdsParser->flags;
+    RDS_Flag rdsFlags = rdsParserGet()->flags;
 
     IconImage iconStereo = {
         .rect = &rectIconStereo,
@@ -57,9 +57,10 @@ static void drawMeta(TunerView *this, bool clear)
     glcdSetFont(&fontterminus14b);
     glcdSetFontColor(pal->active);
 
+    RdsParser *rdsParser = rdsParserGet();
+
     char meta[80];
-    snprintf(meta, sizeof(meta), "%s: %s",
-             this->sync->rdsParser->PS, this->sync->rdsParser->text);
+    snprintf(meta, sizeof(meta), "%s: %s", rdsParser->PS, rdsParser->text);
 
     int16_t len = glcdCalcStringLen(meta);
 
