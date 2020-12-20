@@ -18,11 +18,13 @@ typedef union {
     uint16_t blk[4];
 } RdsBlock;
 
-typedef uint8_t RDS_Flags;
+typedef uint8_t RDS_Flag;
 enum {
-    RDS_FLAG_TP         = 0x01,
-    RDS_FLAG_TA         = 0x02,
-    RDS_FLAG_MS         = 0x04,
+    RDS_FLAG_READY      = 0x01,
+
+    RDS_FLAG_TP         = 0x02,
+    RDS_FLAG_TA         = 0x04,
+    RDS_FLAG_MS         = 0x08,
     RDS_FLAG_DI_ST      = 0x10,
     RDS_FLAG_DI_AH      = 0x20,
     RDS_FLAG_DI_CMP     = 0x40,
@@ -32,12 +34,13 @@ enum {
 typedef struct {
     uint16_t PI;        // Program identification code (16 bits)
     uint8_t PTY;        // Program type code (5 bits)
-    RDS_Flags flags;
+    RDS_Flag flags;
     char PS[8 + 1];
     char text[64 + 1];
 } RdsParser;
 
 void rdsParserReset(void);
+void rdsParserClearFlag(RDS_Flag mask);
 
 void rdsParserDecode(RdsBlock *block);
 RdsParser *rdsParserGet(void);

@@ -96,9 +96,9 @@ static void actionDispExpired(void)
 
     switch (amp->inType) {
     case IN_TUNER:
-        if (!priv.isSlave) {
-            defScreen = SCREEN_TUNER;
-        }
+//        if (!priv.isSlave) {
+        defScreen = SCREEN_TUNER;
+//        }
         break;
     }
 
@@ -547,11 +547,18 @@ static void ampSyncTuner(void)
 static void ampPollInput(void)
 {
     if (amp->screen != SCREEN_STANDBY) {
-        if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
-            if (amp->inType == IN_TUNER) {
+        if (amp->inType == IN_TUNER) {
+            if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
                 tunerUpdateStatus();
+                swTimSet(SW_TIM_INPUT_POLL, 200);
             }
-            swTimSet(SW_TIM_INPUT_POLL, 200);
+            RdsParser *rdsParser = rdsParserGet();
+            if (rdsParser->flags & RDS_FLAG_READY) {
+                swTimSet(SW_TIM_RDS_HOLD, 500);
+            }
+            if (swTimGet(SW_TIM_RDS_HOLD) == 0) {
+                rdsParserClearFlag(RDS_FLAG_READY);
+            }
         }
     }
 }

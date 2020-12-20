@@ -37,6 +37,11 @@ void rdsParserReset()
     memset(&parser, 0, sizeof (parser));
 }
 
+void rdsParserClearFlag(RDS_Flag mask)
+{
+    parser.flags &= ~mask;
+}
+
 void rdsParserDecode(RdsBlock *block)
 {
     parser.PI = block->a;
@@ -60,6 +65,7 @@ void rdsParserDecode(RdsBlock *block)
 
         parser.PS[2 * PSN_index + 0] = (block->d >> 8) & 0x7F;
         parser.PS[2 * PSN_index + 1] = (block->d >> 0) & 0x7F;
+        parser.flags |= RDS_FLAG_READY;
 
         if (block->b & RDS_B_TP_MASK) {
             parser.flags |= RDS_FLAG_TA;

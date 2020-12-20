@@ -28,6 +28,7 @@ static void drawStatusIcons(TunerView *this, bool clear)
     const Palette *pal = paletteGet();
 
     TunerFlag flags = this->sync->tFlags;
+    RDS_Flag rdsFlags = this->sync->rdsParser->flags;
 
     IconImage iconStereo = {
         .rect = &rectIconStereo,
@@ -38,7 +39,7 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
     IconImage iconRds = {
         .rect = &rectIconRds,
-        .color = flags & TUNER_FLAG_RDS_READY ? pal->fg : pal->inactive,
+        .color = rdsFlags & RDS_FLAG_READY ? pal->fg : pal->inactive,
         .icon = ICON_RDS,
     };
     iconImageDraw(&iconRds, clear);
