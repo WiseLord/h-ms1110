@@ -87,11 +87,12 @@ enum {
     ACTION_SP_CHANGE_MODE = 60,
 
     ACTION_TUNER_SET_FREQ = 80,
+    ACTION_TUNER_STORE,
 
-    ACTION_DIGIT,
+    ACTION_DIGIT          = 100,
     ACTION_DIGIT_HOLD,
 
-    ACTION_MEDIA,
+    ACTION_MEDIA          = 110,
 
     ACTION_END
 };

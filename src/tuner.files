@@ -66,6 +66,9 @@ common/fft.h
 common/gui/canvas.c
 common/gui/canvas.h
 common/gui/fonts/font-terminus-dig-40.c
+common/gui/icons.c
+common/gui/icons.h
+common/gui/icons/icons_h-ms1100.c
 common/gui/palette.c
 common/gui/palette.h
 common/gui/view/inputview.c

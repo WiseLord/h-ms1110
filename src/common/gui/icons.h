@@ -26,6 +26,7 @@ enum {
     ICON_FILE,
     ICON_STEREO,
     ICON_RDS,
+    ICON_MEM,
 
     // Input icons
     ICON_TUNER = 0x40,

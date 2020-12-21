@@ -837,6 +837,10 @@ static void ampGetFromSlaves(void)
             memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
             tunerSync->flags |= TUNERSYNC_FLAG_FREQ;
             break;
+        case SYNC_TUNER_STNUM:
+            memcpy(&tunerSync->stNum, &syncData[1], sizeof(int8_t));
+            tunerSync->flags |= TUNERSYNC_FLAG_STNUM;
+            break;
         case SYNC_TUNER_FLAGS:
             memcpy(&tunerSync->tFlags, &syncData[1], sizeof(TunerFlag));
             tunerSync->flags |= TUNERSYNC_FLAG_FLAGS;
@@ -920,18 +924,9 @@ static void ampSendMediaKey(MediaKey key)
         mpcSendMediaKey(key);
         break;
     case IN_TUNER:
-//        tunerSendMediaKey(key);
-//        break;
-//    case IN_PC:
-//#ifdef _ENABLE_USB
-//        usbHidSendMediaKey(key);
-//#endif
-//        break;
-//    case IN_KARADIO:
-//        karadioSendMediaKey(key);
-//        break;
-//    case IN_BLUETOOTH:
-//        btSendMediaKey(key);
+        priv.syncAction = action;
+        break;
+    default:
         break;
     }
 }

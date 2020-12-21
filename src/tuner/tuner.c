@@ -9,6 +9,7 @@
 #include "hwlibs.h"
 #include "i2c.h"
 #include "input.h"
+#include "mediakey.h"
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
@@ -397,8 +398,6 @@ static void actionRemapBtnShort(int16_t button)
 
 static void actionRemapBtnLong(int16_t button)
 {
-    Tuner *tuner = tunerGet();
-
     switch (button) {
     case BTN_TUNER_1:
         actionSet(ACTION_DIGIT_HOLD, 1);
@@ -432,7 +431,7 @@ static void actionRemapBtnLong(int16_t button)
     case BTN_TUNER_RDS:
         break;
     case BTN_TUNER_ENC:
-        stationStore(tuner->status.freq, "test");
+         actionSet(ACTION_TUNER_STORE, 0);
         break;
     default:
         break;
@@ -463,6 +462,13 @@ static void ampActionRemap(void)
     }
 
     switch (action.type) {
+    case ACTION_TUNER_STORE:
+        if (amp->inType == IN_TUNER) {
+            uint16_t freq = tunerGet()->status.freq;
+            char *PS = rdsParserGet()->PS;
+            stationStoreRemove(freq, PS);
+        }
+        break;
     case ACTION_DIGIT:
         if (amp->inType == IN_TUNER) {
             stationFavZap(action.value);
@@ -472,6 +478,18 @@ static void ampActionRemap(void)
         if (amp->inType == IN_TUNER) {
             stationFavStoreRemove(action.value);
         }
+        break;
+    }
+}
+
+static void ampSendMediaKey(MediaKey key)
+{
+    switch (key) {
+    case MEDIAKEY_PREV:
+        stationSeek(-1);
+        break;
+    case MEDIAKEY_NEXT:
+        stationSeek(+1);
         break;
     }
 }
@@ -487,6 +505,10 @@ static void ampActionHandle(void)
         break;
     case ACTION_DISP_EXPIRED:
         actionDispExpired();
+        break;
+
+    case ACTION_MEDIA:
+        ampSendMediaKey((MediaKey)action.value);
         break;
 
     default:
@@ -515,10 +537,17 @@ static void ampSyncTuner(void)
 
     Tuner *tuner = tunerGet();
     TunerSync *sync = tunerSyncGet();
+    int8_t stNum = stationGetNum(tuner->status.freq);
 
     if (sync->freq != tuner->status.freq) {
         sync->freq = tuner->status.freq;
         syncSlaveSend(SYNC_TUNER_FREQ, &sync->freq, sizeof(uint16_t));
+        return;
+    }
+
+    if (sync->stNum != stNum) {
+        sync->stNum = stNum;
+        syncSlaveSend(SYNC_TUNER_STNUM, &stNum, sizeof(int8_t));
         return;
     }
 
