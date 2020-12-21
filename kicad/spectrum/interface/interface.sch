@@ -61,8 +61,6 @@ Wire Wire Line
 NoConn ~ 10600 3600
 NoConn ~ 11150 4500
 Wire Wire Line
-	2850 1400 2850 1650
-Wire Wire Line
 	3050 1400 3050 2050
 $Comp
 L Connector_Generic:Conn_01x04 J3
@@ -88,12 +86,12 @@ SYNC_DATA
 $Comp
 L power:GNDD #PWR0103
 U 1 1 5E238DAE
-P 1600 4100
-F 0 "#PWR0103" H 1600 3850 50  0001 C CNN
-F 1 "GNDD" H 1604 3945 50  0000 C CNN
-F 2 "" H 1600 4100 50  0001 C CNN
-F 3 "" H 1600 4100 50  0001 C CNN
-	1    1600 4100
+P 1600 3850
+F 0 "#PWR0103" H 1600 3600 50  0001 C CNN
+F 1 "GNDD" H 1604 3695 50  0000 C CNN
+F 2 "" H 1600 3850 50  0001 C CNN
+F 3 "" H 1600 3850 50  0001 C CNN
+	1    1600 3850
 	1    0    0    -1  
 $EndComp
 Text Label 1150 2650 0    50   ~ 0
@@ -126,7 +124,7 @@ Wire Wire Line
 	1100 3750 1600 3750
 Connection ~ 1600 3750
 Wire Wire Line
-	1600 3750 1600 4100
+	1600 3750 1600 3850
 Text Label 1150 3450 0    50   ~ 0
 MUTE
 Text Label 1150 3550 0    50   ~ 0
@@ -170,10 +168,6 @@ Text Label 10550 1500 2    50   ~ 0
 SP_L
 Text Label 10550 1700 2    50   ~ 0
 SP_R
-Text Label 4850 2000 1    50   ~ 0
-OUT_L
-Text Label 4950 2000 1    50   ~ 0
-OUT_R
 Wire Wire Line
 	1100 2550 2050 2550
 $Comp
@@ -328,26 +322,12 @@ Wire Wire Line
 	5250 1600 5250 1400
 Wire Wire Line
 	5450 1600 5750 1600
-Text Label 5550 2000 1    50   ~ 0
-MP3_L
-Text Label 5650 2000 1    50   ~ 0
-MP3_R
-Text Label 5850 2000 1    50   ~ 0
-TUN_L
-Text Label 5950 2000 1    50   ~ 0
-TUN_R
 Wire Wire Line
 	5250 1600 4450 1600
 Wire Wire Line
 	4450 1600 4450 1400
 NoConn ~ 4050 1400
 NoConn ~ 5050 1400
-Text Label 4750 2000 1    50   ~ 0
-QD_R
-Text Label 4550 2000 1    50   ~ 0
-QD_L
-Text Label 4250 2000 1    50   ~ 0
-QD_G
 $Comp
 L h-ms1110:MP1584EN_module U1
 U 1 1 5E7F5A1F
@@ -467,41 +447,10 @@ NoConn ~ 2050 1400
 NoConn ~ 2150 1400
 NoConn ~ 3350 1400
 Wire Wire Line
-	5150 1400 5150 2300
-NoConn ~ 5950 2100
-NoConn ~ 5850 2100
-NoConn ~ 5650 2100
-NoConn ~ 5550 2100
-NoConn ~ 4950 2100
-NoConn ~ 4850 2100
-NoConn ~ 4750 2100
-NoConn ~ 4550 2100
-NoConn ~ 4250 2100
-NoConn ~ 3850 2100
-NoConn ~ 3650 2100
+	3650 1400 3650 2000
 Wire Wire Line
-	3650 1400 3650 2100
-Wire Wire Line
-	3850 1400 3850 2100
-Wire Wire Line
-	4250 1400 4250 2100
-Wire Wire Line
-	4550 1400 4550 2100
-Wire Wire Line
-	4750 1400 4750 2100
-Wire Wire Line
-	4850 1400 4850 2100
-Wire Wire Line
-	4950 1400 4950 2100
-Wire Wire Line
-	5550 1400 5550 2100
-Wire Wire Line
-	5650 1400 5650 2100
-Wire Wire Line
-	5850 1400 5850 2100
-Wire Wire Line
-	5950 1400 5950 2100
-NoConn ~ 2850 1650
+	3850 1400 3850 2000
+NoConn ~ 2850 1400
 NoConn ~ 1100 2350
 $Comp
 L Device:R R1
@@ -568,15 +517,16 @@ F 3 "~" H 2600 3450 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 3450 4350 3450
-$Comp
-L power:+12VA #PWR0102
-U 1 1 5FCC8866
-P 5150 2300
-F 0 "#PWR0102" H 5150 2150 50  0001 C CNN
-F 1 "+12VA" H 5165 2473 50  0000 C CNN
-F 2 "" H 5150 2300 50  0001 C CNN
-F 3 "" H 5150 2300 50  0001 C CNN
-	1    5150 2300
-	-1   0    0    1   
-$EndComp
+NoConn ~ 3250 1400
+NoConn ~ 3950 1400
+NoConn ~ 4250 1400
+NoConn ~ 4550 1400
+NoConn ~ 4750 1400
+NoConn ~ 4850 1400
+NoConn ~ 4950 1400
+NoConn ~ 5550 1400
+NoConn ~ 5650 1400
+NoConn ~ 5850 1400
+NoConn ~ 5950 1400
+NoConn ~ 5150 1400
 $EndSCHEMATC

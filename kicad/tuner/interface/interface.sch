@@ -67,8 +67,6 @@ F 3 "~" H 900 1850 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	2850 1400 2850 1650
-Wire Wire Line
 	3050 1400 3050 2050
 Text Label 1150 1850 0    50   ~ 0
 RDDA
@@ -175,10 +173,6 @@ Text Label 10550 1500 2    50   ~ 0
 SP_L
 Text Label 10550 1700 2    50   ~ 0
 SP_R
-Text Label 4850 2000 1    50   ~ 0
-OUT_L
-Text Label 4950 2000 1    50   ~ 0
-OUT_R
 Wire Wire Line
 	5150 1400 5150 2250
 $Comp
@@ -352,10 +346,6 @@ Wire Wire Line
 	5250 1600 5250 1400
 Wire Wire Line
 	5450 1600 5750 1600
-Text Label 5550 2000 1    50   ~ 0
-MP3_L
-Text Label 5650 2000 1    50   ~ 0
-MP3_R
 Text Label 5850 2000 1    50   ~ 0
 TUN_L
 Text Label 5950 2000 1    50   ~ 0
@@ -366,12 +356,6 @@ Wire Wire Line
 	4450 1600 4450 1400
 NoConn ~ 4050 1400
 NoConn ~ 5050 1400
-Text Label 4750 2000 1    50   ~ 0
-QD_R
-Text Label 4550 2000 1    50   ~ 0
-QD_L
-Text Label 4250 2000 1    50   ~ 0
-QD_G
 $Comp
 L Device:CP_Small C5
 U 1 1 5E7FE5FC
@@ -1118,29 +1102,29 @@ Wire Wire Line
 $Comp
 L power:+12VA #PWR02
 U 1 1 5FCC675A
-P 6750 2100
-F 0 "#PWR02" H 6750 1950 50  0001 C CNN
-F 1 "+12VA" H 6765 2273 50  0000 C CNN
-F 2 "" H 6750 2100 50  0001 C CNN
-F 3 "" H 6750 2100 50  0001 C CNN
-	1    6750 2100
+P 6750 2150
+F 0 "#PWR02" H 6750 2000 50  0001 C CNN
+F 1 "+12VA" H 6765 2323 50  0000 C CNN
+F 2 "" H 6750 2150 50  0001 C CNN
+F 3 "" H 6750 2150 50  0001 C CNN
+	1    6750 2150
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	6750 2100 6750 2250
+	6750 2150 6750 2250
 $Comp
 L power:+9VA #PWR08
 U 1 1 5FCD1850
-P 8550 2100
-F 0 "#PWR08" H 8550 1975 50  0001 C CNN
-F 1 "+9VA" H 8565 2273 50  0000 C CNN
-F 2 "" H 8550 2100 50  0001 C CNN
-F 3 "" H 8550 2100 50  0001 C CNN
-	1    8550 2100
+P 8550 2150
+F 0 "#PWR08" H 8550 2025 50  0001 C CNN
+F 1 "+9VA" H 8565 2323 50  0000 C CNN
+F 2 "" H 8550 2150 50  0001 C CNN
+F 3 "" H 8550 2150 50  0001 C CNN
+	1    8550 2150
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	8550 2100 8550 2250
+	8550 2150 8550 2250
 $Comp
 L Regulator_Linear:LM7809_TO220 U2
 U 1 1 5FCE13D8
@@ -1176,28 +1160,6 @@ Wire Wire Line
 	9900 2550 10600 2550
 Wire Wire Line
 	5350 1700 10600 1700
-Wire Wire Line
-	5550 1400 5550 2100
-Wire Wire Line
-	5650 1400 5650 2100
-NoConn ~ 5550 2100
-NoConn ~ 5650 2100
-NoConn ~ 4950 2100
-NoConn ~ 4850 2100
-NoConn ~ 4750 2100
-Wire Wire Line
-	4750 1400 4750 2100
-Wire Wire Line
-	4850 1400 4850 2100
-Wire Wire Line
-	4950 1400 4950 2100
-NoConn ~ 4550 2100
-NoConn ~ 4250 2100
-Wire Wire Line
-	4550 1400 4550 2100
-Wire Wire Line
-	4250 1400 4250 2100
-NoConn ~ 2850 1650
 NoConn ~ 1100 1650
 NoConn ~ 1100 2350
 Wire Wire Line
@@ -1293,4 +1255,14 @@ F 3 "~" H 2600 3450 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 3450 4350 3450
+NoConn ~ 5650 1400
+NoConn ~ 5550 1400
+NoConn ~ 4950 1400
+NoConn ~ 4850 1400
+NoConn ~ 4750 1400
+NoConn ~ 4550 1400
+NoConn ~ 4250 1400
+NoConn ~ 3950 1400
+NoConn ~ 3250 1400
+NoConn ~ 2850 1400
 $EndSCHEMATC
