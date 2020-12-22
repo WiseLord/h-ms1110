@@ -14,11 +14,11 @@ static const GlcdRect rectScale = {44, 34, 212, 6};
 static const GlcdRect rectFav = {246, 0, 10, 15};
 static const GlcdRect rectIconStereo = {150, 0, 20, 12};
 static const GlcdRect rectIconRds = {175, 0, 27, 12};
-static const GlcdRect rectIconMem = {210, 0, 27, 12};
+static const GlcdRect rectStNum = {220, 0, 27, 12};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
-    if (this->sync->flags & (TUNERSYNC_FLAG_STNUM | TUNERSYNC_FLAG_FLAGS | TUNERSYNC_FLAG_RDS)) {
+    if (this->sync->flags & (TUNERSYNC_FLAG_FLAGS | TUNERSYNC_FLAG_RDS)) {
         clear = true;
     }
 
@@ -29,7 +29,6 @@ static void drawStatusIcons(TunerView *this, bool clear)
     const Palette *pal = paletteGet();
 
     TunerFlag flags = this->sync->tFlags;
-    int8_t stNum = this->sync->stNum;
     RDS_Flag rdsFlags = rdsParserGet()->flags;
 
     IconImage iconStereo = {
@@ -45,14 +44,37 @@ static void drawStatusIcons(TunerView *this, bool clear)
         .icon = ICON_RDS,
     };
     iconImageDraw(&iconRds, clear);
+}
 
-    IconImage iconMem = {
-        .rect = &rectIconMem,
-        .color = stNum >= 0 ? pal->fg : pal->inactive,
-        .icon = ICON_MEM,
-    };
-    iconImageDraw(&iconMem, clear);
+static void drawStNum(TunerView *this, bool clear)
+{
+    if (this->sync->flags & (TUNERSYNC_FLAG_STNUM)) {
+        clear = true;
+    }
 
+    if (!clear) {
+        return;
+    }
+
+    const Palette *pal = paletteGet();
+    int8_t stNum = this->sync->stNum;
+
+    color_t color = stNum >= 0 ? pal->fg : pal->inactive;
+
+    glcdSetFont(&fontterminus14b);
+    glcdSetFontColor(color);
+
+    glcdSetRect(&rectStNum);
+    glcdSetXY(0, -1);
+    char buf[8];
+    if (stNum >= 0) {
+        snprintf(buf, sizeof(buf), "%2d", stNum + 1);
+    } else {
+        snprintf(buf, sizeof(buf), "%s", "--");
+    }
+    glcdWriteString(buf);
+
+    glcdResetRect();
 }
 
 static void drawMeta(TunerView *this, bool clear)
@@ -201,6 +223,7 @@ void tunerViewDraw(TunerView *this, bool clear)
     drawProgress(this, clear);
     drawFavNum(this, clear);
     drawStatusIcons(this, clear);
+    drawStNum(this, clear);
 
     this->sync->flags = 0;
 }
