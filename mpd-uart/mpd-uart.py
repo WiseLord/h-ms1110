@@ -121,8 +121,8 @@ class Player(object):
     def notify_fn(self):
         while self.alive:
             self.update_player_info()
-            time.sleep(0.2)
-            pass
+            if not self.cmd_queue:
+                time.sleep(0.1)
 
     def start(self):
         self.alive = True

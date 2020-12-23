@@ -443,6 +443,10 @@ static void actionRemapEncoder(int16_t encCnt)
     if (amp->inType == IN_TUNER) {
         tunerStep(encCnt);
     } else {
+        if (encCnt && priv.isSlave) {
+            Action syncAction = {ACTION_MEDIA, encCnt > 0 ? MEDIAKEY_FFWD : MEDIAKEY_REWIND};
+            syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Spectrum));
+        }
         actionSet(ACTION_NONE, 0);
     }
 }
@@ -490,6 +494,12 @@ static void ampSendMediaKey(MediaKey key)
         break;
     case MEDIAKEY_NEXT:
         stationSeek(+1);
+        break;
+    case MEDIAKEY_REWIND:
+        tunerStep(-1);
+        break;
+    case MEDIAKEY_FFWD:
+        tunerStep(+1);
         break;
     }
 }
