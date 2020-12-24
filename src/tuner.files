@@ -160,4 +160,4 @@ common/usart.h
 common/utils.c
 common/utils.h
 tuner/Makefile
-tuner/tuner.c
+tuner/amp_tuner.c

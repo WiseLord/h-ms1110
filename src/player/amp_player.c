@@ -1,24 +1,22 @@
 #include "amp.h"
 
-#include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "audio/audio.h"
-#include "debug.h"
 #include "gui/canvas.h"
 #include "hwlibs.h"
 #include "i2c.h"
 #include "input/analog.h"
 #include "input.h"
+#include "mediakey.h"
 #include "mpc.h"
 #include "rc.h"
 #include "rtc.h"
 #include "settings.h"
 #include "setup.h"
+#include "spectrum.h"
 #include "swtimers.h"
-#include "timers.h"
-#include "tr/labels.h"
+#include "sync.h"
 #include "tunersync.h"
 #include "utils.h"
 
@@ -59,12 +57,7 @@ static void actionRemapEncoder(int16_t encCnt);
 static void actionRemapCommon(void);
 
 static void ampGetFromSlaves(void);
-static void ampActionGet(void);
-static void ampActionRemap(void);
-static void ampActionHandle(void);
-
 static void ampSendToSlaves(void);
-static void ampScreenShow(void);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -807,23 +800,15 @@ void ampInit(void)
     amp->status = AMP_STATUS_STBY;
 }
 
-void ampRun(void)
+void ampSyncFromOthers(void)
 {
-    while (1) {
-        utilEnableSwd(SCREEN_STANDBY == amp->screen);
+    ampGetFromSlaves();
+    mpcGetData();
+}
 
-        ampGetFromSlaves();
-
-        mpcGetData();
-
-        ampActionGet();
-        ampActionRemap();
-        ampActionHandle();
-
-        ampSendToSlaves();
-
-        ampScreenShow();
-    }
+void ampSyncToOthers(void)
+{
+    ampSendToSlaves();
 }
 
 static void ampGetFromSlaves(void)
@@ -873,7 +858,7 @@ static void ampGetFromSlaves(void)
     }
 }
 
-static void ampActionGet(void)
+void ampActionGet(void)
 {
     if (ACTION_NONE == action.type) {
         action = ampGetButtons();
@@ -904,7 +889,7 @@ static void ampActionGet(void)
     }
 }
 
-static void ampActionRemap(void)
+void ampActionRemap(void)
 {
     switch (action.type) {
     case ACTION_BTN_SHORT:
@@ -1131,7 +1116,7 @@ static void ampSendToSlaves(void)
     }
 }
 
-static void ampScreenShow(void)
+void ampScreenShow(void)
 {
     bool clear = screenCheckClear();
 

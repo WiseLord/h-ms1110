@@ -139,4 +139,4 @@ common/usart.h
 common/utils.c
 common/utils.h
 spectrum/Makefile
-spectrum/spectrum.c
+spectrum/amp_spectrum.c

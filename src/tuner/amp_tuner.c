@@ -39,14 +39,8 @@ static void actionRemapEncoder(int16_t encCnt);
 
 static void ampActionSyncMaster(void);
 
-static void ampActionGet(void);
-static void ampActionRemap(void);
-static void ampActionHandle(void);
-
 static void ampPollInput(void);
 static void ampSyncTuner(void);
-
-static void ampScreenShow(void);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -268,26 +262,18 @@ void ampInit(void)
     amp->status = AMP_STATUS_STBY;
 }
 
-void ampRun(void)
+void ampSyncFromOthers(void)
 {
-    amp = ampGet();
+    ampActionSyncMaster();
+}
 
-    while (1) {
-        utilEnableSwd(SCREEN_STANDBY == amp->screen);
+void ampSyncToOthers(void)
+{
+    ampPollInput();
+    ampSyncTuner();
 
-        ampActionSyncMaster();
+    rdsDemodHandle();
 
-        ampActionGet();
-        ampActionRemap();
-        ampActionHandle();
-
-        ampPollInput();
-        ampSyncTuner();
-
-        rdsDemodHandle();
-
-        ampScreenShow();
-    }
 }
 
 static void ampActionSyncMaster(void)
@@ -451,7 +437,7 @@ static void actionRemapEncoder(int16_t encCnt)
     }
 }
 
-static void ampActionRemap(void)
+void ampActionRemap(void)
 {
     switch (action.type) {
     case ACTION_BTN_SHORT:
@@ -504,7 +490,7 @@ static void ampSendMediaKey(MediaKey key)
     }
 }
 
-static void ampActionHandle(void)
+void ampActionHandle(void)
 {
     switch (action.type) {
     case ACTION_INIT_HW:

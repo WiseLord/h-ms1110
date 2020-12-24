@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#include "rc.h"
+#include "action.h"
 
 #define GENERATE_LABEL_RC_CMD(RC)    LABEL_RC_ ## RC,
 

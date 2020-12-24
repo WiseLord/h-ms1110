@@ -1,6 +1,7 @@
 #include "amp.h"
 
 #include "input.h"
+#include "utils.h"
 
 static Amp amp = {
     .status = AMP_STATUS_STBY,
@@ -10,6 +11,23 @@ static Amp amp = {
 Amp *ampGet(void)
 {
     return &amp;
+}
+
+void ampRun(void)
+{
+    while (1) {
+        utilEnableSwd(SCREEN_STANDBY == amp.screen);
+
+        ampSyncFromOthers();
+
+        ampActionGet();
+        ampActionRemap();
+        ampActionHandle();
+
+        ampSyncToOthers();
+
+        ampScreenShow();
+    }
 }
 
 Action ampGetButtons()

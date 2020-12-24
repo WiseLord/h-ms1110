@@ -174,4 +174,4 @@ common/usart.h
 common/utils.c
 common/utils.h
 player/Makefile
-player/player.c
+player/amp_player.c

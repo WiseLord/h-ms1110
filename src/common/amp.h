@@ -108,9 +108,17 @@ typedef struct {
 } Amp;
 
 void ampInit(void);
+Amp *ampGet(void);
+
 void ampRun(void);
 
-Amp *ampGet(void);
+void ampSyncFromOthers(void);
+void ampSyncToOthers(void);
+
+void ampActionGet(void);
+void ampActionRemap(void);
+void ampActionHandle(void);
+void ampScreenShow(void);
 
 Action ampGetButtons();
 Action ampGetEncoder(void);

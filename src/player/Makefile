@@ -34,7 +34,7 @@ C_DEFS += -D_GLCD_OFT_Y=24
 
 COMMON = ../common
 
-C_SOURCES += $(call lc, $(MODULE)).c
+C_SOURCES += $(call lc, amp_$(MODULE)).c
 
 C_SOURCES += $(COMMON)/amp.c
 C_SOURCES += $(COMMON)/debug.c

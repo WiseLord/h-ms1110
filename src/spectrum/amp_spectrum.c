@@ -30,12 +30,6 @@ static void actionGetTimers(void);
 static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
 
-static void ampActionGet(void);
-static void ampActionRemap(void);
-static void ampActionHandle(void);
-
-static void ampScreenShow(void);
-
 static AmpPriv priv;
 static Amp *amp;
 
@@ -223,19 +217,14 @@ void ampInit(void)
     amp->status = AMP_STATUS_STBY;
 }
 
-void ampRun(void)
+void ampSyncFromOthers(void)
 {
-    while (1) {
-        utilEnableSwd(SCREEN_STANDBY == amp->screen);
+    ampActionSyncMaster();
+}
 
-        ampActionSyncMaster();
+void ampSyncToOthers(void)
+{
 
-        ampActionGet();
-        ampActionRemap();
-        ampActionHandle();
-
-        ampScreenShow();
-    }
 }
 
 static void ampActionSyncMaster(void)
@@ -318,7 +307,7 @@ static void actionRemapBtnLong(int16_t button)
     }
 }
 
-static void ampActionRemap(void)
+void ampActionRemap(void)
 {
     switch (action.type) {
     case ACTION_BTN_SHORT:
@@ -354,7 +343,7 @@ static void spModeChange(int16_t value)
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 
-static void ampActionHandle(void)
+void ampActionHandle(void)
 {
     switch (action.type) {
     case ACTION_INIT_HW:

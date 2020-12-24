@@ -5,6 +5,7 @@
 #include "display/glcd.h"
 #include "eemul.h"
 #include "gui/palette.h"
+#include "rc.h"
 #include "rtc.h"
 #include "setup.h"
 #include "tr/labels.h"
@@ -227,6 +228,8 @@ static void drawAlarm(bool clear)
 
 static void drawRemote(bool clear)
 {
+    (void) clear;
+
     const Palette *pal = paletteGet();
     Setup *setup = setupGet();
 
