@@ -490,9 +490,19 @@ static void actionGetTimers(void)
 
 static void actionRemapBtnShort(int16_t button)
 {
+    Setup *setup = setupGet();
+
     switch (button) {
     case BTN_AMP_STBY:
-        actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        switch (amp->screen) {
+        case SCREEN_SETUP:
+            if (setup->active <= SETUP_MAIN) { // has childs
+                actionSet(ACTION_SETUP_SELECT, setup->child);
+            }
+            break;
+        default:
+            actionSet(ACTION_STANDBY, FLAG_SWITCH);
+        }
         break;
     case BTN_AMP_IN_PREV:
         if (SCREEN_SETUP == amp->screen) {
@@ -528,19 +538,9 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
         break;
     case BTN_PLAYER_AUDIO:
-        if (SCREEN_SETUP == amp->screen) {
-            actionSet(ACTION_SETUP_BACK, 0);
-        } else {
-            action.type = ACTION_AUDIO_MENU;
-        }
+        action.type = ACTION_AUDIO_MENU;
         break;
     case BTN_PLAYER_SUBTITLE:
-        if (SCREEN_SETUP == amp->screen) {
-            Setup *setup = setupGet();
-            if (setup->active <= SETUP_MAIN) { // has childs
-                actionSet(ACTION_SETUP_SELECT, setup->child);
-            }
-        }
         break;
     default:
         break;
@@ -549,10 +549,22 @@ static void actionRemapBtnShort(int16_t button)
 
 static void actionRemapBtnLong(int16_t button)
 {
+    Setup *setup = setupGet();
+
     switch (button) {
     case BTN_AMP_STBY:
-        if (SCREEN_STANDBY == amp->screen) {
+        switch (amp->screen) {
+        case SCREEN_STANDBY:
             actionSet(ACTION_SETUP_SELECT, SETUP_MAIN);
+            break;
+        case SCREEN_SETUP:
+            actionSet(ACTION_STANDBY, FLAG_ENTER);
+            if (setup->active <= SETUP_MAIN) { // has childs
+                actionSet(ACTION_STANDBY, FLAG_ENTER);
+            } else {
+                actionSet(ACTION_SETUP_BACK, 0);
+            }
+            break;
         }
         break;
     case BTN_AMP_IN_PREV:

@@ -47,17 +47,16 @@ void setupSwitchChild(int8_t direction)
     SetupType first = SETUP_NULL;
     SetupType last = SETUP_NULL;
 
+    setup.child += direction;
+
     switch (setup.active) {
     case SETUP_MAIN:
         first = SETUP_TIME;
         last = SETUP_REMOTE;
         break;
     case SETUP_TIME:
-        first = RTC_HOUR;
-        last = RTC_SEC;
-        break;
     case SETUP_DATE:
-        first = RTC_DATE;
+        first = RTC_HOUR;
         last = RTC_YEAR;
         break;
     case SETUP_ALARM:
@@ -72,13 +71,15 @@ void setupSwitchChild(int8_t direction)
         return;
     }
 
-    setup.child += direction;
-
     if (setup.child < first) {
-        setup.child = first;
+        setup.child = last;
     }
     if (setup.child > last) {
-        setup.child = last;
+        setup.child = first;
+    }
+
+    if (setup.active == SETUP_TIME || setup.active == SETUP_DATE) {
+        setup.active = setup.child <= RTC_SEC ? SETUP_TIME : SETUP_DATE;
     }
 }
 
