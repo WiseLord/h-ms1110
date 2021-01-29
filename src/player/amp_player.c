@@ -29,6 +29,13 @@ enum {
     SYNC_FLAG_TUNER     = 0x04,
 };
 
+typedef uint8_t Slaves;
+enum {
+    SLAVE_NO        = 0x00,
+    SLAVE_TUNER     = 0x01,
+    SLAVE_SPECTRUM  = 0x02,
+};
+
 typedef struct {
     SyncFlags syncFlags;
 
@@ -43,6 +50,8 @@ typedef struct {
     Spectrum sp;
     InputType inType;
     Action syncAction;
+
+    Slaves online;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -798,6 +807,7 @@ void ampInit(void)
     swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp->status = AMP_STATUS_STBY;
+    priv.online = SLAVE_TUNER | SLAVE_SPECTRUM;
 }
 
 void ampSyncFromOthers(void)
@@ -811,50 +821,70 @@ void ampSyncToOthers(void)
     ampSendToSlaves();
 }
 
-static void ampGetFromSlaves(void)
+static void receiveFromTunerModule(void)
 {
     uint8_t syncData[SYNC_DATASIZE];
     SyncType syncType;
+
     TunerSync *tunerSync = tunerSyncGet();
     RdsParser *rdsParser = rdsParserGet();
 
-    const uint8_t slaves[] = {AMP_TUNER_ADDR, AMP_SPECTRUM_ADDR};
+    syncType = syncMasterReceive(AMP_TUNER_ADDR, syncData);
+    switch (syncType) {
+    case SYNC_ACTION:
+        action = *(Action *)&syncData[1];
+        break;
+    case SYNC_TUNER_FREQ:
+        memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
+        tunerSync->flags |= TUNERSYNC_FLAG_FREQ;
+        break;
+    case SYNC_TUNER_STNUM:
+        memcpy(&tunerSync->stNum, &syncData[1], sizeof(int8_t));
+        tunerSync->flags |= TUNERSYNC_FLAG_STNUM;
+        break;
+    case SYNC_TUNER_FLAGS:
+        memcpy(&tunerSync->tFlags, &syncData[1], sizeof(TunerFlag));
+        tunerSync->flags |= TUNERSYNC_FLAG_FLAGS;
+        break;
+    case SYNC_TUNER_FAVS:
+        memcpy(&tunerSync->favMask, &syncData[1], sizeof(uint16_t));
+        tunerSync->flags |= TUNERSYNC_FLAG_FAVS;
+        break;
+    case SYNC_TUNER_BAND:
+        memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
+        tunerSync->flags |= TUNERSYNC_FLAG_BAND;
+        break;
+    case SYNC_TUNER_RDS:
+        memcpy(rdsParser, &syncData[1], sizeof(RdsParser));
+        tunerSync->flags |= TUNERSYNC_FLAG_RDS;
+        break;
+    }
+}
 
-    for (uint8_t i = 0; i < sizeof(slaves); i++) {
-        syncType = syncMasterReceive(slaves[i], syncData);
-        switch (syncType) {
-        case SYNC_ACTION:
-            action = *(Action *)&syncData[1];
-            return;
-        case SYNC_SPECTRUM:
-            memcpy(&priv.sp, &syncData[1], sizeof(Spectrum));
-            priv.syncFlags |= SYNC_FLAG_SPECTRUM;
-            return;
-        case SYNC_TUNER_FREQ:
-            memcpy(&tunerSync->freq, &syncData[1], sizeof(uint16_t));
-            tunerSync->flags |= TUNERSYNC_FLAG_FREQ;
-            break;
-        case SYNC_TUNER_STNUM:
-            memcpy(&tunerSync->stNum, &syncData[1], sizeof(int8_t));
-            tunerSync->flags |= TUNERSYNC_FLAG_STNUM;
-            break;
-        case SYNC_TUNER_FLAGS:
-            memcpy(&tunerSync->tFlags, &syncData[1], sizeof(TunerFlag));
-            tunerSync->flags |= TUNERSYNC_FLAG_FLAGS;
-            break;
-        case SYNC_TUNER_FAVS:
-            memcpy(&tunerSync->favMask, &syncData[1], sizeof(uint16_t));
-            tunerSync->flags |= TUNERSYNC_FLAG_FAVS;
-            break;
-        case SYNC_TUNER_BAND:
-            memcpy(&tunerSync->band, &syncData[1], sizeof(TunerSyncBand));
-            tunerSync->flags |= TUNERSYNC_FLAG_BAND;
-            break;
-        case SYNC_TUNER_RDS:
-            memcpy(rdsParser, &syncData[1], sizeof(RdsParser));
-            tunerSync->flags |= TUNERSYNC_FLAG_RDS;
-            break;
-        }
+static void receiveFromSpectrumModule(void)
+{
+    uint8_t syncData[SYNC_DATASIZE];
+    SyncType syncType;
+
+    syncType = syncMasterReceive(AMP_SPECTRUM_ADDR, syncData);
+    switch (syncType) {
+    case SYNC_ACTION:
+        action = *(Action *)&syncData[1];
+        break;
+    case SYNC_SPECTRUM:
+        memcpy(&priv.sp, &syncData[1], sizeof(Spectrum));
+        priv.syncFlags |= SYNC_FLAG_SPECTRUM;
+        break;;
+    }
+}
+
+static void ampGetFromSlaves(void)
+{
+    if (SLAVE_TUNER & priv.online) {
+        receiveFromTunerModule();
+    }
+    if (SLAVE_SPECTRUM & priv.online) {
+        receiveFromSpectrumModule();
     }
 }
 
@@ -1063,6 +1093,26 @@ static void prepareAudioTune(TuneView *tune)
     tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
 }
 
+static void sendToTunerModule(SyncType type, void *data, size_t size)
+{
+    if (SLAVE_TUNER & priv.online) {
+        syncMasterSend(AMP_TUNER_ADDR, type, data, size);
+    }
+}
+
+static void sendToSpectrumModule(SyncType type, void *data, size_t size)
+{
+    if (SLAVE_SPECTRUM & priv.online) {
+        syncMasterSend(AMP_SPECTRUM_ADDR, type, data, size);
+    }
+}
+
+static void sendToAllModules(SyncType type, void *data, size_t size)
+{
+    sendToTunerModule(type, data, size);
+    sendToSpectrumModule(type, data, size);
+}
+
 static void ampSendToSlaves(void)
 {
     if (swTimGet(SW_TIM_SYNC) > 0) {
@@ -1070,8 +1120,7 @@ static void ampSendToSlaves(void)
     }
 
     if (priv.syncAction.type != ACTION_NONE) {
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_ACTION, &priv.syncAction, sizeof(Action));
+        sendToAllModules(SYNC_ACTION, &priv.syncAction, sizeof(Action));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         // Force everything to resend on exit standby
         if (priv.syncAction.type == ACTION_STANDBY && priv.syncAction.value == FLAG_EXIT) {
@@ -1082,8 +1131,7 @@ static void ampSendToSlaves(void)
     }
 
     if (priv.inType != amp->inType) {
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
+        sendToAllModules(SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         priv.inType = amp->inType;
         return;
@@ -1093,8 +1141,7 @@ static void ampSendToSlaves(void)
 
     if (priv.syncFlags & SYNC_FLAG_SPECTRUM) {
         priv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_SPECTRUM, sp, sizeof(Spectrum));
+        sendToAllModules(SYNC_SPECTRUM, sp, sizeof(Spectrum));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
@@ -1102,15 +1149,14 @@ static void ampSendToSlaves(void)
     if (priv.syncFlags & SYNC_FLAG_RTC) {
         priv.syncFlags &= ~SYNC_FLAG_RTC;
         uint32_t rtcRaw = rtcGetRaw();
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
-        syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_TIME, &rtcRaw, sizeof(uint32_t));
+        sendToAllModules(SYNC_TIME, &rtcRaw, sizeof(uint32_t));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
 
     if (priv.syncFlags & SYNC_FLAG_TUNER) {
         priv.syncFlags &= ~SYNC_FLAG_TUNER;
-        syncMasterSend(AMP_TUNER_ADDR, SYNC_REQUEST, NULL, 0);
+        sendToTunerModule(SYNC_REQUEST, NULL, 0);
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
