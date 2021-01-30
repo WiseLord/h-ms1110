@@ -18,7 +18,7 @@ extern "C" {
 #define I2C1_BUF_SIZE   32
 #endif
 #ifndef I2C2_BUF_SIZE
-#define I2C2_BUF_SIZE   96
+#define I2C2_BUF_SIZE   32
 #endif
 
 typedef void (*I2cRxFn)(int16_t rxBytes);

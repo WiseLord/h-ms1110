@@ -28,6 +28,7 @@ C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 C_DEFS += -D_PRINTF_USART1
 C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
+C_DEFS += -DI2C2_BUF_SIZE=96
 
 # Player prototype board has a bit different schematics
 # S1 connected to PB0 instead of PA13

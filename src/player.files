@@ -15,8 +15,6 @@ common/audio/tda7439.c
 common/audio/tda7439.h
 common/audio/tda7719.c
 common/audio/tda7719.h
-common/debug.c
-common/debug.h
 common/display/colors.h
 common/display/dispconf.h
 common/display/dispdrv.c
