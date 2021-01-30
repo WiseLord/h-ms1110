@@ -1,0 +1,17 @@
+src/common
+src/common/audio
+src/common/display
+src/common/display/fonts
+src/common/display/gg256x64
+src/common/display/hw
+src/common/drivers/CMSIS/Device/ST/STM32F1xx/Include
+src/common/drivers/CMSIS/Include
+src/common/drivers/STM32F1xx_HAL_Driver/Inc
+src/common/gui
+src/common/gui/view
+src/common/gui/widget
+src/common/input
+src/common/screen
+src/common/tr
+src/common/tuner
+src/common/tuner/rds

@@ -1,0 +1,5 @@
+*.user
+*.cflags
+*.cxxflags
+build/*
+flash/*
