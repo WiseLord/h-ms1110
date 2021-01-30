@@ -1,5 +1,6 @@
 #include "amp.h"
 
+#include "display/glcd.h"
 #include "input.h"
 #include "utils.h"
 
@@ -59,4 +60,9 @@ Action ampGetEncoder(void)
     }
 
     return ret;
+}
+
+void ampSetBrightness(uint8_t value)
+{
+    glcdSetBrightness(value);
 }

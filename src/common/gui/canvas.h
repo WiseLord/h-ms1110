@@ -15,6 +15,8 @@ extern "C" {
 #include "spectrum.h"
 #include "tr/labels.h"
 
+#include "view/datetimeview.h"
+
 typedef struct {
     Glcd *glcd;
     const Palette *pal;
@@ -26,9 +28,8 @@ Canvas *canvasGet(void);
 void canvasClear(void);
 
 void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
-void canvasShowTime(bool clear, bool active);
-void canvasShowDate(bool clear, bool active);
-void canvasShowWday(bool clear, bool active);
+
+void canvasShowDateTime(bool clear, DateTimeMode mode);
 
 void canvasShowInputCommon(InputType inType, bool clear);
 void canvasShowInputTuner(bool clear);

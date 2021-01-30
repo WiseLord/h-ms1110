@@ -7,8 +7,8 @@
 #include "rtc.h"
 #include "screen/spectrumview.h"
 #include "screen/setupview.h"
-#include "screen/timeview.h"
 #include "swtimers.h"
+
 #include "view/inputview.h"
 #include "view/mpcview.h"
 #include "view/tunerview.h"
@@ -98,28 +98,24 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
-void canvasShowTime(bool clear, bool active)
+void canvasShowDateTime(bool clear, DateTimeMode mode)
 {
+    static DateTimeView dtv;
+
     RTC_type rtc;
     rtcGetTime(&rtc);
 
-    timeViewDraw(clear, active, rtc.hour, rtc.min, rtc.sec);
-}
+    dtv.hour = rtc.hour;
+    dtv.min = rtc.min;
+    dtv.sec = rtc.sec;
+    dtv.month = rtc.month;
+    dtv.year = rtc.year;
+    dtv.date = rtc.date;
+    dtv.wday = rtc.wday;
 
-void canvasShowDate(bool clear, bool active)
-{
-    RTC_type rtc;
-    rtcGetTime(&rtc);
+    dtv.mode = mode;
 
-    dateViewDraw(clear, active, rtc.date, rtc.month, rtc.year, rtc.wday);
-}
-
-void canvasShowWday(bool clear, bool active)
-{
-    RTC_type rtc;
-    rtcGetTime(&rtc);
-
-    wdayViewDraw(clear, active, rtc.wday);
+    dateTimeViewDraw(&dtv, clear);
 }
 
 void canvasShowInputCommon(InputType inType, bool clear)

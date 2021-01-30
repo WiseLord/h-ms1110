@@ -11,6 +11,9 @@ extern "C" {
 #include "action.h"
 #include "sync.h"
 
+#define AMP_BR_STBY         32
+#define AMP_BR_ACTIVE       160
+
 #define FLAG_EXIT           0
 #define FLAG_ENTER          1
 #define FLAG_SWITCH         2
@@ -96,6 +99,14 @@ enum {
     IN_END
 };
 
+typedef uint8_t AmpModule;
+enum {
+    AMP_MODULE_NO       = 0x00,
+    AMP_MODULE_PLAYER   = 0x01,
+    AMP_MODULE_TUNER    = 0x02,
+    AMP_MODULE_SPECTRUM = 0x04,
+};
+
 typedef struct {
     ScreenType type;
     int16_t timeout;
@@ -122,6 +133,8 @@ void ampScreenShow(void);
 
 Action ampGetButtons();
 Action ampGetEncoder(void);
+
+void ampSetBrightness(uint8_t value);
 
 #ifdef __cplusplus
 }

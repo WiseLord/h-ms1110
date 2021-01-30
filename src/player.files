@@ -85,6 +85,8 @@ common/gui/icons.c
 common/gui/icons/icons_h-ms1100.c
 common/gui/palette.c
 common/gui/palette.h
+common/gui/view/datetimeview.c
+common/gui/view/datetimeview.h
 common/gui/view/inputview.c
 common/gui/view/inputview.h
 common/gui/view/mpcview.c
@@ -124,8 +126,6 @@ common/screen/setupview.c
 common/screen/setupview.h
 common/screen/spectrumview.c
 common/screen/spectrumview.h
-common/screen/timeview.c
-common/screen/timeview.h
 common/screen/tuneview.c
 common/screen/tuneview.h
 common/settings.c

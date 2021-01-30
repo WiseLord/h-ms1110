@@ -68,6 +68,8 @@ common/gui/canvas.h
 common/gui/fonts/font-terminus-dig-40.c
 common/gui/palette.c
 common/gui/palette.h
+common/gui/view/datetimeview.c
+common/gui/view/datetimeview.h
 common/gui/widget/progressbar.c
 common/gui/widget/progressbar.h
 common/gui/widget/spectrumcolumn.c
@@ -92,8 +94,6 @@ common/screen/radioview.c
 common/screen/radioview.h
 common/screen/spectrumview.c
 common/screen/spectrumview.h
-common/screen/timeview.c
-common/screen/timeview.h
 common/settings.c
 common/settings.h
 common/spectrum.c

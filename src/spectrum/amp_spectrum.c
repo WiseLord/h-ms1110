@@ -101,6 +101,8 @@ static void ampReadSettings(void)
 
 void ampExitStby(void)
 {
+    ampSetBrightness(AMP_BR_ACTIVE);
+
     ampReadSettings();
 
     amp->status = AMP_STATUS_POWERED;
@@ -111,6 +113,8 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
+    ampSetBrightness(AMP_BR_STBY);
+
     swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
@@ -203,6 +207,8 @@ void ampInit(void)
 
     labelsInit();
     canvasInit();
+
+    ampSetBrightness(AMP_BR_STBY);
 
     inputInit(BTN_NO, 0);
 
@@ -398,10 +404,10 @@ void ampScreenShow(void)
         canvasShowSpectrum(clear, spMode, sp->peaks);
         break;
     case SCREEN_TIME:
-        canvasShowDate(clear, true);
+        canvasShowDateTime(clear, DT_MODE_DATE);
         break;
     case SCREEN_STANDBY:
-        canvasShowDate(clear, false);
+        canvasShowDateTime(clear, DT_MODE_DATE);
         break;
     default:
         break;

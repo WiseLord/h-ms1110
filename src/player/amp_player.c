@@ -22,21 +22,11 @@
 
 #define SYNC_PERIOD     10
 
-#define AMP_BR_STBY     31
-#define AMP_BR_ACTIVE   127
-
 typedef uint8_t SyncFlags;
 enum {
     SYNC_FLAG_RTC       = 0x01,
     SYNC_FLAG_SPECTRUM  = 0x02,
     SYNC_FLAG_TUNER     = 0x04,
-};
-
-typedef uint8_t Slaves;
-enum {
-    SLAVE_NO        = 0x00,
-    SLAVE_TUNER     = 0x01,
-    SLAVE_SPECTRUM  = 0x02,
 };
 
 typedef struct {
@@ -54,7 +44,7 @@ typedef struct {
     InputType inType;
     Action syncAction;
 
-    Slaves online;
+    AmpModule online;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -128,11 +118,6 @@ static bool screenCheckClear(void)
     priv.prevScreen = amp->screen;
 
     return clear;
-}
-
-void ampSetBrightness(uint8_t value)
-{
-    glcdSetBrightness(value);
 }
 
 static void actionDispExpired(void)
@@ -821,7 +806,7 @@ void ampInit(void)
     swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp->status = AMP_STATUS_STBY;
-    priv.online = SLAVE_TUNER | SLAVE_SPECTRUM;
+    priv.online = AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM;
 }
 
 void ampSyncFromOthers(void)
@@ -894,10 +879,10 @@ static void receiveFromSpectrumModule(void)
 
 static void ampGetFromSlaves(void)
 {
-    if (SLAVE_TUNER & priv.online) {
+    if (AMP_MODULE_TUNER & priv.online) {
         receiveFromTunerModule();
     }
-    if (SLAVE_SPECTRUM & priv.online) {
+    if (AMP_MODULE_SPECTRUM & priv.online) {
         receiveFromSpectrumModule();
     }
 }
@@ -1109,14 +1094,14 @@ static void prepareAudioTune(TuneView *tune)
 
 static void sendToTunerModule(SyncType type, void *data, size_t size)
 {
-    if (SLAVE_TUNER & priv.online) {
+    if (AMP_MODULE_TUNER & priv.online) {
         syncMasterSend(AMP_TUNER_ADDR, type, data, size);
     }
 }
 
 static void sendToSpectrumModule(SyncType type, void *data, size_t size)
 {
-    if (SLAVE_SPECTRUM & priv.online) {
+    if (AMP_MODULE_SPECTRUM & priv.online) {
         syncMasterSend(AMP_SPECTRUM_ADDR, type, data, size);
     }
 }
@@ -1186,12 +1171,17 @@ void ampScreenShow(void)
 
     static TuneView tune;
 
+    DateTimeMode dtMode = DT_MODE_TIME | DT_MODE_DATE | DT_MODE_WDAY;
+    if ((AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM) & priv.online) {
+        dtMode &= ~(DT_MODE_DATE | DT_MODE_WDAY);
+    }
+
     switch (amp->screen) {
     case SCREEN_TIME:
-        canvasShowTime(clear, true);
+        canvasShowDateTime(clear, dtMode);
         break;
     case SCREEN_STANDBY:
-        canvasShowTime(clear, false);
+        canvasShowDateTime(clear, dtMode);
         break;
     case SCREEN_TUNE:
         prepareAudioTune(&tune);

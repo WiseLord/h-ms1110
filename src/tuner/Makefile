@@ -68,10 +68,12 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
+C_SOURCES += $(COMMON)/gui/view/datetimeview.c
+C_SOURCES += $(COMMON)/gui/view/inputview.c
+C_SOURCES += $(COMMON)/gui/view/mpcview.c
 C_SOURCES += $(COMMON)/gui/view/tunerview.c
 
 C_SOURCES += $(COMMON)/screen/spectrumview.c
-C_SOURCES += $(COMMON)/screen/timeview.c
 
 C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
 C_SOURCES += $(COMMON)/display/dispdrv.c
