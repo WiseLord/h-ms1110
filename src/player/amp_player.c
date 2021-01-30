@@ -22,6 +22,9 @@
 
 #define SYNC_PERIOD     10
 
+#define AMP_BR_STBY     31
+#define AMP_BR_ACTIVE   127
+
 typedef uint8_t SyncFlags;
 enum {
     SYNC_FLAG_RTC       = 0x01,
@@ -125,6 +128,11 @@ static bool screenCheckClear(void)
     priv.prevScreen = amp->screen;
 
     return clear;
+}
+
+void ampSetBrightness(uint8_t value)
+{
+    glcdSetBrightness(value);
 }
 
 static void actionDispExpired(void)
@@ -234,6 +242,8 @@ static void ampVolumeInit(void)
 
 void ampExitStby(void)
 {
+    ampSetBrightness(AMP_BR_ACTIVE);
+
     ampReadSettings();
 
     ampPinStby(false);      // Power on amplifier
@@ -247,6 +257,8 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
+    ampSetBrightness(AMP_BR_STBY);
+
     swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
     swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
 
@@ -785,6 +797,8 @@ void ampInit(void)
 
     labelsInit();
     canvasInit();
+
+    ampSetBrightness(AMP_BR_STBY);
 
     rtcInit();
     rtcSetCb(rtcCb);
