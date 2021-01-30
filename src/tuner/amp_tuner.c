@@ -422,7 +422,7 @@ static void actionRemapBtnLong(int16_t button)
     case BTN_TUNER_RDS:
         break;
     case BTN_TUNER_ENC:
-         actionSet(ACTION_TUNER_STORE, 0);
+        actionSet(ACTION_TUNER_STORE, 0);
         break;
     default:
         break;
@@ -607,7 +607,8 @@ void ampScreenShow(void)
     }
 
     Spectrum *sp = spGet();
-    SpMode spMode = sp->mode == SP_MODE_MIRROR ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
+    SpMode spMode = (sp->mode == SP_MODE_MIRROR || sp->mode == SP_MODE_INVERTED)
+                    ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:

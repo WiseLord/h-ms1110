@@ -286,6 +286,7 @@ static void actionRemapBtnShort(int16_t button)
 {
     switch (button) {
     case BTN_SPECTRUM_AUTO:
+        actionSet(ACTION_SP_CHANGE_PEAKS, 0);
         break;
     case BTN_SPECTRUM_DEMO:
         break;
@@ -331,18 +332,28 @@ static void spModeChange(int16_t value)
     if (value > 0) {
         if (++sp->mode > SP_MODE_STEREO_END) {
             sp->mode = SP_MODE_STEREO;
-            sp->peaks = !sp->peaks;
         }
     } else if (value < 0) {
         if (--sp->mode < SP_MODE_STEREO) {
             sp->mode = SP_MODE_STEREO_END;
-            sp->peaks = !sp->peaks;
         }
     }
 
     priv.clearScreen = true;
 
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
+
+    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+}
+
+static void spPeaksChange()
+{
+    Spectrum *sp = spGet();
+
+    sp->peaks = !sp->peaks;
+
+    priv.clearScreen = true;
+
     settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
 
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
@@ -364,6 +375,13 @@ void ampActionHandle(void)
     case ACTION_SP_CHANGE_MODE:
         if (amp->screen == SCREEN_SPECTRUM) {
             spModeChange(action.value);
+        }
+        screenSet(SCREEN_SPECTRUM, 3000);
+        break;
+
+    case ACTION_SP_CHANGE_PEAKS:
+        if (amp->screen == SCREEN_SPECTRUM) {
+            spPeaksChange();
         }
         screenSet(SCREEN_SPECTRUM, 3000);
         break;
@@ -396,7 +414,8 @@ void ampScreenShow(void)
 
     Spectrum *sp = spGet();
 
-    SpMode spMode = sp->mode == SP_MODE_ANTIMIRROR ? SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
+    SpMode spMode = (sp->mode == SP_MODE_STEREO || sp->mode == SP_MODE_MIRROR) ?
+                    SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:

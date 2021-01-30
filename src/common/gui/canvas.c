@@ -84,6 +84,12 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
         rect.y += rect.h;
         spViewDraw(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
         break;
+    case SP_MODE_INVERTED:
+        rect.h = rect.h / 2;
+        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
+        rect.y += rect.h;
+        spViewDraw(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
+        break;
     case SP_MODE_ANTIMIRROR:
         rect.h = rect.h / 2;
         spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
