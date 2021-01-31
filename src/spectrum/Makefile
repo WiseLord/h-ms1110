@@ -39,6 +39,7 @@ COMMON = ../common
 C_SOURCES += $(call lc, amp_$(MODULE)).c
 
 C_SOURCES += $(COMMON)/amp.c
+C_SOURCES += $(COMMON)/demo.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c

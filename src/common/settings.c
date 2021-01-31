@@ -60,6 +60,7 @@ static const EE_Cell eeMap[] = {
     [PARAM_SPECTRUM_MODE]   =   {0x50,  0},
     [PARAM_SPECTRUM_PEAKS]  =   {0x51,  true},
     [PARAM_SPECTRUM_GRAD]   =   {0x52,  false},
+    [PARAM_SPECTRUM_DEMO]   =   {0x53,  false},
 
     [PARAM_ALARM_HOUR]      =   {0x60,  7},
     [PARAM_ALARM_MINUTE]    =   {0x61,  30},

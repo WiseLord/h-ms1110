@@ -612,7 +612,11 @@ void ampScreenShow(void)
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, spMode, sp->peaks);
+        if (sp->demo) {
+            canvasShowDemo(clear, 64);
+        } else {
+            canvasShowSpectrum(clear, spMode, sp->peaks);
+        }
         break;
     case SCREEN_TIME:
         canvasShowDateTime(clear, DT_MODE_WDAY);

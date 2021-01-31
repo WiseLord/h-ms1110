@@ -289,6 +289,7 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_SP_CHANGE_PEAKS, 0);
         break;
     case BTN_SPECTRUM_DEMO:
+        actionSet(ACTION_SP_CHANGE_DEMO, 0);
         break;
     case BTN_SPECTRUM_DISP_PREV:
         actionSet(ACTION_SP_CHANGE_MODE, -1);
@@ -359,6 +360,19 @@ static void spPeaksChange()
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 
+static void spDemoChange()
+{
+    Spectrum *sp = spGet();
+
+    sp->demo = !sp->demo;
+
+    priv.clearScreen = true;
+
+    settingsStore(PARAM_SPECTRUM_DEMO, sp->demo);
+
+    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+}
+
 void ampActionHandle(void)
 {
     switch (action.type) {
@@ -382,6 +396,13 @@ void ampActionHandle(void)
     case ACTION_SP_CHANGE_PEAKS:
         if (amp->screen == SCREEN_SPECTRUM) {
             spPeaksChange();
+        }
+        screenSet(SCREEN_SPECTRUM, 3000);
+        break;
+
+    case ACTION_SP_CHANGE_DEMO:
+        if (amp->screen == SCREEN_SPECTRUM) {
+            spDemoChange();
         }
         screenSet(SCREEN_SPECTRUM, 3000);
         break;
@@ -419,7 +440,11 @@ void ampScreenShow(void)
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
-        canvasShowSpectrum(clear, spMode, sp->peaks);
+        if (sp->demo) {
+            canvasShowDemo(clear, 0);
+        } else {
+            canvasShowSpectrum(clear, spMode, sp->peaks);
+        }
         break;
     case SCREEN_TIME:
         canvasShowDateTime(clear, DT_MODE_DATE);

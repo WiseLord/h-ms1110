@@ -50,6 +50,7 @@ typedef struct {
     SpMode mode;
     bool peaks;
     bool grad;
+    bool demo;
 } Spectrum;
 
 // Callback to convert FFT data

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "demo.h"
 #include "input/matrix.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
@@ -101,6 +102,16 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
         break;
     default:
         break;
+    }
+}
+
+void canvasShowDemo(bool clear, int16_t offset)
+{
+    (void)clear;
+
+    if (swTimGet(SW_TIM_SP_CONVERT) == 0) {
+        swTimSet(SW_TIM_SP_CONVERT, 40);
+        demoDraw(offset);
     }
 }
 
