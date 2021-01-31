@@ -20,7 +20,7 @@ void ssd1322Init(void)
     dispdrvSelectReg8(0xAE); // SET_DISPLAY_OFF
 
     dispdrvSelectReg8(0xB3);// SET_CLOCK_DIVIDER
-    dispdrvSendData8(0xB0);
+    dispdrvSendData8(0x91);
 
     dispdrvSelectReg8(0xCA); // SET_MUX_RATIO
     dispdrvSendData8(0x3F); // 64MUX (reset 0x7F => 128MUX)
@@ -35,9 +35,6 @@ void ssd1322Init(void)
     dispdrvSendData8(0x06); // 0x14 to rotate 180
     dispdrvSendData8(0x11);
 
-    dispdrvSelectReg8(0xB5); // SET_GPIO
-    dispdrvSendData8(0x00); // Disabled both GPIO1/GPIO2
-
     dispdrvSelectReg8(0xAB); // FUNCTION_SELECTION
     dispdrvSendData8(0x01); // Internal Vdd regulator
 
@@ -46,7 +43,7 @@ void ssd1322Init(void)
     dispdrvSendData8(0xFD); // Enhanced low GS display quality; (reset 0xB5 (normal)),
 
     dispdrvSelectReg8(0xC1); // SET_CONTRAST_CURRENT
-    dispdrvSendData8(0x7F); // (reset 0x7F)
+    dispdrvSendData8(0x9F); // (reset 0x7F)
 
     dispdrvSelectReg8(0xC7); // MASTER_CURRENT_CONTROL
     dispdrvSendData8(0x0F); // (reset)
@@ -69,15 +66,20 @@ void ssd1322Init(void)
     dispdrvSendData8(0xB4);
     dispdrvSelectReg8(0x00); // ENABLE_GRAY_SCALE_TABLE
 
-    dispdrvSelectReg8(0xD1); // ENHANCE_DRIVING_SCHEME_CAPABILITY
-    dispdrvSendData8(0x82); // Reserved; default is 0xA2 (normal)
-    dispdrvSendData8(0x20);
+//    dispdrvSelectReg8(0xB9); // SELECT_DEFAULT_LINEAR_GRAY_SCALE_TABLE
 
     dispdrvSelectReg8(0xB1); // SET_PHASE_LENGTH
-    dispdrvSendData8(0x74); // Reset 0x74 => Phase 2 = 7 DCLKS, Phase 1 = 4*2=8 DCLKS)
+    dispdrvSendData8(0xE2); // Reset 0x74 => Phase 2 = 7 DCLKS, Phase 1 = 4*2=8 DCLKS)
+
+    dispdrvSelectReg8(0xB5); // SET_GPIO
+    dispdrvSendData8(0x00); // Disabled both GPIO1/GPIO2
+
+    dispdrvSelectReg8(0xD1); // ENHANCE_DRIVING_SCHEME_CAPABILITY
+    dispdrvSendData8(0x82 | 0x20); // Reserved; default is 0xA2 (normal)
+    dispdrvSendData8(0x20);
 
     dispdrvSelectReg8(0xBB); // SET_PRECHARGE_VOLTAGE
-    dispdrvSendData8(0x17); // Reset 0x17 => Table 9-1 in datasheet
+    dispdrvSendData8(0x1F); // Reset 0x17 => Table 9-1 in datasheet
 
     dispdrvSelectReg8(0xB6); // SET_SECOND_PRECHARGE_PERIOD
     dispdrvSendData8(0x08); // Reset 0x08 => Phase 3 = 8 DCLKs
@@ -85,9 +87,9 @@ void ssd1322Init(void)
     dispdrvSelectReg8(0xBE); // SET_VCOMH
     dispdrvSendData8(0x07); // 0.86 Vcc (reset 0x04 => 0.86 Vcc)
 
-    dispdrvSelectReg8(0xA9); // EXIT_PARTIAL_DISPLAY
-
     dispdrvSelectReg8(0xA6); // NORMAL_DISPLAY
+
+    dispdrvSelectReg8(0xA9); // EXIT_PARTIAL_DISPLAY
 
     dispdrvSelectReg8(0xAF); // SET_DISPLAY_ON
 

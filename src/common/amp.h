@@ -11,8 +11,8 @@ extern "C" {
 #include "action.h"
 #include "sync.h"
 
-#define AMP_BR_STBY         32
-#define AMP_BR_ACTIVE       160
+#define AMP_BR_STBY         31
+#define AMP_BR_ACTIVE       127
 
 #define FLAG_EXIT           0
 #define FLAG_ENTER          1

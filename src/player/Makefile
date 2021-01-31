@@ -13,7 +13,6 @@ FEATURE_LIST =
 DEBUG = 1
 OPT = -Os
 
-
 # Lowercase argument
 lc = $(shell echo $1 | tr '[:upper:]' '[:lower:]')
 
@@ -30,8 +29,11 @@ C_DEFS += -D_PRINTF_USART1
 C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
 C_DEFS += -DI2C2_BUF_SIZE=96
-C_DEFS += -D_INPUT_ANALOG
-C_DEFS += -D_GLCD_OFT_Y=24
+
+ifeq "$(MODULE)" "PLAYER"
+  C_DEFS += -D_INPUT_ANALOG
+  C_DEFS += -D_GLCD_OFT_Y=24
+endif
 
 COMMON = ../common
 
@@ -177,7 +179,12 @@ AR = $(PREFIX)ar
 SZ = $(PREFIX)size
 
 OPENOCD := openocd
-OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
+
+ifeq "$(MODULE)" "PLAYER"
+  OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
+else
+  OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_jlink.cfg
+endif
 
 # .s files should be first in linking process to handle -flto properly
 OBJECTS += $(addprefix $(OBJ_DIR)/,$(ASM_SOURCES:.s=.o))
