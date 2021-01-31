@@ -17,8 +17,6 @@ common/audio/tda7719.c
 common/audio/tda7719.h
 common/debug.c
 common/debug.h
-common/demo.c
-common/demo.h
 common/display/colors.h
 common/display/dispconf.h
 common/display/dispdrv.c
@@ -92,6 +90,8 @@ common/gui/view/inputview.c
 common/gui/view/inputview.h
 common/gui/view/mpcview.c
 common/gui/view/mpcview.h
+common/gui/view/starsview.c
+common/gui/view/starsview.h
 common/gui/view/tunerview.c
 common/gui/view/tunerview.h
 common/gui/widget/iconimage.c

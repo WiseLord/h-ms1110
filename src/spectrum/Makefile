@@ -39,7 +39,6 @@ COMMON = ../common
 C_SOURCES += $(call lc, amp_$(MODULE)).c
 
 C_SOURCES += $(COMMON)/amp.c
-C_SOURCES += $(COMMON)/demo.c
 C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/fft.c
 C_SOURCES += $(COMMON)/i2c.c
@@ -74,7 +73,7 @@ endif
 C_SOURCES += $(COMMON)/gui/view/datetimeview.c
 C_SOURCES += $(COMMON)/gui/view/inputview.c
 C_SOURCES += $(COMMON)/gui/view/mpcview.c
-C_SOURCES += $(COMMON)/gui/view/tunerview.c
+C_SOURCES += $(COMMON)/gui/view/starsview.c
 
 C_SOURCES += $(COMMON)/screen/spectrumview.c
 

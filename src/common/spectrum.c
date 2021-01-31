@@ -224,6 +224,7 @@ static void spReadSettings(void)
     spectrum.mode = (SpMode)settingsRead(PARAM_SPECTRUM_MODE, SP_MODE_LEFT);
     spectrum.peaks = (uint8_t)settingsRead(PARAM_SPECTRUM_PEAKS, true);
     spectrum.grad = (uint8_t)settingsRead(PARAM_SPECTRUM_GRAD, false);
+    spectrum.demo = (uint8_t)settingsRead(PARAM_SPECTRUM_DEMO, false);
 }
 
 void spInit(void)

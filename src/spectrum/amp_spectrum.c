@@ -434,14 +434,13 @@ void ampScreenShow(void)
     }
 
     Spectrum *sp = spGet();
-
     SpMode spMode = (sp->mode == SP_MODE_STEREO || sp->mode == SP_MODE_MIRROR) ?
                     SP_MODE_RIGHT_MIRROR : SP_MODE_RIGHT;
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
         if (sp->demo) {
-            canvasShowDemo(clear, 0);
+            canvasShowDemo(clear, -40);
         } else {
             canvasShowSpectrum(clear, spMode, sp->peaks);
         }

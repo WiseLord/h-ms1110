@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "demo.h"
 #include "input/matrix.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
@@ -12,6 +11,7 @@
 
 #include "view/inputview.h"
 #include "view/mpcview.h"
+#include "view/starsview.h"
 #include "view/tunerview.h"
 #include "widget/iconimage.h"
 
@@ -107,11 +107,12 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
 
 void canvasShowDemo(bool clear, int16_t offset)
 {
-    (void)clear;
+    StarsView view;
+    view.offset = offset;
 
     if (swTimGet(SW_TIM_SP_CONVERT) == 0) {
         swTimSet(SW_TIM_SP_CONVERT, 40);
-        demoDraw(offset);
+        starsView(&view, clear);
     }
 }
 
