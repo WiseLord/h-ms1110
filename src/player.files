@@ -40,7 +40,6 @@ common/display/fonts/font-terminus-28.c
 common/display/fonts/font-terminus-32b.c
 common/display/fonts/font-terminus-32.c
 common/display/gg256x64/ssd1322.c
-common/display/gg256x64/ssd1322.h
 common/display/glcd.c
 common/display/glcd.h
 common/display/hw/stm32f1.h
