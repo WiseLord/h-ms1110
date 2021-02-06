@@ -7,6 +7,7 @@ import serial
 import mpd
 from select import select
 
+import subprocess
 
 def do_meta(song):
     title = song.get('title', '')
@@ -69,7 +70,7 @@ class Player(object):
         self.client.connect(host=host, port=port)
         self.alive = False
         self.notify_thread = None
-        self.player_info = []
+        self. player_info = []
         self.cmd_queue = []
 
     def parse_cmd(self, cmd, status):
@@ -137,6 +138,9 @@ class Player(object):
     def join(self):
         self.console.join()
         self.notify_thread.join()
+
+    def get_ip(self):
+        return str(subprocess.check_output('/home/pi/get_ip.sh', universal_newlines=True)).strip()
 
     def update_player_info(self):
         status = self.client.status()
@@ -213,10 +217,12 @@ class Player(object):
     def send_state(self):
         if self.player_info['state'] == 'play':
             self.console.send('##CLI.PLAYING#')
+            self.send_meta()
         elif self.player_info['state'] == 'pause':
             self.console.send('##CLI.PAUSED#')
         else:
             self.console.send('##CLI.STOPPED#')
+            self.console.send('ip: ' + self.get_ip())
 
     def send_repeat(self):
         self.console.send('##CLI.REPEAT#: ' + self.player_info['repeat'])

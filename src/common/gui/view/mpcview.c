@@ -90,7 +90,8 @@ static void drawMeta(MpcView *this, bool clear)
     glcdSetFontColor(pal->active);
 
     this->scroll.rect = &rectMeta;
-    this->scroll.text = this->mpc->status & (MPC_PLAYING) ? this->mpc->meta : "";
+//    this->scroll.text = this->mpc->status & (MPC_PLAYING) ? this->mpc->meta : "";
+    this->scroll.text = this->mpc->meta;
 
     scrollTextDraw(&this->scroll, clear);
 }

@@ -114,6 +114,9 @@ static void parseIP(char *line) // KaRadio only
     // Follows "ip:"
     char *ip = line;
     char *cm = strstr(ip, ",");
+    if (!cm) {
+        cm = line;
+    }
     if (cm != ip) {
         *cm = '\0';
     }
