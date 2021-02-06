@@ -105,7 +105,7 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
     }
 }
 
-void canvasShowDemo(bool clear, int16_t offset)
+void canvasShowStars(bool clear, int16_t offset)
 {
     StarsView view;
     view.offset = offset;

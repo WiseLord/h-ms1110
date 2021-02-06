@@ -613,7 +613,7 @@ void ampScreenShow(void)
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
         if (sp->demo) {
-            canvasShowDemo(clear, +40);
+            canvasShowStars(clear, +40);
         } else {
             canvasShowSpectrum(clear, spMode, sp->peaks);
         }
