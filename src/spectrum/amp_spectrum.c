@@ -351,11 +351,11 @@ static void spPeaksChange()
 {
     Spectrum *sp = spGet();
 
-    sp->peaks = !sp->peaks;
+    sp->flags ^= SP_FLAG_PEAKS;
 
     priv.clearScreen = true;
 
-    settingsStore(PARAM_SPECTRUM_PEAKS, sp->peaks);
+    settingsStore(PARAM_SPECTRUM_PEAKS, (sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
 
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
@@ -364,11 +364,12 @@ static void spDemoChange()
 {
     Spectrum *sp = spGet();
 
-    sp->demo = !sp->demo;
+    sp->flags ^= SP_FLAG_DEMO;
+
 
     priv.clearScreen = true;
 
-    settingsStore(PARAM_SPECTRUM_DEMO, sp->demo);
+    settingsStore(PARAM_SPECTRUM_DEMO, (sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO);
 
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
@@ -439,10 +440,10 @@ void ampScreenShow(void)
 
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
-        if (sp->demo) {
+        if ((sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO) {
             canvasShowStars(clear, -40);
         } else {
-            canvasShowSpectrum(clear, spMode, sp->peaks);
+            canvasShowSpectrum(clear, spMode, (sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
         }
         break;
     case SCREEN_TIME:

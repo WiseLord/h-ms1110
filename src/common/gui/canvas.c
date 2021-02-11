@@ -141,10 +141,12 @@ void canvasShowInputCommon(InputType inType, bool clear)
 #if !defined(_MODULE_PLAYER)
     Spectrum *sp = spGet();
 
+    bool peaks = ((sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
+
     GlcdRect rectL = {0, 40, 125, 24};
-    spViewDraw(clear, true, false, sp->peaks, SP_CHAN_LEFT, &rectL);
+    spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
     GlcdRect rectR = {131, 40, 125, 24};
-    spViewDraw(clear, false, false, sp->peaks, SP_CHAN_RIGHT, &rectR);
+    spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rectR);
 #endif
 
     const Palette *pal = paletteGet();

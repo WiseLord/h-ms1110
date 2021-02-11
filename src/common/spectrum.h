@@ -46,11 +46,18 @@ enum {
 
 #define N_DB            256
 
+typedef uint8_t SpFlags;
+enum {
+    SP_FLAG_NONE    = 0x00,
+
+    SP_FLAG_PEAKS   = 0x01,
+    SP_FLAG_GRAD    = 0x02,
+    SP_FLAG_DEMO    = 0x04,
+};
+
 typedef struct {
     SpMode mode;
-    bool peaks;
-    bool grad;
-    bool demo;
+    SpFlags flags;
 } Spectrum;
 
 // Callback to convert FFT data
