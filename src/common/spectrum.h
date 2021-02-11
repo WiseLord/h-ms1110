@@ -70,6 +70,8 @@ uint8_t spGetDb(uint16_t value, uint8_t min, uint8_t max);
 
 void spGetADC(SpChan chan, uint8_t *out, size_t size, fftGet fn);
 
+void spConvertADC(void);
+
 bool spCheckSignal(void);
 
 #ifdef __cplusplus

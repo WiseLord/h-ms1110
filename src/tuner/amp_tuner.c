@@ -254,6 +254,7 @@ void ampInit(void)
     inputInit(BTN_NO, -4);
 
     spInit();
+    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
 
     syncSlaveInit(AMP_TUNER_ADDR);
 

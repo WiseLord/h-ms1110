@@ -6,7 +6,6 @@
 #include <string.h>
 
 #include "settings.h"
-#include "timers.h"
 #include "utils.h"
 
 #define DMA_BUF_SIZE        (FFT_SIZE * SP_CHAN_END)
@@ -236,8 +235,6 @@ void spInit(void)
 
     spInitDMA();
     spInitADC();
-
-    timerInit(TIM_SPECTRUM, 99, 35); // 20kHz timer: ADC conversion trigger
 }
 
 Spectrum *spGet(void)
@@ -271,7 +268,7 @@ void spGetADC(SpChan chan, uint8_t *out, size_t size, fftGet fn)
     free(smpl);
 }
 
-static void spConvertADC(void)
+void spConvertADC(void)
 {
     if (LL_ADC_IsEnabled(ADC1) == 1) {
 #ifdef STM32F1
@@ -290,15 +287,4 @@ bool spCheckSignal()
     LL_ADC_ClearFlag_AWD1(ADC1);
 
     return ret;
-}
-
-void TIM_SPECTRUM_HANDLER(void)
-{
-    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
-        // Clear the update interrupt flag
-        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
-
-        // Callbacks
-        spConvertADC();
-    }
 }

@@ -1,7 +1,9 @@
 #include "amp.h"
 
 #include "display/glcd.h"
+#include "hwlibs.h"
 #include "input.h"
+#include "spectrum.h"
 #include "utils.h"
 
 static Amp amp = {
@@ -65,4 +67,15 @@ Action ampGetEncoder(void)
 void ampSetBrightness(uint8_t value)
 {
     glcdSetBrightness(value);
+}
+
+void TIM_SPECTRUM_HANDLER(void)
+{
+    if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
+        // Clear the update interrupt flag
+        LL_TIM_ClearFlag_UPDATE(TIM_SPECTRUM);
+
+        // Callbacks
+        spConvertADC();
+    }
 }
