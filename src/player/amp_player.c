@@ -138,7 +138,7 @@ static void actionDispExpired(void)
 static void actionResetSilenceTimer(void)
 {
     if (priv.silenceTimer) {
-        swTimSet(SW_TIM_SILENCE_TIMER, 1000 * 60 * priv.silenceTimer + 999);
+        swTimSet(SW_TIM_SILENCE, 1000 * 60 * priv.silenceTimer + 999);
     }
 }
 
@@ -244,8 +244,8 @@ void ampEnterStby(void)
 {
     ampSetBrightness(AMP_BR_STBY);
 
-    swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
-    swTimSet(SW_TIM_SILENCE_TIMER, SW_TIM_OFF);
+    swTimSet(SW_TIM_STBY, SW_TIM_OFF);
+    swTimSet(SW_TIM_SILENCE, SW_TIM_OFF);
 
     ampMute(true);
 
@@ -474,9 +474,9 @@ static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_AMP_INIT) == 0) {
         actionSet(ACTION_INIT_HW, 0);
-    } else if (swTimGet(SW_TIM_STBY_TIMER) == 0) {
+    } else if (swTimGet(SW_TIM_STBY) == 0) {
         actionSet(ACTION_STANDBY, FLAG_ENTER);
-    } else if (swTimGet(SW_TIM_SILENCE_TIMER) == 0) {
+    } else if (swTimGet(SW_TIM_SILENCE) == 0) {
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
         actionSet(ACTION_INIT_RTC, 0);

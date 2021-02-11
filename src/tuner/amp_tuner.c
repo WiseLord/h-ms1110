@@ -152,7 +152,7 @@ void ampEnterStby(void)
 {
     ampSetBrightness(AMP_BR_STBY);
 
-    swTimSet(SW_TIM_STBY_TIMER, SW_TIM_OFF);
+    swTimSet(SW_TIM_STBY, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
