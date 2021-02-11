@@ -87,6 +87,7 @@ void utilEnableSwd(bool value)
 {
 //    value = true;
 
+#if defined(STM32F1)
     static bool swd = false;
 
     if (value) {
@@ -100,4 +101,5 @@ void utilEnableSwd(bool value)
             swd = false;
         }
     }
+#endif
 }

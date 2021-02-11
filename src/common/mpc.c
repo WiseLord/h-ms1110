@@ -109,7 +109,7 @@ static void parseApTrying(char *line) // KaRadio only
     updateMeta(cm + 1);
 }
 
-static void parseIP(char *line) // KaRadio only
+static void parseIP(char *line)
 {
     // Follows "ip:"
     char *ip = line;
@@ -120,7 +120,7 @@ static void parseIP(char *line) // KaRadio only
     if (cm != ip) {
         *cm = '\0';
     }
-    char buf[32];
+    char buf[40];
     snprintf(buf, sizeof(buf), "IP: %s", line);
     updateMeta(buf);
 }

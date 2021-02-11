@@ -246,7 +246,8 @@ class Player(object):
 
 
 def main(argv):
-    port = '/dev/serial0'
+#    port = '/dev/serial0'
+    port = '/dev/ttyS0'
     baudrate = 115200
     try:
         opts, args = getopt.getopt(argv, "p:b:", ["port=", "baudrate="])
