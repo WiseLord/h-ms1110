@@ -69,6 +69,8 @@ void ampSetBrightness(uint8_t value)
     glcdSetBrightness(value);
 }
 
+#ifndef _MODULE_PLAYER
+
 void TIM_SPECTRUM_HANDLER(void)
 {
     if (LL_TIM_IsActiveFlag_UPDATE(TIM_SPECTRUM)) {
@@ -79,3 +81,5 @@ void TIM_SPECTRUM_HANDLER(void)
         spConvertADC();
     }
 }
+
+#endif

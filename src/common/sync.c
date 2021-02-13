@@ -119,7 +119,9 @@ void syncSlaveSend(SyncType type, void *data, size_t size)
     ampSyncTxIsBusy = true;
 
     ampSyncTxData[0] = type;
-    memcpy(&ampSyncTxData[1], data, size);
+    if (size > 0) {
+        memcpy(&ampSyncTxData[1], data, size);
+    }
     ampSyncTxSize = size + 1;
 }
 

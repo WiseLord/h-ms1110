@@ -20,6 +20,7 @@
 typedef struct {
     ScreenType prevScreen;
     bool clearScreen;
+    bool isSlave;
 } AmpPriv;
 
 static void ampActionSyncMaster(void);
@@ -221,6 +222,8 @@ void ampInit(void)
     swTimInit();
 
     amp->status = AMP_STATUS_STBY;
+
+    syncSlaveSend(SYNC_REQUEST, NULL, 0);
 }
 
 void ampSyncFromOthers(void)
@@ -267,7 +270,9 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_IN_TYPE:
         amp->inType = *(InputType *)&syncData[1];
-        actionSet(ACTION_DISP_EXPIRED, 0);
+        break;
+    case SYNC_REQUEST:
+        priv.isSlave = true;
         break;
     }
 }
@@ -330,7 +335,6 @@ void ampActionRemap(void)
 static void spModeChange(int16_t value)
 {
     Spectrum *sp = spGet();
-
     if (value > 0) {
         if (++sp->mode > SP_MODE_STEREO_END) {
             sp->mode = SP_MODE_STEREO;
@@ -340,38 +344,26 @@ static void spModeChange(int16_t value)
             sp->mode = SP_MODE_STEREO_END;
         }
     }
-
     priv.clearScreen = true;
-
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 
 static void spPeaksChange()
 {
     Spectrum *sp = spGet();
-
     sp->flags ^= SP_FLAG_PEAKS;
-
     priv.clearScreen = true;
-
     settingsStore(PARAM_SPECTRUM_PEAKS, (sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
-
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 
 static void spDemoChange()
 {
     Spectrum *sp = spGet();
-
     sp->flags ^= SP_FLAG_DEMO;
-
-
     priv.clearScreen = true;
-
     settingsStore(PARAM_SPECTRUM_DEMO, (sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO);
-
     syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
 }
 

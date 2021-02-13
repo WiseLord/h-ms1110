@@ -266,6 +266,8 @@ void ampInit(void)
     rdsParserSetCb(rdsParserCb);
 
     amp->status = AMP_STATUS_STBY;
+
+    syncSlaveSend(SYNC_REQUEST, NULL, 0);
 }
 
 void ampSyncFromOthers(void)
@@ -279,7 +281,6 @@ void ampSyncToOthers(void)
     ampSyncTuner();
 
     rdsDemodHandle();
-
 }
 
 static void ampActionSyncMaster(void)
@@ -322,12 +323,10 @@ static void ampActionSyncMaster(void)
         break;
     case SYNC_IN_TYPE:
         amp->inType = *(InputType *)&syncData[1];
-        actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     case SYNC_REQUEST:
         priv.isSlave = true;
         tunerSyncInit();
-        actionSet(ACTION_DISP_EXPIRED, 0);
         break;
     }
 }

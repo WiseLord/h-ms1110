@@ -24,9 +24,14 @@
 
 typedef uint8_t SyncFlags;
 enum {
+    SYNC_FLAG_NONE      = 0x00,
+
     SYNC_FLAG_RTC       = 0x01,
     SYNC_FLAG_SPECTRUM  = 0x02,
     SYNC_FLAG_TUNER     = 0x04,
+    SYNC_FLAG_IN_TYPE   = 0x08,
+
+    SYNC_FLAG_ALL       = 0x0F,
 };
 
 typedef struct {
@@ -41,7 +46,6 @@ typedef struct {
     uint8_t silenceTimer;
 
     Spectrum sp;
-    InputType inType;
     Action syncAction;
 
     AmpModule online;
@@ -284,6 +288,7 @@ void ampHandleStby(void)
         screenSet(SCREEN_STANDBY, 0);
         break;
     case FLAG_EXIT:
+        priv.syncFlags |= SYNC_FLAG_ALL;
         ampExitStby();
         screenSet(SCREEN_TIME, 1000);
         break;
@@ -857,6 +862,9 @@ static void receiveFromTunerModule(void)
         memcpy(rdsParser, &syncData[1], sizeof(RdsParser));
         tunerSync->flags |= TUNERSYNC_FLAG_RDS;
         break;
+    case SYNC_REQUEST:
+        priv.syncFlags |= SYNC_FLAG_ALL;
+        break;
     }
 }
 
@@ -874,6 +882,9 @@ static void receiveFromSpectrumModule(void)
         memcpy(&priv.sp, &syncData[1], sizeof(Spectrum));
         priv.syncFlags |= SYNC_FLAG_SPECTRUM;
         break;;
+    case SYNC_REQUEST:
+        priv.syncFlags |= SYNC_FLAG_ALL;
+        break;
     }
 }
 
@@ -1121,18 +1132,14 @@ static void ampSendToSlaves(void)
     if (priv.syncAction.type != ACTION_NONE) {
         sendToAllModules(SYNC_ACTION, &priv.syncAction, sizeof(Action));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
-        // Force everything to resend on exit standby
-        if (priv.syncAction.type == ACTION_STANDBY && priv.syncAction.value == FLAG_EXIT) {
-            priv.inType = IN_NULL;
-        }
         priv.syncAction.type = ACTION_NONE;
         return;
     }
 
-    if (priv.inType != amp->inType) {
+    if (priv.syncFlags & SYNC_FLAG_IN_TYPE) {
+        priv.syncFlags &= ~SYNC_FLAG_IN_TYPE;
         sendToAllModules(SYNC_IN_TYPE, &amp->inType, sizeof(InputType));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
-        priv.inType = amp->inType;
         return;
     }
 
