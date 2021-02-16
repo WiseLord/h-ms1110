@@ -7,11 +7,16 @@ STM32_MCU = F103CB
 DISPLAY = SSD1322
 DISPVAR = SPI
 
+ifeq "$(MODULE)" "PLAYER"
 APROC_LIST = TDA7719
-FEATURE_LIST =
+endif
+ifeq "$(MODULE)" "TUNER"
+  TUNER_LIST = LC7213X
+endif
 
 DEBUG = 1
 OPT = -Os
+
 
 # Lowercase argument
 lc = $(shell echo $1 | tr '[:upper:]' '[:lower:]')
@@ -30,6 +35,9 @@ C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
 C_DEFS += -DI2C2_BUF_SIZE=96
 
+# Player prototype board has a bit different schematics
+# S1 connected to PB0 instead of PA13
+# S2 connected to PB1 instead of PA13
 ifeq "$(MODULE)" "PLAYER"
   C_DEFS += -D_INPUT_ANALOG
   C_DEFS += -D_GLCD_OFT_Y=24
@@ -44,26 +52,37 @@ C_SOURCES += $(COMMON)/eemul.c
 C_SOURCES += $(COMMON)/i2c.c
 C_SOURCES += $(COMMON)/input.c
 C_SOURCES += $(COMMON)/main.c
-C_SOURCES += $(COMMON)/mpc.c
-C_SOURCES += $(COMMON)/rc.c
-C_SOURCES += $(COMMON)/ringbuf.c
 C_SOURCES += $(COMMON)/rtc.c
 C_SOURCES += $(COMMON)/settings.c
-C_SOURCES += $(COMMON)/setup.c
 C_SOURCES += $(COMMON)/spi.c
 C_SOURCES += $(COMMON)/swtimers.c
 C_SOURCES += $(COMMON)/sync.c
 C_SOURCES += $(COMMON)/timers.c
-C_SOURCES += $(COMMON)/tunersync.c
 C_SOURCES += $(COMMON)/usart.c
 C_SOURCES += $(COMMON)/utils.c
 
-C_SOURCES += $(COMMON)/tuner/rds/parser.c
+ifeq "$(MODULE)" "PLAYER"
+  C_SOURCES += $(COMMON)/mpc.c
+  C_SOURCES += $(COMMON)/rc.c
+  C_SOURCES += $(COMMON)/ringbuf.c
+  C_SOURCES += $(COMMON)/setup.c
+  C_SOURCES += $(COMMON)/tunersync.c
+else
+  C_SOURCES += $(COMMON)/fft.c
+  C_SOURCES += $(COMMON)/spectrum.c
+endif
+
+ifeq "$(MODULE)" "TUNER"
+  C_SOURCES += $(COMMON)/ringbuf.c
+  C_SOURCES += $(COMMON)/tunersync.c
+endif
 
 C_SOURCES += $(wildcard $(COMMON)/tr/labels*.c)
 
 # Input source files
-C_SOURCES += $(COMMON)/input/analog.c
+ifeq "$(MODULE)" "PLAYER"
+  C_SOURCES += $(COMMON)/input/analog.c
+endif
 C_SOURCES += $(COMMON)/input/matrix.c
 
 # Display source files
@@ -80,11 +99,18 @@ endif
 C_SOURCES += $(COMMON)/gui/view/datetimeview.c
 C_SOURCES += $(COMMON)/gui/view/inputview.c
 C_SOURCES += $(COMMON)/gui/view/mpcview.c
-C_SOURCES += $(COMMON)/gui/view/tunerview.c
 
-C_SOURCES += $(COMMON)/screen/setupview.c
-C_SOURCES += $(COMMON)/screen/spectrumview.c
-C_SOURCES += $(COMMON)/screen/tuneview.c
+ifeq "$(MODULE)" "PLAYER"
+  C_SOURCES += $(COMMON)/screen/setupview.c
+  C_SOURCES += $(COMMON)/screen/tuneview.c
+  C_SOURCES += $(COMMON)/gui/view/tunerview.c
+else
+  C_SOURCES += $(COMMON)/screen/spectrumview.c
+  C_SOURCES += $(COMMON)/gui/view/starsview.c
+endif
+ifeq "$(MODULE)" "TUNER"
+  C_SOURCES += $(COMMON)/gui/view/tunerview.c
+endif
 
 C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
 C_SOURCES += $(COMMON)/display/dispdrv.c
@@ -100,10 +126,26 @@ C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/icons.c)
 C_SOURCES += $(wildcard $(COMMON)/gui/icons/icon*.c)
 
-# Audio source files
-C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
-C_SOURCES += $(COMMON)/audio/audio.c
-C_DEFS += $(addprefix -D_, $(APROC_LIST))
+ifeq "$(MODULE)" "PLAYER"
+  C_SOURCES += $(COMMON)/tuner/rds/parser.c
+endif
+ifeq "$(MODULE)" "TUNER"
+  # Tuner source files
+  C_SOURCES += $(addprefix $(COMMON)/tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
+  C_SOURCES += $(COMMON)/tuner/rds/decoder.c
+  C_SOURCES += $(COMMON)/tuner/rds/demod.c
+  C_SOURCES += $(COMMON)/tuner/rds/parser.c
+  C_SOURCES += $(COMMON)/tuner/stations.c
+  C_SOURCES += $(COMMON)/tuner/tuner.c
+  C_DEFS += $(addprefix -D_, $(TUNER_LIST))
+endif
+
+ifeq "$(MODULE)" "PLAYER"
+  # Audio source files
+  C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
+  C_SOURCES += $(COMMON)/audio/audio.c
+  C_DEFS += $(addprefix -D_, $(APROC_LIST))
+endif
 
 C_INCLUDES += \
   -I$(COMMON)/display/fonts \
@@ -179,7 +221,6 @@ AR = $(PREFIX)ar
 SZ = $(PREFIX)size
 
 OPENOCD := openocd
-
 ifeq "$(MODULE)" "PLAYER"
   OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
 else
