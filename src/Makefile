@@ -10,12 +10,9 @@ STM32_MCU = F103CB
 DISPLAY = SSD1322
 DISPVAR = SPI
 
-ifeq "$(MODULE)" "PLAYER"
 APROC_LIST = TDA7719
-endif
-ifeq "$(MODULE)" "TUNER"
-  TUNER_LIST = LC7213X
-endif
+TUNER_LIST = LC7213X
+FEATURE_LIST =
 
 DEBUG = 1
 OPT = -Os
@@ -31,59 +28,53 @@ endif
 
 TARGET = $(call lc, $(PROJECT)_$(MODULE))
 
+ifeq "$(MODULE)" "PLAYER"
+  FEATURE_LIST += USE_MPC
+  FEATURE_LIST += USE_RC
+
+  C_DEFS += -D_INPUT_ANALOG
+  C_DEFS += -D_GLCD_OFT_Y=24
+endif
+
+ifeq "$(MODULE)" "TUNER"
+  FEATURE_LIST += USE_RDS_DEMOD
+endif
+
 C_DEFS += -DUSE_FULL_LL_DRIVER -D$(STM32_GROUP) -D_$(STM32_MCU)
 
 C_DEFS += -D_PRINTF_USART1
 C_DEFS += -D_MODULE_$(MODULE)
 C_DEFS += -D_DISP_RST_ENABLED
 C_DEFS += -DI2C2_BUF_SIZE=96
-
-# Player prototype board has a bit different schematics
-# S1 connected to PB0 instead of PA13
-# S2 connected to PB1 instead of PA13
-ifeq "$(MODULE)" "PLAYER"
-  C_DEFS += -D_INPUT_ANALOG
-  C_DEFS += -D_GLCD_OFT_Y=24
-endif
+C_DEFS += $(addprefix -D_, $(FEATURE_LIST))
 
 C_SOURCES += $(call lc, amp_$(MODULE)).c
 
 C_SOURCES += amp.c
 C_SOURCES += eemul.c
+C_SOURCES += fft.c
 C_SOURCES += i2c.c
 C_SOURCES += input.c
 C_SOURCES += main.c
+C_SOURCES += mpc.c
+C_SOURCES += rc.c
+C_SOURCES += ringbuf.c
 C_SOURCES += rtc.c
 C_SOURCES += settings.c
+C_SOURCES += setup.c
+C_SOURCES += spectrum.c
 C_SOURCES += spi.c
 C_SOURCES += swtimers.c
 C_SOURCES += sync.c
 C_SOURCES += timers.c
+C_SOURCES += tunersync.c
 C_SOURCES += usart.c
 C_SOURCES += utils.c
-
-ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += mpc.c
-  C_SOURCES += rc.c
-  C_SOURCES += ringbuf.c
-  C_SOURCES += setup.c
-  C_SOURCES += tunersync.c
-else
-  C_SOURCES += fft.c
-  C_SOURCES += spectrum.c
-endif
-
-ifeq "$(MODULE)" "TUNER"
-  C_SOURCES += ringbuf.c
-  C_SOURCES += tunersync.c
-endif
 
 C_SOURCES += $(wildcard tr/labels*.c)
 
 # Input source files
-ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += input/analog.c
-endif
+C_SOURCES += input/analog.c
 C_SOURCES += input/matrix.c
 
 # Display source files
@@ -100,18 +91,12 @@ endif
 C_SOURCES += gui/view/datetimeview.c
 C_SOURCES += gui/view/inputview.c
 C_SOURCES += gui/view/mpcview.c
+C_SOURCES += gui/view/tunerview.c
+C_SOURCES += gui/view/starsview.c
 
-ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += screen/setupview.c
-  C_SOURCES += screen/tuneview.c
-  C_SOURCES += gui/view/tunerview.c
-else
-  C_SOURCES += screen/spectrumview.c
-  C_SOURCES += gui/view/starsview.c
-endif
-ifeq "$(MODULE)" "TUNER"
-  C_SOURCES += gui/view/tunerview.c
-endif
+C_SOURCES += screen/setupview.c
+C_SOURCES += screen/spectrumview.c
+C_SOURCES += screen/tuneview.c
 
 C_SOURCES += display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
 C_SOURCES += display/dispdrv.c
@@ -127,26 +112,20 @@ C_SOURCES += $(wildcard gui/widget/*.c)
 C_SOURCES += $(wildcard gui/icons.c)
 C_SOURCES += $(wildcard gui/icons/icon*.c)
 
-ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += tuner/rds/parser.c
-endif
-ifeq "$(MODULE)" "TUNER"
-  # Tuner source files
-  C_SOURCES += $(addprefix tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
-  C_SOURCES += tuner/rds/decoder.c
-  C_SOURCES += tuner/rds/demod.c
-  C_SOURCES += tuner/rds/parser.c
-  C_SOURCES += tuner/stations.c
-  C_SOURCES += tuner/tuner.c
-  C_DEFS += $(addprefix -D_, $(TUNER_LIST))
-endif
+C_SOURCES += tuner/rds/parser.c
+C_SOURCES += tuner/rds/decoder.c
+C_SOURCES += tuner/rds/demod.c
 
-ifeq "$(MODULE)" "PLAYER"
-  # Audio source files
-  C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
-  C_SOURCES += audio/audio.c
-  C_DEFS += $(addprefix -D_, $(APROC_LIST))
-endif
+# Tuner source files
+C_SOURCES += $(addprefix tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
+C_SOURCES += tuner/stations.c
+C_SOURCES += tuner/tuner.c
+C_DEFS += $(addprefix -D_, $(TUNER_LIST))
+
+# Audio source files
+C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
+C_SOURCES += audio/audio.c
+C_DEFS += $(addprefix -D_, $(APROC_LIST))
 
 C_INCLUDES += \
   -Idisplay/fonts \

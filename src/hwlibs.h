@@ -42,8 +42,12 @@ extern "C" {
 #define AMP_SPECTRUM_ADDR       0x26
 
 // Project-specific definitions
+#ifdef _USE_RC
 #define EXTI_RC_HANDLER         EXTI9_5_IRQHandler
+#endif
+#ifdef _USE_RDS_DEMOD
 #define EXTI_RDS_HANDLER        EXTI2_IRQHandler
+#endif
 
 #define I2C_AMP                 I2C1
 #define I2C_SYNC                I2C2
@@ -52,13 +56,17 @@ extern "C" {
 #define LL_I2C1_SDA_PIN         LL_GPIO_PIN_9
 
 #define USART_MPC               USART1
+#ifdef _USE_MPC
 #define USART_MPC_HANDLER       USART1_IRQHandler
+#endif
 
 #define TIM_SPECTRUM            TIM2
 #define TIM_SPECTRUM_HANDLER    TIM2_IRQHandler
 
 #define TIM_RC                  TIM3
+#ifdef _USE_RC
 #define TIM_RC_HANDLER          TIM3_IRQHandler
+#endif
 
 #define TIM_INPUT               TIM4
 #define TIM_INPUT_HANDLER       TIM4_IRQHandler
