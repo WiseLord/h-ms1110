@@ -1,6 +1,9 @@
 PROJECT = H-MS1110
 
-MODULE = PLAYER
+MODULE = ${H_MS1110_MODULE}
+ifeq "$(MODULE)" ""
+  MODULE = PLAYER
+endif
 
 STM32_MCU = F103CB
 
@@ -43,50 +46,48 @@ ifeq "$(MODULE)" "PLAYER"
   C_DEFS += -D_GLCD_OFT_Y=24
 endif
 
-COMMON = ../common
-
 C_SOURCES += $(call lc, amp_$(MODULE)).c
 
-C_SOURCES += $(COMMON)/amp.c
-C_SOURCES += $(COMMON)/eemul.c
-C_SOURCES += $(COMMON)/i2c.c
-C_SOURCES += $(COMMON)/input.c
-C_SOURCES += $(COMMON)/main.c
-C_SOURCES += $(COMMON)/rtc.c
-C_SOURCES += $(COMMON)/settings.c
-C_SOURCES += $(COMMON)/spi.c
-C_SOURCES += $(COMMON)/swtimers.c
-C_SOURCES += $(COMMON)/sync.c
-C_SOURCES += $(COMMON)/timers.c
-C_SOURCES += $(COMMON)/usart.c
-C_SOURCES += $(COMMON)/utils.c
+C_SOURCES += amp.c
+C_SOURCES += eemul.c
+C_SOURCES += i2c.c
+C_SOURCES += input.c
+C_SOURCES += main.c
+C_SOURCES += rtc.c
+C_SOURCES += settings.c
+C_SOURCES += spi.c
+C_SOURCES += swtimers.c
+C_SOURCES += sync.c
+C_SOURCES += timers.c
+C_SOURCES += usart.c
+C_SOURCES += utils.c
 
 ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += $(COMMON)/mpc.c
-  C_SOURCES += $(COMMON)/rc.c
-  C_SOURCES += $(COMMON)/ringbuf.c
-  C_SOURCES += $(COMMON)/setup.c
-  C_SOURCES += $(COMMON)/tunersync.c
+  C_SOURCES += mpc.c
+  C_SOURCES += rc.c
+  C_SOURCES += ringbuf.c
+  C_SOURCES += setup.c
+  C_SOURCES += tunersync.c
 else
-  C_SOURCES += $(COMMON)/fft.c
-  C_SOURCES += $(COMMON)/spectrum.c
+  C_SOURCES += fft.c
+  C_SOURCES += spectrum.c
 endif
 
 ifeq "$(MODULE)" "TUNER"
-  C_SOURCES += $(COMMON)/ringbuf.c
-  C_SOURCES += $(COMMON)/tunersync.c
+  C_SOURCES += ringbuf.c
+  C_SOURCES += tunersync.c
 endif
 
-C_SOURCES += $(wildcard $(COMMON)/tr/labels*.c)
+C_SOURCES += $(wildcard tr/labels*.c)
 
 # Input source files
 ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += $(COMMON)/input/analog.c
+  C_SOURCES += input/analog.c
 endif
-C_SOURCES += $(COMMON)/input/matrix.c
+C_SOURCES += input/matrix.c
 
 # Display source files
-C_SOURCES += $(wildcard $(COMMON)/display/fonts/font*.c)
+C_SOURCES += $(wildcard display/fonts/font*.c)
 
 ifneq (,$(filter $(DISPLAY), \
   SSD1322   \
@@ -96,85 +97,84 @@ ifneq (,$(filter $(DISPLAY), \
   C_DEFS += -D_DISP_FB
 endif
 
-C_SOURCES += $(COMMON)/gui/view/datetimeview.c
-C_SOURCES += $(COMMON)/gui/view/inputview.c
-C_SOURCES += $(COMMON)/gui/view/mpcview.c
+C_SOURCES += gui/view/datetimeview.c
+C_SOURCES += gui/view/inputview.c
+C_SOURCES += gui/view/mpcview.c
 
 ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += $(COMMON)/screen/setupview.c
-  C_SOURCES += $(COMMON)/screen/tuneview.c
-  C_SOURCES += $(COMMON)/gui/view/tunerview.c
+  C_SOURCES += screen/setupview.c
+  C_SOURCES += screen/tuneview.c
+  C_SOURCES += gui/view/tunerview.c
 else
-  C_SOURCES += $(COMMON)/screen/spectrumview.c
-  C_SOURCES += $(COMMON)/gui/view/starsview.c
+  C_SOURCES += screen/spectrumview.c
+  C_SOURCES += gui/view/starsview.c
 endif
 ifeq "$(MODULE)" "TUNER"
-  C_SOURCES += $(COMMON)/gui/view/tunerview.c
+  C_SOURCES += gui/view/tunerview.c
 endif
 
-C_SOURCES += $(COMMON)/display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
-C_SOURCES += $(COMMON)/display/dispdrv.c
-C_SOURCES += $(COMMON)/display/glcd.c
+C_SOURCES += display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
+C_SOURCES += display/dispdrv.c
+C_SOURCES += display/glcd.c
 C_DEFS += -D_$(DISPLAY)
 C_DEFS += -D_DISP_$(DISPVAR)
 
-C_SOURCES += $(COMMON)/gui/canvas.c
-C_SOURCES += $(COMMON)/gui/palette.c
-C_SOURCES += $(wildcard $(COMMON)/gui/fonts/font*.c)
-C_SOURCES += $(wildcard $(COMMON)/gui/widget/*.c)
+C_SOURCES += gui/canvas.c
+C_SOURCES += gui/palette.c
+C_SOURCES += $(wildcard gui/fonts/font*.c)
+C_SOURCES += $(wildcard gui/widget/*.c)
 
-C_SOURCES += $(wildcard $(COMMON)/gui/icons.c)
-C_SOURCES += $(wildcard $(COMMON)/gui/icons/icon*.c)
+C_SOURCES += $(wildcard gui/icons.c)
+C_SOURCES += $(wildcard gui/icons/icon*.c)
 
 ifeq "$(MODULE)" "PLAYER"
-  C_SOURCES += $(COMMON)/tuner/rds/parser.c
+  C_SOURCES += tuner/rds/parser.c
 endif
 ifeq "$(MODULE)" "TUNER"
   # Tuner source files
-  C_SOURCES += $(addprefix $(COMMON)/tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
-  C_SOURCES += $(COMMON)/tuner/rds/decoder.c
-  C_SOURCES += $(COMMON)/tuner/rds/demod.c
-  C_SOURCES += $(COMMON)/tuner/rds/parser.c
-  C_SOURCES += $(COMMON)/tuner/stations.c
-  C_SOURCES += $(COMMON)/tuner/tuner.c
+  C_SOURCES += $(addprefix tuner/, $(addsuffix .c, $(call lc, $(TUNER_LIST))))
+  C_SOURCES += tuner/rds/decoder.c
+  C_SOURCES += tuner/rds/demod.c
+  C_SOURCES += tuner/rds/parser.c
+  C_SOURCES += tuner/stations.c
+  C_SOURCES += tuner/tuner.c
   C_DEFS += $(addprefix -D_, $(TUNER_LIST))
 endif
 
 ifeq "$(MODULE)" "PLAYER"
   # Audio source files
-  C_SOURCES += $(addprefix $(COMMON)/audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
-  C_SOURCES += $(COMMON)/audio/audio.c
+  C_SOURCES += $(addprefix audio/, $(addsuffix .c, $(call lc, $(APROC_LIST))))
+  C_SOURCES += audio/audio.c
   C_DEFS += $(addprefix -D_, $(APROC_LIST))
 endif
 
 C_INCLUDES += \
-  -I$(COMMON)/display/fonts \
-  -I$(COMMON) \
+  -Idisplay/fonts \
   -I.
 
 C_SOURCES += \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_gpio.c \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_i2c.c \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_rcc.c \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_rtc.c \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_usart.c \
-  $(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_utils.c \
-  $(COMMON)/system/system_$(call lc, $(STM32_FAMILY))xx.c
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_gpio.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_i2c.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_rcc.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_rtc.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_usart.c \
+  drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_utils.c \
+  system/system_$(call lc, $(STM32_FAMILY))xx.c
 
 C_INCLUDES += \
-  -I$(COMMON)/drivers/$(STM32_FAMILY)xx_HAL_Driver/Inc \
-  -I$(COMMON)/drivers/CMSIS/Device/ST/$(STM32_FAMILY)xx/Include \
-  -I$(COMMON)/drivers/CMSIS/Include \
-  -I$(COMMON)/system
+  -Idrivers/$(STM32_FAMILY)xx_HAL_Driver/Inc \
+  -Idrivers/CMSIS/Device/ST/$(STM32_FAMILY)xx/Include \
+  -Idrivers/CMSIS/Include \
+  -Isystem
 
 AS_DEFS +=
 
 ASM_SOURCES += \
-  $(COMMON)/system/startup_$(call lc, $(STM32_GROUP)).s
+  system/startup_$(call lc, $(STM32_GROUP)).s
 
 # Build directory
 BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
+OBJ_DIR = $(BUILD_DIR)/obj_$(TARGET)
 
 ifeq "$(STM32_FAMILY)" "STM32F1"
   CPU = -mcpu=cortex-m3
@@ -205,7 +205,7 @@ endif
 # Dependency information
 CFLAGS += -MMD -MP -MT $(OBJ_DIR)/$(*F).o -MF $(OBJ_DIR)/$(*D)/$(*F).d
 
-LDSCRIPT = ../common/system/$(call lc, STM32$(STM32_MCU))_flash.ld
+LDSCRIPT = system/$(call lc, STM32$(STM32_MCU))_flash.ld
 LIBS = -lc -lm -lnosys
 LIBDIR =
 LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
@@ -222,9 +222,9 @@ SZ = $(PREFIX)size
 
 OPENOCD := openocd
 ifeq "$(MODULE)" "PLAYER"
-  OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
+  OPENOCD_CFG := system/$(call lc, $(STM32_GROUP))_openocd_stlink.cfg
 else
-  OPENOCD_CFG := $(COMMON)/system/$(call lc, $(STM32_GROUP))_openocd_jlink.cfg
+  OPENOCD_CFG := system/$(call lc, $(STM32_GROUP))_openocd_jlink.cfg
 endif
 
 # .s files should be first in linking process to handle -flto properly
