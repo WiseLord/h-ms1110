@@ -5,9 +5,9 @@ import time
 
 import serial
 import mpd
-from select import select
 
-import subprocess
+import socket
+
 
 def do_meta(song):
     title = song.get('title', '')
@@ -62,6 +62,45 @@ class Console(object):
                 pass
 
 
+class NetworkChecker(object):
+    def __init__(self):
+        self.ip = "127.0.0.1"
+        self.alive = False
+        self.check_thread = None
+
+    def start(self):
+        self.alive = True
+        self.check_thread = threading.Thread(target=self.check_fn, name='reader')
+        self.check_thread.daemon = True
+        self.check_thread.start()
+
+    def join(self):
+        self.check_thread.join()
+
+    def get_ip(self):
+        return self.ip
+
+    def update_ip(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(1)
+
+        try:
+            s.connect(('8.8.8.8', 1))
+            ip = s.getsockname()[0]
+        except Exception:
+            ip = '127.0.0.1'
+        finally:
+            s.close()
+        return ip
+
+    def check_fn(self):
+        while self.alive:
+            time.sleep(2)
+            ip = self.update_ip()
+            if ip != self.ip:
+                self.ip = ip
+
+
 class Player(object):
     def __init__(self, sport, baudrate, host, port):
         self.client = mpd.MPDClient()
@@ -70,7 +109,8 @@ class Player(object):
         self.client.connect(host=host, port=port)
         self.alive = False
         self.notify_thread = None
-        self. player_info = []
+        self.networkChecker = NetworkChecker()
+        self.player_info = []
         self.cmd_queue = []
 
     def parse_cmd(self, cmd, status):
@@ -131,16 +171,15 @@ class Player(object):
     def start(self):
         self.alive = True
         self.console.start()
+        self.networkChecker.start()
         self.notify_thread = threading.Thread(target=self.notify_fn, name='notify')
         self.notify_thread.daemon = True
         self.notify_thread.start()
 
     def join(self):
         self.console.join()
+        self.networkChecker.join()
         self.notify_thread.join()
-
-    def get_ip(self):
-        return str(subprocess.check_output('/home/pi/get_ip.sh', universal_newlines=True)).strip()
 
     def update_player_info(self):
         status = self.client.status()
@@ -162,6 +201,7 @@ class Player(object):
             'single': status.get('single'),
             'consume': status.get('consume'),
             'timestamp': time.time(),
+            'ip': self.networkChecker.get_ip()
         }
 
         update_all = False
@@ -186,6 +226,8 @@ class Player(object):
         update_single = player_info['single'] != self.player_info['single']
         update_consume = player_info['consume'] != self.player_info['consume']
 
+        update_ip = player_info['ip'] != self.player_info['ip']
+
         self.player_info = player_info
 
         if update_all or update_meta:
@@ -194,7 +236,7 @@ class Player(object):
             self.send_elapsed()
         if update_all or update_duration:
             self.send_duration()
-        if update_all or update_state:
+        if update_all or update_state or update_ip:
             self.send_state()
         if update_all or update_repeat:
             self.send_repeat()
@@ -222,7 +264,7 @@ class Player(object):
             self.console.send('##CLI.PAUSED#')
         else:
             self.console.send('##CLI.STOPPED#')
-            self.console.send('ip: ' + self.get_ip())
+            self.console.send('ip: ' + self.networkChecker.get_ip())
 
     def send_repeat(self):
         self.console.send('##CLI.REPEAT#: ' + self.player_info['repeat'])
@@ -246,7 +288,7 @@ class Player(object):
 
 
 def main(argv):
-#    port = '/dev/serial0'
+    #    port = '/dev/serial0'
     port = '/dev/ttyS0'
     baudrate = 115200
     try:
