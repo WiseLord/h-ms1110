@@ -27,7 +27,6 @@ typedef struct {
     RdsParser rdsParser;
     ScreenType prevScreen;
     bool clearScreen;
-    bool isSlave;
 } AmpPriv;
 
 static void actionGetTimers(void);
@@ -36,10 +35,9 @@ static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
 static void actionRemapEncoder(int16_t encCnt);
 
-static void ampActionSyncMaster(void);
-
 static void ampPollInput(void);
-static void ampSyncTuner(void);
+static void ampGetFromMaster(void);
+static void ampSendToMaster(void);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -89,16 +87,17 @@ static bool screenCheckClear(void)
     return clear;
 }
 
+static bool isTuner()
+{
+    return !ampIsOnline(AMP_MODULE_PLAYER) || (amp->inType == IN_TUNER);
+}
+
 static void actionDispExpired(void)
 {
     ScreenType defScreen = SCREEN_SPECTRUM;
 
-    switch (amp->inType) {
-    case IN_TUNER:
-        if (!priv.isSlave) {
-            defScreen = SCREEN_TUNER;
-        }
-        break;
+    if (!ampIsOnline(AMP_MODULE_PLAYER)) {
+        defScreen = SCREEN_TUNER;
     }
 
     rtcSetMode(RTC_NOEDIT);
@@ -218,6 +217,9 @@ static void actionGetTimers(void)
 {
     if (swTimGet(SW_TIM_AMP_INIT) == 0) {
         actionSet(ACTION_INIT_HW, 0);
+    } else if (swTimGet(SW_TIM_SYNC) == 0) {
+        ampSetOffline(AMP_MODULE_PLAYER);
+        actionSet(ACTION_DISP_EXPIRED, 0);
     } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
         actionSet(ACTION_DISP_EXPIRED, 0);
     }
@@ -239,7 +241,7 @@ static void ampInitMuteStby(void)
 void ampInit(void)
 {
     amp = ampGet();
-    amp->inType = IN_TUNER;
+    amp->inType = IN_NULL;
 
     settingsInit();
     utilInitSysCounter();
@@ -262,28 +264,26 @@ void ampInit(void)
 
     swTimInit();
 
-    tunerSyncInit();
     rdsParserSetCb(rdsParserCb);
 
     amp->status = AMP_STATUS_STBY;
-
-    syncSlaveSend(SYNC_REQUEST, NULL, 0);
+    ampSetOffline(AMP_MODULE_PLAYER);
 }
 
 void ampSyncFromOthers(void)
 {
-    ampActionSyncMaster();
+    ampGetFromMaster();
 }
 
 void ampSyncToOthers(void)
 {
     ampPollInput();
-    ampSyncTuner();
+    ampSendToMaster();
 
     rdsDemodHandle();
 }
 
-static void ampActionSyncMaster(void)
+static void ampGetFromMaster(void)
 {
     uint8_t *syncData;
     uint8_t syncSize;
@@ -306,8 +306,15 @@ static void ampActionSyncMaster(void)
         return;
     }
 
-    SyncType syncType = syncData[0];
+    swTimSet(SW_TIM_SYNC, 1100);
 
+    if (!ampIsOnline(AMP_MODULE_PLAYER)) {
+        ampSetOnline(AMP_MODULE_PLAYER);
+        actionSet(ACTION_DISP_EXPIRED, 0);
+        return;
+    }
+
+    SyncType syncType = syncData[0];
     Spectrum *sp = spGet();
 
     switch (syncType) {
@@ -325,7 +332,6 @@ static void ampActionSyncMaster(void)
         amp->inType = *(InputType *)&syncData[1];
         break;
     case SYNC_REQUEST:
-        priv.isSlave = true;
         tunerSyncInit();
         break;
     }
@@ -431,10 +437,10 @@ static void actionRemapBtnLong(int16_t button)
 
 static void actionRemapEncoder(int16_t encCnt)
 {
-    if (amp->inType == IN_TUNER) {
+    if (isTuner()) {
         tunerStep(encCnt);
     } else {
-        if (encCnt && priv.isSlave) {
+        if (encCnt && !!ampIsOnline(AMP_MODULE_PLAYER)) {
             Action syncAction = {ACTION_MEDIA, encCnt > 0 ? MEDIAKEY_FFWD : MEDIAKEY_REWIND};
             syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Spectrum));
         }
@@ -458,19 +464,19 @@ void ampActionRemap(void)
 
     switch (action.type) {
     case ACTION_TUNER_STORE:
-        if (amp->inType == IN_TUNER) {
+        if (isTuner()) {
             uint16_t freq = tunerGet()->status.freq;
             char *PS = rdsParserGet()->PS;
             stationStoreRemove(freq, PS);
         }
         break;
     case ACTION_DIGIT:
-        if (amp->inType == IN_TUNER) {
+        if (isTuner()) {
             stationFavZap(action.value);
         }
         break;
     case ACTION_DIGIT_HOLD:
-        if (amp->inType == IN_TUNER) {
+        if (isTuner()) {
             stationFavStoreRemove(action.value);
         }
         break;
@@ -530,8 +536,12 @@ void ampActionHandle(void)
     screen.timeout = SW_TIM_OFF;
 }
 
-static void ampSyncTuner(void)
+static void ampSendToMaster(void)
 {
+    if (!ampIsOnline(AMP_MODULE_PLAYER)) {
+        syncTxResetBusy();
+    }
+
     if (syncTxIsBusy()) {
         return;
     }
@@ -585,7 +595,7 @@ static void ampSyncTuner(void)
 static void ampPollInput(void)
 {
     if (amp->screen != SCREEN_STANDBY) {
-        if (amp->inType == IN_TUNER) {
+        if (isTuner()) {
             if (swTimGet(SW_TIM_INPUT_POLL) == 0) {
                 tunerUpdateStatus();
                 swTimSet(SW_TIM_INPUT_POLL, 200);

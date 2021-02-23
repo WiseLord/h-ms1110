@@ -116,13 +116,13 @@ typedef struct {
     AmpStatus status;
     ScreenType screen;
     InputType inType;
+    AmpModule online;
 } Amp;
 
 void ampInit(void);
 Amp *ampGet(void);
 
 void ampRun(void);
-AmpModule ampGetOnlineModules(void);
 
 void ampSyncFromOthers(void);
 void ampSyncToOthers(void);
@@ -136,6 +136,10 @@ Action ampGetButtons();
 Action ampGetEncoder(void);
 
 void ampSetBrightness(uint8_t value);
+
+bool ampIsOnline(AmpModule module);
+void ampSetOffline(AmpModule module);
+void ampSetOnline(AmpModule module);
 
 #ifdef __cplusplus
 }

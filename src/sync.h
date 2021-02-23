@@ -30,6 +30,7 @@ enum {
     SYNC_TUNER_BAND,
     SYNC_TUNER_RDS,
 
+    SYNC_PING,
     SYNC_REQUEST,
 
     SYNC_END
@@ -44,6 +45,7 @@ void syncSlaveSend(SyncType type, void *data, size_t size);
 void syncSlaveReceive(uint8_t **data, uint8_t *size);
 
 bool syncTxIsBusy(void);
+void syncTxResetBusy(void);
 
 #ifdef __cplusplus
 }

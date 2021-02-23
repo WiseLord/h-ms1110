@@ -83,3 +83,18 @@ void TIM_SPECTRUM_HANDLER(void)
 }
 
 #endif
+
+bool ampIsOnline(AmpModule module)
+{
+    return !!(amp.online & module);
+}
+
+void ampSetOffline(AmpModule module)
+{
+    amp.online &= ~module;
+}
+
+void ampSetOnline(AmpModule module)
+{
+    amp.online |= module;
+}

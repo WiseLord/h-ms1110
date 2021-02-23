@@ -28,7 +28,7 @@ enum {
 
     SYNC_FLAG_RTC       = 0x01,
     SYNC_FLAG_SPECTRUM  = 0x02,
-    SYNC_FLAG_TUNER     = 0x04,
+    SYNC_FLAG_REQUEST   = 0x04,
     SYNC_FLAG_IN_TYPE   = 0x08,
 
     SYNC_FLAG_ALL       = 0x0F,
@@ -47,8 +47,6 @@ typedef struct {
 
     Spectrum sp;
     Action syncAction;
-
-    AmpModule online;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -161,7 +159,7 @@ static void inputEnable(void)
 
     switch (inType) {
     case IN_TUNER:
-        priv.syncFlags |= SYNC_FLAG_TUNER;
+        priv.syncFlags |= SYNC_FLAG_REQUEST;
         break;
     case IN_MPD:
         mpcSyncRequest();
@@ -815,12 +813,8 @@ void ampInit(void)
     swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp->status = AMP_STATUS_STBY;
-    priv.online = AMP_MODULE_PLAYER;
-}
-
-AmpModule ampGetOnlineModules(void)
-{
-    return priv.online;
+    ampSetOffline(AMP_MODULE_TUNER);
+    ampSetOffline(AMP_MODULE_SPECTRUM);
 }
 
 void ampSyncFromOthers(void)
@@ -848,7 +842,7 @@ static bool receiveFromTunerModule(void)
     switch (syncType) {
     case SYNC_ERR:
         // Communication error
-        priv.online &= ~ AMP_MODULE_TUNER;
+        ampSetOffline(AMP_MODULE_TUNER);
         break;
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
@@ -877,9 +871,6 @@ static bool receiveFromTunerModule(void)
         memcpy(rdsParser, &syncData[1], sizeof(RdsParser));
         tunerSync->flags |= TUNERSYNC_FLAG_RDS;
         break;
-    case SYNC_REQUEST:
-        priv.syncFlags |= SYNC_FLAG_ALL;
-        break;
     }
 
     return ret;
@@ -894,7 +885,7 @@ static void receiveFromSpectrumModule(void)
     switch (syncType) {
     case SYNC_ERR:
         // Communication error
-        priv.online &= ~ AMP_MODULE_SPECTRUM;
+        ampSetOffline(AMP_MODULE_SPECTRUM);
         break;
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
@@ -902,36 +893,37 @@ static void receiveFromSpectrumModule(void)
     case SYNC_SPECTRUM:
         memcpy(&priv.sp, &syncData[1], sizeof(Spectrum));
         priv.syncFlags |= SYNC_FLAG_SPECTRUM;
-        break;;
-    case SYNC_REQUEST:
-        priv.syncFlags |= SYNC_FLAG_ALL;
         break;
     }
 }
 
 static void ampPingSlaves(void)
 {
-    if (!(AMP_MODULE_TUNER & priv.online)) {
-        SyncType syncType = syncMasterSend(AMP_TUNER_ADDR, SYNC_REQUEST, NULL, 0);
+    if (!ampIsOnline(AMP_MODULE_TUNER)) {
+        SyncType syncType = syncMasterSend(AMP_TUNER_ADDR, SYNC_PING, NULL, 0);
         if (syncType != SYNC_ERR) {
-            priv.online |= AMP_MODULE_TUNER;
+            ampSetOnline(AMP_MODULE_TUNER);
+            priv.syncFlags = SYNC_FLAG_ALL;
+            swTimSet(SW_TIM_SYNC, 100);
         }
     }
 
-    if (!(AMP_MODULE_SPECTRUM & priv.online)) {
-        SyncType syncType = syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_REQUEST, NULL, 0);
+    if (!ampIsOnline(AMP_MODULE_SPECTRUM)) {
+        SyncType syncType = syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_PING, NULL, 0);
         if (syncType != SYNC_ERR) {
-            priv.online |= AMP_MODULE_SPECTRUM;
+            ampSetOnline(AMP_MODULE_SPECTRUM);
+            priv.syncFlags = SYNC_FLAG_ALL;
+            swTimSet(SW_TIM_SYNC, 100);
         }
     }
 }
 
 static void ampGetFromSlaves(void)
 {
-    if (AMP_MODULE_TUNER & priv.online) {
+    if (ampIsOnline(AMP_MODULE_TUNER)) {
         receiveFromTunerModule();
     }
-    if (AMP_MODULE_SPECTRUM & priv.online) {
+    if (ampIsOnline(AMP_MODULE_SPECTRUM)) {
         receiveFromSpectrumModule();
     }
 }
@@ -1072,6 +1064,7 @@ void ampActionHandle(void)
         ampSetInput(actionGetNextAudioInput((int8_t)action.value));
         screenSet(SCREEN_INPUT, 1000);
         priv.clearScreen = true;
+        priv.syncFlags |= SYNC_FLAG_IN_TYPE;
         break;
     case ACTION_AUDIO_SELECT_PARAM:
         audioChangeTune(aProc->tune, (int8_t)action.value);
@@ -1143,20 +1136,20 @@ static void prepareAudioTune(TuneView *tune)
 
 static void sendToTunerModule(SyncType type, void *data, size_t size)
 {
-    if (AMP_MODULE_TUNER & priv.online) {
+    if (ampIsOnline(AMP_MODULE_TUNER)) {
         SyncType syncType = syncMasterSend(AMP_TUNER_ADDR, type, data, size);
         if (syncType == SYNC_ERR) {
-            priv.online &= ~AMP_MODULE_TUNER;
+            ampSetOffline(AMP_MODULE_TUNER);
         }
     }
 }
 
 static void sendToSpectrumModule(SyncType type, void *data, size_t size)
 {
-    if (AMP_MODULE_SPECTRUM & priv.online) {
+    if (ampIsOnline(AMP_MODULE_SPECTRUM)) {
         SyncType syncType = syncMasterSend(AMP_SPECTRUM_ADDR, type, data, size);
         if (syncType == SYNC_ERR) {
-            priv.online &= ~AMP_MODULE_SPECTRUM;
+            ampSetOffline(AMP_MODULE_SPECTRUM);
         }
     }
 }
@@ -1187,15 +1180,6 @@ static void ampSendToSlaves(void)
         return;
     }
 
-    Spectrum *sp = &priv.sp;
-
-    if (priv.syncFlags & SYNC_FLAG_SPECTRUM) {
-        priv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
-        sendToAllModules(SYNC_SPECTRUM, sp, sizeof(Spectrum));
-        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
-        return;
-    }
-
     if (priv.syncFlags & SYNC_FLAG_RTC) {
         priv.syncFlags &= ~SYNC_FLAG_RTC;
         uint32_t rtcRaw = rtcGetRaw();
@@ -1205,9 +1189,18 @@ static void ampSendToSlaves(void)
         return;
     }
 
-    if (priv.syncFlags & SYNC_FLAG_TUNER) {
-        priv.syncFlags &= ~SYNC_FLAG_TUNER;
-        sendToTunerModule(SYNC_REQUEST, NULL, 0);
+    Spectrum *sp = &priv.sp;
+
+    if (priv.syncFlags & SYNC_FLAG_SPECTRUM) {
+        priv.syncFlags &= ~SYNC_FLAG_SPECTRUM;
+        sendToTunerModule(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+        swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
+        return;
+    }
+
+    if (priv.syncFlags & SYNC_FLAG_REQUEST) {
+        priv.syncFlags &= ~SYNC_FLAG_REQUEST;
+        sendToAllModules(SYNC_REQUEST, NULL, 0);
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
         return;
     }
@@ -1224,7 +1217,7 @@ void ampScreenShow(void)
     static TuneView tune;
 
     DateTimeMode dtMode = DT_MODE_TIME | DT_MODE_DATE | DT_MODE_WDAY;
-    if ((AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM) & priv.online) {
+    if (!!ampIsOnline(AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM)) {
         dtMode &= ~(DT_MODE_DATE | DT_MODE_WDAY);
     }
 

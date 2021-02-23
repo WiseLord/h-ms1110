@@ -149,3 +149,8 @@ bool syncTxIsBusy(void)
 {
     return ampSyncTxIsBusy;
 }
+
+void syncTxResetBusy()
+{
+    ampSyncTxIsBusy = false;
+}

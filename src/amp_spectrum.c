@@ -20,15 +20,16 @@
 typedef struct {
     ScreenType prevScreen;
     bool clearScreen;
-    bool isSlave;
+    bool spSyncNeeded;
 } AmpPriv;
-
-static void ampActionSyncMaster(void);
 
 static void actionGetTimers(void);
 
 static void actionRemapBtnShort(int16_t button);
 static void actionRemapBtnLong(int16_t button);
+
+static void ampGetFromMaster(void);
+static void ampSendToMaster(void);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -174,6 +175,18 @@ void ampInitHw(void)
     }
 }
 
+static void actionGetTimers(void)
+{
+    if (swTimGet(SW_TIM_AMP_INIT) == 0) {
+        actionSet(ACTION_INIT_HW, 0);
+    } else if (swTimGet(SW_TIM_SYNC) == 0) {
+        ampSetOffline(AMP_MODULE_PLAYER);
+        actionSet(ACTION_DISP_EXPIRED, 0);
+    } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
+        actionSet(ACTION_DISP_EXPIRED, 0);
+    }
+}
+
 static void ampInitMuteStby(void)
 {
     LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -185,15 +198,6 @@ static void ampInitMuteStby(void)
     LL_GPIO_Init(MUTE_Port, &GPIO_InitStruct);
     GPIO_InitStruct.Pin = STBY_Pin;
     LL_GPIO_Init(STBY_Port, &GPIO_InitStruct);
-}
-
-static void actionGetTimers(void)
-{
-    if (swTimGet(SW_TIM_AMP_INIT) == 0) {
-        actionSet(ACTION_INIT_HW, 0);
-    } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
-        actionSet(ACTION_DISP_EXPIRED, 0);
-    }
 }
 
 void ampInit(void)
@@ -222,21 +226,20 @@ void ampInit(void)
     swTimInit();
 
     amp->status = AMP_STATUS_STBY;
-
-    syncSlaveSend(SYNC_REQUEST, NULL, 0);
+    ampSetOffline(AMP_MODULE_PLAYER);
 }
 
 void ampSyncFromOthers(void)
 {
-    ampActionSyncMaster();
+    ampGetFromMaster();
 }
 
 void ampSyncToOthers(void)
 {
-
+    ampSendToMaster();
 }
 
-static void ampActionSyncMaster(void)
+static void ampGetFromMaster(void)
 {
     uint8_t *syncData;
     uint8_t syncSize;
@@ -259,6 +262,14 @@ static void ampActionSyncMaster(void)
         return;
     }
 
+    swTimSet(SW_TIM_SYNC, 1100);
+
+    if (!ampIsOnline(AMP_MODULE_PLAYER)) {
+        ampSetOnline(AMP_MODULE_PLAYER);
+        actionSet(ACTION_DISP_EXPIRED, 0);
+        return;
+    }
+
     SyncType syncType = syncData[0];
 
     switch (syncType) {
@@ -272,7 +283,7 @@ static void ampActionSyncMaster(void)
         amp->inType = *(InputType *)&syncData[1];
         break;
     case SYNC_REQUEST:
-        priv.isSlave = true;
+        priv.spSyncNeeded = true;
         break;
     }
 }
@@ -346,7 +357,7 @@ static void spModeChange(int16_t value)
     }
     priv.clearScreen = true;
     settingsStore(PARAM_SPECTRUM_MODE, sp->mode);
-    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+    priv.spSyncNeeded = true;
 }
 
 static void spPeaksChange()
@@ -355,7 +366,7 @@ static void spPeaksChange()
     sp->flags ^= SP_FLAG_PEAKS;
     priv.clearScreen = true;
     settingsStore(PARAM_SPECTRUM_PEAKS, (sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
-    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+    priv.spSyncNeeded = true;
 }
 
 static void spDemoChange()
@@ -364,7 +375,7 @@ static void spDemoChange()
     sp->flags ^= SP_FLAG_DEMO;
     priv.clearScreen = true;
     settingsStore(PARAM_SPECTRUM_DEMO, (sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO);
-    syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+    priv.spSyncNeeded = true;
 }
 
 void ampActionHandle(void)
@@ -417,6 +428,23 @@ void ampActionHandle(void)
 
     action.type = ACTION_NONE;
     screen.timeout = SW_TIM_OFF;
+}
+
+static void ampSendToMaster(void)
+{
+    if (!ampIsOnline(AMP_MODULE_PLAYER)) {
+        syncTxResetBusy();
+    }
+
+    if (syncTxIsBusy()) {
+        return;
+    }
+
+    Spectrum *sp = spGet();
+    if (priv.spSyncNeeded) {
+        priv.spSyncNeeded = false;
+        syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+    }
 }
 
 void ampScreenShow(void)

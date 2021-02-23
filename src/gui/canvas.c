@@ -144,8 +144,8 @@ void canvasShowInputCommon(InputType inType, bool clear)
     bool peaks = ((sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
 
     GlcdRect rectL = {0, 40, 125, 24};
-    spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
     GlcdRect rectR = {131, 40, 125, 24};
+    spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
     spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rectR);
 #endif
 
@@ -249,13 +249,12 @@ void canvasDebugFPS(void)
         frames = 0;
         oldFps = fps;
         oldCnt = cnt;
-    } else {
     }
 
     char buf[16];
 
-    glcdSetXY(canvas.glcd->rect.w, 0);
+    glcdSetXY(canvas.glcd->rect.w, 17);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    snprintf(buf, sizeof(buf), "%0d", (int)oldFps);
+    snprintf(buf, sizeof(buf), "%3d %d %d", (int)oldFps, ampGet()->online, ampGet()->inType);
     glcdWriteString(buf);
 }
