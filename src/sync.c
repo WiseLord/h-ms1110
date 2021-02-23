@@ -44,14 +44,21 @@ static void ampSyncTxCb(int16_t bytes)
     ampSyncTxIsBusy = false;
 }
 
-void syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size)
+SyncType syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size)
 {
     i2cBegin(I2C_SYNC, slaveAddr);
     i2cSend(I2C_SYNC, type);
     for (size_t i = 0; i < size; i++) {
         i2cSend(I2C_SYNC, ((uint8_t *)data)[i]);
     }
-    i2cTransmit(I2C_SYNC);
+
+    bool i2cRet = i2cTransmit(I2C_SYNC);
+
+    if (!i2cRet) {
+        return SYNC_ERR;
+    }
+
+    return SYNC_NONE;
 }
 
 void syncMasterInit(void)
@@ -64,7 +71,12 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
     SyncType type = SYNC_NONE;
 
     i2cBegin(I2C_SYNC, slaveAddr);
-    i2cReceive(I2C_SYNC, &type, 1);
+
+    bool i2cRet = i2cReceive(I2C_SYNC, &type, 1);
+
+    if (!i2cRet) {
+        return SYNC_ERR;
+    }
 
     switch (type) {
     case SYNC_ACTION:

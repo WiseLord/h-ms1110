@@ -254,7 +254,7 @@ void canvasDebugFPS(void)
 
     char buf[16];
 
-    glcdSetXY(canvas.glcd->rect.w, 52);
+    glcdSetXY(canvas.glcd->rect.w, 0);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
     snprintf(buf, sizeof(buf), "%0d", (int)oldFps);
     glcdWriteString(buf);

@@ -62,8 +62,12 @@ static void actionRemapEncoder(int16_t encCnt);
 
 static void actionRemapCommon(void);
 
+static void ampPingSlaves(void);
 static void ampGetFromSlaves(void);
 static void ampSendToSlaves(void);
+
+static void sendToTunerModule(SyncType type, void *data, size_t size);
+static void sendToSpectrumModule(SyncType type, void *data, size_t size);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -811,7 +815,12 @@ void ampInit(void)
     swTimSet(SW_TIM_RTC_INIT, 500);
 
     amp->status = AMP_STATUS_STBY;
-    priv.online = AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM;
+    priv.online = AMP_MODULE_PLAYER;
+}
+
+AmpModule ampGetOnlineModules(void)
+{
+    return priv.online;
 }
 
 void ampSyncFromOthers(void)
@@ -825,8 +834,10 @@ void ampSyncToOthers(void)
     ampSendToSlaves();
 }
 
-static void receiveFromTunerModule(void)
+static bool receiveFromTunerModule(void)
 {
+    bool ret = false;
+
     uint8_t syncData[SYNC_DATASIZE];
     SyncType syncType;
 
@@ -835,6 +846,10 @@ static void receiveFromTunerModule(void)
 
     syncType = syncMasterReceive(AMP_TUNER_ADDR, syncData);
     switch (syncType) {
+    case SYNC_ERR:
+        // Communication error
+        priv.online &= ~ AMP_MODULE_TUNER;
+        break;
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
         break;
@@ -866,6 +881,8 @@ static void receiveFromTunerModule(void)
         priv.syncFlags |= SYNC_FLAG_ALL;
         break;
     }
+
+    return ret;
 }
 
 static void receiveFromSpectrumModule(void)
@@ -875,6 +892,10 @@ static void receiveFromSpectrumModule(void)
 
     syncType = syncMasterReceive(AMP_SPECTRUM_ADDR, syncData);
     switch (syncType) {
+    case SYNC_ERR:
+        // Communication error
+        priv.online &= ~ AMP_MODULE_SPECTRUM;
+        break;
     case SYNC_ACTION:
         action = *(Action *)&syncData[1];
         break;
@@ -885,6 +906,23 @@ static void receiveFromSpectrumModule(void)
     case SYNC_REQUEST:
         priv.syncFlags |= SYNC_FLAG_ALL;
         break;
+    }
+}
+
+static void ampPingSlaves(void)
+{
+    if (!(AMP_MODULE_TUNER & priv.online)) {
+        SyncType syncType = syncMasterSend(AMP_TUNER_ADDR, SYNC_REQUEST, NULL, 0);
+        if (syncType != SYNC_ERR) {
+            priv.online |= AMP_MODULE_TUNER;
+        }
+    }
+
+    if (!(AMP_MODULE_SPECTRUM & priv.online)) {
+        SyncType syncType = syncMasterSend(AMP_SPECTRUM_ADDR, SYNC_REQUEST, NULL, 0);
+        if (syncType != SYNC_ERR) {
+            priv.online |= AMP_MODULE_SPECTRUM;
+        }
     }
 }
 
@@ -1106,14 +1144,20 @@ static void prepareAudioTune(TuneView *tune)
 static void sendToTunerModule(SyncType type, void *data, size_t size)
 {
     if (AMP_MODULE_TUNER & priv.online) {
-        syncMasterSend(AMP_TUNER_ADDR, type, data, size);
+        SyncType syncType = syncMasterSend(AMP_TUNER_ADDR, type, data, size);
+        if (syncType == SYNC_ERR) {
+            priv.online &= ~AMP_MODULE_TUNER;
+        }
     }
 }
 
 static void sendToSpectrumModule(SyncType type, void *data, size_t size)
 {
     if (AMP_MODULE_SPECTRUM & priv.online) {
-        syncMasterSend(AMP_SPECTRUM_ADDR, type, data, size);
+        SyncType syncType = syncMasterSend(AMP_SPECTRUM_ADDR, type, data, size);
+        if (syncType == SYNC_ERR) {
+            priv.online &= ~AMP_MODULE_SPECTRUM;
+        }
     }
 }
 
@@ -1157,6 +1201,7 @@ static void ampSendToSlaves(void)
         uint32_t rtcRaw = rtcGetRaw();
         sendToAllModules(SYNC_TIME, &rtcRaw, sizeof(uint32_t));
         swTimSet(SW_TIM_SYNC, SYNC_PERIOD);
+        ampPingSlaves();
         return;
     }
 

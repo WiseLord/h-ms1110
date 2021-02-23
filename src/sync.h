@@ -14,6 +14,8 @@ extern "C" {
 
 typedef uint8_t SyncType;
 enum {
+    SYNC_ERR = 0xFF,
+
     SYNC_NONE = 0,
 
     SYNC_ACTION,
@@ -34,7 +36,7 @@ enum {
 };
 
 void syncMasterInit(void);
-void syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size);
+SyncType syncMasterSend(uint8_t slaveAddr, SyncType type, void *data, size_t size);
 SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data);
 
 void syncSlaveInit(uint8_t addr);

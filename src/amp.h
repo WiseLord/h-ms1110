@@ -122,6 +122,7 @@ void ampInit(void);
 Amp *ampGet(void);
 
 void ampRun(void);
+AmpModule ampGetOnlineModules(void);
 
 void ampSyncFromOthers(void);
 void ampSyncToOthers(void);
