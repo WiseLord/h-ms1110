@@ -146,7 +146,7 @@ void canvasShowInputCommon(InputType inType, bool clear)
     GlcdRect rectL = {0, 40, 125, 24};
     GlcdRect rectR = {131, 40, 125, 24};
     spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
-    spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rectR);
+    spViewDraw(false, false, false, peaks, SP_CHAN_RIGHT, &rectR);
 #endif
 
     const Palette *pal = paletteGet();

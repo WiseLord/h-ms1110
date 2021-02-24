@@ -124,12 +124,13 @@ static void calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *
 
 void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect)
 {
-    if (check && !checkSpectrumReady()) {
-        return;
-    }
     if (clear) {
         memset(&spDrawData, 0, sizeof (SpDrawData));
         memset(spData, 0, sizeof (SpData) * SP_CHAN_END);
+    }
+
+    if (check && !checkSpectrumReady()) {
+        return;
     }
 
     if (chan == SP_CHAN_LEFT || chan == SP_CHAN_BOTH) {
