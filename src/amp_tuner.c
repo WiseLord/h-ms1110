@@ -127,6 +127,8 @@ static void inputEnable(void)
     tunerSetPower(true);
     tunerSetFreq(tuner->status.freq);
     tunerSetVolume(tuner->par.volume);
+    tunerSetForcedMono(tuner->par.forcedMono);
+    tunerSetRds(tuner->par.rds);
     tunerSetMute(false);
 }
 
@@ -385,8 +387,10 @@ static void actionRemapBtnShort(int16_t button)
     case BTN_TUNER_MWFM:
         break;
     case BTN_TUNER_RDS:
+        actionSet(ACTION_TUNER_SET_RDS, FLAG_SWITCH);
         break;
     case BTN_TUNER_ENC:
+        actionSet(ACTION_TUNER_FORCE_MONO, FLAG_SWITCH);
         break;
     default:
         break;
@@ -461,26 +465,6 @@ void ampActionRemap(void)
         actionRemapEncoder(action.value);
         break;
     }
-
-    switch (action.type) {
-    case ACTION_TUNER_STORE:
-        if (isTuner()) {
-            uint16_t freq = tunerGet()->status.freq;
-            char *PS = rdsParserGet()->PS;
-            stationStoreRemove(freq, PS);
-        }
-        break;
-    case ACTION_DIGIT:
-        if (isTuner()) {
-            stationFavZap(action.value);
-        }
-        break;
-    case ACTION_DIGIT_HOLD:
-        if (isTuner()) {
-            stationFavStoreRemove(action.value);
-        }
-        break;
-    }
 }
 
 static void ampSendMediaKey(MediaKey key)
@@ -517,6 +501,34 @@ void ampActionHandle(void)
     case ACTION_MEDIA:
         ampSendMediaKey((MediaKey)action.value);
         break;
+
+    case ACTION_TUNER_STORE:
+        if (isTuner()) {
+            uint16_t freq = tunerGet()->status.freq;
+            char *PS = rdsParserGet()->PS;
+            stationStoreRemove(freq, PS);
+        }
+        break;
+    case ACTION_TUNER_FORCE_MONO:
+        if (isTuner()) {
+            tunerSetForcedMono(!tunerGet()->par.forcedMono);
+        }
+        break;
+    case ACTION_TUNER_SET_RDS:
+        if (isTuner()) {
+            tunerSetRds(!tunerGet()->par.rds);
+        }
+        break;
+
+    case ACTION_DIGIT:
+        if (isTuner()) {
+            stationFavZap(action.value);
+        }
+        break;
+    case ACTION_DIGIT_HOLD:
+        if (isTuner()) {
+            stationFavStoreRemove(action.value);
+        }
 
     default:
         break;
