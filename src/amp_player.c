@@ -1087,6 +1087,12 @@ void ampActionHandle(void)
         ampMute(action.value);
         break;
 
+    case ACTION_DIGIT:
+        if (amp->inType == IN_MPD) {
+            mpcLoadPlaylist((uint8_t)action.value);
+        }
+        break;
+
     case ACTION_MEDIA:
         ampSendMediaKey((MediaKey)action.value);
         break;
