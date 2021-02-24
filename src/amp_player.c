@@ -1217,7 +1217,7 @@ void ampScreenShow(void)
     static TuneView tune;
 
     DateTimeMode dtMode = DT_MODE_TIME | DT_MODE_DATE | DT_MODE_WDAY;
-    if (!!ampIsOnline(AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM)) {
+    if (ampIsOnline(AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM)) {
         dtMode &= ~(DT_MODE_DATE | DT_MODE_WDAY);
     }
 

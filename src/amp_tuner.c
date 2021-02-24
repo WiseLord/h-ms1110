@@ -47,6 +47,10 @@ static Action action = {
     .value = FLAG_ENTER,
 };
 
+static Action syncAction = {
+    .type = ACTION_NONE,
+};
+
 static Screen screen = {
     .type = SCREEN_STANDBY,
     .timeout = SW_TIM_OFF,
@@ -441,14 +445,8 @@ static void actionRemapBtnLong(int16_t button)
 
 static void actionRemapEncoder(int16_t encCnt)
 {
-    if (isTuner()) {
-        tunerStep(encCnt);
-    } else {
-        if (encCnt && !!ampIsOnline(AMP_MODULE_PLAYER)) {
-            Action syncAction = {ACTION_MEDIA, encCnt > 0 ? MEDIAKEY_FFWD : MEDIAKEY_REWIND};
-            syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Spectrum));
-        }
-        actionSet(ACTION_NONE, 0);
+    if (encCnt) {
+        actionSet(ACTION_MEDIA, encCnt > 0 ? MEDIAKEY_FFWD : MEDIAKEY_REWIND);
     }
 }
 
@@ -467,7 +465,7 @@ void ampActionRemap(void)
     }
 }
 
-static void ampSendMediaKey(MediaKey key)
+static void tunerSendMediaKey(MediaKey key)
 {
     switch (key) {
     case MEDIAKEY_PREV:
@@ -499,7 +497,11 @@ void ampActionHandle(void)
         break;
 
     case ACTION_MEDIA:
-        ampSendMediaKey((MediaKey)action.value);
+        if (isTuner()) {
+            tunerSendMediaKey((MediaKey)action.value);
+        } else {
+            syncAction = action;
+        }
         break;
 
     case ACTION_TUNER_STORE:
@@ -523,11 +525,15 @@ void ampActionHandle(void)
     case ACTION_DIGIT:
         if (isTuner()) {
             stationFavZap(action.value);
+        } else {
+            syncAction = action;
         }
         break;
     case ACTION_DIGIT_HOLD:
         if (isTuner()) {
             stationFavStoreRemove(action.value);
+        } else {
+            syncAction = action;
         }
 
     default:
@@ -561,6 +567,12 @@ static void ampSendToMaster(void)
     Tuner *tuner = tunerGet();
     TunerSync *sync = tunerSyncGet();
     int8_t stNum = stationGetNum(tuner->status.freq);
+
+    if (syncAction.type != SYNC_NONE) {
+        syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Action));
+        syncAction.type = SYNC_NONE;
+        return;
+    }
 
     if (sync->freq != tuner->status.freq) {
         sync->freq = tuner->status.freq;
