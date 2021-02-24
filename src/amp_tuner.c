@@ -552,18 +552,21 @@ static void ampSendToMaster(void)
 
     if (sync->freq != tuner->status.freq) {
         sync->freq = tuner->status.freq;
+        sync->flags |= TUNERSYNC_FLAG_FREQ;
         syncSlaveSend(SYNC_TUNER_FREQ, &sync->freq, sizeof(uint16_t));
         return;
     }
 
     if (sync->stNum != stNum) {
         sync->stNum = stNum;
+        sync->flags |= TUNERSYNC_FLAG_STNUM;
         syncSlaveSend(SYNC_TUNER_STNUM, &stNum, sizeof(int8_t));
         return;
     }
 
     if (sync->tFlags != tuner->status.flags) {
         sync->tFlags = tuner->status.flags;
+        sync->flags |= TUNERSYNC_FLAG_FLAGS;
         syncSlaveSend(SYNC_TUNER_FLAGS, &sync->tFlags, sizeof(TunerFlag));
         return;
     }
@@ -571,6 +574,7 @@ static void ampSendToMaster(void)
     uint16_t favMask = stationFavGetMask(tuner->status.freq);
     if (sync->favMask != favMask) {
         sync->favMask = favMask;
+        sync->flags |= TUNERSYNC_FLAG_FAVS;
         syncSlaveSend(SYNC_TUNER_FAVS, &sync->favMask, sizeof(uint16_t));
         return;
     }
@@ -579,6 +583,7 @@ static void ampSendToMaster(void)
         sync->band.fMax != tuner->par.fMax) {
         sync->band.fMin = tuner->par.fMin;
         sync->band.fMax = tuner->par.fMax;
+        sync->flags |= TUNERSYNC_FLAG_BAND;
         syncSlaveSend(SYNC_TUNER_BAND, &sync->band, sizeof(TunerSyncBand));
         return;
     }
@@ -587,6 +592,7 @@ static void ampSendToMaster(void)
 
     if (memcmp(rdsParser, &priv.rdsParser, sizeof(RdsParser))) {
         memcpy(&priv.rdsParser, rdsParser, sizeof(RdsParser));
+        sync->flags |= TUNERSYNC_FLAG_RDS;
         syncSlaveSend(SYNC_TUNER_RDS, rdsParser, sizeof (RdsParser));
         return;
     }
@@ -635,8 +641,7 @@ void ampScreenShow(void)
         canvasShowDateTime(clear, DT_MODE_WDAY);
         break;
     case SCREEN_TUNER:
-        canvasShowInputCommon(IN_TUNER, clear);
-        canvasShowInputTuner(true);
+        canvasShowInput(IN_TUNER, clear);
         break;
     default:
         break;
