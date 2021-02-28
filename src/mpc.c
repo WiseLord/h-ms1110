@@ -1,7 +1,6 @@
 #include "mpc.h"
 
 #include <inttypes.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -269,6 +268,13 @@ void mpcGetData(void)
         if (utilReadChar(&lp, ch)) {
             parseLine(lp.line);
         }
+    }
+}
+
+void mpcSchedPower(bool value)
+{
+    if (!value) {
+        mpcSendCmd("poweroff");
     }
 }
 

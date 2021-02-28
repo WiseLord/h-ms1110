@@ -98,6 +98,8 @@ enum {
 
     ACTION_MEDIA          = 110,
 
+    ACTION_MPD_POWEROFF   = 120,
+
     ACTION_END
 };
 
