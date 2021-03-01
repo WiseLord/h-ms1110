@@ -250,7 +250,7 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
-    swTimSet(SW_TIM_MPD_POWEROFF, 60000); // Turn off MPD after 60 seconds
+    swTimSet(SW_TIM_MPD_POWEROFF, 20000); // Turn off MPD after 60 seconds
     mpcSendMediaKey(MEDIAKEY_STOP);
 
     ampSetBrightness(AMP_BR_STBY);
