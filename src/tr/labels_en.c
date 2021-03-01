@@ -51,6 +51,8 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_ALARM_DAY_WEEKDAYS]  = "weekdays",
     [LABEL_ALARM_DAY_ALL_DAYS]  = "all days",
 
+    [LABEL_MPD_WAIT]        = "Waiting for MPD...",
+
     // NOTE: Keep in sync with cmd.h define list
     [LABEL_RC_STBY_SWITCH]  = "Switch standby",
     [LABEL_RC_VOL_UP]       = "Volume up",

@@ -51,6 +51,8 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_ALARM_DAY_WEEKDAYS]  = "будни",
     [LABEL_ALARM_DAY_ALL_DAYS]  = "все дни",
 
+    [LABEL_MPD_WAIT]        = "Ожидание MPD...",
+
     // NOTE: Keep in sync with cmd.h define list
     [LABEL_RC_STBY_SWITCH]  = "Режим ожидания",
     [LABEL_RC_VOL_UP]       = "Громкость +",

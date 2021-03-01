@@ -7,6 +7,7 @@
 #include "gui/palette.h"
 #include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
+#include "tr/labels.h"
 
 static const GlcdRect rectIconStatus = {44, 0, 15, 15};
 
@@ -90,8 +91,12 @@ static void drawMeta(MpcView *this, bool clear)
     glcdSetFontColor(pal->active);
 
     this->scroll.rect = &rectMeta;
-//    this->scroll.text = this->mpc->status & (MPC_PLAYING) ? this->mpc->meta : "";
-    this->scroll.text = this->mpc->meta;
+
+    if (this->mpc->status == MPC_IDLE) {
+        this->scroll.text = labelsGet(LABEL_MPD_WAIT);
+    } else {
+        this->scroll.text = this->mpc->meta;
+    }
 
     scrollTextDraw(&this->scroll, clear);
 }

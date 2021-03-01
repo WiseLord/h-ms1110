@@ -141,6 +141,8 @@ bool ampIsOnline(AmpModule module);
 void ampSetOffline(AmpModule module);
 void ampSetOnline(AmpModule module);
 
+void ampUpdateDate(char *date);
+
 #ifdef __cplusplus
 }
 #endif

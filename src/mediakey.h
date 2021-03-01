@@ -23,6 +23,7 @@ enum {
     MEDIAKEY_CONSUME,
     MEDIAKEY_EJECT,
     MEDIAKEY_INJECT,
+    MEDIAKEY_MUTE,
 };
 
 #ifdef __cplusplus

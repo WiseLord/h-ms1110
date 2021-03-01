@@ -1,4 +1,5 @@
 import getopt
+import signal
 import sys
 import threading
 import time
@@ -174,6 +175,10 @@ class Player(object):
             if not self.cmd_queue:
                 time.sleep(0.1)
 
+    def signal_handler(self, sig, frame):
+        self.console.send('##SYS.RESET')
+        exit(0)
+
     def start(self):
         self.alive = True
         self.console.start()
@@ -181,6 +186,8 @@ class Player(object):
         self.notify_thread = threading.Thread(target=self.notify_fn, name='notify')
         self.notify_thread.daemon = True
         self.notify_thread.start()
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
 
     def join(self):
         self.console.join()

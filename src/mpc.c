@@ -42,6 +42,22 @@ static void updateName(const char *str) // KaRadio only
     mpc.flags |= MPC_FLAG_UPDATE_NAME;
 }
 
+static void mpcReset(void)
+{
+    mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+    mpc.status = MPC_IDLE;
+}
+
+static void parseSys(char *line)
+{
+    if (utilIsPrefix(line, "DATE#:")) {
+        char *date = line + sizeof("DATE#:");
+        ampUpdateDate(date);
+    } else if (utilIsPrefix(line, "RESET")) {
+        mpcReset();
+    }
+}
+
 static void parseCli(char *line)
 {
     if (utilIsPrefix(line, "ELAPSED#: ")) {
@@ -57,6 +73,9 @@ static void parseCli(char *line)
         mpc.flags |= MPC_FLAG_UPDATE_META;
     } else if (utilIsPrefix(line, "META#: ")) {
         updateMeta(line + strlen("META#: "));
+    } else if (utilIsPrefix(line, "NAMESET#:")) {
+        char *name = line + sizeof("NAMESET#:");
+        updateName(name);
     } else if (utilIsPrefix(line, "PLAYING#")) {
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
         mpc.flags |= MPC_FLAG_UPDATE_NAME | MPC_FLAG_UPDATE_META | MPC_FLAG_UPDATE_TRACKNUM;
@@ -88,9 +107,6 @@ static void parseCli(char *line)
         sscanf(line, "CONSUME#: %d", &consume);
         consume ? (mpc.status |= MPC_CONSUME) : (mpc.status &= ~MPC_CONSUME);
         mpc.flags |= MPC_FLAG_UPDATE_STATUS;
-    } else if (utilIsPrefix(line, "NAMESET#:")) {
-        char *name = line + sizeof("NAMESET#:");
-        updateName(name);
     }
 }
 
@@ -140,6 +156,8 @@ static void parseLine(char *line)
 {
     if (utilIsPrefix(line, "##CLI.")) {
         parseCli(line + strlen("##CLI."));
+    } else if (utilIsPrefix(line, "##SYS.")) {
+        parseSys(line + strlen("##SYS."));
     } else if (utilIsPrefix(line, "Trying ")) {
         parseApTrying(line + strlen("Trying "));
     } else if (utilIsPrefix(line, "ip:")) {
@@ -147,11 +165,6 @@ static void parseLine(char *line)
     } else if (utilIsPrefix(line, "I2S Speed:")) {
         onBootComplete();
     }
-}
-
-static void mpcReset(void)
-{
-    updateMeta("Booting...");
 }
 
 void mpcInit(void)
