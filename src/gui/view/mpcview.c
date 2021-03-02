@@ -94,8 +94,10 @@ static void drawMeta(MpcView *this, bool clear)
 
     if (this->mpc->status == MPC_IDLE) {
         this->scroll.text = labelsGet(LABEL_MPD_WAIT);
-    } else {
+    } else if (this->mpc->status & MPC_PLAYING) {
         this->scroll.text = this->mpc->meta;
+    } else {
+        this->scroll.text = this->mpc->ip;
     }
 
     scrollTextDraw(&this->scroll, clear);

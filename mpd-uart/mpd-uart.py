@@ -252,8 +252,10 @@ class Player(object):
             self.send_elapsed()
         if update_all or update_duration:
             self.send_duration()
-        if update_all or update_state or update_ip:
+        if update_all or update_state:
             self.send_state()
+        if update_all or update_ip:
+            self.send_ip()
         if update_all or update_repeat:
             self.send_repeat()
         if update_all or update_random:
@@ -280,7 +282,9 @@ class Player(object):
             self.console.send('##CLI.PAUSED#')
         else:
             self.console.send('##CLI.STOPPED#')
-            self.console.send('ip: ' + self.networkChecker.get_ip())
+
+    def send_ip(self):
+        self.console.send('ip: ' + self.networkChecker.get_ip())
 
     def send_repeat(self):
         self.console.send('##CLI.REPEAT#: ' + self.player_info['repeat'])
