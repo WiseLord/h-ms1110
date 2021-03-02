@@ -795,6 +795,8 @@ void ampInit(void)
 
     ampInitMuteStby();
 
+    rtcInitAlarms();
+
     labelsInit();
     canvasInit();
 
