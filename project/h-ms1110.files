@@ -1,11 +1,10 @@
 ../src/action.h
 ../src/amp.c
 ../src/amp.h
-../src/.astylerc
-../src/Makefile
 ../src/amp_player.c
 ../src/amp_spectrum.c
 ../src/amp_tuner.c
+../src/.astylerc
 ../src/audio/audio.c
 ../src/audio/audiodefs.h
 ../src/audio/audio.h
@@ -25,6 +24,7 @@
 ../src/display/dispconf.h
 ../src/display/dispdrv.c
 ../src/display/dispdrv.h
+../src/display/dispdrv/ssd1322.c
 ../src/display/fonts/fonts.h
 ../src/display/fonts/font-terminus-12.c
 ../src/display/fonts/font-terminus-14b.c
@@ -43,7 +43,6 @@
 ../src/display/fonts/font-terminus-28.c
 ../src/display/fonts/font-terminus-32b.c
 ../src/display/fonts/font-terminus-32.c
-../src/display/gg256x64/ssd1322.c
 ../src/display/glcd.c
 ../src/display/glcd.h
 ../src/display/hw/stm32f1.h
@@ -120,6 +119,7 @@
 ../src/input/matrix.c
 ../src/input/matrix.h
 ../src/main.c
+../src/Makefile
 ../src/mediakey.h
 ../src/mpc.c
 ../src/mpc.h

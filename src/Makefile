@@ -98,7 +98,7 @@ C_SOURCES += screen/setupview.c
 C_SOURCES += screen/spectrumview.c
 C_SOURCES += screen/tuneview.c
 
-C_SOURCES += display/$(DISPTYPE)$(DISPSIZE)/$(call lc,$(DISPLAY)).c
+C_SOURCES += display/dispdrv/$(call lc,$(DISPLAY)).c
 C_SOURCES += display/dispdrv.c
 C_SOURCES += display/glcd.c
 C_DEFS += -D_$(DISPLAY)
