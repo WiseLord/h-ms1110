@@ -166,3 +166,8 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
 
     glcdResetRect();
 }
+
+void *spViewGetDrawData()
+{
+    return &spDrawData;
+}

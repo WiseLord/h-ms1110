@@ -12,6 +12,8 @@ extern "C" {
 
 void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect);
 
+void *spViewGetDrawData(void);
+
 #ifdef __cplusplus
 }
 #endif
