@@ -112,7 +112,7 @@ void canvasShowStars(bool clear, int16_t offset)
     view.stars = spViewGetDrawData();
 
     if (swTimGet(SW_TIM_SP_CONVERT) == 0) {
-        swTimSet(SW_TIM_SP_CONVERT, 40);
+        swTimSet(SW_TIM_SP_CONVERT, 15);
         starsView(&view, clear);
     }
 }
