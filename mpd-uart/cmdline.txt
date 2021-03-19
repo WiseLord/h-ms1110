@@ -1,0 +1,3 @@
+#console=tty1 root=PARTUUID=06af8f2b-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait
+#console=tty1 root=PARTUUID=06af8f2b-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait fastboot noswap ro
+console=tty1 root=PARTUUID=06af8f2b-02 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait fastboot noswap

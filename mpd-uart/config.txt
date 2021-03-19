@@ -1,0 +1,9 @@
+[all]
+dtoverlay=i2s-mmap
+dtoverlay=hifiberry-dac
+enable_uart=1
+boot_delay=0
+disable_splash=1
+
+dtoverlay=sdtweak,overclock_50=100
+dtoverlay=gpio-poweroff

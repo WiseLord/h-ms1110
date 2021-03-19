@@ -1,0 +1,11 @@
+proc            /proc           proc    defaults          0       0
+PARTUUID=06af8f2b-01  /boot           vfat    defaults          0       2
+PARTUUID=06af8f2b-02  /               ext4    defaults,noatime  0       1
+
+tmpfs           /tmp              tmpfs   defaults,noatime         0       0
+tmpfs           /var/log          tmpfs   defaults,noatime         0       0
+tmpfs           /var/tmp          tmpfs   defaults,noatime         0       0
+tmpfs           /var/lib/dhcpcd5  tmpfs   defaults,noatime         0       0
+
+#UUID=9afdcc7d-eecd-4a8f-aa49-37364a52c25c  /home/media ext4 noauto,x-systemd.automount,noatime,nofail 0 0
+UUID=9afdcc7d-eecd-4a8f-aa49-37364a52c25c  /home/media ext4 noatime,nofail 0 0
