@@ -479,5 +479,5 @@ void ampScreenShow(void)
 
     canvasDebugFPS();
 
-    glcdFbSync();
+    glcdSync();
 }
