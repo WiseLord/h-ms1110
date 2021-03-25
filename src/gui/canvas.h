@@ -35,7 +35,7 @@ void canvasShowDateTime(bool clear, DateTimeMode mode);
 void canvasShowInputSpectrum(void);
 void canvasShowInputTuner(bool clear);
 void canvasShowInputMpc(bool clear);
-void canvasShowInputSelector(bool clear, InputType prev, InputType next);
+void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap);
 void canvasShowInput(bool clear, InputType inType);
 
 void canvasShowTune(bool clear, TuneView *tune);

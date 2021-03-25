@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+#include "amp.h"
 #include "display/glcd.h"
 #include "gui/palette.h"
 #include "gui/widget/iconimage.h"
@@ -34,30 +35,37 @@ void inputViewDrawName(InputView *this)
 
 void inputViewDraw(InputView *this, bool clear)
 {
+    if (this->scrollTimer > 0) {
+        clear = true;
+    }
+
     if (!clear) {
         return;
     }
 
     const Palette *pal = paletteGet();
 
+    const InputMap *inMap = this->inMap;
+    const int8_t inIdx = this->inIdx;
+
     IconImage iconInputPrev = {
         .rect = &rectIconInputPrev,
-        .color = pal->inactive,
-        .icon = this->iconPrev,
+        .color = COLOR_GRAY16(1),
+        .icon = ICON_TUNER + (inMap->pairs[(inMap->mapSize + inIdx - 1) % inMap->mapSize].type - IN_TUNER),
     };
     iconImageDraw(&iconInputPrev, clear);
 
     IconImage iconInput = {
         .rect = &rectIconInput,
         .color = pal->fg,
-        .icon = this->icon,
+        .icon = ICON_TUNER + (inMap->pairs[inIdx].type - IN_TUNER),
     };
     iconImageDraw(&iconInput, clear);
 
     IconImage iconInputNext = {
         .rect = &rectIconInputNext,
-        .color = pal->inactive,
-        .icon = this->iconNext,
+        .color = COLOR_GRAY16(1),
+        .icon = ICON_TUNER + (inMap->pairs[(inMap->mapSize + inIdx + 1) % inMap->mapSize].type - IN_TUNER),
     };
     iconImageDraw(&iconInputNext, clear);
 }

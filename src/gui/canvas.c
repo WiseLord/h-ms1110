@@ -175,31 +175,22 @@ void canvasShowInputMpc(bool clear)
     mpcViewDraw(&view, clear);
 }
 
-void canvasShowInputSelector(bool clear, InputType prev, InputType next)
+void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap)
 {
     Amp *amp = ampGet();
 
     static InputView view;
 
-    view.iconPrev = ICON_EMPTY;
-    view.icon = ICON_EMPTY;
-    view.iconNext = ICON_EMPTY;
-
     Label label = LABEL_BOOL_OFF;
 
     if (amp->inType != IN_NULL) {
         label = LABEL_IN_TUNER + amp->inType;
-        view.icon = ICON_TUNER + amp->inType;
-    }
-
-    if (prev != IN_NULL) {
-        view.iconPrev = ICON_TUNER + prev;
-    }
-    if (next != IN_NULL) {
-        view.iconNext = ICON_TUNER + next;
     }
 
     view.name = labelsGet(label);
+    view.inIdx = inIdx;
+    view.inMap = inMap;
+    view.scrollTimer = swTimGet(SW_TIM_SCROLL);
 
     inputViewDraw(&view, clear);
 }
@@ -233,7 +224,7 @@ void canvasShowSetup(bool clear)
 
 void canvasDebugFPS(void)
 {
-    return;
+//    return;
 
     const Palette *pal = canvas.pal;
 
@@ -259,6 +250,6 @@ void canvasDebugFPS(void)
 
     glcdSetXY(canvas.glcd->rect.w, 17);
     glcdSetFontAlign(GLCD_ALIGN_RIGHT);
-    snprintf(buf, sizeof(buf), "%3d %d %d", (int)oldFps, ampGet()->online, ampGet()->inType);
+    snprintf(buf, sizeof(buf), "%3d %4d", (int)oldFps, (int)swTimGet(SW_TIM_SCROLL));
     glcdWriteString(buf);
 }

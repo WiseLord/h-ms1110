@@ -100,6 +100,16 @@ enum {
     IN_END
 };
 
+typedef struct {
+    int8_t input;
+    InputType type;
+} InputPair;
+
+typedef struct {
+    const InputPair *pairs;
+    int8_t mapSize;
+} InputMap;
+
 typedef uint8_t AmpModule;
 enum {
     AMP_MODULE_NO       = 0x00,

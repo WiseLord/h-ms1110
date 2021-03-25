@@ -12,9 +12,9 @@ extern "C" {
 
 typedef struct {
     const char *name;
-    Icon iconPrev;
-    Icon icon;
-    Icon iconNext;
+    const void *inMap;
+    int16_t scrollTimer;
+    int8_t inIdx;
 } InputView;
 
 void inputViewDraw(InputView *this, bool clear);

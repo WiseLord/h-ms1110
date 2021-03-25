@@ -50,8 +50,7 @@ typedef struct {
 
     AudioTune tune;
 
-    InputType inTypePrev;
-    InputType inTypeNext;
+    int8_t inIdx;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -77,15 +76,17 @@ static int8_t actionGetNextAudioInput(int8_t diff);
 static AmpPriv priv;
 static Amp *amp;
 
-static const InputType inTypes[MAX_INPUTS] = {
-    IN_TUNER,
-    IN_MPD,
-    IN_SPDIF,
-    IN_NULL,
-    IN_AUX1,
-    IN_AUX2,
-    IN_NULL,
-    IN_NULL,
+static const InputPair inPairs[] = {
+    {0, IN_TUNER},
+    {1, IN_MPD},
+    {2, IN_SPDIF},
+    {4, IN_AUX1},
+    {5, IN_AUX2},
+};
+
+static const InputMap inMap = {
+    .pairs = inPairs,
+    .mapSize = sizeof(inPairs) / sizeof(InputPair),
 };
 
 static Action action = {
@@ -187,10 +188,13 @@ static void inputSetPower(bool value)
         priv.inputStatus = 0x00;
     }
 
-    amp->inType = inTypes[input];
-
-    priv.inTypePrev = inTypes[actionGetNextAudioInput(-1)];
-    priv.inTypeNext = inTypes[actionGetNextAudioInput(+1)];
+    for (uint8_t i = 0; i < inMap.mapSize; i++) {
+        if (inPairs[i].input == input) {
+            amp->inType = inPairs[i].type;
+            priv.inIdx = i;
+            break;
+        }
+    }
 }
 
 static void ampPinMute(bool value)
@@ -375,23 +379,9 @@ static void actionNextAudioParam(AudioProc *aProc)
 
 static int8_t actionGetNextAudioInput(int8_t diff)
 {
-    AudioProc *aProc = audioGet();
+    priv.inIdx = (inMap.mapSize + priv.inIdx + diff) % inMap.mapSize;
 
-    int8_t input = aProc->par.input;
-    int8_t inCnt = audioGetInputCount();
-
-    int8_t ret = input;
-
-    do {
-        ret += diff;
-        if (ret < 0) {
-            ret = inCnt - 1;
-        } else if (ret >= inCnt) {
-            ret = 0;
-        }
-    } while ((inTypes[ret] == IN_NULL) && (ret != input));
-
-    return ret;
+    return inPairs[priv.inIdx].input;
 }
 
 static void ampHandleSetup(void)
@@ -1087,9 +1077,12 @@ void ampActionHandle(void)
     case ACTION_AUDIO_SELECT_INPUT:
         if (scrMode == SCREEN_INPUT_SELECTOR) {
             ampSetInput(actionGetNextAudioInput((int8_t)action.value));
+            swTimSet(SW_TIM_SCROLL, 120);
+        } else {
+            priv.clearScreen = true;
+            swTimSet(SW_TIM_SCROLL, SW_TIM_OFF);
         }
         screenSet(SCREEN_INPUT_SELECTOR, 2000);
-        priv.clearScreen = true;
         priv.syncFlags |= SYNC_FLAG_IN_TYPE;
         break;
     case ACTION_AUDIO_SELECT_PARAM:
@@ -1249,6 +1242,7 @@ void ampScreenShow(void)
 
     if (clear) {
         canvasClear();
+        swTimSet(SW_TIM_SCROLL, SW_TIM_OFF);
     }
 
     static TuneView tune;
@@ -1273,7 +1267,7 @@ void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     case SCREEN_INPUT_SELECTOR:
-        canvasShowInputSelector(clear, priv.inTypePrev, priv.inTypeNext);
+        canvasShowInputSelector(clear, priv.inIdx, &inMap);
         break;
     default:
         canvasShowInput(clear, amp->inType);
