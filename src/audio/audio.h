@@ -13,7 +13,6 @@ extern "C" {
 typedef struct {
     const AudioApi *api;
     AudioParam par;
-    AudioTune tune;
 } AudioProc;
 
 void audioReadSettings(AudioIC ic);
@@ -30,11 +29,9 @@ void audioSetTune(AudioTune tune, int8_t value);
 void audioChangeTune(AudioTune tune, int8_t diff);
 
 void audioSetInput(int8_t value);
-void audioSetMute(bool value);
-void audioSetLoudness(bool value);
-void audioSetSurround(bool value);
-void audioSetEffect3D(bool value);
-void audioSetBypass(bool value);
+int8_t audioGetInputCount(void);
+
+void audioSetFlag(AudioFlag flag, bool value);
 
 bool audioIsModeSupported(AudioMode mode);
 

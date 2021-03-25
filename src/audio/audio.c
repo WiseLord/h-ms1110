@@ -4,22 +4,11 @@
 
 #include "settings.h"
 
-#ifdef _TDA7439
 #include "tda7439.h"
-#endif
-#ifdef _TDA731X
 #include "tda731x.h"
-#endif
-#ifdef _PT232X
 #include "pt232x.h"
-#endif
-#ifdef _TDA7418
 #include "tda7418.h"
-#endif
-#ifdef _TDA7719
 #include "tda7719.h"
-#endif
-
 
 static AudioProc aProc;
 
@@ -55,17 +44,14 @@ void audioReadSettings(AudioIC ic)
 
     aProc.par.ic = settingsRead(PARAM_AUDIO_IC, ic);
     aProc.par.input = settingsRead(PARAM_AUDIO_INPUT, 0);
-    aProc.par.loudness = settingsRead(PARAM_AUDIO_LOUDNESS, false);
-    aProc.par.surround = settingsRead(PARAM_AUDIO_SURROUND, false);
-    aProc.par.effect3d = settingsRead(PARAM_AUDIO_EFFECT3D, false);
-    aProc.par.bypass = settingsRead(PARAM_AUDIO_BYPASS, false);
+    aProc.par.flags = settingsRead(PARAM_AUDIO_FLAGS, 0);
     aProc.par.mode = settingsRead(PARAM_AUDIO_MODE, false);
 
     for (Param par = PARAM_AUDIO_GAIN0; par <= PARAM_AUDIO_GAIN7; par++) {
-         aProc.par.gain[par - PARAM_AUDIO_GAIN0] = settingsRead(par, 0);
+        aProc.par.gain[par - PARAM_AUDIO_GAIN0] = settingsRead(par, 0);
     }
     for (Param par = PARAM_AUDIO_VOLUME; par <= PARAM_AUDIO_PREAMP; par++) {
-         aProc.par.tune[par - PARAM_AUDIO_VOLUME].value = settingsRead(par, 0);
+        aProc.par.tune[par - PARAM_AUDIO_VOLUME].value = settingsRead(par, 0);
     }
 
     // API initialization
@@ -74,39 +60,32 @@ void audioReadSettings(AudioIC ic)
     case AUDIO_IC_TDA7439:
     case AUDIO_IC_TDA7440:
         aProc.api = tda7439GetApi();
-        aProc.par.inCnt = TDA7439_IN_CNT;
         break;
 #endif
 #ifdef _TDA731X
     case AUDIO_IC_TDA7313:
         aProc.api = tda731xGetApi();
-        aProc.par.inCnt = TDA7313_IN_CNT;
         break;
 #endif
 #ifdef _PT232X
     case AUDIO_IC_PT232X:
         aProc.api = pt232xGetApi();
-        aProc.par.inCnt = PT2323_IN_CNT;
         break;
 #endif
 #ifdef _TDA7418
     case AUDIO_IC_TDA7418:
         aProc.api = tda7418GetApi();
-        aProc.par.inCnt = TDA7418_IN_CNT;
         break;
 #endif
 #ifdef _TDA7719
     case AUDIO_IC_TDA7719:
         aProc.api = tda7719GetApi();
-        aProc.par.inCnt = TDA7719_IN_CNT;
         break;
 #endif
     case AUDIO_IC_TEST:
         aProc.api = &audioTestApi;
-        aProc.par.inCnt = MAX_INPUTS;
         break;
     default:
-        aProc.par.inCnt = 1;
         break;
     }
 }
@@ -115,10 +94,7 @@ void audioSaveSettings(void)
 {
     settingsStore(PARAM_AUDIO_IC, (int16_t)aProc.par.ic);
     settingsStore(PARAM_AUDIO_INPUT, aProc.par.input);
-    settingsStore(PARAM_AUDIO_LOUDNESS, aProc.par.loudness);
-    settingsStore(PARAM_AUDIO_SURROUND, aProc.par.surround);
-    settingsStore(PARAM_AUDIO_EFFECT3D, aProc.par.effect3d);
-    settingsStore(PARAM_AUDIO_BYPASS, aProc.par.bypass);
+    settingsStore(PARAM_AUDIO_FLAGS, aProc.par.flags & ~AUDIO_FLAG_MUTE);
 
     for (Param par = PARAM_AUDIO_VOLUME; par <= PARAM_AUDIO_PREAMP; par++) {
         settingsStore(par, aProc.par.tune[par - PARAM_AUDIO_VOLUME].value);
@@ -187,10 +163,10 @@ void audioSetPower(bool value)
     } else {
         audioSetInput(aProc.par.input);
 
-        audioSetLoudness(aProc.par.loudness);
-        audioSetSurround(aProc.par.surround);
-        audioSetEffect3D(aProc.par.effect3d);
-        audioSetBypass(aProc.par.bypass);
+        audioSetFlag(AUDIO_FLAG_LOUDNESS, (aProc.par.flags & AUDIO_FLAG_LOUDNESS));
+        audioSetFlag(AUDIO_FLAG_SURROUND, (aProc.par.flags & AUDIO_FLAG_SURROUND));
+        audioSetFlag(AUDIO_FLAG_EFFECT3D, (aProc.par.flags & AUDIO_FLAG_EFFECT3D));
+        audioSetFlag(AUDIO_FLAG_BYPASS, (aProc.par.flags & AUDIO_FLAG_BYPASS));
 
         for (AudioTune tune = AUDIO_TUNE_VOLUME; tune < AUDIO_TUNE_END; tune++) {
             audioSetTune(tune, aProc.par.tune[tune].value);
@@ -229,7 +205,7 @@ void audioSetTune(AudioTune tune, int8_t value)
         case AUDIO_TUNE_BASS:
         case AUDIO_TUNE_MIDDLE:
         case AUDIO_TUNE_TREBLE:
-            if (!aProc.api->setBypass && aProc.par.bypass) {
+            if (!aProc.api->setBypass && (aProc.par.flags & AUDIO_FLAG_BYPASS)) {
                 value = 0;
             }
             break;
@@ -252,7 +228,7 @@ void audioChangeTune(AudioTune tune, int8_t diff)
 
 void audioSetInput(int8_t value)
 {
-    if (value >= aProc.par.inCnt) {
+    if (value >= audioGetInputCount()) {
         value = 0;
     }
 
@@ -266,52 +242,63 @@ void audioSetInput(int8_t value)
     audioSetTune(AUDIO_TUNE_GAIN, aProc.par.gain[value]);
 }
 
-void audioSetMute(bool value)
+int8_t audioGetInputCount(void)
 {
-    aProc.par.mute = value;
-
-    if (aProc.api && aProc.api->setMute) {
-        aProc.api->setMute(value);
+    switch (aProc.par.ic) {
+    case AUDIO_IC_TDA7439:
+    case AUDIO_IC_TDA7440:
+        return TDA7439_IN_CNT;
+    case AUDIO_IC_TDA7313:
+        return TDA7313_IN_CNT;
+    case AUDIO_IC_PT232X:
+        return PT2323_IN_CNT;
+    case AUDIO_IC_TDA7418:
+        return TDA7418_IN_CNT;
+    case AUDIO_IC_TDA7719:
+        return TDA7719_IN_CNT;
+    case AUDIO_IC_TEST:
+        return MAX_INPUTS;
+    default:
+        return 1;
     }
 }
 
-void audioSetLoudness(bool value)
+void audioSetFlag(AudioFlag flag, bool value)
 {
-    aProc.par.loudness = value;
-
-    if (aProc.api && aProc.api->setLoudness) {
-        aProc.api->setLoudness(value);
-    }
-}
-
-void audioSetSurround(bool value)
-{
-    aProc.par.surround = value;
-
-    if (aProc.api && aProc.api->setSurround) {
-        aProc.api->setSurround(value);
-    }
-}
-
-void audioSetEffect3D(bool value)
-{
-    aProc.par.effect3d = value;
-
-    if (aProc.api && aProc.api->setEffect3d) {
-        aProc.api->setEffect3d(value);
-    }
-}
-
-void audioSetBypass(bool value)
-{
-    aProc.par.bypass = value;
-
-    if (aProc.api && aProc.api->setBypass) {
-        aProc.api->setBypass(value);
+    if (value) {
+        aProc.par.flags |= flag;
     } else {
-        audioSetTune(AUDIO_TUNE_BASS, aProc.par.tune[AUDIO_TUNE_BASS].value);
-        audioSetTune(AUDIO_TUNE_MIDDLE, aProc.par.tune[AUDIO_TUNE_MIDDLE].value);
-        audioSetTune(AUDIO_TUNE_TREBLE, aProc.par.tune[AUDIO_TUNE_TREBLE].value);
+        aProc.par.flags &= ~flag;
+    }
+
+    if (flag & AUDIO_FLAG_MUTE) {
+        if (aProc.api && aProc.api->setMute) {
+            aProc.api->setMute(value);
+        }
+    }
+    if (flag & AUDIO_FLAG_LOUDNESS) {
+        if (aProc.api && aProc.api->setLoudness) {
+            aProc.api->setLoudness(value);
+        }
+    }
+    if (flag & AUDIO_FLAG_SURROUND) {
+        if (aProc.api && aProc.api->setSurround) {
+            aProc.api->setSurround(value);
+        }
+    }
+    if (flag & AUDIO_FLAG_EFFECT3D) {
+        if (aProc.api && aProc.api->setEffect3d) {
+            aProc.api->setEffect3d(value);
+        }
+    }
+    if (flag & AUDIO_FLAG_BYPASS) {
+        if (aProc.api && aProc.api->setBypass) {
+            aProc.api->setBypass(value);
+        } else {
+            audioSetTune(AUDIO_TUNE_BASS, aProc.par.tune[AUDIO_TUNE_BASS].value);
+            audioSetTune(AUDIO_TUNE_MIDDLE, aProc.par.tune[AUDIO_TUNE_MIDDLE].value);
+            audioSetTune(AUDIO_TUNE_TREBLE, aProc.par.tune[AUDIO_TUNE_TREBLE].value);
+        }
     }
 }
 

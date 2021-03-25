@@ -48,12 +48,15 @@ enum {
     FOREACH_AUDIO_TUNE(GENERATE_AUDIO_TUNE)
 
     AUDIO_TUNE_END,
+};
 
-    AUDIO_FLAG_MUTE = 0,
-    AUDIO_FLAG_LOUDNESS,
-    AUDIO_FLAG_SURROUND,
-    AUDIO_FLAG_EFFECT3D,
-    AUDIO_FLAG_BYPASS,
+typedef uint8_t AudioFlag;
+enum {
+    AUDIO_FLAG_MUTE     = 0x01,
+    AUDIO_FLAG_LOUDNESS = 0x02,
+    AUDIO_FLAG_SURROUND = 0x04,
+    AUDIO_FLAG_EFFECT3D = 0x08,
+    AUDIO_FLAG_BYPASS   = 0x10,
 };
 
 typedef uint8_t AudioMode;
@@ -91,18 +94,11 @@ typedef struct {
 
 typedef struct {
     AudioIC ic;
-    AudioTuneItem tune[AUDIO_TUNE_END];
-
-    int8_t gain[MAX_INPUTS];
     int8_t input;
-    int8_t inCnt;
     AudioMode mode;
-
-    bool mute;
-    bool loudness;
-    bool surround;
-    bool effect3d;
-    bool bypass;
+    AudioFlag flags;
+    int8_t gain[MAX_INPUTS];
+    AudioTuneItem tune[AUDIO_TUNE_END];
 } AudioParam;
 
 typedef struct {

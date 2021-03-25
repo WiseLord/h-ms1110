@@ -10,10 +10,7 @@ static const EE_Cell eeMap[] = {
 
     [PARAM_AUDIO_IC]        =   {0x01,  0},
     [PARAM_AUDIO_INPUT]     =   {0x02,  0},
-    [PARAM_AUDIO_LOUDNESS]  =   {0x03,  false},
-    [PARAM_AUDIO_SURROUND]  =   {0x04,  false},
-    [PARAM_AUDIO_EFFECT3D]  =   {0x05,  false},
-    [PARAM_AUDIO_BYPASS]    =   {0x06,  false},
+    [PARAM_AUDIO_FLAGS]     =   {0x03,  0},
     [PARAM_AUDIO_MODE]      =   {0x08,  0},
 
     [PARAM_AUDIO_GAIN0]     =   {0x18,  0},

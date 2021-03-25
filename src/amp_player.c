@@ -47,6 +47,8 @@ typedef struct {
 
     Spectrum sp;
     Action syncAction;
+
+    AudioTune tune;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -214,7 +216,7 @@ static void ampMute(bool value)
     }
 
     ampPinMute(value);
-    audioSetMute(value);
+    audioSetFlag(AUDIO_FLAG_MUTE, value);
 }
 
 static void ampReadSettings(void)
@@ -354,13 +356,13 @@ static void ampSetInput(int8_t value)
 static void actionNextAudioParam(AudioProc *aProc)
 {
     do {
-        aProc->tune++;
-        if (aProc->tune >= AUDIO_TUNE_END) {
-            aProc->tune = AUDIO_TUNE_VOLUME;
+        priv.tune++;
+        if (priv.tune >= AUDIO_TUNE_END) {
+            priv.tune = AUDIO_TUNE_VOLUME;
         }
-    } while (aProc->par.tune[aProc->tune].grid == NULL ||
-             aProc->tune == AUDIO_TUNE_BASS ||
-             aProc->tune == AUDIO_TUNE_TREBLE);
+    } while (aProc->par.tune[priv.tune].grid == NULL ||
+             priv.tune == AUDIO_TUNE_BASS ||
+             priv.tune == AUDIO_TUNE_TREBLE);
 }
 
 static int8_t actionGetNextAudioInput(int8_t diff)
@@ -368,7 +370,7 @@ static int8_t actionGetNextAudioInput(int8_t diff)
     AudioProc *aProc = audioGet();
 
     int8_t input = aProc->par.input;
-    int8_t inCnt = aProc->par.inCnt;
+    int8_t inCnt = audioGetInputCount();
 
     int8_t ret = input;
 
@@ -465,15 +467,15 @@ static void actionGetPots(void)
                 amp->screen = SCREEN_TUNE;
                 switch (ain) {
                 case  AIN_POT_A:
-                    if (aProc->tune != AUDIO_TUNE_BASS) {
-                        aProc->tune = AUDIO_TUNE_BASS;
+                    if (priv.tune != AUDIO_TUNE_BASS) {
+                        priv.tune = AUDIO_TUNE_BASS;
                         priv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_SET_PARAM, pot + grid->min);
                     break;
                 case AIN_POT_B:
-                    if (aProc->tune != AUDIO_TUNE_TREBLE) {
-                        aProc->tune = AUDIO_TUNE_TREBLE;
+                    if (priv.tune != AUDIO_TUNE_TREBLE) {
+                        priv.tune = AUDIO_TUNE_TREBLE;
                         priv.clearScreen = true;
                     }
                     actionSet(ACTION_AUDIO_SET_PARAM, pot + grid->min);
@@ -637,12 +639,12 @@ static void actionRemapRemote(void)
         break;
     case RC_CMD_VOL_UP:
         amp->screen = SCREEN_TUNE;
-        audioGet()->tune = AUDIO_TUNE_VOLUME;
+        priv.tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, +1);
         break;
     case RC_CMD_VOL_DOWN:
         amp->screen = SCREEN_TUNE;
-        audioGet()->tune = AUDIO_TUNE_VOLUME;
+        priv.tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, -1);
         break;
     case RC_CMD_MUTE:
@@ -686,7 +688,6 @@ static void actionRemapRemote(void)
 static void actionRemapEncoder(int16_t encCnt)
 {
     ScreenType scrMode = amp->screen;
-    AudioProc *aProc = audioGet();
 
     if (SCREEN_STANDBY == scrMode) {
         return;
@@ -697,9 +698,9 @@ static void actionRemapEncoder(int16_t encCnt)
         actionSet(ACTION_SETUP_CHANGE_CHILD, encCnt);
         break;
     default:
-        if (aProc->tune == AUDIO_TUNE_BASS || aProc->tune == AUDIO_TUNE_TREBLE) {
+        if (priv.tune == AUDIO_TUNE_BASS || priv.tune == AUDIO_TUNE_TREBLE) {
             priv.clearScreen = true;
-            aProc->tune = AUDIO_TUNE_VOLUME;
+            priv.tune = AUDIO_TUNE_VOLUME;
         }
         actionSet(ACTION_AUDIO_SELECT_PARAM, encCnt);
         break;
@@ -709,7 +710,7 @@ static void actionRemapEncoder(int16_t encCnt)
         amp->screen = SCREEN_TUNE;
         switch (scrMode) {
         case SCREEN_SPECTRUM:
-            aProc->tune = AUDIO_TUNE_VOLUME;
+            priv.tune = AUDIO_TUNE_VOLUME;
             break;
         default:
             break;
@@ -766,7 +767,7 @@ static void actionRemapCommon(void)
         switch (action.type) {
         case ACTION_AUDIO_MUTE:
             if (FLAG_SWITCH == action.value) {
-                action.value = !audioGet()->par.mute;
+                action.value = !(audioGet()->par.flags & AUDIO_FLAG_MUTE);
             }
             break;
         }
@@ -1070,7 +1071,7 @@ void ampActionHandle(void)
             priv.clearScreen = true;
             actionNextAudioParam(aProc);
         } else {
-            aProc->tune = AUDIO_TUNE_VOLUME;
+            priv.tune = AUDIO_TUNE_VOLUME;
         }
         screenSet(SCREEN_TUNE, 5000);
         break;
@@ -1082,18 +1083,18 @@ void ampActionHandle(void)
         priv.syncFlags |= SYNC_FLAG_IN_TYPE;
         break;
     case ACTION_AUDIO_SELECT_PARAM:
-        audioChangeTune(aProc->tune, (int8_t)action.value);
-        if (aProc->tune == AUDIO_TUNE_VOLUME) {
+        audioChangeTune(priv.tune, (int8_t)action.value);
+        if (priv.tune == AUDIO_TUNE_VOLUME) {
             priv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
         }
-        if (aProc->par.mute) {
+        if (aProc->par.flags & AUDIO_FLAG_MUTE) {
             ampMute(false);
         }
         screenSet(SCREEN_TUNE, 3000);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
     case ACTION_AUDIO_SET_PARAM:
-        audioSetTune(aProc->tune, (int8_t)action.value);
+        audioSetTune(priv.tune, (int8_t)action.value);
         screenSet(SCREEN_TUNE, 3000);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
         break;
@@ -1151,13 +1152,13 @@ void ampActionHandle(void)
 static void prepareAudioTune(TuneView *tune)
 {
     AudioProc *aProc = audioGet();
-    AudioTuneItem *aItem = &aProc->par.tune[aProc->tune];
+    AudioTuneItem *aItem = &aProc->par.tune[priv.tune];
 
     tune->value = aItem->value;
     tune->min = aItem->grid->min;
     tune->max = aItem->grid->max;
 
-    tune->label = LABEL_VOLUME + (aProc->tune - AUDIO_TUNE_VOLUME);
+    tune->label = LABEL_VOLUME + (priv.tune - AUDIO_TUNE_VOLUME);
 }
 
 static void sendToTunerModule(SyncType type, void *data, size_t size)
