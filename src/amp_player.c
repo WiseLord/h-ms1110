@@ -51,6 +51,7 @@ typedef struct {
     AudioTune tune;
 
     int8_t inIdx;
+    bool inIdxInc;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -1078,6 +1079,7 @@ void ampActionHandle(void)
         if (scrMode == SCREEN_INPUT_SELECTOR) {
             ampSetInput(actionGetNextAudioInput((int8_t)action.value));
             swTimSet(SW_TIM_SCROLL, 120);
+            priv.inIdxInc = (action.value > 0);
         } else {
             priv.clearScreen = true;
             swTimSet(SW_TIM_SCROLL, SW_TIM_OFF);
@@ -1267,7 +1269,7 @@ void ampScreenShow(void)
         canvasShowSetup(clear);
         break;
     case SCREEN_INPUT_SELECTOR:
-        canvasShowInputSelector(clear, priv.inIdx, &inMap);
+        canvasShowInputSelector(clear, priv.inIdx, priv.inIdxInc, &inMap);
         break;
     default:
         canvasShowInput(clear, amp->inType);

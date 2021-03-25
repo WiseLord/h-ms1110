@@ -15,6 +15,7 @@ typedef struct {
     const void *inMap;
     int16_t scrollTimer;
     int8_t inIdx;
+    bool inIdxUp;
 } InputView;
 
 void inputViewDraw(InputView *this, bool clear);

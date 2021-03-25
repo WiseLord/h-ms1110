@@ -136,7 +136,7 @@ void canvasShowDateTime(bool clear, DateTimeMode mode)
     dateTimeViewDraw(&dtv, clear);
 }
 
-void canvasShowInputSpectrum(void)
+void canvasShowInputSpectrum(bool clear)
 {
 #if !defined(_MODULE_PLAYER)
     Spectrum *sp = spGet();
@@ -175,7 +175,7 @@ void canvasShowInputMpc(bool clear)
     mpcViewDraw(&view, clear);
 }
 
-void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap)
+void canvasShowInputSelector(bool clear, int8_t inIdx, bool inIdxUp, const void *inMap)
 {
     Amp *amp = ampGet();
 
@@ -189,6 +189,7 @@ void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap)
 
     view.name = labelsGet(label);
     view.inIdx = inIdx;
+    view.inIdxUp = inIdxUp;
     view.inMap = inMap;
     view.scrollTimer = swTimGet(SW_TIM_SCROLL);
 
@@ -197,7 +198,7 @@ void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap)
 
 void canvasShowInput(bool clear, InputType inType)
 {
-    canvasShowInputSpectrum();
+    canvasShowInputSpectrum(clear);
 
     switch (inType) {
     case IN_MPD:
@@ -224,7 +225,7 @@ void canvasShowSetup(bool clear)
 
 void canvasDebugFPS(void)
 {
-//    return;
+    return;
 
     const Palette *pal = canvas.pal;
 

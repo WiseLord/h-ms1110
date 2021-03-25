@@ -32,10 +32,10 @@ void canvasShowStars(bool clear, int16_t offset);
 
 void canvasShowDateTime(bool clear, DateTimeMode mode);
 
-void canvasShowInputSpectrum(void);
+void canvasShowInputSpectrum(bool clear);
 void canvasShowInputTuner(bool clear);
 void canvasShowInputMpc(bool clear);
-void canvasShowInputSelector(bool clear, int8_t inIdx, const void *inMap);
+void canvasShowInputSelector(bool clear, int8_t inIdx, bool inIdxUp, const void *inMap);
 void canvasShowInput(bool clear, InputType inType);
 
 void canvasShowTune(bool clear, TuneView *tune);

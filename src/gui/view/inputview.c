@@ -8,10 +8,7 @@
 #include "gui/widget/iconimage.h"
 
 static const GlcdRect rectName = {56, 4, 200, 32};
-
-static const GlcdRect rectIconInputPrev = {178, 0, 40, 40};
-static const GlcdRect rectIconInput = {108, 0, 40, 40};
-static const GlcdRect rectIconInputNext = {38, 0, 40, 40};
+static const int16_t xBase = 108;
 
 void inputViewDrawName(InputView *this)
 {
@@ -33,9 +30,39 @@ void inputViewDrawName(InputView *this)
 
 }
 
+static void drawIcon(InputView *this, int16_t xPos, int8_t inIdx)
+{
+    const InputMap *inMap = this->inMap;
+    const Palette *pal = paletteGet();
+
+    int16_t delta = (xBase - xPos) / 6;
+    if (delta < 0) {
+        delta = -delta;
+    }
+    if (delta > 14) {
+        delta = 14;
+    }
+    delta = 15 - delta;
+
+    color_t color = COLOR_GRAY16(delta);
+
+
+    Icon icon = ICON_TUNER + (inMap->pairs[inIdx].type - IN_TUNER);
+
+    const tImage *img = iconFind(icon, &icons_hms1110);
+
+    glcdSetXY(xPos, 0);
+    glcdDrawImage(img, color, pal->bg);
+}
+
 void inputViewDraw(InputView *this, bool clear)
 {
-    if (this->scrollTimer > 0) {
+    int16_t shiftX = 0;
+    const InputMap *inMap = this->inMap;
+    const Palette *pal = paletteGet();
+
+    if (this->scrollTimer >= 0) {
+        shiftX = this->scrollTimer / 2; // Max 60
         clear = true;
     }
 
@@ -43,29 +70,16 @@ void inputViewDraw(InputView *this, bool clear)
         return;
     }
 
-    const Palette *pal = paletteGet();
+    if (this->inIdxUp) {
+        shiftX = -shiftX;
+    }
 
-    const InputMap *inMap = this->inMap;
-    const int8_t inIdx = this->inIdx;
+    for (int8_t i = -3; i <= 3; i++) {
+        drawIcon(this, xBase + shiftX - (60 * i), (inMap->mapSize + this->inIdx + i) % inMap->mapSize);
+    }
 
-    IconImage iconInputPrev = {
-        .rect = &rectIconInputPrev,
-        .color = COLOR_GRAY16(1),
-        .icon = ICON_TUNER + (inMap->pairs[(inMap->mapSize + inIdx - 1) % inMap->mapSize].type - IN_TUNER),
-    };
-    iconImageDraw(&iconInputPrev, clear);
+    for (int8_t i = -2; i <= 3; i++) {
+        glcdDrawRect(xBase + shiftX + (60 * i) - 20, 0, 20, 40, pal->bg);
 
-    IconImage iconInput = {
-        .rect = &rectIconInput,
-        .color = pal->fg,
-        .icon = ICON_TUNER + (inMap->pairs[inIdx].type - IN_TUNER),
-    };
-    iconImageDraw(&iconInput, clear);
-
-    IconImage iconInputNext = {
-        .rect = &rectIconInputNext,
-        .color = COLOR_GRAY16(1),
-        .icon = ICON_TUNER + (inMap->pairs[(inMap->mapSize + inIdx + 1) % inMap->mapSize].type - IN_TUNER),
-    };
-    iconImageDraw(&iconInputNext, clear);
+    }
 }
