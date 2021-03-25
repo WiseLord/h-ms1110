@@ -9,6 +9,7 @@
 #include "gui/widget/progressbar.h"
 #include "tr/labels.h"
 
+static const GlcdRect rectMpcName = {0, 0, 35, 15};
 static const GlcdRect rectIconStatus = {44, 0, 15, 15};
 
 static const GlcdRect rectIconMedia = {68, 0, 15, 15};
@@ -19,8 +20,28 @@ static const GlcdRect rectIconRandom = {132, 0, 15, 15};
 static const GlcdRect rectIconConsume = {152, 0, 15, 15};
 
 static const GlcdRect rectElapsed = {178, 0, 78, 15};
-static const GlcdRect rectMeta = {44, 17, 212, 14};
-static const GlcdRect rectProgress = {44, 34, 212, 6};
+static const GlcdRect rectMeta = {0, 17, 256, 14};
+static const GlcdRect rectProgress = {0, 34, 256, 6};
+
+static void drawMpcName(bool clear)
+{
+    if (!clear) {
+        return;
+    }
+
+    const Palette *pal = paletteGet();
+
+    glcdSetFont(&fontterminus24b);
+    glcdSetFontColor(pal->active);
+
+    glcdSetRect(&rectMpcName);
+    glcdDrawRect(0, 0, rectMpcName.w, rectMpcName.h, COLOR_GRAY);
+
+    glcdSetXY(0, -4);
+    glcdWriteString("MPD");
+
+    glcdResetRect();
+}
 
 static void drawStatusIcons(MpcView *this, bool clear)
 {
@@ -167,7 +188,7 @@ static void drawProgress(MpcView *this, bool clear)
     bar.lt.rect.w = rect->w;
     bar.lt.rect.h = rect->h;
     bar.lt.frame_width = 1;
-    bar.lt.mark_count = 208;
+    bar.lt.mark_count = 252;
     bar.lt.mark_width = 1;
     bar.value = this->mpc->elapsed;
     bar.min = 0;
@@ -183,6 +204,7 @@ static void drawProgress(MpcView *this, bool clear)
 
 void mpcViewDraw(MpcView *this, bool clear)
 {
+    drawMpcName(clear);
     drawStatusIcons(this, clear);
     drawMeta(this, clear);
     drawElapsed(this, clear);

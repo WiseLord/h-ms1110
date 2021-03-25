@@ -71,6 +71,7 @@ enum {
     SCREEN_SETUP,
 
     SCREEN_TUNER,
+    SCREEN_INPUT_SELECTOR,
 
     SCREEN_END
 };

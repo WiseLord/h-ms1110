@@ -16,7 +16,6 @@
 #include "widget/iconimage.h"
 
 static Canvas canvas;
-static const GlcdRect rectIconInput = {0, 0, 40, 40};
 
 void canvasInit()
 {
@@ -137,7 +136,7 @@ void canvasShowDateTime(bool clear, DateTimeMode mode)
     dateTimeViewDraw(&dtv, clear);
 }
 
-void canvasShowInputCommon(InputType inType, bool clear)
+void canvasShowInputSpectrum(void)
 {
 #if !defined(_MODULE_PLAYER)
     Spectrum *sp = spGet();
@@ -149,15 +148,6 @@ void canvasShowInputCommon(InputType inType, bool clear)
     spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
     spViewDraw(false, false, false, peaks, SP_CHAN_RIGHT, &rectR);
 #endif
-
-    const Palette *pal = paletteGet();
-
-    IconImage iconInput = {
-        .rect = &rectIconInput,
-        .color = pal->fg,
-        .icon = inType == IN_NULL ? ICON_EMPTY : ICON_TUNER + inType,
-    };
-    iconImageDraw(&iconInput, clear);
 }
 
 void canvasShowInputTuner(bool clear)
@@ -185,25 +175,38 @@ void canvasShowInputMpc(bool clear)
     mpcViewDraw(&view, clear);
 }
 
-void canvasShowInputDefault(bool clear)
+void canvasShowInputSelector(bool clear, InputType prev, InputType next)
 {
     Amp *amp = ampGet();
+
+    static InputView view;
+
+    view.iconPrev = ICON_EMPTY;
+    view.icon = ICON_EMPTY;
+    view.iconNext = ICON_EMPTY;
 
     Label label = LABEL_BOOL_OFF;
 
     if (amp->inType != IN_NULL) {
         label = LABEL_IN_TUNER + amp->inType;
+        view.icon = ICON_TUNER + amp->inType;
     }
 
-    static InputView view;
+    if (prev != IN_NULL) {
+        view.iconPrev = ICON_TUNER + prev;
+    }
+    if (next != IN_NULL) {
+        view.iconNext = ICON_TUNER + next;
+    }
+
     view.name = labelsGet(label);
 
     inputViewDraw(&view, clear);
 }
 
-void canvasShowInput(InputType inType, bool clear)
+void canvasShowInput(bool clear, InputType inType)
 {
-    canvasShowInputCommon(inType, clear);
+    canvasShowInputSpectrum();
 
     switch (inType) {
     case IN_MPD:
@@ -213,7 +216,7 @@ void canvasShowInput(InputType inType, bool clear)
         canvasShowInputTuner(clear);
         break;
     default:
-        canvasShowInputDefault(clear);
+        canvasShowDateTime(clear, DT_MODE_TIME);
         break;
     }
 }

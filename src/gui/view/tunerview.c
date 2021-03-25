@@ -8,9 +8,9 @@
 #include "gui/widget/iconimage.h"
 #include "gui/widget/progressbar.h"
 
-static const GlcdRect rectFreq = {44, 0, 99, 15};
-static const GlcdRect rectMeta = {44, 17, 212, 14};
-static const GlcdRect rectScale = {44, 34, 212, 6};
+static const GlcdRect rectFreq = {0, 0, 99, 15};
+static const GlcdRect rectMeta = {0, 17, 256, 14};
+static const GlcdRect rectScale = {0, 34, 256, 6};
 static const GlcdRect rectFav = {246, 0, 10, 15};
 static const GlcdRect rectIconStereo = {150, 0, 20, 12};
 static const GlcdRect rectIconRds = {175, 0, 27, 12};
@@ -165,7 +165,7 @@ static void drawProgress(TunerView *this, bool clear)
     bar.lt.rect.w = rect->w;
     bar.lt.rect.h = rect->h;
     bar.lt.frame_width = 1;
-    bar.lt.mark_count = 208;
+    bar.lt.mark_count = 252;
     bar.lt.mark_width = 1;
     bar.value = this->sync->freq;
     bar.min = this->sync->band.fMin;

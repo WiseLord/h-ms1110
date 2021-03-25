@@ -49,6 +49,9 @@ typedef struct {
     Action syncAction;
 
     AudioTune tune;
+
+    InputType inTypePrev;
+    InputType inTypeNext;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -68,6 +71,8 @@ static void ampSendToSlaves(void);
 
 static void sendToTunerModule(SyncType type, void *data, size_t size);
 static void sendToSpectrumModule(SyncType type, void *data, size_t size);
+
+static int8_t actionGetNextAudioInput(int8_t diff);
 
 static AmpPriv priv;
 static Amp *amp;
@@ -183,6 +188,9 @@ static void inputSetPower(bool value)
     }
 
     amp->inType = inTypes[input];
+
+    priv.inTypePrev = inTypes[actionGetNextAudioInput(-1)];
+    priv.inTypeNext = inTypes[actionGetNextAudioInput(+1)];
 }
 
 static void ampPinMute(bool value)
@@ -1077,8 +1085,10 @@ void ampActionHandle(void)
         break;
 
     case ACTION_AUDIO_SELECT_INPUT:
-        ampSetInput(actionGetNextAudioInput((int8_t)action.value));
-        screenSet(SCREEN_INPUT, 1000);
+        if (scrMode == SCREEN_INPUT_SELECTOR) {
+            ampSetInput(actionGetNextAudioInput((int8_t)action.value));
+        }
+        screenSet(SCREEN_INPUT_SELECTOR, 2000);
         priv.clearScreen = true;
         priv.syncFlags |= SYNC_FLAG_IN_TYPE;
         break;
@@ -1262,8 +1272,11 @@ void ampScreenShow(void)
     case SCREEN_SETUP:
         canvasShowSetup(clear);
         break;
+    case SCREEN_INPUT_SELECTOR:
+        canvasShowInputSelector(clear, priv.inTypePrev, priv.inTypeNext);
+        break;
     default:
-        canvasShowInput(amp->inType, clear);
+        canvasShowInput(clear, amp->inType);
         break;
     }
 
