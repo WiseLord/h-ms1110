@@ -138,6 +138,7 @@ static bool screenCheckClear(void)
 static void actionDispExpired(void)
 {
     rtcSetMode(RTC_NOEDIT);
+    priv.tune = AUDIO_TUNE_VOLUME;
 
     switch (amp->screen) {
     case SCREEN_STANDBY:
@@ -1163,7 +1164,11 @@ static void prepareAudioTune(TuneView *tune)
     tune->min = aItem->grid->min;
     tune->max = aItem->grid->max;
 
-    tune->label = LABEL_VOLUME + (priv.tune - AUDIO_TUNE_VOLUME);
+    if (priv.tune == AUDIO_TUNE_GAIN) {
+        tune->label = LABEL_IN_TUNER + amp->inType;
+    } else {
+        tune->label = LABEL_VOLUME + (priv.tune - AUDIO_TUNE_VOLUME);
+    }
 }
 
 static void sendToTunerModule(SyncType type, void *data, size_t size)
