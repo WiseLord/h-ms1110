@@ -885,4 +885,104 @@ Wire Wire Line
 	10600 3850 9250 3850
 Text Label 9250 3850 0    50   ~ 0
 GND
+$Comp
+L Connector_Generic:Conn_02x13_Odd_Even J?
+U 1 1 605D5C81
+P 3250 6050
+F 0 "J?" H 3300 6867 50  0000 C CNN
+F 1 "P1" H 3300 6776 50  0000 C CNN
+F 2 "" H 3250 6050 50  0001 C CNN
+F 3 "~" H 3250 6050 50  0001 C CNN
+	1    3250 6050
+	1    0    0    -1  
+$EndComp
+Text Label 3550 5450 0    50   ~ 0
+5V
+Text Label 3550 5550 0    50   ~ 0
+5V
+Text Label 3550 5650 0    50   ~ 0
+GND
+Text Label 3550 5750 0    50   ~ 0
+PG6_UART1-TX
+Text Label 3550 5850 0    50   ~ 0
+PG7_UART1-RX
+Text Label 3550 6050 0    50   ~ 0
+GND
+Text Label 3550 6150 0    50   ~ 0
+PA19_TWI1-SDA
+Text Label 3550 6250 0    50   ~ 0
+PA18_TWI1-SCK
+Text Label 3550 6350 0    50   ~ 0
+GND
+Text Label 3550 6450 0    50   ~ 0
+PA2_UART2-RTS
+Text Label 3550 6550 0    50   ~ 0
+PA13_SPI1-CS
+Text Label 3550 6650 0    50   ~ 0
+PA10_SIM-DET
+Text Label 3050 6650 2    50   ~ 0
+GND
+Text Label 3050 6550 2    50   ~ 0
+SPI1_SCLK_PA14
+Text Label 3050 6450 2    50   ~ 0
+SPI1_MISO_PA16
+Text Label 3050 6350 2    50   ~ 0
+SPI1_MOSI_PA15
+Text Label 3050 6250 2    50   ~ 0
+3V3
+Text Label 3050 6150 2    50   ~ 0
+UART2-CTS_PA3
+Text Label 3050 6050 2    50   ~ 0
+UART2-TX_PA0
+Text Label 3050 5950 2    50   ~ 0
+UART2-RX_PA1
+Text Label 3050 5850 2    50   ~ 0
+GND
+Text Label 3050 5650 2    50   ~ 0
+TWI0-SCK_PA11
+Text Label 3050 5550 2    50   ~ 0
+TWI0-SDA_PA12
+Text Label 3050 5450 2    50   ~ 0
+3V3
+Text Label 3050 5750 2    50   ~ 0
+PWM1_PA6
+Text Label 3550 5950 0    50   ~ 0
+PA7_SIM-CLK
+$Comp
+L Connector_Generic:Conn_01x13 J?
+U 1 1 60616F70
+P 4950 6050
+F 0 "J?" H 5030 6092 50  0000 L CNN
+F 1 "P2" H 5030 6001 50  0000 L CNN
+F 2 "" H 4950 6050 50  0001 C CNN
+F 3 "~" H 4950 6050 50  0001 C CNN
+	1    4950 6050
+	-1   0    0    1   
+$EndComp
+Text Label 5150 6650 0    50   ~ 0
+5V
+Text Label 5150 6550 0    50   ~ 0
+GND
+Text Label 5150 6450 0    50   ~ 0
+USB2-DM
+Text Label 5150 6250 0    50   ~ 0
+USB3-DM
+Text Label 5150 6350 0    50   ~ 0
+USB2-DP
+Text Label 5150 6150 0    50   ~ 0
+USB3-DP
+Text Label 5150 6050 0    50   ~ 0
+LINE-OUT-R
+Text Label 5150 5950 0    50   ~ 0
+LINE-OUT-L
+Text Label 5150 5850 0    50   ~ 0
+TV-OUT
+Text Label 5150 5750 0    50   ~ 0
+MIC-BIAS
+Text Label 5150 5650 0    50   ~ 0
+MIC1P
+Text Label 5150 5550 0    50   ~ 0
+MIC1N
+Text Label 5150 5450 0    50   ~ 0
+IR-RX
 $EndSCHEMATC
