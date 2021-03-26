@@ -11,6 +11,22 @@ Setup *setupGet()
     return &setup;
 }
 
+static void updateActive(SetupType value)
+{
+    if (setup.active != value) {
+        setup.flags |= SETUP_FLAG_ACTIVE_CHANGED;
+        setup.active = value;
+    }
+}
+
+static void updateChild(SetupType value)
+{
+    if (setup.child != value) {
+        setup.flags |= SETUP_FLAG_CHILD_CHANGED;
+        setup.child = value;
+    }
+}
+
 
 void setupSelect(SetupType type)
 {
@@ -18,38 +34,41 @@ void setupSelect(SetupType type)
         return;
     }
 
-    setup.active = type;
+    SetupType child = SETUP_NULL;
 
-    switch (setup.active) {
+    switch (type) {
     case SETUP_MAIN:
-        setup.child = SETUP_TIME;
+        child = SETUP_TIME;
         break;
     case SETUP_TIME:
-        setup.child = RTC_HOUR;
+        child = RTC_HOUR;
         break;
     case SETUP_DATE:
-        setup.child = RTC_DATE;
+        child = RTC_DATE;
         break;
     case SETUP_ALARM:
-        setup.child = ALARM_DAYS;
+        child = ALARM_DAYS;
         break;
     case SETUP_REMOTE:
-        setup.child = RC_CMD_STBY_SWITCH;
-        break;
-    default:
-        setup.child = SETUP_NULL;
+        child = RC_CMD_STBY_SWITCH;
         break;
     }
+
+    updateActive(type);
+    updateChild(child);
 }
 
 void setupSwitchChild(int8_t direction)
 {
+    SetupType active = setup.active;
+    SetupType child = setup.child;
+
     SetupType first = SETUP_NULL;
     SetupType last = SETUP_NULL;
 
-    setup.child += direction;
+    child += direction;
 
-    switch (setup.active) {
+    switch (active) {
     case SETUP_MAIN:
         first = SETUP_TIME;
         last = SETUP_REMOTE;
@@ -71,16 +90,19 @@ void setupSwitchChild(int8_t direction)
         return;
     }
 
-    if (setup.child < first) {
-        setup.child = last;
+    if (child < first) {
+        child = last;
     }
-    if (setup.child > last) {
-        setup.child = first;
+    if (child > last) {
+        child = first;
     }
 
-    if (setup.active == SETUP_TIME || setup.active == SETUP_DATE) {
-        setup.active = setup.child <= RTC_SEC ? SETUP_TIME : SETUP_DATE;
+    if (active == SETUP_TIME || active == SETUP_DATE) {
+        active = (child <= RTC_SEC) ? SETUP_TIME : SETUP_DATE;
     }
+
+    updateActive(active);
+    updateChild(child);
 }
 
 void setupChangeChild(int8_t direction)
@@ -118,18 +140,22 @@ void setupChangeChild(int8_t direction)
 void setupBack()
 {
     SetupType active = setup.active;
+    SetupType child = setup.child;
 
     switch (active) {
     case SETUP_TIME:
     case SETUP_DATE:
     case SETUP_ALARM:
     case SETUP_REMOTE:
-        setup.active = SETUP_MAIN;
-        setup.child = active;
+        active = SETUP_MAIN;
+        child = active;
         break;
     default:
-        setup.active = SETUP_NULL;
-        setup.child = SETUP_NULL;
+        active = SETUP_NULL;
+        child = SETUP_NULL;
         break;
     }
+
+    updateActive(active);
+    updateChild(child);
 }

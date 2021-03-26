@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef int16_t SetupType;
+typedef int8_t SetupType;
 enum {
     SETUP_NULL = 0,
 
@@ -23,9 +23,18 @@ enum {
     SETUP_END
 };
 
+typedef uint8_t SetupFlags;
+enum {
+    SETUP_FLAG_NONE             = 0x00,
+
+    SETUP_FLAG_ACTIVE_CHANGED   = 0x01,
+    SETUP_FLAG_CHILD_CHANGED   = 0x02,
+};
+
 typedef struct {
     SetupType active;
     SetupType child;
+    SetupFlags flags;
 } Setup;
 
 Setup *setupGet(void);

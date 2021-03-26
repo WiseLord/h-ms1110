@@ -8,7 +8,13 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-void setupViewDraw(bool clear);
+#include "setup.h"
+
+typedef struct {
+    Setup *setup;
+} SetupView;
+
+void setupViewDraw(SetupView *this, bool clear);
 
 #ifdef __cplusplus
 }

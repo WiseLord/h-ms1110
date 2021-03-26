@@ -7,10 +7,8 @@
 #include "gui/palette.h"
 #include "rc.h"
 #include "rtc.h"
-#include "setup.h"
 #include "tr/labels.h"
 
-static Setup old;
 static const int16_t marginX = 16;
 
 const char *getHeadLabel(SetupType type)
@@ -36,11 +34,11 @@ const char *getHeadLabel(SetupType type)
 }
 
 
-static void drawHead(bool clear)
+static void drawHead(SetupView *this, bool clear)
 {
-    Setup *setup = setupGet();
+    Setup *setup = this->setup;
 
-    if (setup->active != old.active) {
+    if (this->setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
         clear = true;
     }
 
@@ -58,11 +56,11 @@ static void drawHead(bool clear)
     }
 }
 
-static void drawActive(bool clear)
+static void drawActive(SetupView *this, bool clear)
 {
-    Setup *setup = setupGet();
+    Setup *setup = this->setup;
 
-    if (setup->active != old.active) {
+    if (this->setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
         clear = true;
     }
 
@@ -94,14 +92,13 @@ static void drawTm(const char *tm, bool select)
     glcdSetFontBgColor(pal->bg);
 }
 
-static void drawTime(bool clear)
+static void drawTime(SetupView *this, bool clear)
 {
     (void)clear;
+    Setup *setup = this->setup;
 
     const Palette *pal = paletteGet();
     GlcdRect rect = glcdGet()->rect;
-
-    Setup *setup = setupGet();
 
     RTC_type rtc;
     rtcGetTime(&rtc);
@@ -136,14 +133,13 @@ static void drawTime(bool clear)
 }
 
 
-static void drawDate(bool clear)
+static void drawDate(SetupView *this, bool clear)
 {
     (void)clear;
+    Setup *setup = this->setup;
 
     const Palette *pal = paletteGet();
     GlcdRect rect = glcdGet()->rect;
-
-    Setup *setup = setupGet();
 
     RTC_type rtc;
     rtcGetTime(&rtc);
@@ -177,8 +173,10 @@ static void drawDate(bool clear)
     glcdSetStringFramed(false);
 }
 
-static void drawAlarm(bool clear)
+static void drawAlarm(SetupView *this, bool clear)
 {
+    Setup *setup = this->setup;
+
     Alarm *alarm = rtcGetAlarm(0);
 
     static AlarmDay _days;
@@ -190,7 +188,6 @@ static void drawAlarm(bool clear)
     GlcdRect rect = glcdGet()->rect;
 
     const Palette *pal = paletteGet();
-    Setup *setup = setupGet();
 
     glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
@@ -226,19 +223,20 @@ static void drawAlarm(bool clear)
     glcdSetStringFramed(false);
 }
 
-static void drawRemote(bool clear)
+static void drawRemote(SetupView *this, bool clear)
 {
     (void) clear;
+    Setup *setup = this->setup;
 
     const Palette *pal = paletteGet();
-    Setup *setup = setupGet();
 
     glcdSetFont(&fontterminus22b);
     glcdSetFontColor(pal->fg);
 
     char code[7];
 
-    const char *funcLabel = labelsGet((Label)(LABEL_RC_STBY_SWITCH + (setup->child - RC_CMD_STBY_SWITCH)));
+    const char *funcLabel = labelsGet((Label)(LABEL_RC_STBY_SWITCH + (setup->child -
+                                                                      RC_CMD_STBY_SWITCH)));
 
     uint16_t rcCode = rcGetCode(setup->child);
 
@@ -258,14 +256,14 @@ static void drawRemote(bool clear)
     glcdWriteString(funcLabel);
 }
 
-static void drawChild(bool clear)
+static void drawChild(SetupView *this, bool clear)
 {
+    Setup *setup = this->setup;
+
     const Palette *pal = paletteGet();
     GlcdRect rect = glcdGet()->rect;
 
-    Setup *setup = setupGet();
-
-    if (setup->child != old.child) {
+    if (this->setup->flags & SETUP_FLAG_CHILD_CHANGED) {
         clear = true;
     }
 
@@ -275,29 +273,29 @@ static void drawChild(bool clear)
 
     switch (setup->active) {
     case SETUP_MAIN:
-        drawActive(clear);
+        drawActive(this, clear);
         break;
     case SETUP_TIME:
-        drawTime(clear);
+        drawTime(this, clear);
         break;
     case SETUP_DATE:
-        drawDate(clear);
+        drawDate(this, clear);
         break;
     case SETUP_ALARM:
-        drawAlarm(clear);
+        drawAlarm(this, clear);
         break;
     case SETUP_REMOTE:
-        drawRemote(clear);
+        drawRemote(this, clear);
         break;
     }
 }
 
 static void drawArrows(bool clear)
 {
-    const Palette *pal = paletteGet();
-    GlcdRect rect = glcdGet()->rect;
-
     if (clear) {
+        const Palette *pal = paletteGet();
+        GlcdRect rect = glcdGet()->rect;
+
         glcdSetFont(&fontterminus22b);
         glcdSetFontColor(pal->fg);
 
@@ -312,12 +310,11 @@ static void drawArrows(bool clear)
 }
 
 
-void setupViewDraw(bool clear)
+void setupViewDraw(SetupView *this, bool clear)
 {
-    drawHead(clear);
-    drawChild(clear);
+    drawHead(this, clear);
+    drawChild(this, clear);
     drawArrows(clear);
 
-    Setup *setup = setupGet();
-    old = *setup;
+    this->setup->flags = SETUP_FLAG_NONE;
 }

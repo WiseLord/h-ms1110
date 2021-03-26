@@ -220,7 +220,11 @@ void canvasShowTune(bool clear, TuneView *tune)
 
 void canvasShowSetup(bool clear)
 {
-    setupViewDraw(clear);
+    static SetupView view;
+
+    view.setup = setupGet();
+
+    setupViewDraw(&view, clear);
 }
 
 void canvasDebugFPS(void)
