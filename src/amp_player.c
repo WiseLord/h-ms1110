@@ -872,8 +872,8 @@ static bool receiveFromTunerModule(void)
         tunerSync->flags |= TUNERSYNC_FLAG_STNUM;
         break;
     case SYNC_TUNER_FLAGS:
-        memcpy(&tunerSync->tFlags, &syncData[1], sizeof(TunerFlag));
-        tunerSync->flags |= TUNERSYNC_FLAG_FLAGS;
+        memcpy(&tunerSync->tStatus, &syncData[1], sizeof(TunerStatusFlag));
+        tunerSync->flags |= TUNERSYNC_FLAG_STATUS;
         break;
     case SYNC_TUNER_FAVS:
         memcpy(&tunerSync->favMask, &syncData[1], sizeof(uint16_t));

@@ -222,14 +222,14 @@ void rda580xSetFreq(uint16_t value)
 void rda580xSeek(int8_t direction)
 {
     // Enter seek mode
-    tStatus->flags &= ~(TUNER_FLAG_SEEKUP | TUNER_FLAG_SEEKDOWN);
+    tStatus->flags &= ~(TUNER_STATUS_FLAG_SEEKUP | TUNER_STATUS_FLAG_SEEKDOWN);
     wrBuf[REG_02h] |= RDA580X_SEEK;
     seeking = true;
 
     if (direction > 0) {
-        tStatus->flags |= TUNER_FLAG_SEEKUP;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
     } else {
-        tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
     }
 
     wrBuf[REG_02h] |= RDA580X_SEEK;
@@ -290,14 +290,14 @@ void rda580xUpdateStatus()
     tStatus->rssi = (rdBuf[REG_0Bh] & RDA580X_RSSI) >> 2;
 
     if (rdBuf[REG_0Ah] & RDA580X_ST) {
-        tStatus->flags |= TUNER_FLAG_STEREO;
+        tStatus->flags |= TUNER_STATUS_FLAG_STEREO;
     }
     if (rdBuf[REG_0Bl] & RDA580X_FM_READY) {
-        tStatus->flags |= TUNER_FLAG_READY;
+        tStatus->flags |= TUNER_STATUS_FLAG_READY;
         seeking = false;
     }
     if (rdBuf[REG_0Ah] & RDA580X_SF) {
-        tStatus->flags |= TUNER_FLAG_BANDLIM;
+        tStatus->flags |= TUNER_STATUS_FLAG_BANDLIM;
     }
 
     if (tPar->rds &&
@@ -318,9 +318,9 @@ void rda580xUpdateStatus()
 
     if (seeking == true) {
         if (wrBuf[REG_02h] & RDA580X_SEEKUP) {
-            tStatus->flags |= TUNER_FLAG_SEEKUP;
+            tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
         } else {
-            tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+            tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
         }
     }
 }

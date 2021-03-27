@@ -55,7 +55,7 @@ void tunerTestInit(TunerParam *tPar, TunerStatus *status)
     }
 
     status->rssi = 10;
-    status->flags = TUNER_FLAG_STEREO;
+    status->flags = TUNER_STATUS_FLAG_STEREO;
 }
 
 void tunerTestSetFreq(uint16_t value)
@@ -270,7 +270,7 @@ void tunerMove(int8_t direction)
 
 void tunerUpdateStatus(void)
 {
-    tuner.status.flags = TUNER_FLAG_INIT;
+    tuner.status.flags = TUNER_STATUS_FLAG_INIT;
 
     if (tuner.api && tuner.api->updateStatus) {
         tuner.api->updateStatus();

@@ -189,7 +189,7 @@ void tea5767Seek(int8_t direction)
     hiloState = HILO_STATE_OK;
 
     // Enter seek mode
-    tStatus->flags &= ~(TUNER_FLAG_SEEKUP | TUNER_FLAG_SEEKDOWN);
+    tStatus->flags &= ~(TUNER_STATUS_FLAG_SEEKUP | TUNER_STATUS_FLAG_SEEKDOWN);
     wrBuf[0] |= TEA5767_SM;
 
     // Mute output
@@ -199,11 +199,11 @@ void tea5767Seek(int8_t direction)
     if (direction > 0) {
         freq += tPar->fStep;
         wrBuf[2] |= TEA5767_SUD;
-        tStatus->flags |= TUNER_FLAG_SEEKUP;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
     } else {
         freq -= tPar->fStep;
         wrBuf[2] &= ~TEA5767_SUD;
-        tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
     }
 
     if (freq < tPar->fMin) {
@@ -257,30 +257,30 @@ void tea5767UpdateStatus()
 
     tStatus->rssi = (rdBuf[3] & TEA5767_LEV) >> 4;
 
-    tStatus->flags = TUNER_FLAG_INIT;
+    tStatus->flags = TUNER_STATUS_FLAG_INIT;
 
     if (rdBuf[2] & TEA5767_STEREO) {
-        tStatus->flags |= TUNER_FLAG_STEREO;
+        tStatus->flags |= TUNER_STATUS_FLAG_STEREO;
     }
     if (rdBuf[0] & TEA5767_RF) {
-        tStatus->flags |= TUNER_FLAG_READY;
+        tStatus->flags |= TUNER_STATUS_FLAG_READY;
     }
     if (rdBuf[0] & TEA5767_BLF) {
-        tStatus->flags |= TUNER_FLAG_BANDLIM;
+        tStatus->flags |= TUNER_STATUS_FLAG_BANDLIM;
     }
 
     if (wrBuf[0] & TEA5767_SM) {
-        if (tStatus->flags & TUNER_FLAG_READY) {
+        if (tStatus->flags & TUNER_STATUS_FLAG_READY) {
             tea5767SetFreq(tStatus->freq);
         } else {
             if (wrBuf[2] & TEA5767_SUD) {
-                tStatus->flags |= TUNER_FLAG_SEEKUP;
+                tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
             } else {
-                tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+                tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
             }
         }
     } else {
-        if (tStatus->flags & TUNER_FLAG_READY) {
+        if (tStatus->flags & TUNER_STATUS_FLAG_READY) {
             tea5767HandleHiLoFreq(tStatus->freq);
         }
     }

@@ -98,7 +98,7 @@ SyncType syncMasterReceive(uint8_t slaveAddr, uint8_t *data)
         break;
     case SYNC_TUNER_FLAGS:
         i2cBegin(I2C_SYNC, slaveAddr);
-        i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerFlag));
+        i2cReceive(I2C_SYNC, data, 1 + sizeof(TunerStatusFlag));
         break;
     case SYNC_TUNER_BAND:
         i2cBegin(I2C_SYNC, slaveAddr);

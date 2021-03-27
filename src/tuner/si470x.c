@@ -138,16 +138,16 @@ void si470xSetFreq(uint16_t value)
 void si470xSeek(int8_t direction)
 {
     // Enter seek mode
-    tStatus->flags &= ~(TUNER_FLAG_SEEKUP | TUNER_FLAG_SEEKDOWN);
+    tStatus->flags &= ~(TUNER_STATUS_FLAG_SEEKUP | TUNER_STATUS_FLAG_SEEKDOWN);
     wrBuf[0] |= SI470X_SEEK;
     seeking = true;
 
     if (direction > 0) {
         wrBuf[0] |= SI470X_SEEKUP;
-        tStatus->flags |= TUNER_FLAG_SEEKUP;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
     } else {
         wrBuf[0] &= ~SI470X_SEEKUP;
-        tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+        tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
     }
 
     si470xWriteI2C(2);
@@ -216,13 +216,13 @@ void si470xUpdateStatus(void)
     tStatus->rssi = rdBuf[1] & SI740X_RSSI;
 
     if (rdBuf[0] & SI740X_ST) {
-        tStatus->flags |= TUNER_FLAG_STEREO;
+        tStatus->flags |= TUNER_STATUS_FLAG_STEREO;
     }
     if (rdBuf[0] & SI740X_STC) {
-        tStatus->flags |= TUNER_FLAG_READY;
+        tStatus->flags |= TUNER_STATUS_FLAG_READY;
     }
     if (rdBuf[0] & SI740X_SFBL) {
-        tStatus->flags |= TUNER_FLAG_BANDLIM;
+        tStatus->flags |= TUNER_STATUS_FLAG_BANDLIM;
     }
 
     if (tPar->rds &&
@@ -244,13 +244,13 @@ void si470xUpdateStatus(void)
 
     if (seeking == true) {
         if (wrBuf[0] & SI470X_SEEKUP) {
-            tStatus->flags |= TUNER_FLAG_SEEKUP;
+            tStatus->flags |= TUNER_STATUS_FLAG_SEEKUP;
         } else {
-            tStatus->flags |= TUNER_FLAG_SEEKDOWN;
+            tStatus->flags |= TUNER_STATUS_FLAG_SEEKDOWN;
         }
     }
 
-    if (tStatus->flags & TUNER_FLAG_READY) {
+    if (tStatus->flags & TUNER_STATUS_FLAG_READY) {
         seeking = false;
         wrBuf[0] &= ~SI470X_SEEK;
         wrBuf[2] &= ~SI470X_TUNE;

@@ -588,10 +588,10 @@ static void ampSendToMaster(void)
         return;
     }
 
-    if (sync->tFlags != tuner->status.flags) {
-        sync->tFlags = tuner->status.flags;
-        sync->flags |= TUNERSYNC_FLAG_FLAGS;
-        syncSlaveSend(SYNC_TUNER_FLAGS, &sync->tFlags, sizeof(TunerFlag));
+    if (sync->tStatus != tuner->status.flags) {
+        sync->tStatus = tuner->status.flags;
+        sync->flags |= TUNERSYNC_FLAG_STATUS;
+        syncSlaveSend(SYNC_TUNER_FLAGS, &sync->tStatus, sizeof(TunerStatusFlag));
         return;
     }
 
