@@ -359,12 +359,12 @@ Connection ~ 4200 5100
 $Comp
 L Diode_Bridge:GBU8K D1
 U 1 1 5E2BD344
-P 1650 4600
-F 0 "D1" H 1800 4850 50  0000 L CNN
-F 1 "GBU8K" H 1800 4750 50  0000 L CNN
-F 2 "Diode_THT:Diode_Bridge_Vishay_GBU" H 1800 4725 50  0001 L CNN
-F 3 "http://www.vishay.com/docs/88656/gbu8a.pdf" H 1650 4600 50  0001 C CNN
-	1    1650 4600
+P 1500 4600
+F 0 "D1" H 1650 4850 50  0000 L CNN
+F 1 "GBU8K" H 1650 4750 50  0000 L CNN
+F 2 "Diode_THT:Diode_Bridge_Vishay_GBU" H 1650 4725 50  0001 L CNN
+F 3 "http://www.vishay.com/docs/88656/gbu8a.pdf" H 1500 4600 50  0001 C CNN
+	1    1500 4600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -381,9 +381,9 @@ $EndComp
 Wire Wire Line
 	2050 4700 2050 4600
 Wire Wire Line
-	2050 4600 1950 4600
+	2050 4600 1900 4600
 Wire Wire Line
-	1300 4600 1350 4600
+	1150 4600 1200 4600
 Connection ~ 4200 5150
 Wire Wire Line
 	4200 5150 4200 5250
@@ -403,13 +403,13 @@ Wire Wire Line
 Wire Wire Line
 	3500 5150 3900 5150
 Wire Wire Line
-	1650 4300 1650 4250
+	1500 4300 1500 4250
 Wire Wire Line
-	1650 4250 850  4250
+	1500 4250 850  4250
 Wire Wire Line
-	1650 4900 1650 4950
+	1500 4900 1500 4950
 Wire Wire Line
-	1650 4950 850  4950
+	1500 4950 850  4950
 Text Label 3650 2000 1    50   ~ 0
 AC1
 Text Label 3850 2000 1    50   ~ 0
@@ -703,9 +703,9 @@ Wire Wire Line
 	3500 4500 3500 4600
 Connection ~ 3500 4600
 Wire Wire Line
-	1300 5150 2050 5150
+	1150 5150 2050 5150
 Wire Wire Line
-	1300 4600 1300 5150
+	1150 4600 1150 5150
 Wire Wire Line
 	2050 4600 2300 4600
 Wire Wire Line
@@ -785,17 +785,6 @@ F 3 " ~" H 10750 2750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_Coaxial_x2 J9
-U 1 1 5FB34EF1
-P 10750 2250
-F 0 "J9" H 10900 2350 50  0000 C CNN
-F 1 "AUX1" H 10950 2250 50  0000 C CNN
-F 2 "" H 10750 2150 50  0001 C CNN
-F 3 " ~" H 10750 2150 50  0001 C CNN
-	1    10750 2250
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:+12VA #PWR07
 U 1 1 5FCC54BA
 P 6750 2150
@@ -866,17 +855,6 @@ Wire Wire Line
 	5400 6200 5400 6300
 Connection ~ 5400 6300
 $Comp
-L Diode_Bridge:GBU8K D2
-U 1 1 5FD57DB5
-P 1600 5800
-F 0 "D2" H 1750 6050 50  0000 L CNN
-F 1 "GBU8K" H 1750 5950 50  0000 L CNN
-F 2 "Diode_THT:Diode_Bridge_Vishay_GBU" H 1750 5925 50  0001 L CNN
-F 3 "http://www.vishay.com/docs/88656/gbu8a.pdf" H 1600 5800 50  0001 C CNN
-	1    1600 5800
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:CP_Small C11
 U 1 1 5FD57DBF
 P 2000 6150
@@ -889,10 +867,6 @@ F 3 "~" H 2000 6150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2000 6050 2000 5800
-Wire Wire Line
-	2000 5800 1900 5800
-Wire Wire Line
-	1250 5800 1300 5800
 Connection ~ 5400 6450
 Wire Wire Line
 	5400 6450 5400 6550
@@ -911,18 +885,6 @@ Wire Wire Line
 	4550 6250 4550 6450
 Wire Wire Line
 	4550 6450 5100 6450
-Wire Wire Line
-	1600 5500 1600 5450
-Wire Wire Line
-	1600 5450 850  5450
-Wire Wire Line
-	1600 6100 1600 6250
-Wire Wire Line
-	1600 6250 850  6250
-Text Label 850  5450 0    50   ~ 0
-RPI_AC1
-Text Label 850  6250 0    50   ~ 0
-RPI_AC2
 $Comp
 L Device:C_Small C13
 U 1 1 5FD57DE0
@@ -939,7 +901,6 @@ Wire Wire Line
 Connection ~ 5100 6450
 Wire Wire Line
 	5100 6450 5400 6450
-Connection ~ 2000 5800
 Wire Wire Line
 	3650 6350 3650 6450
 Wire Wire Line
@@ -951,12 +912,7 @@ Wire Wire Line
 	4450 5800 4550 5800
 Connection ~ 4550 5800
 Wire Wire Line
-	1250 6450 2000 6450
-Wire Wire Line
-	1250 5800 1250 6450
-Wire Wire Line
 	2000 6250 2000 6450
-Connection ~ 2000 6450
 Wire Wire Line
 	2000 6450 3650 6450
 Wire Wire Line
@@ -972,14 +928,6 @@ Wire Wire Line
 	5100 5800 5400 5800
 Wire Wire Line
 	3450 5800 3400 5800
-Wire Wire Line
-	4050 1400 4050 2000
-Wire Wire Line
-	5050 1400 5050 2000
-Text Label 4050 2000 1    50   ~ 0
-RPI_AC1
-Text Label 5050 2000 1    50   ~ 0
-RPI_AC2
 NoConn ~ 8450 4200
 NoConn ~ 8450 4100
 Wire Wire Line
@@ -1236,17 +1184,6 @@ F 3 "" H 5300 5950 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GNDPWR #PWR06
-U 1 1 603F7738
-P 5400 6550
-F 0 "#PWR06" H 5400 6350 50  0001 C CNN
-F 1 "GNDPWR" H 5404 6396 50  0000 C CNN
-F 2 "" H 5400 6500 50  0001 C CNN
-F 3 "" H 5400 6500 50  0001 C CNN
-	1    5400 6550
-	1    0    0    -1  
-$EndComp
-$Comp
 L Transistor_FET:IRLML5203 Q2
 U 1 1 6040E0CF
 P 3200 5900
@@ -1475,8 +1412,8 @@ $Comp
 L Connector_Generic:Conn_01x02 J15
 U 1 1 606E13AD
 P 5700 7150
-F 0 "J15" H 5780 7142 50  0000 L CNN
-F 1 "Conn_01x02" H 5780 7051 50  0000 L CNN
+F 0 "J15" H 5700 7250 50  0000 C CNN
+F 1 "RPI_OFF" V 5800 6950 50  0000 L CNN
 F 2 "" H 5700 7150 50  0001 C CNN
 F 3 "~" H 5700 7150 50  0001 C CNN
 	1    5700 7150
@@ -1500,17 +1437,31 @@ Wire Wire Line
 	5400 7400 5400 7250
 Wire Wire Line
 	5400 7250 5500 7250
-$Comp
-L power:GNDPWR #PWR012
-U 1 1 60703F74
-P 7050 6000
-F 0 "#PWR012" H 7050 5800 50  0001 C CNN
-F 1 "GNDPWR" H 7054 5846 50  0000 C CNN
-F 2 "" H 7050 5950 50  0001 C CNN
-F 3 "" H 7050 5950 50  0001 C CNN
-	1    7050 6000
-	1    0    0    -1  
-$EndComp
+Wire Wire Line
+	1650 7000 1300 7000
+Connection ~ 1650 7000
+Text Label 1300 7000 0    50   ~ 0
+STBY
+Wire Wire Line
+	2100 7000 2150 7000
+NoConn ~ 5050 1400
+NoConn ~ 4050 1400
+Wire Wire Line
+	1900 4600 1900 5800
+Wire Wire Line
+	1900 5800 2000 5800
+Connection ~ 1900 4600
+Wire Wire Line
+	1900 4600 1800 4600
+Connection ~ 2000 5800
+Wire Wire Line
+	7550 5850 7450 5850
+Wire Wire Line
+	7550 6000 7550 5850
+Wire Wire Line
+	7050 5850 7050 6000
+Wire Wire Line
+	7150 5850 7050 5850
 $Comp
 L power:GNDD #PWR013
 U 1 1 607053B8
@@ -1523,29 +1474,47 @@ F 3 "" H 7550 6000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R13
-U 1 1 60706206
+L power:GNDPWR #PWR012
+U 1 1 60703F74
+P 7050 6000
+F 0 "#PWR012" H 7050 5800 50  0001 C CNN
+F 1 "GNDPWR" H 7054 5846 50  0000 C CNN
+F 2 "" H 7050 5950 50  0001 C CNN
+F 3 "" H 7050 5950 50  0001 C CNN
+	1    7050 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GNDD #PWR?
+U 1 1 606557DC
+P 5400 6550
+F 0 "#PWR?" H 5400 6300 50  0001 C CNN
+F 1 "GNDD" H 5404 6395 50  0000 C CNN
+F 2 "" H 5400 6550 50  0001 C CNN
+F 3 "" H 5400 6550 50  0001 C CNN
+	1    5400 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:L L1
+U 1 1 6065697C
 P 7300 5850
-F 0 "R13" V 7200 5850 50  0000 C CNN
-F 1 "1k" V 7400 5850 50  0000 C CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" V 7230 5850 50  0001 C CNN
+F 0 "L1" V 7490 5850 50  0000 C CNN
+F 1 "10uH" V 7399 5850 50  0000 C CNN
+F 2 "" H 7300 5850 50  0001 C CNN
 F 3 "~" H 7300 5850 50  0001 C CNN
 	1    7300 5850
-	0    1    1    0   
+	0    -1   -1   0   
 $EndComp
-Wire Wire Line
-	7150 5850 7050 5850
-Wire Wire Line
-	7050 5850 7050 6000
-Wire Wire Line
-	7550 6000 7550 5850
-Wire Wire Line
-	7550 5850 7450 5850
-Wire Wire Line
-	1650 7000 1300 7000
-Connection ~ 1650 7000
-Text Label 1300 7000 0    50   ~ 0
-STBY
-Wire Wire Line
-	2100 7000 2150 7000
+$Comp
+L Connector:Conn_Coaxial_x2 J9
+U 1 1 5FB34EF1
+P 10750 2250
+F 0 "J9" H 10900 2350 50  0000 C CNN
+F 1 "AUX1" H 10950 2250 50  0000 C CNN
+F 2 "" H 10750 2150 50  0001 C CNN
+F 3 " ~" H 10750 2150 50  0001 C CNN
+	1    10750 2250
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
