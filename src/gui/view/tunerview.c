@@ -18,7 +18,7 @@ static const GlcdRect rectStNum = {220, 0, 27, 12};
 
 static void drawStatusIcons(TunerView *this, bool clear)
 {
-    if (this->sync->flags & (TUNERSYNC_FLAG_STATUS | TUNERSYNC_FLAG_RDS)) {
+    if (this->sync->flags & (TUNERSYNC_FLAG_STATUS | TUNERSYNC_FLAG_PARAM | TUNERSYNC_FLAG_RDS)) {
         clear = true;
     }
 
@@ -28,19 +28,21 @@ static void drawStatusIcons(TunerView *this, bool clear)
 
     const Palette *pal = paletteGet();
 
-    TunerStatusFlag flags = this->sync->tStatus;
+    TunerStatusFlag status = this->sync->statusFlags;
+    TunerParamFlag param = this->sync->paramFlags;
+
     RDS_Flag rdsFlags = rdsParserGet()->flags;
 
     IconImage iconStereo = {
         .rect = &rectIconStereo,
-        .color = flags & TUNER_STATUS_FLAG_STEREO ? pal->fg : pal->inactive,
+        .color =  (param & TUNER_PARAM_MONO) ? pal->bg :((status & TUNER_STATUS_STEREO) ? pal->fg : pal->inactive),
         .icon = ICON_STEREO,
     };
     iconImageDraw(&iconStereo, clear);
 
     IconImage iconRds = {
         .rect = &rectIconRds,
-        .color = rdsFlags & RDS_FLAG_READY ? pal->fg : pal->inactive,
+        .color = (param & TUNER_PARAM_RDS) ? ((rdsFlags & RDS_FLAG_READY) ? pal->fg : pal->inactive) : pal->bg,
         .icon = ICON_RDS,
     };
     iconImageDraw(&iconRds, clear);

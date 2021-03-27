@@ -166,7 +166,7 @@ void lc7213xInit(TunerParam *param, TunerStatus *status)
     updateIn1();
     updateIn2();
 
-    if (tPar->rds) {
+    if (tPar->flags & TUNER_PARAM_RDS) {
         rdsDemodInit();
     } else {
         rdsDemodDeinit();
@@ -222,10 +222,10 @@ void lc7213xUpdateStatus(void)
 {
     readOut();
     if (!(outBuf & LC7213X_OUT_I2)) {
-        tStatus->flags |= TUNER_STATUS_FLAG_STEREO;
+        tStatus->flags |= TUNER_STATUS_STEREO;
     }
     if (!(outBuf & LC7213X_OUT_I1)) {
-        tStatus->flags |= TUNER_STATUS_FLAG_STATION;
+        tStatus->flags |= TUNER_STATUS_STATION;
     }
     updateIn2();
 }

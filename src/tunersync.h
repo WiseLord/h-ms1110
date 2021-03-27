@@ -36,8 +36,8 @@ typedef struct {
     TunerSyncBand band;
     int8_t stNum;
     TunerSyncFlags flags;
-    TunerStatusFlag tStatus;
-    TunerParamFlag tParam;
+    TunerStatusFlag statusFlags;
+    TunerParamFlag paramFlags;
 } TunerSync;
 
 void tunerSyncInit(void);

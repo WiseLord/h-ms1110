@@ -33,27 +33,27 @@ enum {
 
 typedef uint8_t TunerStatusFlag;
 enum {
-    TUNER_STATUS_FLAG_INIT     = 0x00,
+    TUNER_STATUS_INIT       = 0x00,
 
-    TUNER_STATUS_FLAG_READY    = 0x01, // Ready (seek/tune complete)
-    TUNER_STATUS_FLAG_STEREO   = 0x02, // Stereo reception
-    TUNER_STATUS_FLAG_BANDLIM  = 0x04, // Band limit reached
-    TUNER_STATUS_FLAG_STATION  = 0x08, // Tuned at station
+    TUNER_STATUS_READY      = 0x01, // Ready (seek/tune complete)
+    TUNER_STATUS_STEREO     = 0x02, // Stereo reception
+    TUNER_STATUS_BANDLIM    = 0x04, // Band limit reached
+    TUNER_STATUS_STATION    = 0x08, // Tuned at station
 
-    TUNER_STATUS_FLAG_SEEKUP   = 0x10, // Seek up in progress
-    TUNER_STATUS_FLAG_SEEKDOWN = 0x20, // Seek down in progress
+    TUNER_STATUS_SEEKUP     = 0x10, // Seek up in progress
+    TUNER_STATUS_SEEKDOWN   = 0x20, // Seek down in progress
 };
 
 typedef uint8_t TunerParamFlag;
 enum {
-    TUNER_PARAM_FLAG_INIT       = 0x00,
+    TUNER_PARAM_INIT        = 0x00,
 
-    TUNER_PARAM_FLAG_MUTE       = 0x01,
-    TUNER_PARAM_FLAG_BASS       = 0x02,
-    TUNER_PARAM_FLAG_MONO       = 0x04,
-    TUNER_PARAM_FLAG_RDS        = 0x08,
+    TUNER_PARAM_MUTE        = 0x01,
+    TUNER_PARAM_BASS        = 0x02,
+    TUNER_PARAM_MONO        = 0x04,
+    TUNER_PARAM_RDS         = 0x08,
 
-    TUNER_PARAM_FLAG_STA_MODE   = 0x10,
+    TUNER_PARAM_STA_MODE    = 0x10,
 };
 
 typedef uint8_t TunerBand;
@@ -89,15 +89,10 @@ typedef struct {
     TunerStep step;
     TunerDeemph deemph;
 
-    bool stationMode;
-
-    bool mute;
-    bool bassBoost;
-    bool forcedMono;
-    bool rds;
-
     uint16_t fMin;
     uint16_t fMax;
+
+    TunerParamFlag flags;
     uint8_t fStep;
     int8_t volume;
 } TunerParam;

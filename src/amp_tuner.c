@@ -131,8 +131,8 @@ static void inputEnable(void)
     tunerSetPower(true);
     tunerSetFreq(tuner->status.freq);
     tunerSetVolume(tuner->par.volume);
-    tunerSetForcedMono(tuner->par.forcedMono);
-    tunerSetRds(tuner->par.rds);
+    tunerSetForcedMono((tuner->par.flags & TUNER_PARAM_MONO) == TUNER_PARAM_MONO);
+    tunerSetRds((tuner->par.flags & TUNER_PARAM_RDS) == TUNER_PARAM_RDS);
     tunerSetMute(false);
 }
 
@@ -485,6 +485,8 @@ static void tunerSendMediaKey(MediaKey key)
 
 void ampActionHandle(void)
 {
+    Tuner *tuner = tunerGet();
+
     switch (action.type) {
     case ACTION_INIT_HW:
         ampInitHw();
@@ -506,19 +508,19 @@ void ampActionHandle(void)
 
     case ACTION_TUNER_STORE:
         if (isTuner()) {
-            uint16_t freq = tunerGet()->status.freq;
+            uint16_t freq = tuner->status.freq;
             char *PS = rdsParserGet()->PS;
             stationStoreRemove(freq, PS);
         }
         break;
     case ACTION_TUNER_FORCE_MONO:
         if (isTuner()) {
-            tunerSetForcedMono(!tunerGet()->par.forcedMono);
+            tunerSetForcedMono(!(tuner->par.flags & TUNER_PARAM_MONO));
         }
         break;
     case ACTION_TUNER_SET_RDS:
         if (isTuner()) {
-            tunerSetRds(!tunerGet()->par.rds);
+            tunerSetRds(!(tuner->par.flags & TUNER_PARAM_RDS));
         }
         break;
 
@@ -588,10 +590,17 @@ static void ampSendToMaster(void)
         return;
     }
 
-    if (sync->tStatus != tuner->status.flags) {
-        sync->tStatus = tuner->status.flags;
+    if (sync->statusFlags != tuner->status.flags) {
+        sync->statusFlags = tuner->status.flags;
         sync->flags |= TUNERSYNC_FLAG_STATUS;
-        syncSlaveSend(SYNC_TUNER_FLAGS, &sync->tStatus, sizeof(TunerStatusFlag));
+        syncSlaveSend(SYNC_TUNER_STATUS, &sync->statusFlags, sizeof(TunerStatusFlag));
+        return;
+    }
+
+    if (sync->paramFlags != tuner->par.flags) {
+        sync->paramFlags = tuner->par.flags;
+        sync->flags |= TUNERSYNC_FLAG_PARAM;
+        syncSlaveSend(SYNC_TUNER_PARAM, &sync->paramFlags, sizeof(TunerParamFlag));
         return;
     }
 
