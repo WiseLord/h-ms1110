@@ -367,16 +367,30 @@ static void ampSetInput(int8_t value)
     swTimSet(SW_TIM_AMP_INIT, 300);
 }
 
-static void actionNextAudioParam(AudioProc *aProc)
+static void actionNextAudioGroup(void)
 {
+    AudioGroup group = audioGetGroup(priv.tune);
+
+    do {
+        group = (group + 1) % AUDIO_GROUP_END;
+        priv.tune = audioGetFirstInGroup(group);
+    } while (priv.tune == AUDIO_TUNE_INVALID);
+}
+
+static void actionNextAudioSubParam(void)
+{
+    AudioGroup group = audioGetGroup(priv.tune);
+
+    if (group == AUDIO_GROUP_INVALID || priv.tune == AUDIO_TUNE_INVALID) {
+        return;
+    }
+
     do {
         priv.tune++;
         if (priv.tune >= AUDIO_TUNE_END) {
             priv.tune = AUDIO_TUNE_VOLUME;
         }
-    } while (aProc->par.tune[priv.tune].grid == NULL ||
-             priv.tune == AUDIO_TUNE_BASS ||
-             priv.tune == AUDIO_TUNE_TREBLE);
+    } while (!audioIsTuneValid(priv.tune) || audioGetGroup(priv.tune) != group);
 }
 
 static int8_t actionGetNextAudioInput(int8_t diff)
@@ -558,9 +572,10 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
         break;
     case BTN_PLAYER_AUDIO:
-        action.type = ACTION_AUDIO_MENU;
+        actionSet(ACTION_AUDIO_MENU, 0);
         break;
     case BTN_PLAYER_SUBTITLE:
+        actionSet(ACTION_AUDIO_MENU, 1);
         break;
     default:
         break;
@@ -639,18 +654,19 @@ static void actionRemapRemote(void)
         break;
     case RC_CMD_VOL_UP:
         amp->screen = SCREEN_TUNE;
-        priv.tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, +1);
         break;
     case RC_CMD_VOL_DOWN:
         amp->screen = SCREEN_TUNE;
-        priv.tune = AUDIO_TUNE_VOLUME;
         actionSet(ACTION_AUDIO_SELECT_PARAM, -1);
         break;
     case RC_CMD_MUTE:
         actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
         break;
 
+    case RC_CMD_MENU:
+        actionSet(ACTION_AUDIO_MENU, 0);
+        break;
 
     case RC_CMD_IN_PREV:
         actionSet(ACTION_AUDIO_SELECT_INPUT, -1);
@@ -704,17 +720,6 @@ static void actionRemapEncoder(int16_t encCnt)
         }
         actionSet(ACTION_AUDIO_SELECT_PARAM, encCnt);
         break;
-    }
-
-    if (ACTION_AUDIO_SELECT_PARAM == action.type) {
-        amp->screen = SCREEN_TUNE;
-        switch (scrMode) {
-        case SCREEN_SPECTRUM:
-            priv.tune = AUDIO_TUNE_VOLUME;
-            break;
-        default:
-            break;
-        }
     }
 }
 
@@ -1073,9 +1078,11 @@ void ampActionHandle(void)
     case ACTION_AUDIO_MENU:
         if (scrMode == SCREEN_TUNE) {
             priv.clearScreen = true;
-            actionNextAudioParam(aProc);
-        } else {
-            priv.tune = AUDIO_TUNE_VOLUME;
+            if (action.value == 0) {
+                actionNextAudioGroup();
+            } else {
+                actionNextAudioSubParam();
+            }
         }
         screenSet(SCREEN_TUNE, 5000);
         break;

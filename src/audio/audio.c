@@ -45,7 +45,7 @@ void audioReadSettings(AudioIC ic)
     aProc.par.ic = settingsRead(PARAM_AUDIO_IC, ic);
     aProc.par.input = settingsRead(PARAM_AUDIO_INPUT, 0);
     aProc.par.flags = settingsRead(PARAM_AUDIO_FLAGS, 0);
-    aProc.par.mode = settingsRead(PARAM_AUDIO_MODE, false);
+    aProc.par.mode = settingsRead(PARAM_AUDIO_MODE, AUDIO_MODE_2_0);
 
     for (Param par = PARAM_AUDIO_GAIN0; par <= PARAM_AUDIO_GAIN7; par++) {
         aProc.par.gain[par - PARAM_AUDIO_GAIN0] = settingsRead(par, 0);
@@ -180,10 +180,7 @@ void audioSetPower(bool value)
 
 void audioSetTune(AudioTune tune, int8_t value)
 {
-    if (tune >= AUDIO_TUNE_END)
-        return;
-
-    if (aProc.par.tune[tune].grid == NULL) {
+    if (!audioIsTuneValid(tune)) {
         return;
     }
 
@@ -217,7 +214,7 @@ void audioSetTune(AudioTune tune, int8_t value)
 
 void audioChangeTune(AudioTune tune, int8_t diff)
 {
-    if (tune >= AUDIO_TUNE_END) {
+    if (!audioIsTuneValid(tune)) {
         return;
     }
 
@@ -342,4 +339,104 @@ bool audioIsModeSupported(AudioMode mode)
     }
 
     return ret;
+}
+
+bool audioIsTuneValid(AudioTune tune)
+{
+    if (tune >= AUDIO_TUNE_END) {
+        return false;
+    }
+
+    return aProc.par.tune[tune].grid != NULL;
+}
+
+AudioGroup audioGetGroup(AudioTune tune)
+{
+    switch (tune) {
+    case AUDIO_TUNE_VOLUME:
+    case AUDIO_TUNE_PREAMP:
+    case AUDIO_TUNE_GAIN:
+        return AUDIO_GROUP_VOLUME;
+    case AUDIO_TUNE_BASS:
+    case AUDIO_TUNE_BASS_FREQ:
+    case AUDIO_TUNE_BASS_QUAL:
+        return AUDIO_GROUP_BASS;
+    case AUDIO_TUNE_MIDDLE:
+    case AUDIO_TUNE_MIDDLE_KFREQ:
+    case AUDIO_TUNE_MIDDLE_QUAL:
+        return AUDIO_GROUP_MIDDLE;
+    case AUDIO_TUNE_TREBLE:
+    case AUDIO_TUNE_TREBLE_KFREQ:
+        return AUDIO_GROUP_TREBLE;
+    case AUDIO_TUNE_FRONTREAR:
+    case AUDIO_TUNE_BALANCE:
+    case AUDIO_TUNE_CENTER:
+        return AUDIO_GROUP_BALANCE;
+    case AUDIO_TUNE_SUBWOOFER:
+    case AUDIO_TUNE_SUB_CUT_FREQ:
+        return AUDIO_GROUP_SUBFOOWER;
+    case AUDIO_TUNE_LOUDNESS:
+    case AUDIO_TUNE_LOUD_PEAK_FREQ:
+        return AUDIO_GROUP_LOUDNESS;
+    default:
+        return AUDIO_GROUP_INVALID;
+    }
+}
+
+AudioTune audioGetFirstInGroup(AudioGroup group)
+{
+    switch (group) {
+    case AUDIO_GROUP_VOLUME:
+        if (audioIsTuneValid(AUDIO_TUNE_VOLUME)) {
+            return AUDIO_TUNE_VOLUME;
+        } else if (audioIsTuneValid(AUDIO_TUNE_PREAMP)) {
+            return AUDIO_TUNE_PREAMP;
+        } else if (audioIsTuneValid(AUDIO_TUNE_GAIN)) {
+            return AUDIO_TUNE_GAIN;
+        }
+    case AUDIO_GROUP_BASS:
+        if (audioIsTuneValid(AUDIO_TUNE_BASS)) {
+            return AUDIO_TUNE_BASS;
+        } else if (audioIsTuneValid(AUDIO_TUNE_BASS_FREQ)) {
+            return AUDIO_TUNE_BASS_FREQ;
+        } else if (audioIsTuneValid(AUDIO_TUNE_BASS_QUAL)) {
+            return AUDIO_TUNE_BASS_QUAL;
+        }
+    case AUDIO_GROUP_MIDDLE:
+        if (audioIsTuneValid(AUDIO_TUNE_MIDDLE)) {
+            return AUDIO_TUNE_MIDDLE;
+        } else if (audioIsTuneValid(AUDIO_TUNE_MIDDLE_KFREQ)) {
+            return AUDIO_TUNE_MIDDLE_KFREQ;
+        } else if (audioIsTuneValid(AUDIO_TUNE_MIDDLE_QUAL)) {
+            return AUDIO_TUNE_MIDDLE_QUAL;
+        }
+    case AUDIO_GROUP_TREBLE:
+        if (audioIsTuneValid(AUDIO_TUNE_TREBLE)) {
+            return AUDIO_TUNE_TREBLE;
+        } else if (audioIsTuneValid(AUDIO_TUNE_TREBLE_KFREQ)) {
+            return AUDIO_TUNE_TREBLE_KFREQ;
+        }
+    case AUDIO_GROUP_BALANCE:
+        if (audioIsTuneValid(AUDIO_TUNE_BALANCE)) {
+            return AUDIO_TUNE_BALANCE;
+        } else if (audioIsTuneValid(AUDIO_TUNE_FRONTREAR)) {
+            return AUDIO_TUNE_FRONTREAR;
+        } else if (audioIsTuneValid(AUDIO_TUNE_CENTER)) {
+            return AUDIO_TUNE_CENTER;
+        }
+    case AUDIO_GROUP_SUBFOOWER:
+        if (audioIsTuneValid(AUDIO_TUNE_SUBWOOFER)) {
+            return AUDIO_TUNE_SUBWOOFER;
+        } else if (audioIsTuneValid(AUDIO_TUNE_SUB_CUT_FREQ)) {
+            return AUDIO_TUNE_SUB_CUT_FREQ;
+        }
+    case AUDIO_GROUP_LOUDNESS:
+        if (audioIsTuneValid(AUDIO_TUNE_LOUDNESS)) {
+            return AUDIO_TUNE_LOUDNESS;
+        } else if (audioIsTuneValid(AUDIO_TUNE_LOUD_PEAK_FREQ)) {
+            return AUDIO_TUNE_LOUD_PEAK_FREQ;
+        }
+    }
+
+    return AUDIO_TUNE_INVALID;
 }

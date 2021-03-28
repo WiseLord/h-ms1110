@@ -36,6 +36,11 @@ void audioSetFlag(AudioFlag flag, bool value);
 
 bool audioIsModeSupported(AudioMode mode);
 
+bool audioIsTuneValid(AudioTune tune);
+
+AudioGroup audioGetGroup(AudioTune tune);
+AudioTune audioGetFirstInGroup(AudioGroup group);
+
 #ifdef __cplusplus
 }
 #endif
