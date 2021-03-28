@@ -31,6 +31,7 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_CENTER]          = "Center",
     [LABEL_SUBWOOFER]       = "Subwoofer",
     [LABEL_PREAMP]          = "Preamp",
+    [LABEL_LOUDNESS]        = "Loudness",
 
     [LABEL_BASS_FREQ]       = "Bass freq",
     [LABEL_BASS_QUAL]       = "Bass Q",
@@ -48,6 +49,10 @@ const char *const labels_en[LABEL_END] = {
 
     [LABEL_BOOL_OFF]        = "OFF",
     [LABEL_BOOL_ON]         = "ON",
+
+    [LABEL_DB]              = "dB",
+    [LABEL_HZ]              = "Hz",
+    [LABEL_K]               = "k",
 
     [LABEL_SETUP_MAIN]      = "Setup",
     [LABEL_SETUP_TIME]      = "Time",

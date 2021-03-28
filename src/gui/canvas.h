@@ -9,6 +9,7 @@ extern "C" {
 #include <stdint.h>
 
 #include "amp.h"
+#include "audio/audiodefs.h"
 #include "display/glcd.h"
 #include "gui/palette.h"
 #include "screen/tuneview.h"
@@ -38,7 +39,7 @@ void canvasShowInputMpc(bool clear);
 void canvasShowInputSelector(bool clear, int8_t inIdx, bool inIdxUp, const void *inMap);
 void canvasShowInput(bool clear, InputType inType);
 
-void canvasShowTune(bool clear, TuneView *tune);
+void canvasShowTune(bool clear, AudioTune tune);
 void canvasShowSetup(bool clear);
 
 void canvasDebugFPS(void);

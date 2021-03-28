@@ -32,6 +32,7 @@ extern "C" {
     AUDIO_TUNE(CENTER)                  \
     AUDIO_TUNE(SUBWOOFER)               \
     AUDIO_TUNE(PREAMP)                  \
+    AUDIO_TUNE(LOUDNESS)                \
     AUDIO_TUNE(BASS_FREQ)               \
     AUDIO_TUNE(BASS_QUAL)               \
     AUDIO_TUNE(MIDDLE_KFREQ)            \

@@ -31,6 +31,7 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_CENTER]          = "Центр",
     [LABEL_SUBWOOFER]       = "Сабвуфер",
     [LABEL_PREAMP]          = "Усиление",
+    [LABEL_LOUDNESS]        = "Тонкоррекция",
 
     [LABEL_BASS_FREQ]       = "Частота НЧ",
     [LABEL_BASS_QUAL]       = "Добротн. НЧ",
@@ -48,6 +49,10 @@ const char *const labels_ru[LABEL_END] = {
 
     [LABEL_BOOL_OFF]        = "ВЫКЛ",
     [LABEL_BOOL_ON]         = "ВКЛ",
+
+    [LABEL_DB]              = "дБ",
+    [LABEL_HZ]              = "Гц",
+    [LABEL_K]               = "к",
 
     [LABEL_SETUP_MAIN]      = "Настройки",
     [LABEL_SETUP_TIME]      = "Время",

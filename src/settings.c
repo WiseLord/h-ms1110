@@ -11,7 +11,15 @@ static const EE_Cell eeMap[] = {
     [PARAM_AUDIO_IC]        =   {0x01,  0},
     [PARAM_AUDIO_INPUT]     =   {0x02,  0},
     [PARAM_AUDIO_FLAGS]     =   {0x03,  0},
-    [PARAM_AUDIO_MODE]      =   {0x08,  0},
+    [PARAM_AUDIO_MODE]      =   {0x04,  0},
+
+    [PARAM_AUDIO_BASS_FREQ]      = {0x08, 0},
+    [PARAM_AUDIO_BASS_QUAL]      = {0x09, 0},
+    [PARAM_AUDIO_MIDDLE_FREQ]    = {0x0A, 0},
+    [PARAM_AUDIO_MIDDLE_QUAL]    = {0x0B, 0},
+    [PARAM_AUDIO_TREBLE_FREQ]    = {0x0C, 0},
+    [PARAM_AUDIO_SUB_CUT_FREQ]   = {0x0D, 0},
+    [PARAM_AUDIO_LOUD_PEAK_FREQ] = {0x0E, 0},
 
     [PARAM_AUDIO_GAIN0]     =   {0x18,  0},
     [PARAM_AUDIO_GAIN1]     =   {0x19,  0},
@@ -31,6 +39,7 @@ static const EE_Cell eeMap[] = {
     [PARAM_AUDIO_CENTER]    =   {0x26,  0},
     [PARAM_AUDIO_SUBWOOFER] =   {0x27,  0},
     [PARAM_AUDIO_PREAMP]    =   {0x28,  0},
+    [PARAM_AUDIO_LOUDNESS]  =   {0x29,  0},
 
     [PARAM_TUNER_IC]        =   {0x30,  0},
     [PARAM_TUNER_BAND]      =   {0x31,  0},

@@ -80,6 +80,5 @@ void inputViewDraw(InputView *this, bool clear)
 
     for (int8_t i = -2; i <= 3; i++) {
         glcdDrawRect(xBase + shiftX + (60 * i) - 20, 0, 20, 40, pal->bg);
-
     }
 }

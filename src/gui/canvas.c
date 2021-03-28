@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "audio/audio.h"
 #include "input/matrix.h"
 #include "rtc.h"
 #include "screen/spectrumview.h"
@@ -118,22 +119,22 @@ void canvasShowStars(bool clear, int16_t offset)
 
 void canvasShowDateTime(bool clear, DateTimeMode mode)
 {
-    static DateTimeView dtv;
+    static DateTimeView view;
 
     RTC_type rtc;
     rtcGetTime(&rtc);
 
-    dtv.hour = rtc.hour;
-    dtv.min = rtc.min;
-    dtv.sec = rtc.sec;
-    dtv.month = rtc.month;
-    dtv.year = rtc.year;
-    dtv.date = rtc.date;
-    dtv.wday = rtc.wday;
+    view.hour = rtc.hour;
+    view.min = rtc.min;
+    view.sec = rtc.sec;
+    view.month = rtc.month;
+    view.year = rtc.year;
+    view.date = rtc.date;
+    view.wday = rtc.wday;
 
-    dtv.mode = mode;
+    view.mode = mode;
 
-    dateTimeViewDraw(&dtv, clear);
+    dateTimeViewDraw(&view, clear);
 }
 
 void canvasShowInputSpectrum(bool clear)
@@ -177,9 +178,9 @@ void canvasShowInputMpc(bool clear)
 
 void canvasShowInputSelector(bool clear, int8_t inIdx, bool inIdxUp, const void *inMap)
 {
-    Amp *amp = ampGet();
-
     static InputView view;
+
+    Amp *amp = ampGet();
 
     Label label = LABEL_BOOL_OFF;
 
@@ -213,9 +214,61 @@ void canvasShowInput(bool clear, InputType inType)
     }
 }
 
-void canvasShowTune(bool clear, TuneView *tune)
+void canvasShowTune(bool clear, AudioTune tune)
 {
-    tuneViewDraw(clear, tune);
+    static TuneView view;
+
+    AudioProc *aProc = audioGet();
+    AudioTuneItem *aItem = &aProc->par.tune[tune];
+
+    int16_t value = aItem->value;
+    int8_t step = (aItem->grid != NULL) ? aItem->grid->mStep : 0;
+
+    if (view.value != value) {
+        view.flags |= TUNE_FLAG_VALUE;
+    }
+
+    view.value = value;
+    view.min = (aItem->grid != NULL) ? aItem->grid->min : 0;
+    view.max = (aItem->grid != NULL) ? aItem->grid->max : 0;
+
+    if (aItem->grid != NULL && aItem->grid->array != NULL) {
+        value = aItem->grid->array[value];
+    }
+
+    if (tune == AUDIO_TUNE_GAIN) {
+        view.name = labelsGet(LABEL_IN_TUNER + ampGet()->inType);
+    } else {
+        view.name = labelsGet(LABEL_VOLUME + (tune - AUDIO_TUNE_VOLUME));
+    }
+
+    switch (tune) {
+    case AUDIO_TUNE_BASS_FREQ:
+    case AUDIO_TUNE_SUB_CUT_FREQ:
+    case AUDIO_TUNE_LOUD_PEAK_FREQ:
+        value = value / STEP_MULT;
+        snprintf(view.valStr, sizeof(view.valStr), "%4d", value);
+        snprintf(view.unitStr, sizeof(view.unitStr), "\u2008%s", labelsGet(LABEL_HZ));
+        break;
+    case AUDIO_TUNE_MIDDLE_KFREQ:
+    case AUDIO_TUNE_TREBLE_KFREQ:
+        value = value * 1000 / STEP_MULT;
+        snprintf(view.valStr, sizeof(view.valStr), "%3d.%1d", value / 1000, value % 1000 / 100);
+        snprintf(view.unitStr, sizeof(view.unitStr), "\u2008%s%s", labelsGet(LABEL_K), labelsGet(LABEL_HZ));
+        break;
+    case AUDIO_TUNE_BASS_QUAL:
+    case AUDIO_TUNE_MIDDLE_QUAL:
+        value = value * 1000 / STEP_MULT;
+        snprintf(view.valStr, sizeof(view.valStr), "%d.%02d", value / 1000, value % 1000 / 10);
+        view.unitStr[0] = '\0';
+        break;
+    default:
+        value = value * step / STEP_MULT;
+        snprintf(view.valStr, sizeof(view.valStr), "%3d", value);
+        snprintf(view.unitStr, sizeof(view.unitStr), "\u2008%s", labelsGet(LABEL_DB));
+    }
+
+    tuneViewDraw(&view, clear);
 }
 
 void canvasShowSetup(bool clear)

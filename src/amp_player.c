@@ -1159,22 +1159,6 @@ void ampActionHandle(void)
     screen.timeout = SW_TIM_OFF;
 }
 
-static void prepareAudioTune(TuneView *tune)
-{
-    AudioProc *aProc = audioGet();
-    AudioTuneItem *aItem = &aProc->par.tune[priv.tune];
-
-    tune->value = aItem->value;
-    tune->min = aItem->grid->min;
-    tune->max = aItem->grid->max;
-
-    if (priv.tune == AUDIO_TUNE_GAIN) {
-        tune->label = LABEL_IN_TUNER + amp->inType;
-    } else {
-        tune->label = LABEL_VOLUME + (priv.tune - AUDIO_TUNE_VOLUME);
-    }
-}
-
 static void sendToTunerModule(SyncType type, void *data, size_t size)
 {
     if (ampIsOnline(AMP_MODULE_TUNER)) {
@@ -1256,8 +1240,6 @@ void ampScreenShow(void)
         swTimSet(SW_TIM_SCROLL, SW_TIM_OFF);
     }
 
-    static TuneView tune;
-
     DateTimeMode dtMode = DT_MODE_TIME | DT_MODE_DATE | DT_MODE_WDAY;
     if (ampIsOnline(AMP_MODULE_TUNER | AMP_MODULE_SPECTRUM)) {
         dtMode &= ~(DT_MODE_DATE | DT_MODE_WDAY);
@@ -1271,8 +1253,7 @@ void ampScreenShow(void)
         canvasShowDateTime(clear, dtMode);
         break;
     case SCREEN_TUNE:
-        prepareAudioTune(&tune);
-        canvasShowTune(clear, &tune);
+        canvasShowTune(clear, priv.tune);
         break;
     case SCREEN_SETUP:
         canvasShowSetup(clear);
