@@ -61,7 +61,7 @@ Wire Wire Line
 NoConn ~ 10600 3600
 NoConn ~ 11150 4500
 Wire Wire Line
-	3050 1400 3050 2050
+	3050 1400 3050 1700
 $Comp
 L Connector_Generic:Conn_01x04 J3
 U 1 1 5E236DDB
@@ -77,8 +77,6 @@ Wire Wire Line
 	1100 2450 1750 2450
 Wire Wire Line
 	1600 2650 1100 2650
-Wire Wire Line
-	1600 2050 3050 2050
 Text Label 1150 2550 0    50   ~ 0
 SYNC_SCK
 Text Label 1150 2450 0    50   ~ 0
@@ -113,9 +111,6 @@ F 3 "~" H 900 3550 50  0001 C CNN
 	1    900  3550
 	-1   0    0    -1  
 $EndComp
-Connection ~ 1600 2650
-Wire Wire Line
-	1600 2650 1600 2050
 Wire Wire Line
 	3550 2450 3550 1400
 Wire Wire Line
@@ -517,10 +512,6 @@ F 3 "~" H 2600 3450 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2750 3450 4350 3450
-NoConn ~ 3250 1400
-NoConn ~ 3950 1400
-NoConn ~ 4250 1400
-NoConn ~ 4550 1400
 NoConn ~ 4750 1400
 NoConn ~ 4850 1400
 NoConn ~ 4950 1400
@@ -529,4 +520,36 @@ NoConn ~ 5650 1400
 NoConn ~ 5850 1400
 NoConn ~ 5950 1400
 NoConn ~ 5150 1400
+Wire Wire Line
+	4250 1400 4250 1700
+Wire Wire Line
+	4250 1700 3950 1700
+Wire Wire Line
+	3950 1700 3950 1400
+Wire Wire Line
+	3950 1700 3250 1700
+Wire Wire Line
+	3250 1700 3250 1400
+Connection ~ 3950 1700
+Wire Wire Line
+	3250 1700 3050 1700
+Connection ~ 3250 1700
+Wire Wire Line
+	4550 1400 4550 1700
+Wire Wire Line
+	4550 1700 4250 1700
+Connection ~ 4250 1700
+$Comp
+L power:GNDD #PWR?
+U 1 1 6060E544
+P 3950 2100
+F 0 "#PWR?" H 3950 1850 50  0001 C CNN
+F 1 "GNDD" H 3954 1945 50  0000 C CNN
+F 2 "" H 3950 2100 50  0001 C CNN
+F 3 "" H 3950 2100 50  0001 C CNN
+	1    3950 2100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 1700 3950 2100
 $EndSCHEMATC

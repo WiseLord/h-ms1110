@@ -67,7 +67,7 @@ F 3 "~" H 900 1850 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 Wire Wire Line
-	3050 1400 3050 2050
+	3050 1400 3050 1700
 Text Label 1150 1850 0    50   ~ 0
 RDDA
 Text Label 1150 1950 0    50   ~ 0
@@ -969,10 +969,7 @@ NoConn ~ 3350 1400
 NoConn ~ 2150 1400
 NoConn ~ 2050 1400
 Wire Wire Line
-	1600 2050 3050 2050
-Wire Wire Line
 	1100 2050 1600 2050
-Connection ~ 1600 2050
 Connection ~ 1600 2650
 Wire Wire Line
 	1600 2650 1600 2050
@@ -1273,4 +1270,36 @@ Text Label 9800 4850 0    50   ~ 0
 DO
 Text Label 9800 4950 0    50   ~ 0
 CL
+Wire Wire Line
+	4550 1400 4550 1700
+Wire Wire Line
+	4550 1700 4250 1700
+Wire Wire Line
+	4250 1700 4250 1400
+Wire Wire Line
+	4250 1700 3950 1700
+Wire Wire Line
+	3950 1700 3950 1400
+Connection ~ 4250 1700
+Wire Wire Line
+	3950 1700 3250 1700
+Wire Wire Line
+	3250 1700 3250 1400
+Connection ~ 3950 1700
+Wire Wire Line
+	3250 1700 3050 1700
+Connection ~ 3250 1700
+$Comp
+L power:GNDD #PWR?
+U 1 1 606333E9
+P 3950 2100
+F 0 "#PWR?" H 3950 1850 50  0001 C CNN
+F 1 "GNDD" H 3954 1945 50  0000 C CNN
+F 2 "" H 3950 2100 50  0001 C CNN
+F 3 "" H 3950 2100 50  0001 C CNN
+	1    3950 2100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3950 2100 3950 1700
 $EndSCHEMATC

@@ -113,7 +113,7 @@ Wire Wire Line
 Wire Wire Line
 	3350 1950 3350 1400
 Wire Wire Line
-	3050 1400 3050 2050
+	3050 1400 3050 1700
 Text Label 1150 1650 0    50   ~ 0
 +3.3VA
 Text Label 1150 1750 0    50   ~ 0
@@ -141,9 +141,6 @@ Wire Wire Line
 	1600 2650 1100 2650
 Wire Wire Line
 	1100 2050 1600 2050
-Connection ~ 1600 2050
-Wire Wire Line
-	1600 2050 3050 2050
 Text Label 1150 2550 0    50   ~ 0
 SYNC_SCK
 Text Label 1150 2450 0    50   ~ 0
@@ -380,8 +377,6 @@ F 3 "~" H 2050 4800 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2050 4700 2050 4600
-Wire Wire Line
-	2050 4600 1900 4600
 Wire Wire Line
 	1150 4600 1200 4600
 Connection ~ 4200 5150
@@ -912,8 +907,6 @@ Wire Wire Line
 	4450 5800 4550 5800
 Connection ~ 4550 5800
 Wire Wire Line
-	2000 6250 2000 6450
-Wire Wire Line
 	2000 6450 3650 6450
 Wire Wire Line
 	4550 5800 4900 5800
@@ -1124,10 +1117,6 @@ Wire Wire Line
 	4750 4300 6600 4300
 Wire Wire Line
 	4750 1400 4750 4300
-NoConn ~ 3250 1400
-NoConn ~ 3950 1400
-NoConn ~ 4250 1400
-NoConn ~ 4550 1400
 Wire Wire Line
 	10750 2600 10450 2600
 Wire Wire Line
@@ -1446,13 +1435,6 @@ Wire Wire Line
 	2100 7000 2150 7000
 NoConn ~ 5050 1400
 NoConn ~ 4050 1400
-Wire Wire Line
-	1900 4600 1900 5800
-Wire Wire Line
-	1900 5800 2000 5800
-Connection ~ 1900 4600
-Wire Wire Line
-	1900 4600 1800 4600
 Connection ~ 2000 5800
 Wire Wire Line
 	7550 5850 7450 5850
@@ -1515,6 +1497,49 @@ F 1 "AUX1" H 10950 2250 50  0000 C CNN
 F 2 "" H 10750 2150 50  0001 C CNN
 F 3 " ~" H 10750 2150 50  0001 C CNN
 	1    10750 2250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1900 5800 2000 5800
+Wire Wire Line
+	2000 6250 2000 6450
+Wire Wire Line
+	1900 4600 1800 4600
+Wire Wire Line
+	2050 4600 1900 4600
+Connection ~ 1900 4600
+Wire Wire Line
+	1900 4600 1900 5800
+Wire Wire Line
+	4550 1400 4550 1700
+Wire Wire Line
+	4550 1700 4250 1700
+Wire Wire Line
+	4250 1400 4250 1700
+Connection ~ 4250 1700
+Wire Wire Line
+	4250 1700 3950 1700
+Wire Wire Line
+	3250 1400 3250 1700
+Connection ~ 3250 1700
+Wire Wire Line
+	3250 1700 3050 1700
+Wire Wire Line
+	3950 1400 3950 1700
+Connection ~ 3950 1700
+Wire Wire Line
+	3950 1700 3250 1700
+Wire Wire Line
+	3950 2100 3950 1700
+$Comp
+L power:GNDD #PWR?
+U 1 1 6065B73B
+P 3950 2100
+F 0 "#PWR?" H 3950 1850 50  0001 C CNN
+F 1 "GNDD" H 3954 1945 50  0000 C CNN
+F 2 "" H 3950 2100 50  0001 C CNN
+F 3 "" H 3950 2100 50  0001 C CNN
+	1    3950 2100
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
