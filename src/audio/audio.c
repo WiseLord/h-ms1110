@@ -12,12 +12,12 @@
 
 static AudioProc aProc;
 
-static const AudioGrid gridTestVolume       = {-79,  0, (int8_t)(1.00 * STEP_MULT)}; // -79..0dB with 1dB step
-static const AudioGrid gridTestTone         = { -7,  7, (int8_t)(2.00 * STEP_MULT)}; // -14..14dB with 2dB step
-static const AudioGrid gridTestBalance      = { -7,  7, (int8_t)(1.00 * STEP_MULT)}; // -7..7dB with 1dB step
-static const AudioGrid gridTestCenterSub    = {-15,  0, (int8_t)(1.00 * STEP_MULT)}; // -15..0dB with 1dB step
-static const AudioGrid gridTestPreamp       = {-47,  0, (int8_t)(1.00 * STEP_MULT)}; // -47..0dB with 1dB step
-static const AudioGrid gridTestGain         = {  0, 15, (int8_t)(2.00 * STEP_MULT)}; // 0..30dB with 2dB step
+static const AudioGrid gridTestVolume       = {NULL, -79,  0, (int8_t)(1.00 * STEP_MULT)}; // -79..0dB with 1dB step
+static const AudioGrid gridTestTone         = {NULL,  -7,  7, (int8_t)(2.00 * STEP_MULT)}; // -14..14dB with 2dB step
+static const AudioGrid gridTestBalance      = {NULL,  -7,  7, (int8_t)(1.00 * STEP_MULT)}; // -7..7dB with 1dB step
+static const AudioGrid gridTestCenterSub    = {NULL, -15,  0, (int8_t)(1.00 * STEP_MULT)}; // -15..0dB with 1dB step
+static const AudioGrid gridTestPreamp       = {NULL, -47,  0, (int8_t)(1.00 * STEP_MULT)}; // -47..0dB with 1dB step
+static const AudioGrid gridTestGain         = {NULL,   0, 15, (int8_t)(2.00 * STEP_MULT)}; // 0..30dB with 2dB step
 
 static void audioTestInit(AudioParam *aPar)
 {
@@ -50,7 +50,7 @@ void audioReadSettings(AudioIC ic)
     for (Param par = PARAM_AUDIO_GAIN0; par <= PARAM_AUDIO_GAIN7; par++) {
         aProc.par.gain[par - PARAM_AUDIO_GAIN0] = settingsRead(par, 0);
     }
-    for (Param par = PARAM_AUDIO_VOLUME; par <= PARAM_AUDIO_PREAMP; par++) {
+    for (Param par = PARAM_AUDIO_VOLUME; par <= PARAM_AUDIO_LOUD_PEAK_FREQ; par++) {
         aProc.par.tune[par - PARAM_AUDIO_VOLUME].value = settingsRead(par, 0);
     }
 
@@ -96,7 +96,7 @@ void audioSaveSettings(void)
     settingsStore(PARAM_AUDIO_INPUT, aProc.par.input);
     settingsStore(PARAM_AUDIO_FLAGS, aProc.par.flags & ~AUDIO_FLAG_MUTE);
 
-    for (Param par = PARAM_AUDIO_VOLUME; par <= PARAM_AUDIO_PREAMP; par++) {
+    for (Param par = PARAM_AUDIO_VOLUME; par < PARAM_AUDIO_END; par++) {
         settingsStore(par, aProc.par.tune[par - PARAM_AUDIO_VOLUME].value);
     }
 
@@ -183,8 +183,9 @@ void audioSetTune(AudioTune tune, int8_t value)
     if (tune >= AUDIO_TUNE_END)
         return;
 
-    if (aProc.par.tune[tune].grid == 0)
+    if (aProc.par.tune[tune].grid == NULL) {
         return;
+    }
 
     int8_t min = aProc.par.tune[tune].grid->min;
     int8_t max = aProc.par.tune[tune].grid->max;
@@ -216,13 +217,12 @@ void audioSetTune(AudioTune tune, int8_t value)
 
 void audioChangeTune(AudioTune tune, int8_t diff)
 {
-    if (tune >= AUDIO_TUNE_END)
+    if (tune >= AUDIO_TUNE_END) {
         return;
+    }
 
     int8_t value = aProc.par.tune[tune].value;
-
     value += diff;
-
     audioSetTune(tune, value);
 }
 

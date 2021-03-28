@@ -32,6 +32,13 @@ extern "C" {
     AUDIO_TUNE(CENTER)                  \
     AUDIO_TUNE(SUBWOOFER)               \
     AUDIO_TUNE(PREAMP)                  \
+    AUDIO_TUNE(BASS_FREQ)               \
+    AUDIO_TUNE(BASS_QUAL)               \
+    AUDIO_TUNE(MIDDLE_KFREQ)            \
+    AUDIO_TUNE(MIDDLE_QUAL)             \
+    AUDIO_TUNE(TREBLE_KFREQ)            \
+    AUDIO_TUNE(SUB_CUT_FREQ)            \
+    AUDIO_TUNE(LOUD_PEAK_FREQ)          \
     AUDIO_TUNE(GAIN)                    \
 
 #define GENERATE_AUDIO_TUNE(TUNE)    AUDIO_TUNE_ ## TUNE,
@@ -82,6 +89,7 @@ typedef struct {
 #define STEP_MULT   8
 
 typedef struct {
+    const int16_t *array;
     int8_t min;     // Minimum in steps
     int8_t max;     // Maximum in steps
     int8_t mStep;   // Step multiplied by STEP_MULT (to handle 1.25dB real step)

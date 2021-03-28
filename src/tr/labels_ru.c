@@ -32,6 +32,14 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_SUBWOOFER]       = "Сабвуфер",
     [LABEL_PREAMP]          = "Усиление",
 
+    [LABEL_BASS_FREQ]       = "Частота НЧ",
+    [LABEL_BASS_QUAL]       = "Добротн. НЧ",
+    [LABEL_MIDDLE_KFREQ]    = "Частота СЧ",
+    [LABEL_MIDDLE_QUAL]     = "Добротн. СЧ",
+    [LABEL_TREBLE_KFREQ]    = "Частота ВЧ",
+    [LABEL_SUB_CUT_FREQ]    = "Полоса саба",
+    [LABEL_LOUD_PEAK_FREQ]  = "Пик тонкомп.",
+
     [LABEL_IN_TUNER]        = "Тюнер",
     [LABEL_IN_MPD]          = "MPD",
     [LABEL_IN_AUX1]         = "AUX1",

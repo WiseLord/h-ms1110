@@ -32,6 +32,14 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_SUBWOOFER]       = "Subwoofer",
     [LABEL_PREAMP]          = "Preamp",
 
+    [LABEL_BASS_FREQ]       = "Bass freq",
+    [LABEL_BASS_QUAL]       = "Bass Q",
+    [LABEL_MIDDLE_KFREQ]    = "Middle freq",
+    [LABEL_MIDDLE_QUAL]     = "Middle Q",
+    [LABEL_TREBLE_KFREQ]    = "Treble freq",
+    [LABEL_SUB_CUT_FREQ]    = "Sub cut freq",
+    [LABEL_LOUD_PEAK_FREQ]  = "Loudness freq",
+
     [LABEL_IN_TUNER]        = "Tuner",
     [LABEL_IN_MPD]          = "MPD",
     [LABEL_IN_AUX1]         = "AUX1",

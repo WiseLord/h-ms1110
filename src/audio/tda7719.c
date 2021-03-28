@@ -154,10 +154,65 @@
 
 static const int8_t inCfg2[TDA7719_IN_CNT] = { 0, 4, 1, 2, 5, 6 };
 
-static const AudioGrid gridVolume    = {-79,  0, (int8_t)(1.00 * STEP_MULT)}; // -79..0dB with 1dB step
-static const AudioGrid gridToneBal   = {-15, 15, (int8_t)(1.00 * STEP_MULT)}; // -15..15dB with 1dB step
-static const AudioGrid gridSubwoofer = {  0, 15, (int8_t)(1.00 * STEP_MULT)}; // -15..0dB with 1dB step
-static const AudioGrid gridGain      = {  0,  1, (int8_t)(3.00 * STEP_MULT)}; // 0..3dB with 3dB step
+static const AudioGrid gridVolume    = {NULL, -79,  0, (int8_t)(1.00 * STEP_MULT)}; // -79..0dB with 1dB step
+static const AudioGrid gridToneBal   = {NULL, -15, 15, (int8_t)(1.00 * STEP_MULT)}; // -15..15dB with 1dB step
+static const AudioGrid gridSubwoofer = {NULL,   0, 15, (int8_t)(1.00 * STEP_MULT)}; // -15..0dB with 1dB step
+static const AudioGrid gridGain      = {NULL,   0,  1, (int8_t)(3.00 * STEP_MULT)}; // 0..3dB with 3dB step
+
+static const int16_t arrBassCFreq[] = {
+    60  * STEP_MULT,
+    80  * STEP_MULT,
+    100 * STEP_MULT,
+    200 * STEP_MULT
+};
+static const AudioGrid adjustBassCFreq = {arrBassCFreq, 0, 3, 0};
+
+static const int16_t arrBassQFact[] = {
+    1    * STEP_MULT,
+    1.25 * STEP_MULT,
+    1.5  * STEP_MULT,
+    2    * STEP_MULT
+};
+static const AudioGrid adjustBassQFact = {arrBassQFact, 0, 3, 0};
+
+static const int16_t arrMiddleCFreqK[] = {
+    0.5  * STEP_MULT,
+    1    * STEP_MULT,
+    1.5 * STEP_MULT,
+    2.5 * STEP_MULT
+};
+static const AudioGrid adjustMiddleCFreqK = {arrMiddleCFreqK, 0, 3, 0};
+
+static const int16_t arrMiddleQFact[] = {
+    0.5  * STEP_MULT,
+    0.75 * STEP_MULT,
+    1    * STEP_MULT,
+    1.25 * STEP_MULT
+};
+static const AudioGrid adjustMiddleQFact = {arrMiddleQFact, 0, 3, 0};
+
+static const int16_t arrTrebleCFreqK[] = {
+    10   * STEP_MULT,
+    12.5 * STEP_MULT,
+    15   * STEP_MULT,
+    17.5 * STEP_MULT
+};
+static const AudioGrid adjustTrebleCFreqK = {arrTrebleCFreqK, 0, 3, 0};
+
+static const int16_t subCutFreq[] = {
+    80  * STEP_MULT,
+    120 * STEP_MULT,
+    160 * STEP_MULT,
+};
+static const AudioGrid adjustSubCutFreq = {subCutFreq, 0, 2, 0};
+
+static const int16_t arrLoudPeakFreq[] = {
+    0    * STEP_MULT,
+    400  * STEP_MULT,
+    800  * STEP_MULT,
+    2400 * STEP_MULT
+};
+static const AudioGrid adjustLoudPeakFreq = {arrLoudPeakFreq, 0, 3, 0};
 
 static AudioParam *aPar;
 
@@ -223,6 +278,14 @@ void tda7719Init(AudioParam *param)
         aPar->mode == AUDIO_MODE_4_1) {
         subDisable = 0;
     }
+
+    aPar->tune[AUDIO_TUNE_BASS_FREQ].grid       = &adjustBassCFreq;
+    aPar->tune[AUDIO_TUNE_BASS_QUAL].grid       = &adjustBassQFact;
+    aPar->tune[AUDIO_TUNE_MIDDLE_KFREQ].grid     = &adjustMiddleCFreqK;
+    aPar->tune[AUDIO_TUNE_MIDDLE_QUAL].grid     = &adjustMiddleQFact;
+    aPar->tune[AUDIO_TUNE_TREBLE_KFREQ].grid     = &adjustTrebleCFreqK;
+    aPar->tune[AUDIO_TUNE_SUB_CUT_FREQ].grid    = &adjustSubCutFreq;
+    aPar->tune[AUDIO_TUNE_LOUD_PEAK_FREQ].grid  = &adjustLoudPeakFreq;
 
     i2cBegin(I2C_AMP, TDA7719_I2C_ADDR);
     i2cSend(I2C_AMP, TDA7719_INPUT_CONFIG | TDA7719_AUTOINC);
