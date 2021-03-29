@@ -201,6 +201,12 @@ void canvasShowInput(bool clear, InputType inType)
 {
     canvasShowInputSpectrum(clear);
 
+    AudioProc *aProc = audioGet();
+    if (aProc->par.flags & AUDIO_FLAG_MUTE) {
+        canvasShowMute(clear);
+        return;
+    }
+
     switch (inType) {
     case IN_MPD:
         canvasShowInputMpc(clear);
@@ -211,6 +217,17 @@ void canvasShowInput(bool clear, InputType inType)
     default:
         canvasShowDateTime(clear, DT_MODE_TIME);
         break;
+    }
+}
+
+void canvasShowMute(bool clear)
+{
+    if (clear) {
+        const Palette *pal = paletteGet();
+        const tImage *img = iconFind(ICON_MUTE, &icons_hms1110);
+
+        glcdSetXY(canvas.glcd->rect.w / 2 - img->width / 2, 0);
+        glcdDrawImage(img, pal->fg, pal->bg);
     }
 }
 

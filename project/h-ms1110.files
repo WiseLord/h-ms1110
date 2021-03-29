@@ -97,6 +97,8 @@
 ../src/gui/view/starsview.h
 ../src/gui/view/tunerview.c
 ../src/gui/view/tunerview.h
+../src/gui/view/tuneview.c
+../src/gui/view/tuneview.h
 ../src/gui/widget/iconimage.c
 ../src/gui/widget/iconimage.h
 ../src/gui/widget/progressbar.c
@@ -135,8 +137,6 @@
 ../src/screen/setupview.h
 ../src/screen/spectrumview.c
 ../src/screen/spectrumview.h
-../src/screen/tuneview.c
-../src/screen/tuneview.h
 ../src/settings.c
 ../src/settings.h
 ../src/setup.c

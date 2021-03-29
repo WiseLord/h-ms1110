@@ -12,11 +12,11 @@ extern "C" {
 #include "audio/audiodefs.h"
 #include "display/glcd.h"
 #include "gui/palette.h"
-#include "screen/tuneview.h"
 #include "spectrum.h"
 #include "tr/labels.h"
 
 #include "view/datetimeview.h"
+#include "view/tuneview.h"
 
 typedef struct {
     Glcd *glcd;
@@ -38,6 +38,7 @@ void canvasShowInputTuner(bool clear);
 void canvasShowInputMpc(bool clear);
 void canvasShowInputSelector(bool clear, int8_t inIdx, bool inIdxUp, const void *inMap);
 void canvasShowInput(bool clear, InputType inType);
+void canvasShowMute(bool clear);
 
 void canvasShowTune(bool clear, AudioTune tune);
 void canvasShowSetup(bool clear);

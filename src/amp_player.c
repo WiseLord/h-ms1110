@@ -1119,6 +1119,8 @@ void ampActionHandle(void)
 
     case ACTION_AUDIO_MUTE:
         ampMute(action.value);
+        priv.clearScreen = true;
+        actionDispExpired();
         break;
 
     case ACTION_DIGIT:
