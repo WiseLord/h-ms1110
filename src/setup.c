@@ -84,7 +84,7 @@ void setupSwitchChild(int8_t direction)
         break;
     case SETUP_REMOTE:
         first = RC_CMD_STBY_SWITCH;
-        last = RC_CMD_SCR_DEF;
+        last = RC_CMD_END - 1;
         break;
     default:
         return;
@@ -128,7 +128,7 @@ void setupChangeChild(int8_t direction)
         }
         break;
     case SETUP_REMOTE:
-        if (setup.child >= RC_CMD_STBY_SWITCH && setup.child <= RC_CMD_SCR_DEF) {
+        if (setup.child >= RC_CMD_STBY_SWITCH && setup.child < RC_CMD_END) {
             RcData rcData = rcRead(false);
             uint16_t raw = (int16_t)(((rcData.addr & 0xFF) << 8) | rcData.cmd);
             rcSaveCode(setup.child, raw);

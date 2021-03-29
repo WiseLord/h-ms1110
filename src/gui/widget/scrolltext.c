@@ -6,13 +6,13 @@ static void calcNameScroll(ScrollText *this, int16_t max_oft)
 {
     if (this->oft >= 0 && !this->pause) {
         this->oft = 0;
-        this->pause = 20;
+        this->pause = 100;
         this->flags &= ~SCROLL_RIGHT;
     }
 
     if (this->oft <= -max_oft && !this->pause) {
         this->oft = -max_oft;
-        this->pause = 20;
+        this->pause = 50;
         this->flags |= SCROLL_RIGHT;
     }
 

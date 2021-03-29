@@ -9,48 +9,42 @@ extern "C" {
 
 #define FOREACH_CMD(CMD)    \
     CMD(STBY_SWITCH)        \
+    CMD(MUTE)               \
+    CMD(IN_NEXT)            \
     CMD(VOL_UP)             \
     CMD(VOL_DOWN)           \
-    CMD(MUTE)               \
-        CMD(MENU)           \
-        CMD(CHAN_PREV)      \
-        CMD(CHAN_NEXT)      \
-        CMD(DIG_0)          \
-        CMD(DIG_1)          \
-        CMD(DIG_2)          \
-        CMD(DIG_3)          \
-        CMD(DIG_4)          \
-        CMD(DIG_5)          \
-        CMD(DIG_6)          \
-        CMD(DIG_7)          \
-        CMD(DIG_8)          \
-        CMD(DIG_9)          \
-    CMD(IN_PREV)            \
-    CMD(IN_NEXT)            \
-        CMD(NAV_OK)         \
-        CMD(NAV_BACK)       \
-        CMD(NAV_RIGHT)      \
-        CMD(NAV_UP)         \
-        CMD(NAV_LEFT)       \
-        CMD(NAV_DOWN)       \
-        CMD(BASS_UP)        \
-        CMD(BASS_DOWN)      \
-        CMD(MIDDLE_UP)      \
-        CMD(MIDDLE_DOWN)    \
-        CMD(TREBLE_UP)      \
-        CMD(TREBLE_DOWN)    \
-        CMD(LOUDNESS)       \
-        CMD(TIME)           \
+    CMD(CHAN_PREV)          \
+    CMD(CHAN_NEXT)          \
+    CMD(AUDIO_MENU)         \
+    CMD(AUDIO_SUBMENU)      \
+    CMD(DIG_0)              \
+    CMD(DIG_1)              \
+    CMD(DIG_2)              \
+    CMD(DIG_3)              \
+    CMD(DIG_4)              \
+    CMD(DIG_5)              \
+    CMD(DIG_6)              \
+    CMD(DIG_7)              \
+    CMD(DIG_8)              \
+    CMD(DIG_9)              \
+    CMD(NAV_LEFT)           \
+    CMD(NAV_RIGHT)          \
+    CMD(NAV_UP)             \
+    CMD(NAV_DOWN)           \
+    CMD(NAV_OK)             \
+    CMD(NAV_BACK)           \
+    CMD(TIME)               \
     CMD(PLAY)               \
     CMD(PAUSE)              \
     CMD(STOP)               \
-    CMD(PREV)               \
-    CMD(NEXT)               \
     CMD(REW)                \
     CMD(FWD)                \
-        CMD(TIMER)          \
-        CMD(SP_MODE)        \
-        CMD(SCR_DEF)        \
+    CMD(PREV)               \
+    CMD(NEXT)               \
+    CMD(TIMER)              \
+    CMD(SP_MODE)            \
+    CMD(SP_PEAKS)           \
+    CMD(SP_DEMO)            \
 
 typedef uint8_t ActionType;
 enum {

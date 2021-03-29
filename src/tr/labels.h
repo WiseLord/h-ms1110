@@ -9,12 +9,11 @@ extern "C" {
 
 #include "action.h"
 
-#define GENERATE_LABEL_RC_CMD(RC)    LABEL_RC_ ## RC,
+#define GENERATE_LABEL(RC)      LABEL_RC_ ## RC,
 
 typedef uint8_t Lang;
 enum {
     LANG_EN,
-//    LANG_BY,
     LANG_RU,
 
     LANG_END,
@@ -89,7 +88,7 @@ enum {
 
     LABEL_MPD_WAIT,
 
-    FOREACH_CMD(GENERATE_LABEL_RC_CMD)
+    FOREACH_CMD(GENERATE_LABEL)
 
     LABEL_END,
 };

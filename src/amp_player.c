@@ -653,6 +653,12 @@ static void actionRemapRemote(void)
     case RC_CMD_STBY_SWITCH:
         actionSet(ACTION_STANDBY, FLAG_SWITCH);
         break;
+    case RC_CMD_MUTE:
+        actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
+        break;
+    case RC_CMD_IN_NEXT:
+        actionSet(ACTION_AUDIO_SELECT_INPUT, +1);
+        break;
     case RC_CMD_VOL_UP:
         amp->screen = SCREEN_TUNE;
         actionSet(ACTION_AUDIO_SELECT_PARAM, +1);
@@ -661,23 +667,49 @@ static void actionRemapRemote(void)
         amp->screen = SCREEN_TUNE;
         actionSet(ACTION_AUDIO_SELECT_PARAM, -1);
         break;
-    case RC_CMD_MUTE:
-        actionSet(ACTION_AUDIO_MUTE, FLAG_SWITCH);
+    case RC_CMD_CHAN_PREV:
+        actionSet(ACTION_MEDIA, MEDIAKEY_PREV);
         break;
-
-    case RC_CMD_MENU:
+    case RC_CMD_CHAN_NEXT:
+        actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
+        break;
+    case RC_CMD_AUDIO_MENU:
         actionSet(ACTION_AUDIO_MENU, 0);
         break;
-
-    case RC_CMD_IN_PREV:
-        actionSet(ACTION_AUDIO_SELECT_INPUT, -1);
+    case RC_CMD_AUDIO_SUBMENU:
+        actionSet(ACTION_AUDIO_MENU, 1);
         break;
-    case RC_CMD_IN_NEXT:
-        actionSet(ACTION_AUDIO_SELECT_INPUT, +1);
+    case RC_CMD_DIG_0:
+    case RC_CMD_DIG_1:
+    case RC_CMD_DIG_2:
+    case RC_CMD_DIG_3:
+    case RC_CMD_DIG_4:
+    case RC_CMD_DIG_5:
+    case RC_CMD_DIG_6:
+    case RC_CMD_DIG_7:
+    case RC_CMD_DIG_8:
+    case RC_CMD_DIG_9:
         break;
-
+    case RC_CMD_NAV_LEFT:
+        actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
+        break;
+    case RC_CMD_NAV_RIGHT:
+        actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
+        break;
+    case RC_CMD_NAV_UP:
+        actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
+        break;
+    case RC_CMD_NAV_DOWN:
+        actionSet(ACTION_MEDIA, MEDIAKEY_PREV);
+        break;
+    case RC_CMD_NAV_OK:
+        break;
+    case RC_CMD_NAV_BACK:
+        break;
+    case RC_CMD_TIME:
+        break;
     case RC_CMD_PLAY:
-        actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PLAY);
         break;
     case RC_CMD_PAUSE:
         actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
@@ -685,17 +717,29 @@ static void actionRemapRemote(void)
     case RC_CMD_STOP:
         actionSet(ACTION_MEDIA, MEDIAKEY_STOP);
         break;
+    case RC_CMD_REW:
+        actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
+        break;
+    case RC_CMD_FWD:
+        actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
+        break;
     case RC_CMD_PREV:
         actionSet(ACTION_MEDIA, MEDIAKEY_PREV);
         break;
     case RC_CMD_NEXT:
         actionSet(ACTION_MEDIA, MEDIAKEY_NEXT);
         break;
-    case RC_CMD_REW:
-        actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
+    case RC_CMD_SP_MODE:
+        priv.syncAction.type = ACTION_SP_CHANGE_MODE;
+        priv.syncAction.value = +1;
         break;
-    case RC_CMD_FWD:
-        actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
+    case RC_CMD_SP_PEAKS:
+        priv.syncAction.type = ACTION_SP_CHANGE_PEAKS;
+        priv.syncAction.value = 0;
+        break;
+    case RC_CMD_SP_DEMO:
+        priv.syncAction.type = ACTION_SP_CHANGE_DEMO;
+        priv.syncAction.value = 0;
         break;
     default:
         break;
