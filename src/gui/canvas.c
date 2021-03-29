@@ -219,21 +219,21 @@ void canvasShowTune(bool clear, AudioTune tune)
     static TuneView view;
 
     AudioProc *aProc = audioGet();
-    AudioTuneItem *aItem = &aProc->par.tune[tune];
 
-    int16_t value = aItem->value;
-    int8_t step = (aItem->grid != NULL) ? aItem->grid->mStep : 0;
+    const AudioGrid *grid = aProc->par.grid[tune];
+    int16_t value = aProc->par.tune[tune];
+    int8_t step = (grid != NULL) ? grid->mStep : 0;
 
     if (view.value != value) {
         view.flags |= TUNE_FLAG_VALUE;
     }
 
     view.value = value;
-    view.min = (aItem->grid != NULL) ? aItem->grid->min : 0;
-    view.max = (aItem->grid != NULL) ? aItem->grid->max : 0;
+    view.min = (grid != NULL) ? grid->min : 0;
+    view.max = (grid != NULL) ? grid->max : 0;
 
-    if (aItem->grid != NULL && aItem->grid->array != NULL) {
-        value = aItem->grid->array[value];
+    if (grid != NULL && grid->array != NULL) {
+        value = grid->array[value];
     }
 
     if (tune == AUDIO_TUNE_GAIN) {

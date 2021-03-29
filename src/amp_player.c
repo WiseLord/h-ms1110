@@ -220,12 +220,12 @@ static void ampPinStby(bool value)
 static void ampMute(bool value)
 {
     AudioProc *aProc = audioGet();
-    AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
+    const AudioGrid *grid = aProc->par.grid[AUDIO_TUNE_VOLUME];
 
     if (value) {
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_OFF);
     } else {
-        audioSetTune(AUDIO_TUNE_VOLUME, volItem->grid->min);
+        audioSetTune(AUDIO_TUNE_VOLUME, grid->min);
         swTimSet(SW_TIM_SOFT_VOLUME, SW_TIM_ON);
     }
 
@@ -241,10 +241,11 @@ static void ampReadSettings(void)
 static void ampVolumeInit(void)
 {
     AudioProc *aProc = audioGet();
-    AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
+    const AudioGrid *grid = aProc->par.grid[AUDIO_TUNE_VOLUME];
+    int8_t *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
 
-    priv.volume = volItem->value;
-    volItem->value = volItem->grid->min;
+    priv.volume = *volItem;
+    *volItem = grid->min;
 }
 
 void ampExitStby(void)
@@ -278,8 +279,8 @@ void ampEnterStby(void)
 
     // Restore volume value before saving
     AudioProc *aProc = audioGet();
-    AudioTuneItem *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
-    volItem->value = priv.volume;
+    int8_t *volItem = &aProc->par.tune[AUDIO_TUNE_VOLUME];
+    *volItem = priv.volume;
 
     audioSetPower(false);
 
@@ -471,7 +472,7 @@ static void actionGetPots(void)
     static int8_t potPrev[AIN_POT_END];
 
     AudioProc *aProc = audioGet();
-    const AudioGrid *grid = aProc->par.tune[AUDIO_TUNE_BASS].grid;
+    const AudioGrid *grid = aProc->par.grid[AUDIO_TUNE_BASS];
     uint16_t zoneCnt = grid->max - grid->min + 1;
 
     for (AinChannel ain = AIN_POT_A; ain < AIN_POT_END; ain++) {
@@ -1043,7 +1044,7 @@ void ampActionHandle(void)
         break;
 
     case ACTION_RESTORE_VOLUME:
-        if (aProc->par.tune[AUDIO_TUNE_VOLUME].value < action.value) {
+        if (aProc->par.tune[AUDIO_TUNE_VOLUME] < action.value) {
             audioChangeTune(AUDIO_TUNE_VOLUME, +1);
             swTimSet(SW_TIM_SOFT_VOLUME, 25);
         } else {
@@ -1102,7 +1103,7 @@ void ampActionHandle(void)
     case ACTION_AUDIO_SELECT_PARAM:
         audioChangeTune(priv.tune, (int8_t)action.value);
         if (priv.tune == AUDIO_TUNE_VOLUME) {
-            priv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME].value;
+            priv.volume = aProc->par.tune[AUDIO_TUNE_VOLUME];
         }
         if (aProc->par.flags & AUDIO_FLAG_MUTE) {
             ampMute(false);
