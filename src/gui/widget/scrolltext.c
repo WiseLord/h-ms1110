@@ -2,17 +2,19 @@
 
 #include "gui/palette.h"
 
+#define NF  2   // Speed factor between LEFT and RIGHT scroll
+
 static void calcNameScroll(ScrollText *this, int16_t max_oft)
 {
     if (this->oft >= 0 && !this->pause) {
         this->oft = 0;
-        this->pause = 100;
+        this->pause = 100 * NF;
         this->flags &= ~SCROLL_RIGHT;
     }
 
-    if (this->oft <= -max_oft && !this->pause) {
-        this->oft = -max_oft;
-        this->pause = 50;
+    if ((this->oft <= -max_oft * NF) && !this->pause) {
+        this->oft = -max_oft *NF;
+        this->pause = 50 * NF;
         this->flags |= SCROLL_RIGHT;
     }
 
@@ -22,9 +24,9 @@ static void calcNameScroll(ScrollText *this, int16_t max_oft)
 
     if (0 == this->pause) {
         if (this->flags & SCROLL_RIGHT) {
-            this->oft++;
+            this->oft += NF;
         } else {
-            this->oft--;
+            this->oft -= 1;
         }
     }
 }
@@ -61,7 +63,7 @@ void scrollTextDraw(ScrollText *this, bool clear)
     }
 
     if (clear) {
-        glcdSetXY(this->oft, 0);
+        glcdSetXY(this->oft / NF, 0);
         glcdWriteString(this->text);
     }
 
