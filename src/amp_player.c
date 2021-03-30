@@ -1167,6 +1167,27 @@ void ampActionHandle(void)
         actionDispExpired();
         break;
 
+    case ACTION_SWITCH_BAND:
+        for (uint8_t i = 0; i < inMap.mapSize; i++) {
+            if (inPairs[i].type == IN_MPD) {
+                if (amp->inType == IN_TUNER) {
+                    ampSetInput(inPairs[i].input);
+                    mpcSendMediaKey(MEDIAKEY_INJECT);
+                    break;
+                }
+            }
+            if (inPairs[i].type == IN_TUNER) {
+                if (amp->inType != IN_TUNER) {
+                    ampSetInput(inPairs[i].input);
+                    break;
+                }
+            }
+        }
+        screenSet(SCREEN_INPUT_SELECTOR, 2000);
+        priv.clearScreen = true;
+        priv.syncFlags |= SYNC_FLAG_IN_TYPE;
+        break;
+
     case ACTION_DIGIT:
         if (amp->inType == IN_MPD) {
             mpcLoadPlaylist((uint8_t)action.value);

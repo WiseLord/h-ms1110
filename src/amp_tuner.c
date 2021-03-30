@@ -389,6 +389,7 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_DIGIT, 9);
         break;
     case BTN_TUNER_MWFM:
+        actionSet(ACTION_SWITCH_BAND, 0);
         break;
     case BTN_TUNER_RDS:
         actionSet(ACTION_TUNER_SET_RDS, FLAG_SWITCH);
@@ -522,6 +523,10 @@ void ampActionHandle(void)
         if (isTuner()) {
             tunerSetRds(!(tuner->par.flags & TUNER_PARAM_RDS));
         }
+        break;
+
+    case ACTION_SWITCH_BAND:
+        syncAction = action;
         break;
 
     case ACTION_DIGIT:
