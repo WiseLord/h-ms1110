@@ -330,7 +330,7 @@ void ampHandleStby(void)
     case FLAG_EXIT:
         priv.syncFlags |= SYNC_FLAG_ALL;
         ampExitStby();
-        screenSet(SCREEN_TIME, 1000);
+        screenSet(SCREEN_INPUT_SELECTOR, 2000);
         break;
     }
 }
