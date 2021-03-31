@@ -88,6 +88,7 @@ enum {
     ACTION_TUNER_SET_RDS,
 
     ACTION_SWITCH_BAND    = 90,
+    ACTION_NO_SILENCE,
 
     ACTION_DIGIT          = 100,
     ACTION_DIGIT_HOLD,

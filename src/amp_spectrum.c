@@ -21,6 +21,8 @@ typedef struct {
     ScreenType prevScreen;
     bool clearScreen;
     bool spSyncNeeded;
+
+    uint8_t signalCnt;
 } AmpPriv;
 
 static void actionGetTimers(void);
@@ -37,6 +39,10 @@ static Amp *amp;
 static Action action = {
     .type = ACTION_NONE,
     .value = FLAG_ENTER,
+};
+
+static Action syncAction = {
+    .type = ACTION_NONE,
 };
 
 static Screen screen = {
@@ -109,6 +115,7 @@ void ampExitStby(void)
     amp->status = AMP_STATUS_POWERED;
 
     swTimSet(SW_TIM_AMP_INIT, 200);
+    swTimSet(SW_TIM_SILENCE, SW_TIM_ON);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
@@ -117,12 +124,14 @@ void ampEnterStby(void)
     ampSetBrightness(AMP_BR_STBY);
 
     swTimSet(SW_TIM_STBY, SW_TIM_OFF);
+    swTimSet(SW_TIM_SILENCE, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
     inputDisable();
 
     amp->status = AMP_STATUS_INACTIVE;
+    spGet()->flags &= ~SP_FLAG_DEMO;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
@@ -306,7 +315,7 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_SP_CHANGE_PEAKS, 0);
         break;
     case BTN_SPECTRUM_DEMO:
-        actionSet(ACTION_SP_CHANGE_DEMO, 0);
+        actionSet(ACTION_SP_CHANGE_DEMO, FLAG_SWITCH);
         break;
     case BTN_SPECTRUM_DISP_PREV:
         actionSet(ACTION_SP_CHANGE_MODE, -1);
@@ -373,8 +382,6 @@ static void spDemoChange()
 {
     Spectrum *sp = spGet();
     sp->flags ^= SP_FLAG_DEMO;
-    priv.clearScreen = true;
-    settingsStore(PARAM_SPECTRUM_DEMO, (sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO);
     priv.spSyncNeeded = true;
 }
 
@@ -406,14 +413,31 @@ void ampActionHandle(void)
         break;
 
     case ACTION_SP_CHANGE_DEMO:
-        if (amp->screen == SCREEN_SPECTRUM) {
+        if (action.value == FLAG_SWITCH) {
             spDemoChange();
+        } else if (action.value == FLAG_ENTER) {
+            spGet()->flags |= SP_FLAG_DEMO;
+        } else if (action.value == FLAG_EXIT) {
+            spGet()->flags &= ~SP_FLAG_DEMO;
         }
+        priv.clearScreen = true;
         screenSet(SCREEN_SPECTRUM, 3000);
         break;
 
     default:
         break;
+    }
+
+    if (amp->status == AMP_STATUS_ACTIVE) {
+        if (swTimGet(SW_TIM_SILENCE) == 0) {
+            // Reset silence timer on signal
+            if (spCheckSignal()) {
+                syncAction.type = ACTION_NO_SILENCE;
+                swTimSet(SW_TIM_SILENCE, 1000);
+            } else {
+                swTimSet(SW_TIM_SILENCE, 100);
+            }
+        }
     }
 
     if (action.type != ACTION_NONE) {
@@ -440,10 +464,16 @@ static void ampSendToMaster(void)
         return;
     }
 
-    Spectrum *sp = spGet();
+    if (syncAction.type != SYNC_NONE) {
+        syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Action));
+        syncAction.type = SYNC_NONE;
+        return;
+    }
+
     if (priv.spSyncNeeded) {
         priv.spSyncNeeded = false;
-        syncSlaveSend(SYNC_SPECTRUM, sp, sizeof(Spectrum));
+        syncSlaveSend(SYNC_SPECTRUM, spGet(), sizeof(Spectrum));
+        return;
     }
 }
 

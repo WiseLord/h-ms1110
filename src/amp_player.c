@@ -22,6 +22,12 @@
 
 #define SYNC_PERIOD     10
 
+#define SW_TIM_SCREENSAVER_GAP      20
+#define SW_TIM_SILENCE_SHOW_GAP     30
+#define SW_TIM_STBY_SHOW_GAP        60
+
+#define S_TO_MS(x)      ((x) * 1000 + 999)
+
 typedef uint8_t SyncFlags;
 enum {
     SYNC_FLAG_NONE      = 0x00,
@@ -52,6 +58,8 @@ typedef struct {
 
     int8_t inIdx;
     bool inIdxInc;
+
+    bool forseScreenSaver;
 } AmpPriv;
 
 static void actionGetRemote(void);
@@ -153,8 +161,13 @@ static void actionDispExpired(void)
 
 static void actionResetSilenceTimer(void)
 {
-    if (priv.silenceTimer) {
-        swTimSet(SW_TIM_SILENCE, 1000 * 60 * priv.silenceTimer + 999);
+    int16_t min = priv.silenceTimer;
+    if (min <= 0) {
+        min = 32767;
+    }
+
+    if (min) {
+        swTimSet(SW_TIM_SILENCE, S_TO_MS(60 * min));
     }
 }
 
@@ -235,6 +248,8 @@ static void ampMute(bool value)
 
 static void ampReadSettings(void)
 {
+    priv.silenceTimer = settingsRead(PARAM_SYSTEM_SIL_TIM, 0);
+
     audioReadSettings(AUDIO_IC_TDA7719);
 }
 
@@ -289,6 +304,7 @@ void ampEnterStby(void)
     inputSetPower(false);   // Power off input device
 
     amp->status = AMP_STATUS_INACTIVE;
+    priv.forseScreenSaver = false;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
@@ -520,6 +536,30 @@ static void actionGetTimers(void)
         actionSet(ACTION_RESTORE_VOLUME, priv.volume);
     } else if (swTimGet(SW_TIM_DISPLAY) == 0) {
         actionSet(ACTION_DISP_EXPIRED, 0);
+    } else {
+        int32_t swTimSilence = swTimGet(SW_TIM_SILENCE);
+        if (swTimSilence == 0) {
+            actionSet(ACTION_STANDBY, FLAG_ENTER);
+            return;
+        } else if (swTimSilence > 0) {
+            int16_t min = priv.silenceTimer;
+            if (min <= 0) {
+                min = 32767;
+            }
+            if (swTimSilence < S_TO_MS(60 * min - SW_TIM_SCREENSAVER_GAP)) {
+                if (!priv.forseScreenSaver) {
+                    priv.forseScreenSaver = true;
+                    priv.syncAction.type = ACTION_SP_CHANGE_DEMO;
+                    priv.syncAction.value = FLAG_ENTER;
+                }
+            } else {
+                if (priv.forseScreenSaver) {
+                    priv.forseScreenSaver= false;
+                    priv.syncAction.type = ACTION_SP_CHANGE_DEMO;
+                    priv.syncAction.value = FLAG_EXIT;
+                }
+            }
+        }
     }
 }
 
@@ -739,7 +779,7 @@ static void actionRemapRemote(void)
         break;
     case RC_CMD_SP_DEMO:
         priv.syncAction.type = ACTION_SP_CHANGE_DEMO;
-        priv.syncAction.value = 0;
+        priv.syncAction.value = FLAG_SWITCH;
         break;
     default:
         break;
@@ -1188,6 +1228,11 @@ void ampActionHandle(void)
         priv.syncFlags |= SYNC_FLAG_IN_TYPE;
         break;
 
+    case ACTION_NO_SILENCE:
+        swTimSet(SW_TIM_SILENCE, 20000);
+        actionResetSilenceTimer();
+        break;
+
     case ACTION_DIGIT:
         if (amp->inType == IN_MPD) {
             mpcLoadPlaylist((uint8_t)action.value);
@@ -1207,11 +1252,7 @@ void ampActionHandle(void)
         break;
     }
 
-    if (scrMode != SCREEN_STANDBY && scrMode != SCREEN_SETUP) {
-        // Reset silence timer on signal
-//        if (spCheckSignal()) {
-        actionResetSilenceTimer();
-//        }
+    if (amp->status == AMP_STATUS_ACTIVE) {
         // Reset silence timer on any user action
         if (action.type != ACTION_NONE &&
             action.type != ACTION_DISP_EXPIRED &&

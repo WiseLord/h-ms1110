@@ -150,6 +150,7 @@ void ampExitStby(void)
     amp->status = AMP_STATUS_POWERED;
 
     swTimSet(SW_TIM_AMP_INIT, 200);
+    swTimSet(SW_TIM_SILENCE, SW_TIM_ON);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_ON);
 }
 
@@ -158,12 +159,14 @@ void ampEnterStby(void)
     ampSetBrightness(AMP_BR_STBY);
 
     swTimSet(SW_TIM_STBY, SW_TIM_OFF);
+    swTimSet(SW_TIM_SILENCE, SW_TIM_OFF);
     swTimSet(SW_TIM_SP_CONVERT, SW_TIM_OFF);
     swTimSet(SW_TIM_INPUT_POLL, SW_TIM_OFF);
 
     inputDisable();
 
     amp->status = AMP_STATUS_INACTIVE;
+    spGet()->flags &= ~SP_FLAG_DEMO;
     swTimSet(SW_TIM_AMP_INIT, 1000);
 }
 
@@ -499,6 +502,16 @@ void ampActionHandle(void)
         actionDispExpired();
         break;
 
+    case ACTION_SP_CHANGE_DEMO:
+        if (action.value == FLAG_ENTER) {
+            spGet()->flags |= SP_FLAG_DEMO;
+        } else if (action.value == FLAG_EXIT) {
+            spGet()->flags &= ~SP_FLAG_DEMO;
+        }
+        priv.clearScreen = true;
+        screenSet(SCREEN_SPECTRUM, 3000);
+        break;
+
     case ACTION_MEDIA:
         if (isTuner()) {
             tunerSendMediaKey((MediaKey)action.value);
@@ -545,6 +558,18 @@ void ampActionHandle(void)
 
     default:
         break;
+    }
+
+    if (amp->status == AMP_STATUS_ACTIVE) {
+        if (swTimGet(SW_TIM_SILENCE) == 0) {
+            // Reset silence timer on signal
+            if (spCheckSignal()) {
+                syncAction.type = ACTION_NO_SILENCE;
+                swTimSet(SW_TIM_SILENCE, 1000);
+            } else {
+                swTimSet(SW_TIM_SILENCE, 100);
+            }
+        }
     }
 
     if (action.type != ACTION_NONE) {
