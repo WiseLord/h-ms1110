@@ -50,7 +50,7 @@ static void fftGet43(FftSample *sp, uint8_t *out, size_t size)
             }
         }
         uint16_t ret = (uint16_t)(max >> 15);
-        out[s] = spGetDb(ret, 0, N_DB - 1);
+        out[s] = spGetDb(ret);
     }
 }
 
