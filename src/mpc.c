@@ -317,3 +317,15 @@ void USART_MPC_HANDLER(void)
         // Call Error function
     }
 }
+
+void mpcSetBluetooth(bool value)
+{
+    if (value) {
+        mpcSendCmd("bt(\"on\")");
+        mpc.status |= MPC_BT_ON;
+    } else {
+        mpcSendCmd("bt(\"off\")");
+        mpc.status &= ~MPC_BT_ON;
+    }
+    mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+}

@@ -528,6 +528,8 @@ static void actionGetTimers(void)
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_MPD_POWEROFF) == 0) {
         actionSet(ACTION_MPD_POWEROFF, 0);
+    } else if (swTimGet(SW_TIM_BLUETOOTH) == 0) {
+        actionSet(ACTION_BLUETOOTH, false);
     } else if (swTimGet(SW_TIM_SILENCE) == 0) {
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
@@ -554,7 +556,7 @@ static void actionGetTimers(void)
                 }
             } else {
                 if (priv.forseScreenSaver) {
-                    priv.forseScreenSaver= false;
+                    priv.forseScreenSaver = false;
                     priv.syncAction.type = ACTION_SP_CHANGE_DEMO;
                     priv.syncAction.value = FLAG_EXIT;
                 }
@@ -667,6 +669,7 @@ static void actionRemapBtnLong(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
         break;
     case BTN_PLAYER_AUDIO:
+        actionSet(ACTION_BLUETOOTH, true);
         break;
     case BTN_PLAYER_SUBTITLE:
         break;
@@ -1246,6 +1249,16 @@ void ampActionHandle(void)
     case ACTION_MPD_POWEROFF:
         mpcSchedPower(false);
         swTimSet(SW_TIM_MPD_POWEROFF, SW_TIM_OFF);
+        break;
+
+    case ACTION_BLUETOOTH:
+        if (amp->inType == IN_MPD) {
+            if (action.value) {
+                mpcSendMediaKey(MEDIAKEY_STOP);
+            }
+            mpcSetBluetooth(action.value);
+            swTimSet(SW_TIM_BLUETOOTH, action.value ? 30000 : SW_TIM_OFF);
+        }
         break;
 
     default:

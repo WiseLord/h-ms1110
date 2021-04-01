@@ -27,6 +27,7 @@ enum {
     SW_TIM_SYNC,
     SW_TIM_SCROLL,
     SW_TIM_MPD_POWEROFF,
+    SW_TIM_BLUETOOTH,
 
     SW_TIM_DEC_END,
 

@@ -168,7 +168,13 @@ class Player(object):
             self.client.consume(int(not int(status.get(cmd))))
         if cmd == 'poweroff':
             try:
-               subprocess.call(['sh', '/home/pi/poweroff.sh'])
+                subprocess.call(['sh', '/home/pi/poweroff.sh'])
+            except:
+                pass
+        if cmd.startswith('bt'):
+            try:
+                btstate = cmd[4:-2].strip()
+                subprocess.call(['/usr/bin/bluetoothctl', 'discoverable', btstate])
             except:
                 pass
 

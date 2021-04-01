@@ -96,6 +96,7 @@ enum {
     ACTION_MEDIA          = 110,
 
     ACTION_MPD_POWEROFF   = 120,
+    ACTION_BLUETOOTH,
 
     ACTION_END
 };

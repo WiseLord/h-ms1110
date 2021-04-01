@@ -60,7 +60,8 @@ static void drawStatusIcons(MpcView *this, bool clear)
     IconImage iconStatus = {
         .rect = &rectIconStatus,
         .color = pal->fg,
-        .icon = st & MPC_PAUSED ? ICON_PAUSED : st & MPC_PLAYING ? ICON_PLAYING : ICON_STOPPED,
+        .icon = (st & MPC_PAUSED) ? ICON_PAUSED : ((st & MPC_PLAYING) ? ICON_PLAYING :
+                                                   (st & MPC_BT_ON ? ICON_BT_STATUS : ICON_IDLE)),
     };
     iconImageDraw(&iconStatus, clear);
 
@@ -95,7 +96,7 @@ static void drawStatusIcons(MpcView *this, bool clear)
     IconImage iconMedia = {
         .rect = &rectIconMedia,
         .color = pal->fg,
-        .icon = st & MPC_PLAYING ? duration ? ICON_FILE : ICON_STREAM : ICON_IDLE,
+        .icon = (st & MPC_PLAYING) ? (duration ? ICON_FILE : ICON_STREAM) : ICON_IDLE,
     };
     iconImageDraw(&iconMedia, clear);
 }

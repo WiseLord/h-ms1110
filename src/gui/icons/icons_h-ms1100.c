@@ -7,7 +7,7 @@
 * family: xos4 Terminus
 * size: 36
 * style: Bold
-* included characters: \x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b \x0040ABCD
+* included characters: \x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x001c \x0040ABCD
 * antialiasing: no
 * type: proportional
 * encoding: UTF-16
@@ -359,6 +359,28 @@ static const __flash uint8_t image_data_icons_hms1110_0x001b[55] = {
     0xec, 0xfe, 0xff, 0x01, 0x01, 0x3d, 0x3d, 0xbd, 0x81, 0xc3, 0xff, 0x01, 0x01, 0xfd, 0xfd, 0xf9, 0x03, 0x07, 0xff, 0xe3, 0xc1, 0x03, 0xdd, 0xe8, 0x19, 0x3b, 0xff, 0xfe, 0x07, 0x0f, 0x08, 0x08, 0x0f, 0x0e, 0x0c, 0x09, 0x0b, 0x0f, 0x08, 0x08, 0x0b, 0x0b, 0x09, 0x0c, 0x0e, 0x0f, 0x0c, 0x08, 0x03, 0x0b, 0xfc, 0x08, 0x0c, 0x0f, 0x07
 };
 static const __flash tImage icons_hms1110_0x001b = { image_data_icons_hms1110_0x001b, 27, 12, 55, yes};
+#endif
+
+#if (0x0 == 0x0)
+static const __flash uint8_t image_data_icons_hms1110_0x001c[28] = {
+    // ∙∙∙∙∙∙██∙∙∙∙∙∙∙
+    // ∙∙∙∙∙∙███∙∙∙∙∙∙
+    // ∙∙██∙∙████∙∙∙∙∙
+    // ∙∙∙██∙██∙██∙∙∙∙
+    // ∙∙∙∙████∙∙██∙∙∙
+    // ∙∙∙∙∙███∙██∙∙∙∙
+    // ∙∙∙∙∙∙████∙∙∙∙∙
+    // ∙∙∙∙∙∙███∙∙∙∙∙∙
+    // ∙∙∙∙∙∙████∙∙∙∙∙
+    // ∙∙∙∙∙███∙██∙∙∙∙
+    // ∙∙∙∙████∙∙██∙∙∙
+    // ∙∙∙██∙██∙██∙∙∙∙
+    // ∙∙██∙∙████∙∙∙∙∙
+    // ∙∙∙∙∙∙███∙∙∙∙∙∙
+    // ∙∙∙∙∙∙██∙∙∙∙∙∙∙
+    0xf4, 0x00, 0x00, 0x04, 0x0c, 0x18, 0x30, 0xff, 0xff, 0xc6, 0x6c, 0x38, 0x10, 0x05, 0x00, 0xf6, 0x10, 0x18, 0x0c, 0x06, 0x7f, 0x7f, 0x31, 0x1b, 0x0e, 0x04, 0x03, 0x00
+};
+static const __flash tImage icons_hms1110_0x001c = { image_data_icons_hms1110_0x001c, 15, 15, 28, yes};
 #endif
 
 #if (0x0 == 0x0)
@@ -751,6 +773,14 @@ static const __flash tChar icons_hms1110_array[] = {
 #endif
 
 #if (0x0 == 0x0)
+    // character: '\x001c'
+    {0x001c, &icons_hms1110_0x001c},
+#else
+    // character: '\x001c' == ''
+    {0x001c, &icons_hms1110_0x},
+#endif
+
+#if (0x0 == 0x0)
     // character: ' '
     {0x0020, &icons_hms1110_0x0020},
 #else
@@ -801,4 +831,4 @@ static const __flash tChar icons_hms1110_array[] = {
 };
 
 
-const tFont __flash icons_hms1110 = { 19, icons_hms1110_array };
+const tFont __flash icons_hms1110 = { 20, icons_hms1110_array };

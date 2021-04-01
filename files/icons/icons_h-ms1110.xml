@@ -11,7 +11,7 @@
     <background>ffffffff</background>
     <multiplicityWidth>1</multiplicityWidth>
     <multiplicityHeight>1</multiplicityHeight>
-    <string>\x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b \x0040ABCD</string>
+    <string>\x0000\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x001c \x0040ABCD</string>
     <converted>/home/STM32/Projects/h-ms1110/src/gui/icons/icons_h-ms1100.c</converted>
     <chars>
         <char character="\x0000" code="0000">
@@ -52,6 +52,9 @@
         </char>
         <char character="\x001b" code="001b">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAABsAAAAMCAIAAAAcZVEhAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAbklEQVQoka1TQQ7AIAizy/7/5e7A0iBDdMaeoEBTiDaS7RxIQlGoAfjyRqYjvvSWfYdSz4/ikF7rG6WuVZLHH4qLuPfGAITF5bFTTDsKUT9I0pjE41SrRnfH4vYBYeWhYi1q5PwaabfSnRd+/Bc+tl9l6jOV040AAAAASUVORK5CYII=</picture>
+        </char>
+        <char character="\x001c" code="001c">
+            <picture format="png">iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAIAAAC0tAIdAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAXUlEQVQokZWQORLAMAgDV578/8ukSAqwcOxQ6hhgFRHUkQS4DgyXcqdPS3LblTf97M22K+WSk0K5e/rM39WKSdtfMvHoJr1k4okNE/e+mDQETBnnUeDKS6f5waTt3yGJPB9X6ZW0AAAAAElFTkSuQmCC</picture>
         </char>
         <char character=" " code="0020">
             <picture format="png">iVBORw0KGgoAAAANSUhEUgAAADAAAAAoCAIAAAA35e4mAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABG0lEQVRYhcXY2Q7EIAgF0Ivp//+y89BJY4pQEEGeJq6nY+tGvXfEgojuH/GmALRg/UezK0Kg7RpEQBkaLIOSNFgDjZotL/IYblCqBl5QtgYuUIEGdlCNBkZQmQbAxbtUwqW52zRWeQq3VI2x8bFwy9BI/VlyL73L5Rm59z7WJSJL+/8hS4qXgD8b1yC+/Vg2TTXpIMkkaSpAkknKrQDxXpX0ItC076myDvT5ld1RBJLmM55eAdLf4lduOmiqUUy5IOW/kUzWpUpZXKWTqz5SUpnm2q/Yw6Lh6UTUlNJB06dmbrJo9C2sPmTeHaMJpJvO3H6MneWdo+H67GtMvnmowOSeGLNNKzN1qmlx6Th/tudx/vaDx/n7IR7bTT91hrdRQn1/VQAAAABJRU5ErkJggg==</picture>

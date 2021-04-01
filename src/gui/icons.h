@@ -26,6 +26,7 @@ enum {
     ICON_FILE,
     ICON_STEREO,
     ICON_RDS,
+    ICON_BT_STATUS,
 
     //
     ICON_MUTE = 0x20,
