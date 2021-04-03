@@ -171,10 +171,13 @@ class Player(object):
                 subprocess.call(['sh', '/home/pi/poweroff.sh'])
             except:
                 pass
-        if cmd.startswith('bt'):
+        if cmd.startswith('mode'):
             try:
-                btstate = cmd[4:-2].strip()
-                subprocess.call(['/usr/bin/bluetoothctl', 'discoverable', btstate])
+                mode = cmd[4:-2].strip()
+                if mode == 'bluez':
+                    subprocess.call(['/usr/bin/bluetoothctl', 'discoverable', 'on'])
+                else:
+                    subprocess.call(['/usr/bin/bluetoothctl', 'discoverable', 'off'])
             except:
                 pass
 

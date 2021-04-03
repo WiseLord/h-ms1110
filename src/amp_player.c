@@ -528,8 +528,6 @@ static void actionGetTimers(void)
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_MPD_POWEROFF) == 0) {
         actionSet(ACTION_MPD_POWEROFF, 0);
-    } else if (swTimGet(SW_TIM_BLUETOOTH) == 0) {
-        actionSet(ACTION_BLUETOOTH, false);
     } else if (swTimGet(SW_TIM_SILENCE) == 0) {
         actionSet(ACTION_STANDBY, FLAG_ENTER);
     } else if (swTimGet(SW_TIM_RTC_INIT) == 0) {
@@ -669,7 +667,7 @@ static void actionRemapBtnLong(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
         break;
     case BTN_PLAYER_AUDIO:
-        actionSet(ACTION_BLUETOOTH, true);
+        actionSet(ACTION_BLUETOOTH, FLAG_SWITCH);
         break;
     case BTN_PLAYER_SUBTITLE:
         break;
@@ -1253,11 +1251,12 @@ void ampActionHandle(void)
 
     case ACTION_BLUETOOTH:
         if (amp->inType == IN_MPD) {
-            if (action.value) {
-                mpcSendMediaKey(MEDIAKEY_STOP);
+            mpcSendMediaKey(MEDIAKEY_STOP);
+            if (mpcGet()->status & MPC_BT_ON) {
+                mpcSetBluetooth(false);
+            } else {
+                mpcSetBluetooth(true);
             }
-            mpcSetBluetooth(action.value);
-            swTimSet(SW_TIM_BLUETOOTH, action.value ? 30000 : SW_TIM_OFF);
         }
         break;
 

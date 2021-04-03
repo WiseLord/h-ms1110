@@ -321,10 +321,10 @@ void USART_MPC_HANDLER(void)
 void mpcSetBluetooth(bool value)
 {
     if (value) {
-        mpcSendCmd("bt(\"on\")");
+        mpcSendCmd("mode(\"bluez\")");
         mpc.status |= MPC_BT_ON;
     } else {
-        mpcSendCmd("bt(\"off\")");
+        mpcSendCmd("mode(\"mpd\")");
         mpc.status &= ~MPC_BT_ON;
     }
     mpc.flags |= MPC_FLAG_UPDATE_STATUS;
