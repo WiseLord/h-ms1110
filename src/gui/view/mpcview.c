@@ -151,7 +151,7 @@ static void drawElapsed(MpcView *this, bool clear)
     time /= 24;
 
     char buf[16];
-    if (!(this->mpc->status & MPC_PLAYING)) {
+    if (!(this->mpc->status & MPC_PLAYING) || this->mpc->elapsed < 0) {
         snprintf(buf, sizeof(buf), "  \u2008 -:--");
     } else if (time > 0) {
         snprintf(buf, sizeof(buf), "%2d.%02d:%02d", time, hour, min);

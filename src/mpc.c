@@ -67,7 +67,8 @@ static void mpcSetMode(const char *str)
     } else if (!strcmp(buf, "MPD")) {
         mpc.status &= ~MPC_BT_ON;
     }
-    mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+    mpc.elapsed = -1;
+    mpc.flags |= (MPC_FLAG_UPDATE_STATUS | MPC_FLAG_UPDATE_ELAPSED);
 }
 
 static void parseSys(char *line)
