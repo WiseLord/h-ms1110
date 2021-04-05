@@ -65,4 +65,5 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_ALARM_DAY_ALL_DAYS]  = "все дни",
 
     [LABEL_MPD_WAIT]        = "Ожидание MPD...",
+    [LABEL_BT_WAIT]         = "Ожидание Bluetooth...",
 };

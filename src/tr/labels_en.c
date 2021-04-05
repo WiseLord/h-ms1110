@@ -69,6 +69,7 @@ const char *const labels_en[LABEL_END] = {
     [LABEL_ALARM_DAY_ALL_DAYS]  = "all days",
 
     [LABEL_MPD_WAIT]        = "Waiting for MPD...",
+    [LABEL_BT_WAIT]         = "Waiting for Bluetooth...",
 
     FOREACH_CMD(GENERATE_LABEL_STRING)
 };

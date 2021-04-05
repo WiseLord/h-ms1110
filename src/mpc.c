@@ -56,11 +56,28 @@ static void mpcReset(void)
     mpc.status = MPC_IDLE;
 }
 
+static void mpcSetMode(const char *str)
+{
+    char buf[8];
+    strncpy(buf, str, sizeof(buf));
+    utilTrimLineEnd(buf);
+
+    if (!strcmp(buf, "BLUEZ")) {
+        mpc.status |= MPC_BT_ON;
+    } else if (!strcmp(buf, "MPD")) {
+        mpc.status &= ~MPC_BT_ON;
+    }
+    mpc.flags |= MPC_FLAG_UPDATE_STATUS;
+}
+
 static void parseSys(char *line)
 {
     if (utilIsPrefix(line, "DATE#:")) {
         char *date = line + sizeof("DATE#:");
         ampUpdateDate(date);
+    } else if (utilIsPrefix(line, "MODE#:")) {
+        char *mode = line + sizeof("MODE#:");
+        mpcSetMode(mode);
     } else if (utilIsPrefix(line, "RESET")) {
         mpcReset();
     }
@@ -322,10 +339,8 @@ void mpcSetBluetooth(bool value)
 {
     if (value) {
         mpcSendCmd("mode(\"bluez\")");
-        mpc.status |= MPC_BT_ON;
     } else {
         mpcSendCmd("mode(\"mpd\")");
-        mpc.status &= ~MPC_BT_ON;
     }
     mpc.flags |= MPC_FLAG_UPDATE_STATUS;
 }

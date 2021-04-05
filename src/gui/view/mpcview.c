@@ -60,35 +60,34 @@ static void drawStatusIcons(MpcView *this, bool clear)
     IconImage iconStatus = {
         .rect = &rectIconStatus,
         .color = pal->fg,
-        .icon = (st & MPC_PAUSED) ? ICON_PAUSED : ((st & MPC_PLAYING) ? ICON_PLAYING :
-                                                   (st & MPC_BT_ON ? ICON_BT_STATUS : ICON_IDLE)),
+        .icon = (st & MPC_PAUSED) ? ICON_PAUSED : ((st & MPC_PLAYING) ? ICON_PLAYING :ICON_IDLE),
     };
     iconImageDraw(&iconStatus, clear);
 
     IconImage iconRepeat = {
         .rect = &rectIconRepeat,
-        .color = st & MPC_REPEAT ? pal->fg : pal->inactive,
+        .color = ((st & (MPC_REPEAT | MPC_BT_ON)) == MPC_REPEAT) ? pal->fg : pal->inactive,
         .icon = ICON_REPEAT,
     };
     iconImageDraw(&iconRepeat, clear);
 
     IconImage iconSingle = {
         .rect = &rectIconSingle,
-        .color = st & MPC_SINGLE ? pal->fg : pal->inactive,
+        .color = ((st & (MPC_SINGLE | MPC_BT_ON)) == MPC_SINGLE) ? pal->fg : pal->inactive,
         .icon = ICON_SINGLE,
     };
     iconImageDraw(&iconSingle, clear);
 
     IconImage iconRandom = {
         .rect = &rectIconRandom,
-        .color = st & MPC_RANDOM ? pal->fg : pal->inactive,
+        .color = ((st & (MPC_RANDOM | MPC_BT_ON)) == MPC_RANDOM) ? pal->fg : pal->inactive,
         .icon = ICON_RANDOM,
     };
     iconImageDraw(&iconRandom, clear);
 
     IconImage iconConsume = {
         .rect = &rectIconConsume,
-        .color = st & MPC_CONSUME ? pal->fg : pal->inactive,
+        .color = ((st & (MPC_CONSUME | MPC_BT_ON)) == MPC_CONSUME) ? pal->fg : pal->inactive,
         .icon = ICON_CONSUME,
     };
     iconImageDraw(&iconConsume, clear);
@@ -96,7 +95,7 @@ static void drawStatusIcons(MpcView *this, bool clear)
     IconImage iconMedia = {
         .rect = &rectIconMedia,
         .color = pal->fg,
-        .icon = (st & MPC_PLAYING) ? (duration ? ICON_FILE : ICON_STREAM) : ICON_IDLE,
+        .icon = (st & MPC_BT_ON) ? ICON_BT_STATUS : ((st & MPC_PLAYING) ? (duration ? ICON_FILE : ICON_STREAM) : ICON_FILE),
     };
     iconImageDraw(&iconMedia, clear);
 }
@@ -119,7 +118,11 @@ static void drawMeta(MpcView *this, bool clear)
     } else if (this->mpc->status & MPC_PLAYING) {
         this->scroll.text = this->mpc->meta;
     } else {
-        this->scroll.text = this->mpc->ip;
+        if (this->mpc->status & MPC_BT_ON) {
+            this->scroll.text = labelsGet(LABEL_BT_WAIT);
+        } else {
+            this->scroll.text = this->mpc->ip;
+        }
     }
 
     scrollTextDraw(&this->scroll, clear);
