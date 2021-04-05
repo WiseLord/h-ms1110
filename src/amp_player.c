@@ -667,7 +667,7 @@ static void actionRemapBtnLong(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_FFWD);
         break;
     case BTN_PLAYER_AUDIO:
-        actionSet(ACTION_BLUETOOTH, FLAG_SWITCH);
+        actionSet(ACTION_IN_MODE, FLAG_SWITCH);
         break;
     case BTN_PLAYER_SUBTITLE:
         break;
@@ -699,6 +699,9 @@ static void actionRemapRemote(void)
         break;
     case RC_CMD_IN_NEXT:
         actionSet(ACTION_AUDIO_SELECT_INPUT, +1);
+        break;
+    case RC_CMD_IN_MODE:
+        actionSet(ACTION_IN_MODE, FLAG_SWITCH);
         break;
     case RC_CMD_VOL_UP:
         amp->screen = SCREEN_TUNE;
@@ -1237,11 +1240,13 @@ void ampActionHandle(void)
     case ACTION_DIGIT:
         if (amp->inType == IN_MPD) {
             mpcLoadPlaylist((uint8_t)action.value);
+            actionDispExpired();
         }
         break;
 
     case ACTION_MEDIA:
         ampSendMediaKey((MediaKey)action.value);
+        actionDispExpired();
         break;
 
     case ACTION_MPD_POWEROFF:
@@ -1249,7 +1254,7 @@ void ampActionHandle(void)
         swTimSet(SW_TIM_MPD_POWEROFF, SW_TIM_OFF);
         break;
 
-    case ACTION_BLUETOOTH:
+    case ACTION_IN_MODE:
         if (amp->inType == IN_MPD) {
             mpcSendMediaKey(MEDIAKEY_STOP);
             if (mpcGet()->status & MPC_BT_ON) {

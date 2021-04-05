@@ -45,6 +45,7 @@ extern "C" {
     CMD(SP_MODE)            \
     CMD(SP_PEAKS)           \
     CMD(SP_DEMO)            \
+    CMD(IN_MODE)            \
 
 typedef uint8_t ActionType;
 enum {
@@ -96,7 +97,7 @@ enum {
     ACTION_MEDIA          = 110,
 
     ACTION_MPD_POWEROFF   = 120,
-    ACTION_BLUETOOTH,
+    ACTION_IN_MODE,
 
     ACTION_END
 };
