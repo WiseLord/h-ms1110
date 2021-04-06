@@ -67,6 +67,8 @@ static void mpcSetMode(const char *str)
     } else if (!strcmp(buf, "MPD")) {
         mpc.status &= ~MPC_BT_ON;
     }
+    updateMeta("");
+    mpc.status &= ~(MPC_PLAYING | MPC_PAUSED);
     mpc.elapsed = -1;
     mpc.flags |= (MPC_FLAG_UPDATE_STATUS | MPC_FLAG_UPDATE_ELAPSED);
 }
