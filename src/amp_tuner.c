@@ -452,6 +452,15 @@ static void actionRemapEncoder(int16_t encCnt)
     }
 }
 
+static void actionRemapCommon()
+{
+    if (amp->status == AMP_STATUS_STBY) {
+        if (action.type != ACTION_STANDBY) {
+            actionSet(ACTION_NONE, 0);
+        }
+    }
+}
+
 void ampActionRemap(void)
 {
     switch (action.type) {
@@ -465,6 +474,8 @@ void ampActionRemap(void)
         actionRemapEncoder(action.value);
         break;
     }
+
+    actionRemapCommon();
 }
 
 static void tunerSendMediaKey(MediaKey key)

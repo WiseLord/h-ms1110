@@ -338,6 +338,15 @@ static void actionRemapBtnLong(int16_t button)
     }
 }
 
+static void actionRemapCommon()
+{
+    if (amp->status == AMP_STATUS_STBY) {
+        if (action.type != ACTION_STANDBY) {
+            actionSet(ACTION_NONE, 0);
+        }
+    }
+}
+
 void ampActionRemap(void)
 {
     switch (action.type) {
@@ -348,6 +357,8 @@ void ampActionRemap(void)
         actionRemapBtnLong(action.value);
         break;
     }
+
+    actionRemapCommon();
 }
 
 static void spModeChange(int16_t value)
