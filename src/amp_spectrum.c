@@ -22,6 +22,8 @@ typedef struct {
     bool clearScreen;
     bool spSyncNeeded;
 
+    Action syncAction;
+
     uint8_t signalCnt;
 } AmpPriv;
 
@@ -39,10 +41,6 @@ static Amp *amp;
 static Action action = {
     .type = ACTION_NONE,
     .value = FLAG_ENTER,
-};
-
-static Action syncAction = {
-    .type = ACTION_NONE,
 };
 
 static Screen screen = {
@@ -432,7 +430,7 @@ void ampActionHandle(void)
         if (swTimGet(SW_TIM_SILENCE) == 0) {
             // Reset silence timer on signal
             if (spCheckSignal()) {
-                syncAction.type = ACTION_NO_SILENCE;
+                priv.syncAction.type = ACTION_NO_SILENCE;
                 swTimSet(SW_TIM_SILENCE, 1000);
             } else {
                 swTimSet(SW_TIM_SILENCE, 100);
@@ -464,9 +462,9 @@ static void ampSendToMaster(void)
         return;
     }
 
-    if (syncAction.type != SYNC_NONE) {
-        syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Action));
-        syncAction.type = SYNC_NONE;
+    if (priv.syncAction.type != SYNC_NONE) {
+        syncSlaveSend(SYNC_ACTION, &priv.syncAction, sizeof(Action));
+        priv.syncAction.type = SYNC_NONE;
         return;
     }
 

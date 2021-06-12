@@ -27,6 +27,8 @@ typedef struct {
     RdsParser rdsParser;
     ScreenType prevScreen;
     bool clearScreen;
+
+    Action syncAction;
 } AmpPriv;
 
 static void actionGetTimers(void);
@@ -45,10 +47,6 @@ static Amp *amp;
 static Action action = {
     .type = ACTION_NONE,
     .value = FLAG_ENTER,
-};
-
-static Action syncAction = {
-    .type = ACTION_NONE,
 };
 
 static Screen screen = {
@@ -516,7 +514,7 @@ void ampActionHandle(void)
         if (isTuner()) {
             tunerSendMediaKey((MediaKey)action.value);
         } else {
-            syncAction = action;
+            priv.syncAction = action;
         }
         break;
 
@@ -539,21 +537,21 @@ void ampActionHandle(void)
         break;
 
     case ACTION_SWITCH_BAND:
-        syncAction = action;
+        priv.syncAction = action;
         break;
 
     case ACTION_DIGIT:
         if (isTuner()) {
             stationFavZap(action.value);
         } else {
-            syncAction = action;
+            priv.syncAction = action;
         }
         break;
     case ACTION_DIGIT_HOLD:
         if (isTuner()) {
             stationFavStoreRemove(action.value);
         } else {
-            syncAction = action;
+            priv.syncAction = action;
         }
 
     default:
@@ -564,7 +562,7 @@ void ampActionHandle(void)
         if (swTimGet(SW_TIM_SILENCE) == 0) {
             // Reset silence timer on signal
             if (spCheckSignal()) {
-                syncAction.type = ACTION_NO_SILENCE;
+                priv.syncAction.type = ACTION_NO_SILENCE;
                 swTimSet(SW_TIM_SILENCE, 1000);
             } else {
                 swTimSet(SW_TIM_SILENCE, 100);
@@ -600,9 +598,9 @@ static void ampSendToMaster(void)
     TunerSync *sync = tunerSyncGet();
     int8_t stNum = stationGetNum(tuner->status.freq);
 
-    if (syncAction.type != SYNC_NONE) {
-        syncSlaveSend(SYNC_ACTION, &syncAction, sizeof(Action));
-        syncAction.type = SYNC_NONE;
+    if (priv.syncAction.type != SYNC_NONE) {
+        syncSlaveSend(SYNC_ACTION, &priv.syncAction, sizeof(Action));
+        priv.syncAction.type = SYNC_NONE;
         return;
     }
 
