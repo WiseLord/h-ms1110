@@ -47,7 +47,6 @@ typedef struct {
 
     ScreenType prevScreen;
 
-    uint8_t inputStatus;
     int8_t volume;
     uint8_t silenceTimer;
 
@@ -173,7 +172,12 @@ static void actionResetSilenceTimer(void)
 
 static void inputDisable(void)
 {
-    // TODO: Power off current input device
+    InputType inType = amp->inType;
+
+    switch (inType) {
+    case IN_MPD:
+        mpcSendMediaKey(MEDIAKEY_STOP);
+    }
 }
 
 static void inputEnable(void)
@@ -185,11 +189,10 @@ static void inputEnable(void)
         priv.syncFlags |= SYNC_FLAG_REQUEST;
         break;
     case IN_MPD:
+        mpcSendMediaKey(MEDIAKEY_PLAY);
         mpcSyncRequest();
         break;
     }
-
-    // TODO: Power on current input device
 }
 
 static void inputSetPower(bool value)
@@ -197,17 +200,21 @@ static void inputSetPower(bool value)
     AudioProc *aProc = audioGet();
     int8_t input = aProc->par.input;
 
-    if (value) {
-        priv.inputStatus = (uint8_t)(1 << input);
-    } else {
-        priv.inputStatus = 0x00;
-    }
-
     for (uint8_t i = 0; i < inMap.mapSize; i++) {
         if (inPairs[i].input == input) {
             amp->inType = inPairs[i].type;
             priv.inIdx = i;
             break;
+        }
+    }
+
+    if (amp->inType == IN_MPD) {
+        if (value) {
+            swTimSet(SW_TIM_MPD_POWEROFF, SW_TIM_OFF);
+            SET(PWR_MPD);
+        } else {
+            swTimSet(SW_TIM_MPD_POWEROFF, 20000); // Turn off MPD after 60 seconds
+            CLR(PWR_MPD);
         }
     }
 }
@@ -265,8 +272,6 @@ static void ampVolumeInit(void)
 
 void ampExitStby(void)
 {
-    swTimSet(SW_TIM_MPD_POWEROFF, SW_TIM_OFF);
-
     ampSetBrightness(AMP_BR_ACTIVE);
 
     ampReadSettings();
@@ -282,7 +287,6 @@ void ampExitStby(void)
 
 void ampEnterStby(void)
 {
-    swTimSet(SW_TIM_MPD_POWEROFF, 20000); // Turn off MPD after 60 seconds
     mpcSendMediaKey(MEDIAKEY_STOP);
 
     ampSetBrightness(AMP_BR_STBY);
@@ -886,6 +890,18 @@ static void ampInitMuteStby(void)
     ampPinStby(true);
 }
 
+static void ampInitInControl(void)
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+
+    GPIO_InitStruct.Pin = PWR_MPD_Pin;
+    LL_GPIO_Init(PWR_MPD_Port, &GPIO_InitStruct);
+}
+
 void ampInit(void)
 {
     amp = ampGet();
@@ -894,6 +910,7 @@ void ampInit(void)
     utilInitSysCounter();
 
     ampInitMuteStby();
+    ampInitInControl();
 
     rtcInitAlarms();
 

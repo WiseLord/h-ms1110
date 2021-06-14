@@ -24,6 +24,10 @@ extern "C" {
 #define MUTE_Port               GPIOB
 #define MUTE_Pin                LL_GPIO_PIN_1
 
+// Input power control pins
+#define PWR_MPD_Port            GPIOA
+#define PWR_MPD_Pin             LL_GPIO_PIN_5
+
 // Player matrix buttons
 #define BTN_PLAYER_OPEN         0x0001
 #define BTN_PLAYER_PLAYPAUSE    0x0002
