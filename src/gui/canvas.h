@@ -32,6 +32,7 @@ void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
 void canvasShowStars(bool clear, int16_t offset);
 
 void canvasShowDateTime(bool clear, DateTimeMode mode);
+void canvasShowInputCommon(bool clear, InputType inType);
 
 void canvasShowInputSpectrum(bool clear);
 void canvasShowInputTuner(bool clear);

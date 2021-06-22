@@ -137,6 +137,34 @@ void canvasShowDateTime(bool clear, DateTimeMode mode)
     dateTimeViewDraw(&view, clear);
 }
 
+void canvasShowInputCommon(bool clear, InputType inType)
+{
+    Icon icon = ICON_TUNER + (inType - IN_TUNER);
+
+    const tImage *img = iconFind(icon, &icons_hms1110);
+    const Palette *pal = paletteGet();
+
+    glcdSetXY(0, 0);
+    glcdDrawImage(img, pal->fg, pal->bg);
+
+    static DateTimeView view;
+
+    RTC_type rtc;
+    rtcGetTime(&rtc);
+
+    view.hour = rtc.hour;
+    view.min = rtc.min;
+    view.sec = rtc.sec;
+    view.month = rtc.month;
+    view.year = rtc.year;
+    view.date = rtc.date;
+    view.wday = rtc.wday;
+
+    view.mode = DT_MODE_TIME_R;
+
+    dateTimeViewDraw(&view, clear);
+}
+
 void canvasShowInputSpectrum(bool clear)
 {
 #if !defined(_MODULE_PLAYER)
@@ -215,7 +243,7 @@ void canvasShowInput(bool clear, InputType inType)
         canvasShowInputTuner(clear);
         break;
     default:
-        canvasShowDateTime(clear, DT_MODE_TIME);
+        canvasShowInputCommon(clear, inType);
         break;
     }
 }

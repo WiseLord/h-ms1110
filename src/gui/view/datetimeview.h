@@ -10,11 +10,13 @@ extern "C" {
 
 #include "gui/icons.h"
 
-typedef int8_t DateTimeMode;
+typedef uint8_t DateTimeMode;
 enum {
     DT_MODE_TIME    = 0x01,
     DT_MODE_DATE    = 0x02,
     DT_MODE_WDAY    = 0x04,
+
+    DT_MODE_TIME_R  = 0x80,
 };
 
 typedef struct {
