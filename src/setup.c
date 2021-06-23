@@ -46,6 +46,9 @@ void setupSelect(SetupType type)
     case SETUP_DATE:
         child = RTC_DATE;
         break;
+    case SETUP_TIMECORR:
+        child = 0;
+        break;
     case SETUP_ALARM:
         child = ALARM_DAYS;
         break;
@@ -77,6 +80,10 @@ void setupSwitchChild(int8_t direction)
     case SETUP_DATE:
         first = RTC_HOUR;
         last = RTC_YEAR;
+        break;
+    case SETUP_TIMECORR:
+        first = 0;
+        last = 0;
         break;
     case SETUP_ALARM:
         first = ALARM_HOUR;
@@ -112,6 +119,10 @@ void setupChangeChild(int8_t direction)
     case SETUP_DATE:
         rtcChangeTime(setup.child, direction);
         break;
+    case SETUP_TIMECORR:
+        rtcSetCorrection(rtcGetCorrection() + direction);
+        settingsStore(PARAM_SYSTEM_RTC_CORR, rtcGetCorrection());
+        break;
     case SETUP_ALARM:
         rtcChangeAlarm(setup.child, direction);
         Alarm *alarm = rtcGetAlarm(0);
@@ -145,14 +156,15 @@ void setupBack()
     switch (active) {
     case SETUP_TIME:
     case SETUP_DATE:
+    case SETUP_TIMECORR:
     case SETUP_ALARM:
     case SETUP_REMOTE:
-        active = SETUP_MAIN;
         child = active;
+        active = SETUP_MAIN;
         break;
     default:
-        active = SETUP_NULL;
         child = SETUP_NULL;
+        active = SETUP_NULL;
         break;
     }
 

@@ -57,6 +57,7 @@ const char *const labels_ru[LABEL_END] = {
     [LABEL_SETUP_MAIN]      = "Настройки",
     [LABEL_SETUP_TIME]      = "Время",
     [LABEL_SETUP_DATE]      = "Дата",
+    [LABEL_SETUP_TIMECORR]  = "Коррекция времени",
     [LABEL_SETUP_ALARM]     = "Будильник",
     [LABEL_SETUP_REMOTE]    = "Пульт ДУ",
 

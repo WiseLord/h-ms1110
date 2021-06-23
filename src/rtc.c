@@ -265,6 +265,13 @@ int16_t rtcGetCorrection()
 
 void rtcSetCorrection(int16_t value)
 {
+    if (value > 64) {
+        value = 64;
+    }
+    if (value < -63) {
+        value = -63;
+    }
+
     rtcCorr = value;
 
 #ifdef STM32F1

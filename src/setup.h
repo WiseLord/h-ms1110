@@ -15,6 +15,7 @@ enum {
 
     SETUP_TIME,
     SETUP_DATE,
+    SETUP_TIMECORR,
     SETUP_ALARM,
     SETUP_REMOTE,
 
@@ -28,7 +29,7 @@ enum {
     SETUP_FLAG_NONE             = 0x00,
 
     SETUP_FLAG_ACTIVE_CHANGED   = 0x01,
-    SETUP_FLAG_CHILD_CHANGED   = 0x02,
+    SETUP_FLAG_CHILD_CHANGED    = 0x02,
 };
 
 typedef struct {

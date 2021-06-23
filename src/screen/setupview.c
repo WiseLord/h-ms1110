@@ -22,6 +22,9 @@ const char *getHeadLabel(SetupType type)
     case SETUP_DATE:
         label = LABEL_SETUP_DATE;
         break;
+    case SETUP_TIMECORR:
+        label = LABEL_SETUP_TIMECORR;
+        break;
     case SETUP_ALARM:
         label = LABEL_SETUP_ALARM;
         break;
@@ -38,7 +41,7 @@ static void drawHead(SetupView *this, bool clear)
 {
     Setup *setup = this->setup;
 
-    if (this->setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
+    if (setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
         clear = true;
     }
 
@@ -56,11 +59,11 @@ static void drawHead(SetupView *this, bool clear)
     }
 }
 
-static void drawActive(SetupView *this, bool clear)
+static void drawActive(SetupView *this, bool clear, const char *valStr)
 {
     Setup *setup = this->setup;
 
-    if (this->setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
+    if (setup->flags & SETUP_FLAG_ACTIVE_CHANGED) {
         clear = true;
     }
 
@@ -75,7 +78,7 @@ static void drawActive(SetupView *this, bool clear)
 
         glcdSetXY(rect.w / 2, 18);
         glcdSetFontAlign(GLCD_ALIGN_CENTER);
-        glcdWriteString(getHeadLabel(setup->child));
+        glcdWriteString(valStr);
     }
 }
 
@@ -271,15 +274,23 @@ static void drawChild(SetupView *this, bool clear)
         glcdDrawRect(marginX, 18, rect.w - marginX * 2, 22, pal->bg);
     }
 
+    char buf[16];
+    int value = 0;
+
     switch (setup->active) {
     case SETUP_MAIN:
-        drawActive(this, clear);
+        drawActive(this, clear, getHeadLabel(setup->child));
         break;
     case SETUP_TIME:
         drawTime(this, clear);
         break;
     case SETUP_DATE:
         drawDate(this, clear);
+        break;
+    case SETUP_TIMECORR:
+        value = rtcGetCorrection();
+        snprintf(buf, sizeof(buf), "%s%d", value > 0 ? "+" : "", value);
+        drawActive(this, true, buf);
         break;
     case SETUP_ALARM:
         drawAlarm(this, clear);
