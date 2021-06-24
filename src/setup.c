@@ -27,6 +27,23 @@ static void updateChild(SetupType value)
     }
 }
 
+static void updateSettings(SetupType type)
+{
+    switch (type) {
+    case SETUP_TIMECORR: {
+        int16_t corr = rtcGetCorrection();
+        settingsStore(PARAM_SYSTEM_RTC_CORR, corr);
+    }
+    break;
+    case SETUP_ALARM: {
+        Alarm *alarm = rtcGetAlarm(0);
+        settingsStore(PARAM_ALARM_HOUR, alarm->hour);
+        settingsStore(PARAM_ALARM_MINUTE, alarm->min);
+        settingsStore(PARAM_ALARM_DAYS, alarm->days);
+    }
+    break;
+    }
+}
 
 void setupSelect(SetupType type)
 {
@@ -121,22 +138,9 @@ void setupChangeChild(int8_t direction)
         break;
     case SETUP_TIMECORR:
         rtcSetCorrection(rtcGetCorrection() + direction);
-        settingsStore(PARAM_SYSTEM_RTC_CORR, rtcGetCorrection());
         break;
     case SETUP_ALARM:
         rtcChangeAlarm(setup.child, direction);
-        Alarm *alarm = rtcGetAlarm(0);
-        switch (setup.child) {
-        case ALARM_HOUR:
-            settingsStore(PARAM_ALARM_HOUR, alarm->hour);
-            break;
-        case ALARM_MIN:
-            settingsStore(PARAM_ALARM_MINUTE, alarm->min);
-            break;
-        case ALARM_DAYS:
-            settingsStore(PARAM_ALARM_DAYS, alarm->days);
-            break;
-        }
         break;
     case SETUP_REMOTE:
         if (setup.child >= RC_CMD_STBY_SWITCH && setup.child < RC_CMD_END) {
@@ -160,6 +164,7 @@ void setupBack()
     case SETUP_ALARM:
     case SETUP_REMOTE:
         child = active;
+        updateSettings(active);
         active = SETUP_MAIN;
         break;
     default:
