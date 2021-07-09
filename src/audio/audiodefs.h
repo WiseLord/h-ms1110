@@ -125,6 +125,7 @@ typedef struct {
 
 typedef struct {
     void (*init)(AudioParam *param);
+    int8_t (*getInCnt)(void);
 
     void (*setTune)(AudioTune tune, int8_t value);
     void (*setInput)(int8_t value);

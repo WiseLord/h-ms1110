@@ -7,6 +7,8 @@
 // I2C address
 #define TDA7719_I2C_ADDR            0x88
 
+#define TDA7719_IN_CNT              6
+
 // Subaddress
 #define TDA7719_TEST_MODE           0x80
 #define TDA7719_AUTOINC             0x20
@@ -238,6 +240,7 @@ static AudioParam *aPar;
 
 static const AudioApi tda7719Api = {
     .init = tda7719Init,
+    .getInCnt = tda7719GetInCnt,
 
     .setTune = tda7719SetTune,
     .setInput = tda7719SetInput,
@@ -337,6 +340,11 @@ void tda7719Init(AudioParam *param)
     i2cSend(I2C_AMP, TDA7719_SP_ATT_MASK);
 
     i2cTransmit(I2C_AMP);
+}
+
+int8_t tda7719GetInCnt(void)
+{
+    return TDA7719_IN_CNT;
 }
 
 static void tda7719SetTrebleFilter(void)
