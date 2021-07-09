@@ -52,6 +52,7 @@ void audioReadSettings(AudioIC ic)
     aProc.par.input = settingsRead(PARAM_AUDIO_INPUT, 0);
     aProc.par.flags = settingsRead(PARAM_AUDIO_FLAGS, 0);
     aProc.par.mode = settingsRead(PARAM_AUDIO_MODE, AUDIO_MODE_2_0);
+    aProc.par.inCfg = settingsRead(PARAM_AUDIO_IN_CFG, 2);
 
     for (Param par = PARAM_AUDIO_GAIN0; par <= PARAM_AUDIO_GAIN7; par++) {
         aProc.par.gain[par - PARAM_AUDIO_GAIN0] = settingsRead(par, 0);

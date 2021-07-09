@@ -12,6 +12,7 @@ static const uint8_t eeMap[] = {
     [PARAM_AUDIO_INPUT]          = 0x02,
     [PARAM_AUDIO_FLAGS]          = 0x03,
     [PARAM_AUDIO_MODE]           = 0x04,
+    [PARAM_AUDIO_IN_CFG]         = 0x05,
 
     [PARAM_AUDIO_BASS_FREQ]      = 0x08,
     [PARAM_AUDIO_BASS_QUAL]      = 0x09,
