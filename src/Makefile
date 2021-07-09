@@ -34,6 +34,8 @@ ifeq "$(MODULE)" "PLAYER"
 
   C_DEFS += -D_INPUT_ANALOG
   C_DEFS += -D_GLCD_OFT_Y=24
+
+  C_DEFS += -DAUDIO_IN_CFG_DEFAULT=5
 endif
 
 ifeq "$(MODULE)" "TUNER"

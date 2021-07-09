@@ -86,10 +86,10 @@ static Amp *amp;
 
 static const InputPair inPairs[] = {
     {0, IN_TUNER},
-    {1, IN_MPD},
-    {2, IN_SPDIF},
-    {4, IN_AUX1},
-    {5, IN_AUX2},
+    {2, IN_MPD},
+    {1, IN_SPDIF},
+    {3, IN_AUX1},
+    {4, IN_AUX2},
 };
 
 static const InputMap inMap = {
