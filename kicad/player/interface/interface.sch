@@ -443,23 +443,14 @@ F 3 "" H 5250 2000 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5750 1400 5750 1600
-Wire Wire Line
 	5250 2000 5250 1600
 Wire Wire Line
 	5450 1600 5250 1600
-Connection ~ 5450 1600
 Wire Wire Line
 	5450 1600 5450 1400
 Connection ~ 5250 1600
 Wire Wire Line
 	5250 1600 5250 1400
-Wire Wire Line
-	5450 1600 5750 1600
-Text Label 5550 2000 1    50   ~ 0
-QD_L
-Text Label 5650 2000 1    50   ~ 0
-QD_R
 Text Label 5850 2000 1    50   ~ 0
 TUN_L
 Text Label 5950 2000 1    50   ~ 0
@@ -468,32 +459,24 @@ Wire Wire Line
 	5250 1600 4450 1600
 Wire Wire Line
 	4450 1600 4450 1400
-Text Label 6200 3500 0    50   ~ 0
-TUN_L
-Text Label 6200 3600 0    50   ~ 0
-TUN_R
-Text Label 6200 3950 0    50   ~ 0
+Text Label 5250 3750 0    50   ~ 0
 DIG_L
-Text Label 6200 4050 0    50   ~ 0
+Text Label 5250 3950 0    50   ~ 0
 DIG_R
-Text Label 6200 4550 0    50   ~ 0
+Text Label 5250 4550 0    50   ~ 0
 AUX1_L
-Text Label 6200 4650 0    50   ~ 0
+Text Label 5250 4650 0    50   ~ 0
 AUX1_R
-Text Label 6200 4750 0    50   ~ 0
+Text Label 5250 4750 0    50   ~ 0
 AUX2_L
-Text Label 6200 4850 0    50   ~ 0
+Text Label 5250 4850 0    50   ~ 0
 AUX2_R
-Text Label 6200 4200 0    50   ~ 0
+Text Label 5250 4200 0    50   ~ 0
 QD_L
-Text Label 6200 4300 0    50   ~ 0
+Text Label 5250 4300 0    50   ~ 0
 QD_G
-Text Label 6200 4400 0    50   ~ 0
+Text Label 5250 4400 0    50   ~ 0
 QD_R
-Text Label 6200 3700 0    50   ~ 0
-RPI_L
-Text Label 6200 3850 0    50   ~ 0
-RPI_R
 $Comp
 L Device:CP_Small C5
 U 1 1 5E7FE5FC
@@ -735,13 +718,11 @@ Wire Wire Line
 Wire Wire Line
 	5850 3500 6600 3500
 Wire Wire Line
-	5850 1400 5850 3500
+	5850 1400 5850 2450
 Wire Wire Line
-	5950 1400 5950 3600
+	5950 1400 5950 2700
 Wire Wire Line
 	5950 3600 6600 3600
-Wire Wire Line
-	5350 3950 6600 3950
 Wire Wire Line
 	8450 4550 9150 4550
 Wire Wire Line
@@ -1046,77 +1027,16 @@ Wire Wire Line
 $Comp
 L Connector_Generic:Conn_01x03 J13
 U 1 1 5FE04C52
-P 5000 3450
-F 0 "J13" H 5000 3650 50  0000 C CNN
-F 1 "RPI_SND" V 5100 3450 50  0000 C CNN
-F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 3450 50  0001 C CNN
-F 3 "~" H 5000 3450 50  0001 C CNN
-	1    5000 3450
+P 5000 4300
+F 0 "J13" H 5000 4500 50  0000 C CNN
+F 1 "RPI_SND" V 5100 4300 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 4300 50  0001 C CNN
+F 3 "~" H 5000 4300 50  0001 C CNN
+	1    5000 4300
 	-1   0    0    -1  
 $EndComp
-Wire Wire Line
-	5200 3350 5750 3350
-Wire Wire Line
-	5750 3350 5750 3700
-Wire Wire Line
-	5750 3700 6600 3700
-Wire Wire Line
-	5450 3550 5200 3550
-Wire Wire Line
-	5450 3550 5450 3850
-Wire Wire Line
-	5450 3850 6600 3850
-Wire Wire Line
-	5200 3850 5350 3850
-Wire Wire Line
-	5350 3850 5350 3950
-Wire Wire Line
-	5200 4050 6600 4050
-$Comp
-L power:GNDA #PWR010
-U 1 1 5FE5006A
-P 5250 4100
-F 0 "#PWR010" H 5250 3850 50  0001 C CNN
-F 1 "GNDA" H 5255 3927 50  0000 C CNN
-F 2 "" H 5250 4100 50  0001 C CNN
-F 3 "" H 5250 4100 50  0001 C CNN
-	1    5250 4100
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5250 4100 5250 3950
-Wire Wire Line
-	5250 3950 5200 3950
-Wire Wire Line
-	5250 3950 5250 3450
-Wire Wire Line
-	5250 3450 5200 3450
-Connection ~ 5250 3950
 Wire Wire Line
 	4150 1400 4150 3550
-$Comp
-L Connector_Generic:Conn_01x03 J14
-U 1 1 5FE065A4
-P 5000 3950
-F 0 "J14" H 5000 4150 50  0000 C CNN
-F 1 "SPDIF" V 5100 3950 50  0000 C CNN
-F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 3950 50  0001 C CNN
-F 3 "~" H 5000 3950 50  0001 C CNN
-	1    5000 3950
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	5550 1400 5550 4200
-Wire Wire Line
-	5550 4200 6600 4200
-Wire Wire Line
-	5650 1400 5650 4400
-Wire Wire Line
-	5650 4400 6600 4400
-Wire Wire Line
-	4750 4300 6600 4300
-Wire Wire Line
-	4750 1400 4750 4300
 Wire Wire Line
 	10750 2600 10450 2600
 Wire Wire Line
@@ -1154,13 +1074,13 @@ AUX2_L
 Text Label 10100 2950 0    50   ~ 0
 AUX2_R
 Wire Wire Line
-	6150 4550 6600 4550
+	5200 4550 5800 4550
 Wire Wire Line
-	6150 4650 6600 4650
+	5200 4650 6150 4650
 Wire Wire Line
-	6150 4750 6600 4750
+	5200 4750 5800 4750
 Wire Wire Line
-	6150 4850 6600 4850
+	5200 4850 6150 4850
 $Comp
 L h-ms1110:XL4015_module U2
 U 1 1 603F3A9B
@@ -1572,4 +1492,215 @@ NoConn ~ 1100 6900
 NoConn ~ 1100 6800
 NoConn ~ 1100 6700
 NoConn ~ 1100 6600
+NoConn ~ 4750 1400
+NoConn ~ 5550 1400
+NoConn ~ 5650 1400
+Wire Wire Line
+	5200 4300 5800 4300
+$Comp
+L Connector_Generic:Conn_01x03 J14
+U 1 1 5FE065A4
+P 5000 3850
+F 0 "J14" H 5000 4050 50  0000 C CNN
+F 1 "SPDIF" V 5100 3850 50  0000 C CNN
+F 2 "Connector_JST:JST_EH_B3B-EH-A_1x03_P2.50mm_Vertical" H 5000 3850 50  0001 C CNN
+F 3 "~" H 5000 3850 50  0001 C CNN
+	1    5000 3850
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5200 4200 6150 4200
+Wire Wire Line
+	5200 4400 6150 4400
+Wire Wire Line
+	5200 3950 5550 3950
+Wire Wire Line
+	5550 3950 5550 4050
+Wire Wire Line
+	5550 4050 5800 4050
+Wire Wire Line
+	5200 3850 5800 3850
+Wire Wire Line
+	6600 3950 6350 3950
+Wire Wire Line
+	5650 3950 5650 3750
+Wire Wire Line
+	5650 3750 5200 3750
+Wire Wire Line
+	5750 3700 6600 3700
+$Comp
+L Device:C_Small C?
+U 1 1 60FB1962
+P 5950 2800
+F 0 "C?" H 6042 2846 50  0000 L CNN
+F 1 "0.47" H 6042 2755 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5950 2800 50  0001 C CNN
+F 3 "~" H 5950 2800 50  0001 C CNN
+	1    5950 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5950 2900 5950 3600
+$Comp
+L Device:C_Small C?
+U 1 1 60FB23CA
+P 5850 2550
+F 0 "C?" H 5950 2600 50  0000 L CNN
+F 1 "0.47" H 5950 2500 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5850 2550 50  0001 C CNN
+F 3 "~" H 5850 2550 50  0001 C CNN
+	1    5850 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5850 2650 5850 3500
+Wire Wire Line
+	5750 1400 5750 2700
+$Comp
+L Device:C_Small C?
+U 1 1 60FD4B8D
+P 5750 2800
+F 0 "C?" H 5842 2846 50  0000 L CNN
+F 1 "0.47" H 5842 2755 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5750 2800 50  0001 C CNN
+F 3 "~" H 5750 2800 50  0001 C CNN
+	1    5750 2800
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 2900 5750 3700
+$Comp
+L Device:C_Small C?
+U 1 1 60FE610E
+P 5900 3850
+F 0 "C?" V 5950 3900 50  0000 L CNN
+F 1 "0.47" V 5850 3900 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5900 3850 50  0001 C CNN
+F 3 "~" H 5900 3850 50  0001 C CNN
+	1    5900 3850
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6000 3850 6600 3850
+$Comp
+L Device:C_Small C?
+U 1 1 60FE6E3A
+P 6250 3950
+F 0 "C?" V 6300 4000 50  0000 L CNN
+F 1 "0.47" V 6200 4000 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 6250 3950 50  0001 C CNN
+F 3 "~" H 6250 3950 50  0001 C CNN
+	1    6250 3950
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6150 3950 5650 3950
+$Comp
+L Device:C_Small C?
+U 1 1 60FE7228
+P 5900 4050
+F 0 "C?" V 5950 4100 50  0000 L CNN
+F 1 "0.47" V 5850 4100 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5900 4050 50  0001 C CNN
+F 3 "~" H 5900 4050 50  0001 C CNN
+	1    5900 4050
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6000 4050 6600 4050
+$Comp
+L Device:C_Small C?
+U 1 1 60FE749F
+P 6250 4200
+F 0 "C?" V 6300 4250 50  0000 L CNN
+F 1 "0.47" V 6200 4250 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 6250 4200 50  0001 C CNN
+F 3 "~" H 6250 4200 50  0001 C CNN
+	1    6250 4200
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6350 4200 6600 4200
+$Comp
+L Device:C_Small C?
+U 1 1 60FE7C7D
+P 5900 4300
+F 0 "C?" V 5950 4350 50  0000 L CNN
+F 1 "0.47" V 5850 4350 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5900 4300 50  0001 C CNN
+F 3 "~" H 5900 4300 50  0001 C CNN
+	1    5900 4300
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6000 4300 6600 4300
+$Comp
+L Device:C_Small C?
+U 1 1 60FE7F73
+P 6250 4400
+F 0 "C?" V 6300 4450 50  0000 L CNN
+F 1 "0.47" V 6200 4450 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 6250 4400 50  0001 C CNN
+F 3 "~" H 6250 4400 50  0001 C CNN
+	1    6250 4400
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6350 4400 6600 4400
+$Comp
+L Device:C_Small C?
+U 1 1 61076558
+P 5900 4550
+F 0 "C?" V 5950 4600 50  0000 L CNN
+F 1 "0.47" V 5850 4600 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5900 4550 50  0001 C CNN
+F 3 "~" H 5900 4550 50  0001 C CNN
+	1    5900 4550
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6000 4550 6600 4550
+$Comp
+L Device:C_Small C?
+U 1 1 61076769
+P 6250 4650
+F 0 "C?" V 6300 4700 50  0000 L CNN
+F 1 "0.47" V 6200 4700 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 6250 4650 50  0001 C CNN
+F 3 "~" H 6250 4650 50  0001 C CNN
+	1    6250 4650
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6350 4650 6600 4650
+$Comp
+L Device:C_Small C?
+U 1 1 61076B9B
+P 5900 4750
+F 0 "C?" V 5950 4800 50  0000 L CNN
+F 1 "0.47" V 5850 4800 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 5900 4750 50  0001 C CNN
+F 3 "~" H 5900 4750 50  0001 C CNN
+	1    5900 4750
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6000 4750 6600 4750
+$Comp
+L Device:C_Small C?
+U 1 1 610770B3
+P 6250 4850
+F 0 "C?" V 6300 4900 50  0000 L CNN
+F 1 "0.47" V 6200 4900 50  0000 L CNN
+F 2 "Capacitor_THT:C_Rect_L7.0mm_W3.5mm_P5.00mm" H 6250 4850 50  0001 C CNN
+F 3 "~" H 6250 4850 50  0001 C CNN
+	1    6250 4850
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	6350 4850 6600 4850
+Text Label 5250 3850 0    50   ~ 0
+DIG_G
+Text Label 5750 2000 1    50   ~ 0
+TUN_G
 $EndSCHEMATC
