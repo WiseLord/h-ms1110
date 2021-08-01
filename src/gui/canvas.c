@@ -114,7 +114,7 @@ void canvasShowInputCommon(bool clear, InputType inType)
     const tImage *img = iconFind(icon, &icons_hms1110);
     const Palette *pal = paletteGet();
 
-    glcdSetXY(0, 0);
+    glcdSetXY(108, 0);
     glcdDrawImage(img, pal->fg, pal->bg);
 
     static DateTimeView view;
@@ -129,8 +129,6 @@ void canvasShowInputCommon(bool clear, InputType inType)
     view.year = rtc.year;
     view.date = rtc.date;
     view.wday = rtc.wday;
-
-    view.mode = DT_MODE_TIME_R;
 
     dateTimeViewDraw(&view, clear);
 }
