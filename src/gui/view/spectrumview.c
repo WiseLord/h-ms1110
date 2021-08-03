@@ -122,16 +122,18 @@ static void calcSpCol(int16_t chan, int16_t scale, uint8_t col, SpectrumColumn *
     }
 }
 
-void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect)
+void spViewDraw(SpView *this, bool clear, GlcdRect *rect)
 {
     if (clear) {
         memset(&spDrawData, 0, sizeof (SpDrawData));
         memset(spData, 0, sizeof (SpData) * SP_CHAN_END);
     }
 
-    if (check && !checkSpectrumReady()) {
+    if (this->check && !checkSpectrumReady()) {
         return;
     }
+
+    SpChan chan = this->chan;
 
     if (chan == SP_CHAN_LEFT || chan == SP_CHAN_BOTH) {
         spGetADC(SP_CHAN_LEFT, spData[SP_CHAN_LEFT].raw, SPECTRUM_SIZE, fftGet43);
@@ -157,11 +159,11 @@ void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, Gl
 
         SpectrumColumn spCol;
         calcSpCol(chan, rect->h, col, &spCol);
-        if (!peaks) {
+        if (!this->peaks) {
             spCol.peakW = 0;
         }
         GlcdRect colRect = {x, 0, width, rect->h};
-        spectrumColumnDraw(&spCol, clear, &colRect, mirror, grad);
+        spectrumColumnDraw(&spCol, clear, &colRect, this->mirror, grad);
     }
 
     glcdResetRect();

@@ -28,7 +28,7 @@ Canvas *canvasGet(void);
 
 void canvasClear(void);
 
-void canvasShowSpectrum(bool clear, SpMode mode, bool peaks);
+void canvasShowSpectrum(bool clear);
 void canvasShowStars(bool clear, int16_t offset);
 
 void canvasShowDateTime(bool clear, DateTimeMode mode);

@@ -55,54 +55,24 @@ void canvasClear(void)
     glcdSetFontBgColor(pal->bg);
 }
 
-void canvasShowSpectrum(bool clear, SpMode mode, bool peaks)
+void canvasShowSpectrum(bool clear)
 {
+    static SpView spView;
+    Spectrum *sp = spGet();
+
+#if defined(_MODULE_SPECTRUM)
+    spView.chan = SP_CHAN_RIGHT;
+    spView.mirror = (sp->mode == SP_MODE_STEREO || sp->mode == SP_MODE_MIRROR);
+#else
+    spView.chan = SP_CHAN_LEFT;
+    spView.mirror = (sp->mode == SP_MODE_MIRROR || sp->mode == SP_MODE_INVERTED);
+#endif
+
+    spView.check = true;
+    spView.peaks = ((sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
+
     GlcdRect rect = glcdGet()->rect;
-
-    switch (mode) {
-    case SP_MODE_LEFT:
-        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
-        break;
-    case SP_MODE_RIGHT:
-        spViewDraw(clear, true, false, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-    case SP_MODE_LEFT_MIRROR:
-        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
-        break;
-    case SP_MODE_RIGHT_MIRROR:
-        spViewDraw(clear, true, true, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-
-    case SP_MODE_STEREO:
-        rect.h = rect.h / 2;
-        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
-        rect.y += rect.h;
-        spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-    case SP_MODE_MIRROR:
-        rect.h = rect.h / 2;
-        spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rect);
-        rect.y += rect.h;
-        spViewDraw(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-    case SP_MODE_INVERTED:
-        rect.h = rect.h / 2;
-        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
-        rect.y += rect.h;
-        spViewDraw(clear, false, true, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-    case SP_MODE_ANTIMIRROR:
-        rect.h = rect.h / 2;
-        spViewDraw(clear, true, true, peaks, SP_CHAN_LEFT, &rect);
-        rect.y += rect.h;
-        spViewDraw(clear, false, false, peaks, SP_CHAN_RIGHT, &rect);
-        break;
-    case SP_MODE_MIXED:
-        spViewDraw(clear, true, false, peaks, SP_CHAN_BOTH, &rect);
-        break;
-    default:
-        break;
-    }
+    spViewDraw(&spView, clear, &rect);
 }
 
 void canvasShowStars(bool clear, int16_t offset)
@@ -167,15 +137,23 @@ void canvasShowInputCommon(bool clear, InputType inType)
 
 void canvasShowInputSpectrum(bool clear)
 {
+    (void)clear;
 #if !defined(_MODULE_PLAYER)
+    static SpView spView;
     Spectrum *sp = spGet();
-
-    bool peaks = ((sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
 
     GlcdRect rectL = {0, 40, 125, 24};
     GlcdRect rectR = {131, 40, 125, 24};
-    spViewDraw(clear, true, false, peaks, SP_CHAN_LEFT, &rectL);
-    spViewDraw(false, false, false, peaks, SP_CHAN_RIGHT, &rectR);
+
+    spView.mirror = false;
+    spView.peaks = ((sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
+
+    spView.check = true;
+    spView.chan = SP_CHAN_LEFT;
+    spViewDraw(&spView, clear, &rectL);
+    spView.chan = SP_CHAN_RIGHT;
+    spView.check = false;
+    spViewDraw(&spView, clear, &rectR);
 #endif
 }
 

@@ -10,7 +10,14 @@ extern "C" {
 #include "display/glcd.h"
 #include "spectrum.h"
 
-void spViewDraw(bool clear, bool check, bool mirror, bool peaks, SpChan chan, GlcdRect *rect);
+typedef struct {
+    bool check;
+    bool mirror;
+    bool peaks;
+    SpChan chan;
+} SpView;
+
+void spViewDraw(SpView *this, bool clear, GlcdRect *rect);
 
 void *spViewGetDrawData(void);
 

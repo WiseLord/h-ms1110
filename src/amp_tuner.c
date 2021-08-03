@@ -694,16 +694,12 @@ void ampScreenShow(void)
         canvasClear();
     }
 
-    Spectrum *sp = spGet();
-    SpMode spMode = (sp->mode == SP_MODE_MIRROR || sp->mode == SP_MODE_INVERTED)
-                    ? SP_MODE_LEFT_MIRROR : SP_MODE_LEFT;
-
     switch (amp->screen) {
     case SCREEN_SPECTRUM:
-        if ((sp->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO) {
+        if ((spGet()->flags & SP_FLAG_DEMO) == SP_FLAG_DEMO) {
             canvasShowStars(clear, +40);
         } else {
-            canvasShowSpectrum(clear, spMode, (sp->flags & SP_FLAG_PEAKS) == SP_FLAG_PEAKS);
+            canvasShowSpectrum(clear);
         }
         break;
     case SCREEN_TIME:
