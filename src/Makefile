@@ -96,10 +96,10 @@ C_SOURCES += gui/view/inputview.c
 C_SOURCES += gui/view/mpcview.c
 C_SOURCES += gui/view/tunerview.c
 C_SOURCES += gui/view/tuneview.c
+C_SOURCES += gui/view/spectrumview.c
 C_SOURCES += gui/view/starsview.c
 
 C_SOURCES += screen/setupview.c
-C_SOURCES += screen/spectrumview.c
 
 C_SOURCES += display/dispdrv/$(call lc,$(DISPLAY)).c
 C_SOURCES += display/dispdrv.c

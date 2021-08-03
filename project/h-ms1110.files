@@ -143,6 +143,8 @@
 ../src/gui/view/inputview.h
 ../src/gui/view/mpcview.c
 ../src/gui/view/mpcview.h
+../src/gui/view/spectrumview.c
+../src/gui/view/spectrumview.h
 ../src/gui/view/starsview.c
 ../src/gui/view/starsview.h
 ../src/gui/view/tunerview.c
@@ -185,8 +187,6 @@
 ../src/screen/radioview.h
 ../src/screen/setupview.c
 ../src/screen/setupview.h
-../src/screen/spectrumview.c
-../src/screen/spectrumview.h
 ../src/settings.c
 ../src/settings.h
 ../src/setup.c

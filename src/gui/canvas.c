@@ -6,12 +6,12 @@
 #include "audio/audio.h"
 #include "input/matrix.h"
 #include "rtc.h"
-#include "screen/spectrumview.h"
 #include "screen/setupview.h"
 #include "swtimers.h"
 
 #include "view/inputview.h"
 #include "view/mpcview.h"
+#include "view/spectrumview.h"
 #include "view/starsview.h"
 #include "view/tunerview.h"
 #include "widget/iconimage.h"
