@@ -31,6 +31,7 @@ TARGET = $(call lc, $(PROJECT)_$(MODULE))
 ifeq "$(MODULE)" "PLAYER"
   FEATURE_LIST += USE_MPC
   FEATURE_LIST += USE_RC
+  FEATURE_LIST += ENABLE_USB
 
   C_DEFS += -D_INPUT_ANALOG
   C_DEFS += -D_GLCD_OFT_Y=24
@@ -147,6 +148,26 @@ C_INCLUDES += \
   -Idrivers/CMSIS/Device/ST/$(STM32_FAMILY)xx/Include \
   -Idrivers/CMSIS/Include \
   -Isystem
+
+ifneq (,$(filter $(FEATURE_LIST), ENABLE_USB))
+  C_SOURCES += \
+	drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_hal_pcd.c \
+	drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_hal_pcd_ex.c \
+	drivers/$(STM32_FAMILY)xx_HAL_Driver/Src/$(call lc, $(STM32_FAMILY))xx_ll_usb.c \
+	drivers/STM32_USB_Device_Library/Core/Src/usbd_core.c \
+	drivers/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
+	drivers/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
+
+  C_SOURCES += \
+	usb/usbd_amp.c \
+	usb/usbd_conf.c \
+	usb/usbd_desc.c \
+	usb/usbhid.c
+
+  C_INCLUDES += \
+	-Idrivers/STM32_USB_Device_Library/Core/Inc \
+	-Iusb
+endif
 
 AS_DEFS +=
 

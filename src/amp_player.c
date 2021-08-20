@@ -18,6 +18,8 @@
 #include "swtimers.h"
 #include "sync.h"
 #include "tunersync.h"
+#include "usb/hidkeys.h"
+#include "usb/usbhid.h"
 #include "utils.h"
 
 #define SYNC_PERIOD     10
@@ -938,6 +940,8 @@ void ampInit(void)
     inputSetPower(false);    // Power off input device
 
     swTimSet(SW_TIM_RTC_INIT, 500);
+
+    usbHidInit();
 
     amp->status = AMP_STATUS_STBY;
     ampSetOffline(AMP_MODULE_TUNER);

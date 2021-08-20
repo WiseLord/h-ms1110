@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 #if defined(STM32F103xB)
+#include <stm32f1xx_hal_def.h>
+#include <stm32f1xx_hal_pcd.h>
 #include <stm32f1xx_ll_adc.h>
 #include <stm32f1xx_ll_bus.h>
 #include <stm32f1xx_ll_cortex.h>
