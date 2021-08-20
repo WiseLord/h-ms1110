@@ -604,7 +604,7 @@ static void actionRemapBtnShort(int16_t button)
         actionSet(ACTION_MEDIA, MEDIAKEY_EJECT);
         break;
     case BTN_PLAYER_PLAYPAUSE:
-        actionSet(ACTION_MEDIA, MEDIAKEY_PAUSE);
+        actionSet(ACTION_MEDIA, MEDIAKEY_PLAY);
         break;
     case BTN_PLAYER_STOP:
         actionSet(ACTION_MEDIA, MEDIAKEY_STOP);
@@ -1117,6 +1117,38 @@ void ampActionRemap(void)
     actionRemapCommon();
 }
 
+static void usbSendMediaKey(MediaKey key)
+{
+    switch (key) {
+    case MEDIAKEY_PREV:
+        usbHidSendMediaKey(HIDMEDIAKEY_PREV_TRACK);
+        break;
+    case MEDIAKEY_NEXT:
+        usbHidSendMediaKey(HIDMEDIAKEY_NEXT_TRACK);
+        break;
+    case MEDIAKEY_STOP:
+        usbHidSendMediaKey(HIDMEDIAKEY_STOP);
+        break;
+    case MEDIAKEY_PLAY:
+        usbHidSendMediaKey(HIDMEDIAKEY_PLAY);
+        break;
+    case MEDIAKEY_PAUSE:
+        usbHidSendMediaKey(HIDMEDIAKEY_PAUSE);
+        break;
+    case MEDIAKEY_REWIND:
+        usbHidSendMediaKey(HIDMEDIAKEY_REWIND);
+        break;
+    case MEDIAKEY_FFWD:
+        usbHidSendMediaKey(HIDMEDIAKEY_FFWD);
+        break;
+    case MEDIAKEY_MUTE:
+        usbHidSendMediaKey(HIDMEDIAKEY_MUTE);
+        break;
+    default:
+        break;
+    }
+}
+
 static void ampSendMediaKey(MediaKey key)
 {
     InputType inType = amp->inType;
@@ -1127,6 +1159,9 @@ static void ampSendMediaKey(MediaKey key)
         break;
     case IN_TUNER:
         priv.syncAction = action;
+        break;
+    case IN_SPDIF:
+        usbSendMediaKey(key);
         break;
     default:
         break;
