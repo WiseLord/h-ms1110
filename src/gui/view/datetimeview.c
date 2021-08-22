@@ -6,7 +6,7 @@
 #include "gui/palette.h"
 #include "tr/labels.h"
 
-static const GlcdRect rectTime = {95, 10, 66, 20};
+static const GlcdRect rectTime = {76, 0, 103, 40};
 static const GlcdRect rectDateTop = {0, 0, 256, 32};
 static const GlcdRect rectDateMiddle = {0, 16, 256, 32};
 static const GlcdRect rectDateBottom = {0, 32, 256, 32};
@@ -25,7 +25,7 @@ static void timeDraw(DateTimeView *this, bool clear)
     }
 
     if (clear) {
-        const tFont *font = &fontterminus32;
+        const tFont *font = &fontterminusdig40;
         const Palette *pal = paletteGet();
 
         glcdSetFont(font);
@@ -39,7 +39,7 @@ static void timeDraw(DateTimeView *this, bool clear)
 
         glcdSetRect(&rectTime);
 
-        glcdSetXY(0, -6);
+        glcdSetXY(0, 0);
         glcdWriteString(buf);
 
         glcdResetRect();
