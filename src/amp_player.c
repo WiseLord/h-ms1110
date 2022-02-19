@@ -215,7 +215,7 @@ static void inputSetPower(bool value)
             swTimSet(SW_TIM_MPD_POWEROFF, SW_TIM_OFF);
             SET(PWR_MPD);
         } else {
-            swTimSet(SW_TIM_MPD_POWEROFF, 20000); // Turn off MPD after 60 seconds
+            swTimSet(SW_TIM_MPD_POWEROFF, 60000); // Turn off MPD after 60 seconds
             CLR(PWR_MPD);
         }
     }
@@ -312,6 +312,7 @@ void ampEnterStby(void)
     amp->status = AMP_STATUS_INACTIVE;
     priv.forseScreenSaver = false;
     swTimSet(SW_TIM_AMP_INIT, 1000);
+    swTimSet(SW_TIM_MPD_POWEROFF, 0);
 }
 
 void ampHandleStby(void)
