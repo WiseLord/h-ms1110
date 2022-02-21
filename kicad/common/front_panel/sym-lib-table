@@ -1,3 +1,3 @@
 (sym_lib_table
-  (lib (name h-ms1110)(type Legacy)(uri ${KIPRJMOD}/../../h-ms1110.lib)(options "")(descr ""))
+  (lib (name "h-ms1110")(type "KiCad")(uri "/home/STM32/Projects/h-ms1110/kicad/h-ms1110.kicad_sym")(options "")(descr ""))
 )
