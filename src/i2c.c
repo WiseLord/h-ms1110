@@ -4,7 +4,7 @@
 
 #include "hwlibs.h"
 
-#define I2C_TIMEOUT_MS      5
+#define I2C_TIMEOUT_MS      25
 
 typedef struct {
     I2cRxFn rxCb;
