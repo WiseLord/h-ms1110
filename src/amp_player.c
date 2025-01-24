@@ -466,7 +466,15 @@ static void actionGetRemote(void)
         int32_t repTime = swTimGet(SW_TIM_RC_REPEAT);
 
         if (cmd != cmdPrev) {
-            actionSet(ACTION_REMOTE, (int16_t)cmd);
+            if (cmd == RC_CMD_STBY_SWITCH && repTime > 800) {
+                if (cmdPrev == RC_CMD_PLAY && amp->status == AMP_STATUS_STBY) {
+                    actionSet(ACTION_STANDBY, FLAG_EXIT);
+                } else if (cmdPrev == RC_CMD_STOP && amp->status != AMP_STATUS_STBY) {
+                    actionSet(ACTION_STANDBY, FLAG_ENTER);
+                }
+            } else {
+                actionSet(ACTION_REMOTE, (int16_t)cmd);
+            }
             swTimSet(SW_TIM_RC_REPEAT, 1000);
             cmdPrev = cmd;
         } else {
