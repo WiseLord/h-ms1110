@@ -748,8 +748,13 @@ static void actionRemapRemote(void)
     case RC_CMD_DIG_7:
     case RC_CMD_DIG_8:
     case RC_CMD_DIG_9:
-        priv.syncAction.type = ACTION_DIGIT;
-        priv.syncAction.value = action.value - RC_CMD_DIG_0;
+        if (screen.type == SCREEN_INPUT_SELECTOR) {
+            ampSetInput(action.value - RC_CMD_DIG_0);
+            swTimSet(SW_TIM_SCROLL, 120);
+        } else {
+            priv.syncAction.type = ACTION_DIGIT;
+            priv.syncAction.value = action.value - RC_CMD_DIG_0;
+        }
         break;
     case RC_CMD_NAV_LEFT:
         actionSet(ACTION_MEDIA, MEDIAKEY_REWIND);
